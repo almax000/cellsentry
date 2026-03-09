@@ -74,6 +74,8 @@ const api: SidecarAPI = {
     get: (): Promise<number> => ipcRenderer.invoke('zoom:get'),
     set: (level: number): Promise<void> => ipcRenderer.invoke('zoom:set', level)
   },
+  // LLM
+  getLlmStatus: () => ipcRenderer.invoke('llm:status'),
   // PII
   analyzePii: (filePath: string) => ipcRenderer.invoke('pii:analyze', filePath),
   redactPii: (filePath: string, outputPath: string) => ipcRenderer.invoke('pii:redact', filePath, outputPath),

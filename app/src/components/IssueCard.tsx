@@ -57,6 +57,14 @@ export default function IssueCard({
         <span className={`issue-layer ${issue.layer === 'ai' ? 'ai' : ''}`}>
           {issue.layer === 'ai' ? `✦ ${t('aiLabel')}` : `⚙ ${t('ruleLabel')}`}
         </span>
+        {issue.llmVerified !== undefined && (
+          <span
+            className={`issue-ai-badge ${issue.llmVerified ? 'verified' : 'disputed'}`}
+            title={issue.llmReasoning || ''}
+          >
+            {issue.llmVerified ? `✓ ${t('aiVerified')}` : `✗ ${t('aiDisputed')}`}
+          </span>
+        )}
       </div>
 
       {isExpanded && (
@@ -71,6 +79,12 @@ export default function IssueCard({
             <div className="issue-detail-row">
               <span className="issue-detail-label">{t('suggest')}</span>
               <span className="issue-detail-suggested">{issue.suggestion}</span>
+            </div>
+          )}
+          {issue.llmReasoning && (
+            <div className="issue-detail-row">
+              <span className="issue-detail-label">{t('aiReasoning')}</span>
+              <span className="issue-detail-reasoning">{issue.llmReasoning}</span>
             </div>
           )}
           <div className="issue-detail-actions">

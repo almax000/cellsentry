@@ -9,7 +9,7 @@ import { readdirSync, statSync, existsSync } from 'fs'
 import { join, extname, normalize } from 'path'
 import { is } from '@electron-toolkit/utils'
 
-import { analyzeExcel } from '../engine/ruleEngine'
+import { analyzeExcel, type RendererIssue } from '../engine/ruleEngine'
 import { getFileInfo, readFileCells } from '../engine/excelReader'
 import { generateReport } from '../report/generator'
 import { ModelDownloader } from '../model/downloader'
@@ -17,7 +17,8 @@ import { scanForPii } from '../pii/scanner'
 import { redactFile } from '../pii/redactor'
 import { extractDocument } from '../extraction/extractor'
 import { exportToJson, exportToCsv } from '../extraction/exporters'
-import { getLlmStatus, analyzeWithLlm } from '../llm/lifecycle'
+import { getLlmStatus, analyzeWithLlm, mergeJudgments } from '../llm/lifecycle'
+import type { LlmIssueInput } from '../llm/types'
 
 function validateFilePath(filePath: unknown): filePath is string {
   if (typeof filePath !== 'string' || filePath.length === 0) return false
@@ -39,6 +40,40 @@ function getDownloader(): ModelDownloader {
   return modelDownloader
 }
 
+function getMainWindow(): BrowserWindow | null {
+  const windows = BrowserWindow.getAllWindows()
+  return windows[0] || null
+}
+
+function sendProgress(phase: string, percent: number): void {
+  const win = getMainWindow()
+  if (win) {
+    win.webContents.send('sidecar:scan-progress', { phase, percent, message: '' })
+  }
+}
+
+/** Map RendererIssue confidence string → number */
+function confidenceToNumber(c: string): number {
+  switch (c) {
+    case 'high': return 0.9
+    case 'medium': return 0.7
+    case 'low': return 0.5
+    default: return 0.7
+  }
+}
+
+/** Map RendererIssue[] → LlmIssueInput[] for the LLM bridge */
+function mapToLlmInput(issues: RendererIssue[]): LlmIssueInput[] {
+  return issues.map((i) => ({
+    ruleId: i.ruleId,
+    cellAddress: i.cell,
+    sheetName: i.sheet,
+    formula: i.formula || '',
+    message: i.message,
+    confidence: confidenceToNumber(i.confidence),
+  }))
+}
+
 export function registerIpcHandlers(): void {
   // ── Analysis ────────────────────────────────────────────
   ipcMain.handle('sidecar:analyze', async (_event, filePath: string) => {
@@ -46,10 +81,43 @@ export function registerIpcHandlers(): void {
       return { success: false, error: 'Invalid path', issues: [], summary: { total: 0, error: 0, warning: 0, info: 0 } }
     }
     try {
+      // Phase 1: Rule engine
       const result = await analyzeExcel(filePath)
+      sendProgress('rules', 100)
+
+      // Phase 2: LLM verification (graceful degradation)
+      let enrichedIssues = result.issues as Array<RendererIssue & {
+        llmVerified?: boolean
+        llmConfidence?: number
+        llmReasoning?: string
+      }>
+
+      if (result.issues.length > 0) {
+        try {
+          const status = await getLlmStatus()
+          if (status.available) {
+            sendProgress('ai', 0)
+            const llmInput = mapToLlmInput(result.issues)
+            const judgments = await analyzeWithLlm(llmInput)
+
+            if (judgments.length > 0) {
+              // mergeJudgments expects { ruleId, cellAddress } — wrap issues
+              const issuesForMerge = result.issues.map((i) => ({
+                ...i,
+                cellAddress: i.cell,
+              }))
+              enrichedIssues = mergeJudgments(issuesForMerge, judgments)
+            }
+            sendProgress('ai', 100)
+          }
+        } catch {
+          // LLM failure is non-fatal — continue with rules-only result
+        }
+      }
+
       return {
         success: true,
-        issues: result.issues,
+        issues: enrichedIssues,
         summary: result.summary,
         sheets: result.sheets,
       }

@@ -199,16 +199,19 @@ function mapRawResult(filePath: string, fileName: string, rawResult: Record<stri
   const issues: Issue[] = ((rawResult.issues as Record<string, unknown>[]) || []).map(
     (ri, idx) => ({
       id: `issue-${idx}`,
-      sheetName: (ri.sheet_name as string) || 'Sheet1',
-      cell: (ri.cell_address as string) || 'A1',
+      sheetName: (ri.sheet_name as string) || (ri.sheet as string) || 'Sheet1',
+      cell: (ri.cell_address as string) || (ri.cell as string) || 'A1',
       formula: (ri.formula as string) || '',
-      ruleId: (ri.rule_id as string) || '',
+      ruleId: (ri.rule_id as string) || (ri.ruleId as string) || '',
       severity: mapSeverity((ri.severity as string) || 'medium'),
       confidence: (ri.confidence as number) || 0.8,
       message: (ri.message as string) || '',
       suggestion: (ri.suggestion as string) || '',
       category: (ri.category as string) || '',
       layer: (ri.layer as 'rule' | 'ai') || 'rule',
+      ...(ri.llmVerified !== undefined && { llmVerified: ri.llmVerified as boolean }),
+      ...(ri.llmConfidence !== undefined && { llmConfidence: ri.llmConfidence as number }),
+      ...(ri.llmReasoning !== undefined && { llmReasoning: ri.llmReasoning as string }),
     })
   )
 

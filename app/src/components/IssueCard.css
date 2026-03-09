@@ -174,3 +174,31 @@
   font-size: 11px;
   padding: 4px 8px;
 }
+
+/* ── AI Badge ── */
+.issue-ai-badge {
+  font-size: 9.5px;
+  font-weight: 600;
+  padding: 1px 5px;
+  border-radius: 3px;
+  letter-spacing: 0.3px;
+  cursor: help;
+}
+
+.issue-ai-badge.verified {
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+.issue-ai-badge.disputed {
+  background: var(--warning-bg);
+  color: var(--warning);
+}
+
+/* ── AI Reasoning ── */
+.issue-detail-reasoning {
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-style: italic;
+  line-height: 1.4;
+}

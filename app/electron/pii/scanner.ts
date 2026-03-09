@@ -1,11 +1,20 @@
 /**
  * PII scanner — reads an Excel file and returns all PII findings.
+ *
+ * Two-pass approach:
+ * 1. Regex pass: fast deterministic patterns
+ * 2. LLM pass (optional): catches names, addresses, and other soft PII
+ *    that regex cannot reliably detect
  */
 
 import { readWorkbook } from '../engine/excelReader'
 import { PII_PATTERNS } from './patterns'
 import { PiiType } from './types'
 import type { PiiFinding, PiiScanResult } from './types'
+import { getLlmStatus, analyzeWithLlmPii } from '../llm/lifecycle'
+import type { LlmCellContext } from '../llm/types'
+
+const LLM_CANDIDATE_LIMIT = 100
 
 /**
  * Mask a matched value, preserving a few characters at each end for
@@ -53,6 +62,9 @@ function maskValue(value: string, piiType: string): string {
  * Iterates every non-empty cell across all sheets, testing cell text against
  * each PII pattern. When a validator is present the confidence is raised to
  * 0.95; regex-only matches get 0.8.
+ *
+ * If the LLM is available, unflagged text cells are sent for secondary
+ * screening to catch soft PII (names, addresses) that regex cannot detect.
  */
 export async function scanForPii(filePath: string): Promise<PiiScanResult> {
   const start = Date.now()
@@ -60,7 +72,9 @@ export async function scanForPii(filePath: string): Promise<PiiScanResult> {
   try {
     const { sheets } = await readWorkbook(filePath)
     const findings: PiiFinding[] = []
+    const regexFlaggedCells = new Set<string>() // "Sheet!A1" keys
 
+    // Pass 1: regex patterns
     for (const sheet of sheets) {
       for (const cell of Object.values(sheet.cells)) {
         if (cell.dataType === 'empty' || cell.value == null) continue
@@ -82,9 +96,69 @@ export async function scanForPii(filePath: string): Promise<PiiScanResult> {
             confidence: pattern.validator ? 0.95 : 0.8,
             pattern: pattern.label,
           })
+          regexFlaggedCells.add(`${sheet.name}!${cell.address}`)
           break // one match per cell
         }
       }
+    }
+
+    // Pass 2: LLM secondary screening (optional)
+    try {
+      const status = await getLlmStatus()
+      if (status.available) {
+        const candidates: LlmCellContext[] = []
+
+        for (const sheet of sheets) {
+          for (const cell of Object.values(sheet.cells)) {
+            if (candidates.length >= LLM_CANDIDATE_LIMIT) break
+            if (cell.dataType === 'empty' || cell.value == null) continue
+            const text = String(cell.value)
+            // Skip cells already flagged, formulas, pure numbers, and short text
+            if (regexFlaggedCells.has(`${sheet.name}!${cell.address}`)) continue
+            if (cell.formula) continue
+            if (/^\d+\.?\d*$/.test(text)) continue
+            if (text.length <= 10) continue
+
+            candidates.push({
+              address: `${sheet.name}!${cell.address}`,
+              value: text,
+            })
+          }
+          if (candidates.length >= LLM_CANDIDATE_LIMIT) break
+        }
+
+        if (candidates.length > 0) {
+          const llmFindings = await analyzeWithLlmPii(candidates)
+          for (const f of llmFindings) {
+            // Deduplicate by cell address
+            const alreadyFound = findings.some(
+              (existing) => `${existing.sheet_name}!${existing.cell}` === f.cellAddress
+            )
+            if (alreadyFound) continue
+
+            // Parse "Sheet1!A1" back into sheet + cell
+            const bangIdx = f.cellAddress.indexOf('!')
+            const sheetName = bangIdx > 0 ? f.cellAddress.substring(0, bangIdx) : 'Sheet1'
+            const cellAddr = bangIdx > 0 ? f.cellAddress.substring(bangIdx + 1) : f.cellAddress
+
+            // Get original cell value for masking
+            const origCell = candidates.find((c) => c.address === f.cellAddress)
+            const origValue = origCell?.value || ''
+
+            findings.push({
+              sheet_name: sheetName,
+              cell: cellAddr,
+              pii_type: f.piiType,
+              original_value: origValue,
+              masked_value: maskValue(origValue, f.piiType),
+              confidence: f.confidence,
+              pattern: 'ai-detected',
+            })
+          }
+        }
+      }
+    } catch {
+      // LLM failure is non-fatal — continue with regex-only results
     }
 
     return {

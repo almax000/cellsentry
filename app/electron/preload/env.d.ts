@@ -52,6 +52,8 @@ interface SidecarAPI {
     get: () => Promise<number>
     set: (level: number) => Promise<void>
   }
+  // LLM
+  getLlmStatus: () => Promise<{ available: boolean; backend: string; modelLoaded: boolean }>
   // PII
   analyzePii: (filePath: string) => Promise<unknown>
   redactPii: (filePath: string, outputPath: string) => Promise<unknown>

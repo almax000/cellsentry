@@ -19,6 +19,9 @@ export interface Issue {
   suggestion: string
   category: string
   layer: 'rule' | 'ai'
+  llmVerified?: boolean
+  llmConfidence?: number
+  llmReasoning?: string
 }
 
 export interface AnalysisSummary {
