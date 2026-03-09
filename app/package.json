@@ -1,0 +1,47 @@
+{
+  "name": "cellsentry",
+  "version": "0.10.0",
+  "description": "CellSentry — Excel Formula Error Detection",
+  "main": "./out/main/index.js",
+  "author": "CellSentry",
+  "license": "MIT",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "postinstall": "electron-builder install-app-deps",
+    "preview": "electron-vite preview",
+    "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
+    "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
+    "typecheck": "npm run typecheck:node && npm run typecheck:web",
+    "test:e2e": "npx playwright test",
+    "test:visual": "npx playwright test --project=visual",
+    "test:functional": "npx playwright test --project=functional",
+    "test:flow": "npx playwright test --project=flow",
+    "test:ci": "electron-vite build && npm run typecheck:node && npx playwright test",
+    "build:win": "npm run build && npx electron-builder --win --x64",
+    "build:mac": "npm run build && npx electron-builder --mac"
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.3",
+    "exceljs": "^4.4.0",
+    "i18next": "^25.8.14",
+    "i18next-browser-languagedetector": "^8.2.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-i18next": "^16.5.4",
+    "react-router-dom": "^7.1.0"
+  },
+  "devDependencies": {
+    "@electron-toolkit/preload": "^3.0.1",
+    "@electron-toolkit/utils": "^4.0.0",
+    "@playwright/test": "^1.58.2",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "electron": "^40.6.1",
+    "electron-builder": "^25.1.8",
+    "electron-vite": "^5.0.0",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.3"
+  }
+}

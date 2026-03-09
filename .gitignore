@@ -1,0 +1,12 @@
+node_modules/
+dist/
+out/
+.vite/
+.idea/
+.vscode/
+*.swp
+*~
+.DS_Store
+*.log
+test-results/
+playwright-report/

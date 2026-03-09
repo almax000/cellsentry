@@ -1,0 +1,120 @@
+name: Build Windows Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  # ── Stage 1: Test ─────────────────────────────────────────────────────
+  test:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install dependencies
+        working-directory: app
+        run: npm ci
+
+      - name: Build (electron-vite)
+        working-directory: app
+        run: npx electron-vite build
+
+      - name: TypeScript type check
+        working-directory: app
+        run: npm run typecheck:node
+
+  # ── Stage 2: Build Windows ───────────────────────────────────────────
+  build-windows:
+    runs-on: windows-latest
+    needs: test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install dependencies
+        working-directory: app
+        run: npm ci
+
+      - name: Build (electron-vite)
+        working-directory: app
+        run: npx electron-vite build
+
+      - name: Build Windows installer (electron-builder NSIS)
+        working-directory: app
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx electron-builder --win --x64
+
+      - name: Sign executable (optional)
+        if: env.CODE_SIGN_CERT != ''
+        env:
+          CODE_SIGN_CERT: ${{ secrets.CODE_SIGN_CERT }}
+          CODE_SIGN_PASSWORD: ${{ secrets.CODE_SIGN_PASSWORD }}
+        run: |
+          $certBytes = [Convert]::FromBase64String($env:CODE_SIGN_CERT)
+          [IO.File]::WriteAllBytes("cert.pfx", $certBytes)
+
+          $installer = Get-ChildItem -Path app\dist -Filter "*.exe" | Select-Object -First 1
+          & "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe" sign `
+            /f cert.pfx `
+            /p $env:CODE_SIGN_PASSWORD `
+            /tr http://timestamp.digicert.com `
+            /td sha256 `
+            /fd sha256 `
+            $installer.FullName
+
+          Remove-Item cert.pfx
+
+      - name: List build artifacts
+        run: |
+          Write-Host "=== electron-builder output ==="
+          dir app\dist\*.exe
+          dir app\dist\latest.yml 2>$null
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CellSentry-Windows-Installer
+          path: app/dist/*Setup*.exe
+          retention-days: 7
+
+      - name: Upload auto-updater manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: CellSentry-Windows-UpdateManifest
+          path: app/dist/latest.yml
+          retention-days: 7
+
+      - name: Upload to GitHub Release (if tag)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            app/dist/*Setup*.exe
+            app/dist/latest.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

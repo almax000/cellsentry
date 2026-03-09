@@ -1,0 +1,122 @@
+name: Build macOS Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  # ── Stage 1: Test ─────────────────────────────────────────────────────
+  test:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install dependencies
+        working-directory: app
+        run: npm ci
+
+      - name: Build (electron-vite)
+        working-directory: app
+        run: npx electron-vite build
+
+      - name: TypeScript type check
+        working-directory: app
+        run: npm run typecheck:node
+
+  # ── Stage 2: Build macOS ──────────────────────────────────────────────
+  build-mac:
+    runs-on: macos-latest
+    needs: test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install dependencies
+        working-directory: app
+        run: npm ci
+
+      - name: Build (electron-vite)
+        working-directory: app
+        run: npx electron-vite build
+
+      - name: Build macOS installer (electron-builder)
+        working-directory: app
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HAS_CODE_SIGN: ${{ secrets.CSC_LINK }}
+          CSC_LINK: ${{ secrets.CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          if [ -z "$HAS_CODE_SIGN" ]; then
+            echo "No code signing cert — building unsigned"
+            unset CSC_LINK CSC_KEY_PASSWORD APPLE_ID APPLE_APP_SPECIFIC_PASSWORD APPLE_TEAM_ID
+            export CSC_IDENTITY_AUTO_DISCOVERY=false
+            npx electron-builder --mac -c.mac.notarize=false
+          else
+            echo "Code signing cert found — building signed + notarized"
+            npx electron-builder --mac
+          fi
+
+      - name: List build artifacts
+        run: |
+          echo "=== electron-builder output ==="
+          ls -lh app/dist/*.dmg app/dist/*.zip app/dist/latest-mac.yml 2>/dev/null || true
+
+      - name: Upload DMG artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CellSentry-macOS-DMG
+          path: app/dist/*.dmg
+          retention-days: 7
+
+      - name: Upload ZIP artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CellSentry-macOS-ZIP
+          path: app/dist/*.zip
+          retention-days: 7
+
+      - name: Upload auto-updater manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: CellSentry-macOS-UpdateManifest
+          path: app/dist/latest-mac.yml
+          retention-days: 7
+
+      - name: Upload to GitHub Release (if tag)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            app/dist/*.dmg
+            app/dist/*.zip
+            app/dist/latest-mac.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

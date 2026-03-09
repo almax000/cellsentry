@@ -1,0 +1,63 @@
+appId: com.cellsentry.app
+productName: CellSentry
+directories:
+  buildResources: resources
+  output: dist
+files:
+  - '!**/.vscode/*'
+  - '!src/*'
+  - '!e2e/*'
+  - '!electron.vite.config.*'
+  - '!playwright.config.*'
+  - '!{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
+  - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
+
+# ── Windows ──────────────────────────────────────────────────────────────
+win:
+  target: nsis
+  icon: resources/icon.ico
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  installerIcon: resources/icon.ico
+  uninstallerIcon: resources/icon.ico
+
+# ── macOS ────────────────────────────────────────────────────────────────
+mac:
+  category: public.app-category.productivity
+  darkModeSupport: false
+  target:
+    - dmg
+    - zip
+  icon: resources/icon.icns
+  notarize: true
+  entitlements: resources/entitlements.mac.plist
+  entitlementsInherit: resources/entitlements.mac.plist
+
+dmg:
+  title: Install CellSentry
+  background: resources/dmg-background.png
+  iconSize: 80
+  iconTextSize: 12
+  contents:
+    - x: 130
+      y: 220
+    - x: 410
+      y: 220
+      type: link
+      path: /Applications
+  window:
+    width: 540
+    height: 380
+
+publish:
+  provider: github
+  owner: almax000
+  repo: cellsentry
+
+# ── Linux ────────────────────────────────────────────────────────────────
+linux:
+  target: AppImage
+  icon: resources/icon.png
+  category: Office

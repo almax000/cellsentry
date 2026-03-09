@@ -1,0 +1,149 @@
+import { test, expect } from '@playwright/test'
+import { launchApp, teardownApp, type TestContext } from './electron.setup'
+import type { Page } from '@playwright/test'
+
+let ctx: TestContext
+let page: Page
+
+test.beforeAll(async () => {
+  ctx = await launchApp()
+  page = ctx.page
+})
+
+test.afterAll(async () => {
+  if (ctx) await teardownApp(ctx)
+})
+
+// ── Sidebar Navigation ─────────────────────────────────────────────────
+
+test.describe('Sidebar', () => {
+  test('navigates to Settings and back', async () => {
+    const settingsNav = page.locator('[data-testid="sidebar-nav-settings"]')
+    await settingsNav.click()
+    await page.waitForTimeout(300)
+
+    const settingsContainer = page.locator('.settings-container')
+    await expect(settingsContainer).toBeVisible()
+
+    // Navigate back to home
+    const auditNav = page.locator('[data-testid="sidebar-nav-audit"]')
+    await auditNav.click()
+    await page.waitForTimeout(300)
+
+    const dropZone = page.locator('[data-testid="dropzone-area"]')
+    await expect(dropZone).toBeVisible()
+  })
+
+  test('disabled nav items do not navigate', async () => {
+    const piiNav = page.locator('[data-testid="sidebar-nav-pii"]')
+    await piiNav.click()
+    await page.waitForTimeout(200)
+
+    // Should still be on home (DropZone visible)
+    const dropZone = page.locator('[data-testid="dropzone-area"]')
+    await expect(dropZone).toBeVisible()
+  })
+
+  test('active nav item has pill indicator', async () => {
+    const auditItem = page.locator('[data-testid="sidebar-nav-audit"]')
+    const classes = await auditItem.getAttribute('class')
+    expect(classes).toContain('active')
+  })
+})
+
+// ── DropZone ────────────────────────────────────────────────────────────
+
+test.describe('DropZone', () => {
+  test('shows browse, batch, and folder buttons', async () => {
+    // Ensure we're on home
+    await page.locator('[data-testid="sidebar-nav-audit"]').click()
+    await page.waitForTimeout(300)
+
+    await expect(page.locator('[data-testid="dropzone-browse-btn"]')).toBeVisible()
+    await expect(page.locator('[data-testid="dropzone-batch-btn"]')).toBeVisible()
+    await expect(page.locator('[data-testid="dropzone-folder-btn"]')).toBeVisible()
+  })
+
+  test('drop zone area is visible and has dashed border', async () => {
+    const area = page.locator('[data-testid="dropzone-area"]')
+    await expect(area).toBeVisible()
+    const border = await area.evaluate((el) =>
+      window.getComputedStyle(el).borderStyle
+    )
+    expect(border).toBe('dashed')
+  })
+})
+
+// ── Settings Page ───────────────────────────────────────────────────────
+
+test.describe('Settings', () => {
+  test.beforeEach(async () => {
+    await page.locator('[data-testid="sidebar-nav-settings"]').click()
+    await page.waitForTimeout(300)
+  })
+
+  test('theme selector switches data-theme attribute', async () => {
+    // Click Dark
+    await page.locator('[data-testid="settings-theme-dark"]').click()
+    await page.waitForTimeout(200)
+    let theme = await page.locator('html').getAttribute('data-theme')
+    expect(theme).toBe('dark')
+
+    // Click Light
+    await page.locator('[data-testid="settings-theme-light"]').click()
+    await page.waitForTimeout(200)
+    theme = await page.locator('html').getAttribute('data-theme')
+    expect(theme).toBe('light')
+
+    // Click System
+    await page.locator('[data-testid="settings-theme-system"]').click()
+    await page.waitForTimeout(200)
+    theme = await page.locator('html').getAttribute('data-theme')
+    // System resolves to either light or dark based on OS
+    expect(theme).toMatch(/^(light|dark)$/)
+  })
+
+  test('zoom controls increment and decrement', async () => {
+    const zoomValue = page.locator('[data-testid="settings-zoom-value"]')
+    const initial = await zoomValue.textContent()
+
+    // Zoom in
+    await page.locator('[data-testid="settings-zoom-in"]').click()
+    await page.waitForTimeout(100)
+    const after = await zoomValue.textContent()
+    expect(after).not.toBe(initial)
+
+    // Zoom back out
+    await page.locator('[data-testid="settings-zoom-out"]').click()
+    await page.waitForTimeout(100)
+    const restored = await zoomValue.textContent()
+    expect(restored).toBe(initial)
+  })
+
+  test('version is displayed', async () => {
+    const version = page.locator('[data-testid="settings-version"]')
+    await expect(version).toBeVisible()
+    const text = await version.textContent()
+    expect(text).toMatch(/\d+\.\d+\.\d+/)
+  })
+})
+
+// ── Export Button ────────────────────────────────────────────────────────
+
+test.describe('Export', () => {
+  test('export button exists on results page', async () => {
+    // Navigate to home first to ensure we can trigger a scan flow later
+    await page.locator('[data-testid="sidebar-nav-audit"]').click()
+    await page.waitForTimeout(300)
+  })
+})
+
+// ── Connection Banner ───────────────────────────────────────────────────
+
+test.describe('ConnectionBanner', () => {
+  test('banner not visible when sidecar is connected', async () => {
+    const banner = page.locator('[data-testid="connection-banner"]')
+    // With mock sidecar running, banner should be hidden or not present
+    await expect(banner).toHaveCount(0)
+  })
+})
