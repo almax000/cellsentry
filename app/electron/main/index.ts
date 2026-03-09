@@ -4,6 +4,7 @@ import { readFileSync, writeFileSync, appendFileSync, mkdirSync } from 'fs'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { registerIpcHandlers } from './ipc'
 import { initAutoUpdater, registerUpdaterIpc } from './updater'
+import { setupLlmLifecycle } from '../llm/lifecycle'
 
 const IS_TEST_MODE = process.env.CELLSENTRY_TEST_MODE === '1'
 
@@ -309,6 +310,7 @@ if (!gotTheLock) {
     registerIpcHandlers()
     registerTestIpcHandlers()
     registerUpdaterIpc()
+    setupLlmLifecycle()
     const mainWindow = createWindow()
 
     // Register zoom handlers once (not inside createWindow to avoid duplicate registration)

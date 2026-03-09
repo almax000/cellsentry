@@ -1,9 +1,18 @@
 import { createContext, useContext, useReducer, useEffect, useCallback, type ReactNode } from 'react'
 import type {
   ScanState,
+  ScanMode,
   ScanProgress,
   AnalysisResult,
   AnalysisSummary,
+  PiiResult,
+  PiiFinding,
+  PiiSummary,
+  PiiType,
+  ExtractionResult,
+  ExtractionField,
+  ExtractedTable,
+  DocumentType,
   FileInfo,
   Issue,
   ScanPhase,
@@ -18,10 +27,13 @@ import { mapSeverity } from '../utils/format'
 interface ScanContextState {
   // Single-file scan state (preserved for backward compat)
   scanState: ScanState
+  scanMode: ScanMode
   filePath: string
   fileInfo: FileInfo | null
   progress: ScanProgress
   results: AnalysisResult | null
+  piiResults: PiiResult | null
+  extractionResults: ExtractionResult | null
   error: string
   // Batch scan state
   batchState: BatchState
@@ -34,10 +46,13 @@ interface ScanContextState {
 
 const initialState: ScanContextState = {
   scanState: 'idle',
+  scanMode: 'audit',
   filePath: '',
   fileInfo: null,
   progress: { phase: 'rules', percent: 0, message: '' },
   results: null,
+  piiResults: null,
+  extractionResults: null,
   error: '',
   batchState: 'idle',
   batchFiles: [],
@@ -49,9 +64,11 @@ const initialState: ScanContextState = {
 // ── Actions ──
 
 type ScanAction =
-  | { type: 'START_SCAN'; filePath: string; fileInfo: FileInfo }
+  | { type: 'START_SCAN'; filePath: string; fileInfo: FileInfo; mode?: ScanMode }
   | { type: 'UPDATE_PROGRESS'; progress: ScanProgress }
   | { type: 'SCAN_COMPLETE'; results: AnalysisResult }
+  | { type: 'PII_COMPLETE'; results: PiiResult }
+  | { type: 'EXTRACTION_COMPLETE'; results: ExtractionResult }
   | { type: 'SCAN_ERROR'; error: string }
   | { type: 'RESET' }
   | { type: 'START_BATCH'; files: QueuedFile[] }
@@ -79,6 +96,7 @@ function scanReducer(state: ScanContextState, action: ScanAction): ScanContextSt
       return {
         ...initialState,
         scanState: 'scanning',
+        scanMode: action.mode || 'audit',
         filePath: action.filePath,
         fileInfo: action.fileInfo,
         isBatch: false,
@@ -87,6 +105,10 @@ function scanReducer(state: ScanContextState, action: ScanAction): ScanContextSt
       return { ...state, progress: action.progress }
     case 'SCAN_COMPLETE':
       return { ...state, scanState: 'complete', results: action.results }
+    case 'PII_COMPLETE':
+      return { ...state, scanState: 'complete', piiResults: action.results }
+    case 'EXTRACTION_COMPLETE':
+      return { ...state, scanState: 'complete', extractionResults: action.results }
     case 'SCAN_ERROR':
       return { ...state, scanState: 'error', error: action.error }
     case 'RESET':
@@ -208,10 +230,79 @@ function mapRawResult(filePath: string, fileName: string, rawResult: Record<stri
   }
 }
 
+// ── Map PII raw result ──
+
+function mapPiiResult(filePath: string, fileName: string, raw: Record<string, unknown>): PiiResult {
+  const findings: PiiFinding[] = ((raw.findings as Record<string, unknown>[]) || []).map(
+    (rf, idx) => ({
+      id: `pii-${idx}`,
+      sheetName: (rf.sheet_name as string) || 'Sheet1',
+      cell: (rf.cell as string) || 'A1',
+      piiType: (rf.pii_type as PiiType) || 'email',
+      originalValue: (rf.original_value as string) || '',
+      maskedValue: (rf.masked_value as string) || '',
+      confidence: (rf.confidence as number) || 0.9,
+      pattern: (rf.pattern as string) || '',
+    })
+  )
+
+  const byType = {} as Record<PiiType, number>
+  for (const f of findings) {
+    byType[f.piiType] = (byType[f.piiType] || 0) + 1
+  }
+
+  return {
+    success: true,
+    filePath,
+    fileName,
+    findings,
+    summary: { total: findings.length, byType },
+    scannedAt: (raw.scannedAt as string) || new Date().toISOString(),
+    duration: (raw.duration as number) || 0,
+  }
+}
+
+// ── Map Extraction raw result ──
+
+function mapExtractionResult(filePath: string, fileName: string, raw: Record<string, unknown>): ExtractionResult {
+  const fields: ExtractionField[] = ((raw.fields as Record<string, unknown>[]) || []).map(
+    (rf) => ({
+      key: (rf.key as string) || '',
+      label: (rf.label as string) || '',
+      value: (rf.value as string) || '',
+      cell: (rf.cell as string) || '',
+      sheetName: (rf.sheet_name as string) || 'Sheet1',
+      confidence: (rf.confidence as number) || 0.8,
+    })
+  )
+
+  const tables: ExtractedTable[] = ((raw.tables as Record<string, unknown>[]) || []).map(
+    (rt) => ({
+      sheetName: (rt.sheet_name as string) || 'Sheet1',
+      headerRow: (rt.header_row as number) || 1,
+      headers: (rt.headers as string[]) || [],
+      rows: (rt.rows as string[][]) || [],
+      startCell: (rt.start_cell as string) || 'A1',
+      endCell: (rt.end_cell as string) || 'A1',
+    })
+  )
+
+  return {
+    success: true,
+    filePath,
+    fileName,
+    documentType: (raw.document_type as DocumentType) || 'unknown',
+    fields,
+    tables,
+    scannedAt: (raw.scannedAt as string) || new Date().toISOString(),
+    duration: (raw.duration as number) || 0,
+  }
+}
+
 // ── Context ──
 
 interface ScanContextValue extends ScanContextState {
-  startScan: (filePath: string) => Promise<void>
+  startScan: (filePath: string, mode?: ScanMode) => Promise<void>
   startBatchScan: (filePaths: Array<{ path: string; name: string; size: number }>) => Promise<void>
   selectBatchFile: (index: number) => void
   reset: () => void
@@ -246,8 +337,8 @@ export function ScanProvider({ children }: { children: ReactNode }): JSX.Element
     return unsubscribe
   }, [])
 
-  // Single-file scan
-  const startScan = useCallback(async (filePath: string) => {
+  // Single-file scan (mode-aware)
+  const startScan = useCallback(async (filePath: string, mode: ScanMode = 'audit') => {
     if (!window.api) {
       dispatch({ type: 'SCAN_ERROR', error: 'Sidecar not available' })
       return
@@ -263,17 +354,33 @@ export function ScanProvider({ children }: { children: ReactNode }): JSX.Element
         totalCells: rawInfo.totalCells ?? rawInfo.cellCount ?? 0,
       }
 
-      dispatch({ type: 'START_SCAN', filePath, fileInfo })
+      dispatch({ type: 'START_SCAN', filePath, fileInfo, mode })
 
-      const rawResult = await window.api.analyzeFile(filePath)
-
-      if (!rawResult.success) {
-        dispatch({ type: 'SCAN_ERROR', error: rawResult.error || 'Analysis failed' })
-        return
+      if (mode === 'pii') {
+        const rawResult = await window.api.analyzePii(filePath)
+        if (!rawResult.success) {
+          dispatch({ type: 'SCAN_ERROR', error: rawResult.error || 'PII analysis failed' })
+          return
+        }
+        const result = mapPiiResult(filePath, fileInfo.fileName, rawResult as Record<string, unknown>)
+        dispatch({ type: 'PII_COMPLETE', results: result })
+      } else if (mode === 'extraction') {
+        const rawResult = await window.api.analyzeExtraction(filePath)
+        if (!rawResult.success) {
+          dispatch({ type: 'SCAN_ERROR', error: rawResult.error || 'Extraction failed' })
+          return
+        }
+        const result = mapExtractionResult(filePath, fileInfo.fileName, rawResult as Record<string, unknown>)
+        dispatch({ type: 'EXTRACTION_COMPLETE', results: result })
+      } else {
+        const rawResult = await window.api.analyzeFile(filePath)
+        if (!rawResult.success) {
+          dispatch({ type: 'SCAN_ERROR', error: rawResult.error || 'Analysis failed' })
+          return
+        }
+        const result = mapRawResult(filePath, fileInfo.fileName, rawResult as Record<string, unknown>)
+        dispatch({ type: 'SCAN_COMPLETE', results: result })
       }
-
-      const result = mapRawResult(filePath, fileInfo.fileName, rawResult as Record<string, unknown>)
-      dispatch({ type: 'SCAN_COMPLETE', results: result })
     } catch (err) {
       dispatch({
         type: 'SCAN_ERROR',

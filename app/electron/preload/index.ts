@@ -73,7 +73,14 @@ const api: SidecarAPI = {
   zoom: {
     get: (): Promise<number> => ipcRenderer.invoke('zoom:get'),
     set: (level: number): Promise<void> => ipcRenderer.invoke('zoom:set', level)
-  }
+  },
+  // PII
+  analyzePii: (filePath: string) => ipcRenderer.invoke('pii:analyze', filePath),
+  redactPii: (filePath: string, outputPath: string) => ipcRenderer.invoke('pii:redact', filePath, outputPath),
+  // Extraction
+  analyzeExtraction: (filePath: string) => ipcRenderer.invoke('extraction:analyze', filePath),
+  exportExtraction: (filePath: string, format: string, outputPath: string) =>
+    ipcRenderer.invoke('extraction:export', filePath, format, outputPath),
 }
 
 contextBridge.exposeInMainWorld('api', api)

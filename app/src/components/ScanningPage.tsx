@@ -9,15 +9,25 @@ import './ScanningPage.css'
 export default function ScanningPage(): JSX.Element {
   const { t } = useTranslation('scanning')
   const navigate = useNavigate()
-  const { scanState, fileInfo, progress, isBatch, batchFiles, batchIndex, batchResults } = useScan()
+  const { scanState, scanMode, fileInfo, progress, isBatch, batchFiles, batchIndex, batchResults } = useScan()
   const [elapsed, setElapsed] = useState(0)
   const startTimeRef = useRef(Date.now())
 
-  const scanLayers = [
-    { label: t('ruleEngineScan'), startPhase: 1, endPhase: 2 },
-    { label: t('aiContextAnalysis'), startPhase: 2, endPhase: 3, isAi: true },
-    { label: t('aiDeepDiscovery'), startPhase: 3, endPhase: 4, isAi: true },
-  ]
+  const scanLayers = scanMode === 'pii'
+    ? [
+        { label: t('patternScanning', { ns: 'pii' }), startPhase: 1, endPhase: 2 },
+        { label: t('validation', { ns: 'pii' }), startPhase: 2, endPhase: 4 },
+      ]
+    : scanMode === 'extraction'
+      ? [
+          { label: t('templateMatching', { ns: 'extraction' }), startPhase: 1, endPhase: 2 },
+          { label: t('fieldExtraction', { ns: 'extraction' }), startPhase: 2, endPhase: 4 },
+        ]
+      : [
+          { label: t('ruleEngineScan'), startPhase: 1, endPhase: 2 },
+          { label: t('aiContextAnalysis'), startPhase: 2, endPhase: 3, isAi: true },
+          { label: t('aiDeepDiscovery'), startPhase: 3, endPhase: 4, isAi: true },
+        ]
 
   useEffect(() => {
     startTimeRef.current = Date.now()
@@ -29,14 +39,20 @@ export default function ScanningPage(): JSX.Element {
 
   useEffect(() => {
     if (scanState === 'complete') {
-      const timer = setTimeout(() => navigate('/results'), 600)
+      const resultsPath = scanMode === 'pii' ? '/pii/results'
+        : scanMode === 'extraction' ? '/extract/results'
+        : '/results'
+      const timer = setTimeout(() => navigate(resultsPath), 600)
       return () => clearTimeout(timer)
     }
     if (scanState === 'error') {
-      const timer = setTimeout(() => navigate('/'), 2000)
+      const homePath = scanMode === 'pii' ? '/pii'
+        : scanMode === 'extraction' ? '/extract'
+        : '/'
+      const timer = setTimeout(() => navigate(homePath), 2000)
       return () => clearTimeout(timer)
     }
-  }, [scanState, navigate])
+  }, [scanState, scanMode, navigate])
 
   const scanLayer = (() => {
     if (scanState === 'complete') return 4

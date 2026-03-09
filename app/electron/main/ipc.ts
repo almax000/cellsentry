@@ -13,6 +13,11 @@ import { analyzeExcel } from '../engine/ruleEngine'
 import { getFileInfo, readFileCells } from '../engine/excelReader'
 import { generateReport } from '../report/generator'
 import { ModelDownloader } from '../model/downloader'
+import { scanForPii } from '../pii/scanner'
+import { redactFile } from '../pii/redactor'
+import { extractDocument } from '../extraction/extractor'
+import { exportToJson, exportToCsv } from '../extraction/exporters'
+import { getLlmStatus, analyzeWithLlm } from '../llm/lifecycle'
 
 function validateFilePath(filePath: unknown): filePath is string {
   if (typeof filePath !== 'string' || filePath.length === 0) return false
@@ -160,6 +165,64 @@ export function registerIpcHandlers(): void {
       loaded: downloader.checkModelExists(),
       backend: process.platform === 'darwin' ? 'mlx' : 'llama-cpp',
     }
+  })
+
+  // ── LLM ───────────────────────────────────────────────
+  ipcMain.handle('llm:status', async () => {
+    try {
+      return await getLlmStatus()
+    } catch {
+      return { available: false, backend: 'none', modelLoaded: false }
+    }
+  })
+
+  ipcMain.handle('llm:analyze', async (_event, issues: unknown[]) => {
+    try {
+      return await analyzeWithLlm(issues as Parameters<typeof analyzeWithLlm>[0])
+    } catch (e) {
+      return { error: String(e), judgments: [] }
+    }
+  })
+
+  // ── PII ───────────────────────────────────────────────
+  ipcMain.handle('pii:analyze', async (_event, filePath: string) => {
+    if (!validateFilePath(filePath)) {
+      return { success: false, error: 'Invalid path' }
+    }
+    try {
+      return await scanForPii(filePath)
+    } catch (e) {
+      return { success: false, error: String(e) }
+    }
+  })
+
+  ipcMain.handle('pii:redact', async (_event, filePath: string, outputPath: string) => {
+    if (!validateFilePath(filePath) || !validateFilePath(outputPath)) {
+      return { success: false, error: 'Invalid path' }
+    }
+    try {
+      return await redactFile(filePath, outputPath)
+    } catch (e) {
+      return { success: false, error: String(e) }
+    }
+  })
+
+  // ── Extraction ────────────────────────────────────────
+  ipcMain.handle('extraction:analyze', async (_event, filePath: string) => {
+    if (!validateFilePath(filePath)) {
+      return { success: false, error: 'Invalid path' }
+    }
+    try {
+      return await extractDocument(filePath)
+    } catch (e) {
+      return { success: false, error: String(e) }
+    }
+  })
+
+  ipcMain.handle('extraction:export', async (_event, _filePath: string, format: string, _outputPath: string) => {
+    // Export is handled client-side with data from the analysis result.
+    // This handler is a placeholder for future server-side export if needed.
+    return { success: false, error: `Server-side export not implemented for format: ${format}` }
   })
 
   // ── File Dialogs ────────────────────────────────────────

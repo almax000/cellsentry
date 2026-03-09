@@ -52,6 +52,12 @@ interface SidecarAPI {
     get: () => Promise<number>
     set: (level: number) => Promise<void>
   }
+  // PII
+  analyzePii: (filePath: string) => Promise<unknown>
+  redactPii: (filePath: string, outputPath: string) => Promise<unknown>
+  // Extraction
+  analyzeExtraction: (filePath: string) => Promise<unknown>
+  exportExtraction: (filePath: string, format: string, outputPath: string) => Promise<unknown>
 }
 
 interface TestAPI {

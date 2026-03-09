@@ -20,6 +20,10 @@
   },
   "header": {
     "spreadsheetAudit": "表格审计",
+    "piiRedaction": "隐私脱敏",
+    "piiResults": "脱敏结果",
+    "dataExtraction": "数据提取",
+    "extractionResults": "提取结果",
     "scanning": "扫描中...",
     "scanResults": "扫描结果",
     "settings": "设置"

@@ -20,6 +20,10 @@
   },
   "header": {
     "spreadsheetAudit": "Spreadsheet Audit",
+    "piiRedaction": "PII Redaction",
+    "piiResults": "PII Results",
+    "dataExtraction": "Data Extraction",
+    "extractionResults": "Extraction Results",
     "scanning": "Scanning...",
     "scanResults": "Scan Results",
     "settings": "Settings"

@@ -5,6 +5,8 @@ export type ScanState = 'idle' | 'loading' | 'scanning' | 'complete' | 'error'
 
 export type ScanPhase = 'rules' | 'enhance' | 'discover'
 
+export type ScanMode = 'audit' | 'pii' | 'extraction'
+
 export interface Issue {
   id: string
   sheetName: string
@@ -94,3 +96,72 @@ export interface BatchResult {
 }
 
 export type BatchState = 'idle' | 'scanning' | 'complete' | 'error'
+
+// ── PII Scanning ──
+
+export type PiiType = 'ssn' | 'phone' | 'email' | 'id_number' | 'credit_card' | 'name' | 'address' | 'iban' | 'bank_card' | 'passport'
+
+export interface PiiFinding {
+  id: string
+  sheetName: string
+  cell: string
+  piiType: PiiType
+  originalValue: string
+  maskedValue: string
+  confidence: number
+  pattern: string
+}
+
+export interface PiiSummary {
+  total: number
+  byType: Record<PiiType, number>
+}
+
+export interface PiiResult {
+  success: boolean
+  filePath: string
+  fileName: string
+  findings: PiiFinding[]
+  summary: PiiSummary
+  scannedAt: string
+  duration: number
+  error?: string
+}
+
+// ── Data Extraction ──
+
+export type DocumentType = 'invoice' | 'receipt' | 'expense_report' | 'purchase_order' | 'payroll' | 'unknown'
+
+export interface ExtractionField {
+  key: string
+  label: string
+  value: string
+  cell: string
+  sheetName: string
+  confidence: number
+}
+
+export interface ExtractedTable {
+  sheetName: string
+  headerRow: number
+  headers: string[]
+  rows: string[][]
+  startCell: string
+  endCell: string
+}
+
+export interface ExtractionResult {
+  success: boolean
+  filePath: string
+  fileName: string
+  documentType: DocumentType
+  fields: ExtractionField[]
+  tables: ExtractedTable[]
+  scannedAt: string
+  duration: number
+  error?: string
+}
+
+// ── Discriminated Union ──
+
+export type ScanResult = AnalysisResult | PiiResult | ExtractionResult
