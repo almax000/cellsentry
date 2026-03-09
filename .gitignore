@@ -9,4 +9,15 @@ out/
 .DS_Store
 *.log
 test-results/
+app/test-results/
 playwright-report/
+
+# Environment files
+.env
+.env.*
+
+# Models (large files, downloaded at runtime)
+models/
+adapters/
+*.gguf
+*.safetensors
