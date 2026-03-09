@@ -1,0 +1,264 @@
+/* ── Scanning Progress ── */
+.scan-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+}
+
+.scan-visual {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+
+.scan-ring {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px solid var(--border);
+  position: relative;
+}
+
+.scan-ring::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  border-top-color: var(--brand);
+  animation: scanSpin 1.2s linear infinite;
+}
+
+@keyframes scanSpin {
+  to { transform: rotate(360deg); }
+}
+
+.scan-center-icon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--brand);
+}
+
+.scan-info {
+  text-align: center;
+}
+
+.scan-title {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  margin-bottom: 6px;
+}
+
+.scan-subtitle {
+  color: var(--text-secondary);
+  font-size: 13.5px;
+  margin-bottom: 24px;
+}
+
+.scan-elapsed {
+  margin-top: 16px;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.scan-layers {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 320px;
+}
+
+.scan-layer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-muted);
+  transition: color var(--transition);
+}
+
+.scan-layer.active {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.scan-layer.done {
+  color: var(--success);
+}
+
+.scan-layer-indicator {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 11px;
+  transition: all var(--transition);
+}
+
+.scan-layer.active .scan-layer-indicator {
+  border-color: var(--brand);
+  background: var(--brand-subtle);
+  color: var(--brand);
+}
+
+.scan-layer.done .scan-layer-indicator {
+  border-color: var(--success);
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+.scan-layer-bar {
+  flex: 1;
+  height: 4px;
+  background: var(--bg-tertiary);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.scan-layer-fill {
+  height: 100%;
+  background: var(--brand);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.scan-layer.done .scan-layer-fill {
+  background: var(--success);
+}
+
+/* ── Batch Progress ── */
+
+.batch-progress {
+  width: 320px;
+  margin-bottom: 16px;
+}
+
+.batch-progress-bar {
+  height: 6px;
+  background: var(--bg-tertiary);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.batch-progress-fill {
+  height: 100%;
+  background: var(--brand);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.batch-progress-stats {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.batch-file-list {
+  width: 320px;
+  max-height: 200px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.batch-file-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  padding: 5px 8px;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  transition: all var(--transition);
+}
+
+.batch-file-item.scanning {
+  color: var(--text-primary);
+  background: var(--brand-subtle);
+  font-weight: 600;
+}
+
+.batch-file-item.complete {
+  color: var(--success);
+}
+
+.batch-file-item.error {
+  color: var(--danger);
+}
+
+.batch-file-indicator {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 10px;
+}
+
+.batch-file-item.complete .batch-file-indicator {
+  border-color: var(--success);
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+.batch-file-item.error .batch-file-indicator {
+  border-color: var(--danger);
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.batch-file-item.scanning .batch-file-indicator {
+  border-color: var(--brand);
+  background: var(--brand-subtle);
+}
+
+.batch-file-spinner {
+  width: 10px;
+  height: 10px;
+  border: 1.5px solid var(--border);
+  border-top-color: var(--brand);
+  border-radius: 50%;
+  animation: scanSpin 0.8s linear infinite;
+}
+
+.batch-file-num {
+  font-size: 9px;
+  color: var(--text-muted);
+}
+
+.batch-file-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.batch-file-issues {
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+}
+
+.batch-file-size {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}

@@ -1,0 +1,11 @@
+{
+  "title": "将表格文件拖放到这里",
+  "subtitle": "扫描公式错误、不一致性\n和数据完整性问题",
+  "browse": "或浏览文件",
+  "selectMultiple": "选择多个文件",
+  "scanFolder": "扫描文件夹",
+  "errorNotConnected": "Python 后台引擎未连接",
+  "errorNoFiles": "未找到支持的文件。请使用 .xlsx、.xls 或 .csv",
+  "errorNoFilesInFolder": "文件夹中未找到表格文件",
+  "errorFolderScan": "扫描文件夹失败"
+}

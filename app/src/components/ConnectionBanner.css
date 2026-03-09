@@ -1,0 +1,59 @@
+/* ── Connection Banner ── */
+.connection-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 16px;
+  background: rgba(239, 68, 68, 0.08);
+  border-bottom: 1px solid rgba(239, 68, 68, 0.15);
+  font-size: 12px;
+  color: var(--danger);
+  flex-shrink: 0;
+  animation: banner-slide-in 0.2s ease-out;
+}
+
+.connection-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.connection-banner-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--danger);
+  animation: banner-pulse 1.5s ease-in-out infinite;
+}
+
+.connection-banner-dismiss {
+  background: none;
+  border: none;
+  color: var(--danger);
+  cursor: pointer;
+  font-size: 13px;
+  padding: 2px 4px;
+  opacity: 0.6;
+  transition: opacity var(--transition);
+  line-height: 1;
+}
+
+.connection-banner-dismiss:hover {
+  opacity: 1;
+}
+
+@keyframes banner-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes banner-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}

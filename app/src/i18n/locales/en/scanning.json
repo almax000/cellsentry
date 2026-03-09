@@ -1,0 +1,15 @@
+{
+  "analyzingSpreadsheet": "Analyzing spreadsheet",
+  "analyzing": "Analyzing...",
+  "ruleEngineScan": "Rule engine scan",
+  "aiContextAnalysis": "AI context analysis",
+  "aiDeepDiscovery": "AI deep discovery",
+  "elapsed": "{{time}}s elapsed",
+  "scanningBatch": "Scanning {{current}} of {{total}} files",
+  "batchComplete": "{{completed}}/{{total}} complete",
+  "issuesFound": "{{count}} issues found",
+  "issues": "{{count}} issues",
+  "sheets_one": "{{count}} sheet",
+  "sheets_other": "{{count}} sheets",
+  "cells": "{{count}} cells"
+}

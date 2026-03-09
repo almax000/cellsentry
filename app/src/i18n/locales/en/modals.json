@@ -1,0 +1,23 @@
+{
+  "modelDownload": {
+    "checking": "Checking...",
+    "downloading": "Downloading AI Model",
+    "verifying": "Verifying integrity...",
+    "modelReady": "Model Ready",
+    "downloadFailed": "Download Failed",
+    "checkingMsg": "Checking for AI model...",
+    "startingDownload": "Starting download...",
+    "verifyingChecksum": "Verifying checksum...",
+    "modelIsReady": "Model is ready.",
+    "readySubtitle": "CellSentry is ready to analyze your spreadsheets.",
+    "errorSubtitle": "An error occurred during download.",
+    "oneTimeSubtitle": "This is a one-time download. The AI model runs entirely on your device.",
+    "sha256Check": "SHA-256 check...",
+    "getStarted": "Get Started",
+    "retryDownload": "Retry Download"
+  },
+  "confirm": {
+    "defaultConfirm": "Confirm",
+    "defaultCancel": "Cancel"
+  }
+}

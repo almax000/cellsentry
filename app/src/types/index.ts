@@ -1,0 +1,96 @@
+// Severity levels map to the sidecar's high/medium/low confidence
+export type SeverityLevel = 'error' | 'warning' | 'info'
+
+export type ScanState = 'idle' | 'loading' | 'scanning' | 'complete' | 'error'
+
+export type ScanPhase = 'rules' | 'enhance' | 'discover'
+
+export interface Issue {
+  id: string
+  sheetName: string
+  cell: string
+  formula: string
+  ruleId: string
+  severity: SeverityLevel
+  confidence: number
+  message: string
+  suggestion: string
+  category: string
+  layer: 'rule' | 'ai'
+}
+
+export interface AnalysisSummary {
+  errors: number
+  warnings: number
+  info: number
+  total: number
+}
+
+export interface AnalysisResult {
+  success: boolean
+  filePath: string
+  fileName: string
+  issues: Issue[]
+  summary: AnalysisSummary
+  scannedAt: string
+  duration: number
+  error?: string
+}
+
+export interface FileInfo {
+  success: boolean
+  fileName: string
+  fileSize: number
+  sheets: SheetInfo[]
+  totalCells: number
+}
+
+export interface SheetInfo {
+  name: string
+  rows: number
+  columns: number
+  cells: number
+}
+
+export interface ScanProgress {
+  phase: ScanPhase
+  percent: number
+  message: string
+}
+
+export interface CellData {
+  value: string
+  formula: string
+  hasIssue?: boolean
+  issueId?: string
+}
+
+export interface FileCellsResult {
+  success: boolean
+  columns: string[]
+  rows: CellData[][]
+  sheetName: string
+  error?: string
+}
+
+// ── Batch Scanning ──
+
+export interface QueuedFile {
+  path: string
+  name: string
+  size: number
+  status: 'pending' | 'scanning' | 'complete' | 'error'
+  result?: AnalysisResult
+  error?: string
+}
+
+export interface BatchResult {
+  files: QueuedFile[]
+  totalFiles: number
+  completedFiles: number
+  aggregateSummary: AnalysisSummary
+  startedAt: string
+  completedAt?: string
+}
+
+export type BatchState = 'idle' | 'scanning' | 'complete' | 'error'

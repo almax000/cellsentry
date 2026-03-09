@@ -1,0 +1,146 @@
+.sidebar {
+  width: 72px;
+  min-width: 72px;
+  background: var(--chrome-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-right: 1px solid var(--chrome-border);
+  position: relative;
+  z-index: 10;
+  padding: 12px 0;
+  overflow: visible;
+}
+
+/* macOS: top padding so first icon clears traffic lights */
+.platform-darwin .sidebar {
+  padding-top: 48px;
+}
+
+/* Invisible drag zone at top of sidebar (all platforms) */
+.sidebar::before {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 48px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  -webkit-app-region: drag;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  padding: 0 12px;
+  overflow: visible;
+}
+
+.sidebar-item {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  color: var(--chrome-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition);
+  position: relative;
+  user-select: none;
+}
+
+/* Discord-style pill indicator */
+.sidebar-item::before {
+  content: '';
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 0;
+  background: #ffffff;
+  border-radius: 0 4px 4px 0;
+  transition: height 0.2s ease;
+}
+
+.sidebar-item:hover::before {
+  height: 10px;
+}
+
+.sidebar-item:hover {
+  background: var(--chrome-bg-hover);
+  color: var(--chrome-text);
+}
+
+.sidebar-item.active {
+  background: var(--bg-sidebar-active);
+  color: var(--chrome-text);
+}
+
+.sidebar-item.active::before {
+  height: 20px;
+}
+
+.sidebar-item.disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.sidebar-item.disabled::before {
+  display: none;
+}
+
+.sidebar-item-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar-tooltip {
+  position: absolute;
+  left: 80px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: var(--shadow-md);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 50;
+}
+
+.sidebar-item:hover .sidebar-tooltip {
+  opacity: 1;
+}
+
+.sidebar-tooltip .soon-tag {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-left: 6px;
+}
+
+.sidebar-spacer {
+  flex: 1;
+}
+
+.sidebar-footer {
+  width: 100%;
+  padding: 0 12px;
+  border-top: 1px solid var(--chrome-border);
+  padding-top: 8px;
+}

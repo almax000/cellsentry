@@ -1,0 +1,27 @@
+{
+  "appName": "CellSentry",
+  "cancel": "取消",
+  "confirm": "确认",
+  "close": "关闭",
+  "ok": "确定",
+  "soon": "即将推出",
+  "dismiss": "关闭",
+  "scanAnother": "扫描其他文件",
+  "rescan": "重新扫描",
+  "ai": "AI",
+  "rule": "规则",
+  "file": "文件",
+  "connectionLost": "Python 引擎已断开 — 正在重新连接…",
+  "sidebar": {
+    "spreadsheetAudit": "表格审计",
+    "piiRedaction": "隐私脱敏",
+    "dataExtraction": "数据提取",
+    "settings": "设置"
+  },
+  "header": {
+    "spreadsheetAudit": "表格审计",
+    "scanning": "扫描中...",
+    "scanResults": "扫描结果",
+    "settings": "设置"
+  }
+}

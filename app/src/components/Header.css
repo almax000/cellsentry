@@ -1,0 +1,53 @@
+.main-header {
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--chrome-bg);
+  color: var(--chrome-text);
+  border-bottom: 1px solid var(--chrome-border);
+  min-height: 48px;
+  -webkit-app-region: drag;
+}
+
+/* Windows/Linux: extra right padding for native title bar overlay */
+.platform-win32 .main-header,
+.platform-linux .main-header {
+  padding-right: 140px;
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  -webkit-app-region: no-drag;
+}
+
+.header-title svg {
+  color: var(--chrome-text-secondary);
+}
+
+.main-header h1 {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--chrome-text);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  -webkit-app-region: no-drag;
+}
+
+/* btn-icon inside dark chrome header */
+.main-header .btn-icon {
+  border-color: var(--chrome-border);
+  color: var(--chrome-text-secondary);
+}
+
+.main-header .btn-icon:hover {
+  background: var(--chrome-bg-hover);
+  color: var(--chrome-text);
+}

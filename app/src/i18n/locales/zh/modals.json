@@ -1,0 +1,23 @@
+{
+  "modelDownload": {
+    "checking": "检查中...",
+    "downloading": "正在下载 AI 模型",
+    "verifying": "正在验证完整性...",
+    "modelReady": "模型就绪",
+    "downloadFailed": "下载失败",
+    "checkingMsg": "正在检查 AI 模型...",
+    "startingDownload": "开始下载...",
+    "verifyingChecksum": "正在验证校验和...",
+    "modelIsReady": "模型已就绪。",
+    "readySubtitle": "CellSentry 已准备好分析您的表格。",
+    "errorSubtitle": "下载过程中发生错误。",
+    "oneTimeSubtitle": "这是一次性下载。AI 模型完全在您的设备上运行。",
+    "sha256Check": "SHA-256 校验中...",
+    "getStarted": "开始使用",
+    "retryDownload": "重试下载"
+  },
+  "confirm": {
+    "defaultConfirm": "确认",
+    "defaultCancel": "取消"
+  }
+}

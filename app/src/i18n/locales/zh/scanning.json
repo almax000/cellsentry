@@ -1,0 +1,15 @@
+{
+  "analyzingSpreadsheet": "正在分析表格",
+  "analyzing": "分析中...",
+  "ruleEngineScan": "规则引擎扫描",
+  "aiContextAnalysis": "AI 上下文分析",
+  "aiDeepDiscovery": "AI 深度发现",
+  "elapsed": "已用时 {{time}}s",
+  "scanningBatch": "正在扫描第 {{current}}/{{total}} 个文件",
+  "batchComplete": "{{completed}}/{{total}} 已完成",
+  "issuesFound": "发现 {{count}} 个问题",
+  "issues": "{{count}} 个问题",
+  "sheets_one": "{{count}} 个工作表",
+  "sheets_other": "{{count}} 个工作表",
+  "cells": "{{count}} 个单元格"
+}
