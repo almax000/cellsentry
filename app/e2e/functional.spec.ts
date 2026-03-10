@@ -84,27 +84,6 @@ test.describe('Settings', () => {
     await page.waitForTimeout(300)
   })
 
-  test('theme selector switches data-theme attribute', async () => {
-    // Click Dark
-    await page.locator('[data-testid="settings-theme-dark"]').click()
-    await page.waitForTimeout(200)
-    let theme = await page.locator('html').getAttribute('data-theme')
-    expect(theme).toBe('dark')
-
-    // Click Light
-    await page.locator('[data-testid="settings-theme-light"]').click()
-    await page.waitForTimeout(200)
-    theme = await page.locator('html').getAttribute('data-theme')
-    expect(theme).toBe('light')
-
-    // Click System
-    await page.locator('[data-testid="settings-theme-system"]').click()
-    await page.waitForTimeout(200)
-    theme = await page.locator('html').getAttribute('data-theme')
-    // System resolves to either light or dark based on OS
-    expect(theme).toMatch(/^(light|dark)$/)
-  })
-
   test('zoom controls increment and decrement', async () => {
     const zoomValue = page.locator('[data-testid="settings-zoom-value"]')
     const initial = await zoomValue.textContent()

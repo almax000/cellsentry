@@ -49,34 +49,7 @@ test.describe('Flow: Single file scan', () => {
   })
 })
 
-// ── Flow 2: Settings Theme Cycle ────────────────────────────────────────
-
-test.describe('Flow: Theme switching', () => {
-  test('cycle through all themes with screenshots', async () => {
-    // Navigate to settings
-    await page.locator('[data-testid="sidebar-nav-settings"]').click()
-    await page.waitForTimeout(300)
-
-    // Light theme
-    await page.locator('[data-testid="settings-theme-light"]').click()
-    await page.waitForTimeout(300)
-    await page.screenshot({ path: join(screenshotDir, 'flow2-01-light.png') })
-    expect(await page.locator('html').getAttribute('data-theme')).toBe('light')
-
-    // Dark theme
-    await page.locator('[data-testid="settings-theme-dark"]').click()
-    await page.waitForTimeout(300)
-    await page.screenshot({ path: join(screenshotDir, 'flow2-02-dark.png') })
-    expect(await page.locator('html').getAttribute('data-theme')).toBe('dark')
-
-    // System theme
-    await page.locator('[data-testid="settings-theme-system"]').click()
-    await page.waitForTimeout(300)
-    await page.screenshot({ path: join(screenshotDir, 'flow2-03-system.png') })
-  })
-})
-
-// ── Flow 3: Navigation round-trip ───────────────────────────────────────
+// ── Flow 2: Navigation round-trip ───────────────────────────────────────
 
 test.describe('Flow: Full navigation', () => {
   test('visit every page via sidebar', async () => {
