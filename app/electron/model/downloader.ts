@@ -23,7 +23,7 @@ export const DEFAULT_MODEL: ModelInfo = {
   version: 'v1.0',
   size: 940 * 1024 * 1024,
   sha256: 'd2b5667047fd3caa1205100450a5619f149e55eceddf1b214d65d9e6beea96c3',
-  downloadUrl: 'https://download.cellsentry.pro/models/v1.0/cellsentry-1.5b-q4km.gguf',
+  downloadUrl: 'https://github.com/almax000/cellsentry/releases/download/model-v1.0/cellsentry-1.5b-q4km.gguf',
   description: 'CellSentry fine-tuned model (Q4_K_M quantization)'
 }
 
