@@ -44,6 +44,8 @@ interface SidecarAPI {
   installUpdate: () => void
   onUpdateStatus: (callback: (status: UpdateStatus) => void) => () => void
   onTestTriggerAnalysis?: (callback: (filePath: string) => void) => () => void
+  onTestTriggerPiiScan?: (callback: (filePath: string) => void) => () => void
+  onTestTriggerExtractionScan?: (callback: (filePath: string) => void) => () => void
   onTestResetState?: (callback: () => void) => () => void
   openFilePath: (filePath: string) => Promise<{ success: boolean; error?: string }>
   getFilePathFromDrop: (file: File) => string
@@ -66,5 +68,7 @@ interface TestAPI {
   getRouterPath: () => Promise<string>
   getScanState: () => Promise<string>
   triggerFileAnalysis: (filePath: string) => Promise<void>
+  triggerPiiScan: (filePath: string) => void
+  triggerExtractionScan: (filePath: string) => void
   resetState: () => void
 }

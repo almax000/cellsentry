@@ -5,9 +5,9 @@
 <h1 align="center">CellSentry</h1>
 
 <p align="center">
-  <strong>Intelligent Excel formula error detection</strong>
+  <strong>Local AI toolbox for spreadsheets</strong>
   <br>
-  Catch formula bugs before they cost you money.
+  Audit formulas, detect PII, and extract structured data — your data never leaves your machine.
 </p>
 
 <p align="center">
@@ -20,16 +20,31 @@
 
 ## What is CellSentry?
 
-CellSentry scans your Excel spreadsheets for formula errors using 23 audit rules across 7 categories. It runs entirely on your machine — your data never leaves your computer.
+CellSentry is a desktop app that scans your Excel spreadsheets for formula errors, sensitive data, and structured information — all running locally on your machine. No cloud, no uploads, no data leaks.
 
-**Key features:**
+### Formula Audit
 
 - **23 audit rules** in 7 categories: consistency, references, logic, hardcoding, structure, style, complexity
 - **Batch scanning** — drag & drop multiple files or folders
 - **Confidence scoring** — each issue rated High / Medium / Low
+- **AI verification** — optional local LLM confirms or dismisses findings (graceful degradation when unavailable)
 - **Export reports** — HTML, PDF, or marked Excel files
-- **Bilingual** — English and Chinese (i18n)
-- **Cross-platform** — macOS (DMG) and Windows (Setup.exe)
+
+### PII Detection
+
+- **12 regex patterns** across 4 locales (US, CN, EU, generic)
+- Detects: SSN, phone numbers, email, national IDs, credit cards, IBAN, passport numbers
+- **Validators**: Luhn algorithm (credit cards), CN ID checksum
+- **Masking preview** — see redacted values before exporting
+- Cell-level highlighting with confidence scores
+
+### Data Extraction
+
+- **5 document types**: invoice, receipt, purchase order, expense report, payroll
+- **Multilingual templates** — English and Chinese header matching
+- Field extraction: invoice number, date, vendor, totals, line items
+- **Table detection** — automatic header/row identification
+- **Export**: JSON or CSV structured output
 
 ## Download
 
@@ -76,17 +91,30 @@ cd app && npm run build:win
 app/
 ├── electron/           # Main process
 │   ├── engine/         # Rule engine (23 rules, 7 categories)
+│   ├── pii/            # PII scanner (12 patterns, 4 locales)
+│   ├── extraction/     # Document extractor (5 doc types)
+│   ├── llm/            # Local LLM bridge (graceful degradation)
 │   ├── model/          # Model downloader
 │   ├── report/         # HTML report generator
 │   ├── excel/          # Excel cell marker
 │   └── main/           # Electron main + IPC
 ├── src/                # Renderer (React)
 │   ├── components/     # UI components
+│   ├── context/        # Scan state management
 │   ├── i18n/           # Translations (EN/ZH)
 │   └── hooks/          # React hooks
 ├── e2e/                # Playwright E2E tests
 └── resources/          # App icons, DMG background
 ```
+
+## AI Verification (Optional)
+
+CellSentry includes an optional local LLM that verifies rule engine findings. The AI layer:
+
+- Runs entirely on your machine (MLX on Mac, llama.cpp on Windows)
+- Downloads a 920MB model on first use
+- Confirms or dismisses rule engine findings with reasoning
+- **Gracefully degrades** — all three features work perfectly without the model
 
 ## Contributing
 

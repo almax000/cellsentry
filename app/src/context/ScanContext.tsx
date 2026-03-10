@@ -392,6 +392,23 @@ export function ScanProvider({ children }: { children: ReactNode }): JSX.Element
     }
   }, [])
 
+  // Test triggers: PII and extraction scans (test mode only)
+  useEffect(() => {
+    if (!window.api?.onTestTriggerPiiScan) return
+    const unsubscribe = window.api.onTestTriggerPiiScan((filePath) => {
+      startScan(filePath, 'pii')
+    })
+    return unsubscribe
+  }, [startScan])
+
+  useEffect(() => {
+    if (!window.api?.onTestTriggerExtractionScan) return
+    const unsubscribe = window.api.onTestTriggerExtractionScan((filePath) => {
+      startScan(filePath, 'extraction')
+    })
+    return unsubscribe
+  }, [startScan])
+
   // Batch scan — processes files sequentially
   const startBatchScan = useCallback(
     async (filePaths: Array<{ path: string; name: string; size: number }>) => {

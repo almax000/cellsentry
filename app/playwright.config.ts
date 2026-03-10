@@ -29,6 +29,14 @@ export default defineConfig({
     {
       name: 'flow',
       testMatch: /flow\.spec\.ts/
+    },
+    {
+      name: 'pii',
+      testMatch: /pii\.spec\.ts/
+    },
+    {
+      name: 'extraction',
+      testMatch: /extraction\.spec\.ts/
     }
   ]
 })

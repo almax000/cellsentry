@@ -49,6 +49,14 @@ function registerTestIpcHandlers(): void {
     event.sender.send('test:trigger-analysis', filePath)
   })
 
+  ipcMain.on('test:trigger-pii-scan', (event, filePath: string) => {
+    event.sender.send('test:trigger-pii-scan', filePath)
+  })
+
+  ipcMain.on('test:trigger-extraction-scan', (event, filePath: string) => {
+    event.sender.send('test:trigger-extraction-scan', filePath)
+  })
+
   ipcMain.on('test:reset-state', (event) => {
     event.sender.send('test:reset-state')
   })

@@ -34,14 +34,16 @@ test.describe('Sidebar', () => {
     await expect(dropZone).toBeVisible()
   })
 
-  test('disabled nav items do not navigate', async () => {
+  test('PII nav navigates to PII page', async () => {
     const piiNav = page.locator('[data-testid="sidebar-nav-pii"]')
     await piiNav.click()
     await page.waitForTimeout(200)
 
-    // Should still be on home (DropZone visible)
-    const dropZone = page.locator('[data-testid="dropzone-area"]')
-    await expect(dropZone).toBeVisible()
+    await expect(page.locator('[data-testid="pii-dropzone-area"]')).toBeVisible()
+
+    // Navigate back to audit
+    await page.locator('[data-testid="sidebar-nav-audit"]').click()
+    await page.waitForTimeout(200)
   })
 
   test('active nav item has pill indicator', async () => {

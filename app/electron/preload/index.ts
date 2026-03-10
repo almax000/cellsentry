@@ -58,6 +58,28 @@ const api: SidecarAPI = {
         }
       }
     : undefined,
+  onTestTriggerPiiScan: IS_TEST_MODE
+    ? (callback: (filePath: string) => void) => {
+        const handler = (_event: Electron.IpcRendererEvent, filePath: string): void => {
+          callback(filePath)
+        }
+        ipcRenderer.on('test:trigger-pii-scan', handler)
+        return (): void => {
+          ipcRenderer.removeListener('test:trigger-pii-scan', handler)
+        }
+      }
+    : undefined,
+  onTestTriggerExtractionScan: IS_TEST_MODE
+    ? (callback: (filePath: string) => void) => {
+        const handler = (_event: Electron.IpcRendererEvent, filePath: string): void => {
+          callback(filePath)
+        }
+        ipcRenderer.on('test:trigger-extraction-scan', handler)
+        return (): void => {
+          ipcRenderer.removeListener('test:trigger-extraction-scan', handler)
+        }
+      }
+    : undefined,
   onTestResetState: IS_TEST_MODE
     ? (callback: () => void) => {
         const handler = (): void => { callback() }
@@ -97,6 +119,12 @@ if (IS_TEST_MODE) {
     },
     triggerFileAnalysis: (filePath: string) => {
       return ipcRenderer.invoke('test:trigger-analysis', filePath)
+    },
+    triggerPiiScan: (filePath: string) => {
+      ipcRenderer.send('test:trigger-pii-scan', filePath)
+    },
+    triggerExtractionScan: (filePath: string) => {
+      ipcRenderer.send('test:trigger-extraction-scan', filePath)
     },
     resetState: () => {
       ipcRenderer.send('test:reset-state')

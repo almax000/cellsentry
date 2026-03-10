@@ -1,6 +1,6 @@
 {
   "name": "cellsentry",
-  "version": "0.10.0",
+  "version": "1.0.0",
   "description": "CellSentry — Excel Formula Error Detection",
   "main": "./out/main/index.js",
   "author": "CellSentry",
@@ -17,6 +17,8 @@
     "test:visual": "npx playwright test --project=visual",
     "test:functional": "npx playwright test --project=functional",
     "test:flow": "npx playwright test --project=flow",
+    "test:pii": "npx playwright test --project=pii",
+    "test:extraction": "npx playwright test --project=extraction",
     "test:ci": "electron-vite build && npm run typecheck:node && npx playwright test",
     "build:win": "npm run build && npx electron-builder --win --x64",
     "build:mac": "npm run build && npx electron-builder --mac"
@@ -38,7 +40,7 @@
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.4",
-    "electron": "^40.6.1",
+    "electron": "^40.8.0",
     "electron-builder": "^25.1.8",
     "electron-vite": "^5.0.0",
     "typescript": "^5.7.2",
