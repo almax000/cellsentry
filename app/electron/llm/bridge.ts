@@ -12,7 +12,7 @@ import { existsSync } from 'fs'
 import { is } from '@electron-toolkit/utils'
 import type { LlmRequest, LlmResponse, LlmStatus } from './types'
 
-const REQUEST_TIMEOUT_MS = 30_000
+const REQUEST_TIMEOUT_MS = 60_000
 const SHUTDOWN_GRACE_MS = 5_000
 
 interface PendingRequest {

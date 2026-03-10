@@ -154,7 +154,7 @@ const routes: Record<string, RouteHandler> = {
   'GET /model/status': (_req, res) => {
     json(res, {
       loaded: modelLoaded,
-      name: 'cellsentry-1.5b-v2-4bit-g32',
+      name: 'cellsentry-1.5b-v3-4bit-g32',
       size: '920MB',
       backend: 'mlx'
     })

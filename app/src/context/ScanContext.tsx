@@ -365,7 +365,7 @@ export function ScanProvider({ children }: { children: ReactNode }): JSX.Element
           dispatch({ type: 'SCAN_ERROR', error: rawResult.error || 'PII analysis failed' })
           return
         }
-        const result = mapPiiResult(filePath, fileInfo.fileName, rawResult as Record<string, unknown>)
+        const result = mapPiiResult(filePath, fileInfo.fileName, rawResult as unknown as Record<string, unknown>)
         dispatch({ type: 'PII_COMPLETE', results: result })
       } else if (mode === 'extraction') {
         const rawResult = await window.api.analyzeExtraction(filePath)
@@ -373,7 +373,7 @@ export function ScanProvider({ children }: { children: ReactNode }): JSX.Element
           dispatch({ type: 'SCAN_ERROR', error: rawResult.error || 'Extraction failed' })
           return
         }
-        const result = mapExtractionResult(filePath, fileInfo.fileName, rawResult as Record<string, unknown>)
+        const result = mapExtractionResult(filePath, fileInfo.fileName, rawResult as unknown as Record<string, unknown>)
         dispatch({ type: 'EXTRACTION_COMPLETE', results: result })
       } else {
         const rawResult = await window.api.analyzeFile(filePath)
@@ -381,7 +381,7 @@ export function ScanProvider({ children }: { children: ReactNode }): JSX.Element
           dispatch({ type: 'SCAN_ERROR', error: rawResult.error || 'Analysis failed' })
           return
         }
-        const result = mapRawResult(filePath, fileInfo.fileName, rawResult as Record<string, unknown>)
+        const result = mapRawResult(filePath, fileInfo.fileName, rawResult as unknown as Record<string, unknown>)
         dispatch({ type: 'SCAN_COMPLETE', results: result })
       }
     } catch (err) {
@@ -442,7 +442,7 @@ export function ScanProvider({ children }: { children: ReactNode }): JSX.Element
             continue
           }
 
-          const result = mapRawResult(file.path, file.name, rawResult as Record<string, unknown>)
+          const result = mapRawResult(file.path, file.name, rawResult as unknown as Record<string, unknown>)
           dispatch({ type: 'BATCH_FILE_COMPLETE', index: i, result })
         } catch (err) {
           dispatch({

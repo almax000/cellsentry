@@ -37,6 +37,14 @@ interface SidecarAPI {
     get: () => Promise<number>
     set: (level: number) => Promise<void>
   }
+  // LLM
+  getLlmStatus: () => Promise<{ available: boolean; backend: string; modelLoaded: boolean }>
+  // PII
+  analyzePii: (filePath: string) => Promise<AnalysisResult>
+  redactPii: (filePath: string, outputPathOrIds: string | string[]) => Promise<{ success: boolean; outputPath?: string; error?: string }>
+  // Extraction
+  analyzeExtraction: (filePath: string) => Promise<AnalysisResult>
+  exportExtraction: (filePath: string, format: string, outputPath?: string) => Promise<{ success: boolean; error?: string }>
 }
 
 interface FolderScanResult {
@@ -95,7 +103,7 @@ interface FileInfo {
   fileName?: string
   size?: string
   fileSize?: number
-  sheets?: Array<string | { name: string; rows: number; columns: number; cells: number }>
+  sheets?: Array<{ name: string; rows: number; columns: number; cells: number }>
   cellCount?: number
   totalCells?: number
 }
@@ -117,9 +125,7 @@ interface TestAPI {
   resetState: () => void
 }
 
-declare global {
-  interface Window {
-    api: SidecarAPI
-    __TEST_API__?: TestAPI
-  }
+interface Window {
+  api: SidecarAPI
+  __TEST_API__?: TestAPI
 }

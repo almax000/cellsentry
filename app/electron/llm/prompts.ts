@@ -49,29 +49,15 @@ export function buildAuditPrompt(issues: LlmIssueInput[]): string {
 
 export function buildPiiPrompt(cells: LlmCellContext[]): string {
   const cellList = cells
-    .map((c) => {
-      let entry = `- ${c.address}: ${c.value}`
-      if (c.formula) entry += ` (formula: ${c.formula})`
-      return entry
-    })
+    .map((c, i) => `${i + 1}. "${c.value}" (${c.address})`)
     .join('\n')
 
   return [
-    'You are a PII detection specialist. Review the following cell values from a spreadsheet.',
-    'Identify any personally identifiable information that simple regex patterns might miss.',
-    'Consider context: "John" alone is not PII, but a full name with an ID number is.',
+    'Identify any personally identifiable information (PII) in the following',
+    'spreadsheet cells. Respond with JSON.',
     '',
     'Cells:',
     cellList,
-    '',
-    'Respond with a JSON array. Each element must have:',
-    '- cellAddress (string): the cell reference',
-    '- piiType (string): one of "name", "email", "phone", "ssn", "id_number", "credit_card", "address", "passport", "bank_card", "iban", "other"',
-    '- confidence (number): 0 to 1',
-    '- reasoning (string): brief explanation',
-    '',
-    'If no PII is found, return an empty array [].',
-    'Output ONLY the JSON array, no markdown fences or extra text.',
   ].join('\n')
 }
 
