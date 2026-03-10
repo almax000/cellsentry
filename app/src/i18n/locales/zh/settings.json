@@ -26,5 +26,10 @@
   "download": "下载",
   "updateError": "检查更新失败",
   "noReleasesYet": "尚未发布任何版本",
-  "checking": "检查中…"
+  "checking": "检查中…",
+  "feedback": "反馈",
+  "reportBug": "报告问题",
+  "reportBugDesc": "在 GitHub Issues 提交 Bug 报告",
+  "sendFeedback": "发送反馈",
+  "sendFeedbackDesc": "通过 X (Twitter) 联系我们"
 }

@@ -26,5 +26,10 @@
   "download": "Download",
   "updateError": "Update check failed",
   "noReleasesYet": "No releases published yet",
-  "checking": "Checking…"
+  "checking": "Checking…",
+  "feedback": "Feedback",
+  "reportBug": "Report a Bug",
+  "reportBugDesc": "File a bug report on GitHub Issues",
+  "sendFeedback": "Send Feedback",
+  "sendFeedbackDesc": "Reach out on X (Twitter)"
 }

@@ -116,6 +116,11 @@ CellSentry includes an optional local LLM that verifies rule engine findings. Th
 - Confirms or dismisses rule engine findings with reasoning
 - **Gracefully degrades** — all three features work perfectly without the model
 
+## Feedback & Community
+
+- **Bug reports & feature requests** — [GitHub Issues](https://github.com/almax000/cellsentry/issues)
+- **Questions & feedback** — [@almax000 on X](https://x.com/almax000)
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.

@@ -144,6 +144,37 @@ export default function SettingsPage(): JSX.Element {
         </div>
       </div>
 
+      {/* Feedback Section */}
+      <div className="settings-section">
+        <div className="settings-section-title">{t('feedback')}</div>
+        <div className="settings-group">
+          <div className="settings-row">
+            <div>
+              <div className="settings-label">{t('reportBug')}</div>
+              <div className="settings-desc">{t('reportBugDesc')}</div>
+            </div>
+            <div
+              className="settings-value feedback-link"
+              onClick={() => window.open('https://github.com/almax000/cellsentry/issues/new/choose')}
+            >
+              GitHub Issues <span className="external-icon">↗</span>
+            </div>
+          </div>
+          <div className="settings-row">
+            <div>
+              <div className="settings-label">{t('sendFeedback')}</div>
+              <div className="settings-desc">{t('sendFeedbackDesc')}</div>
+            </div>
+            <div
+              className="settings-value feedback-link"
+              onClick={() => window.open('https://x.com/messages/compose?recipient_id=almax000')}
+            >
+              @almax000 <span className="external-icon">↗</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Updates Section */}
       <div className="settings-section">
         <div className="settings-section-title">{t('updates')}</div>
