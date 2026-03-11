@@ -392,7 +392,15 @@ export function ScanProvider({ children }: { children: ReactNode }): JSX.Element
     }
   }, [])
 
-  // Test triggers: PII and extraction scans (test mode only)
+  // Test triggers: audit, PII, and extraction scans (test mode only)
+  useEffect(() => {
+    if (!window.api?.onTestTriggerAnalysis) return
+    const unsubscribe = window.api.onTestTriggerAnalysis((filePath) => {
+      startScan(filePath, 'audit')
+    })
+    return unsubscribe
+  }, [startScan])
+
   useEffect(() => {
     if (!window.api?.onTestTriggerPiiScan) return
     const unsubscribe = window.api.onTestTriggerPiiScan((filePath) => {
