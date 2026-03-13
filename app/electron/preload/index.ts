@@ -98,6 +98,16 @@ const api: SidecarAPI = {
   },
   // LLM
   getLlmStatus: () => ipcRenderer.invoke('llm:status'),
+  startLlm: () => ipcRenderer.invoke('llm:start'),
+  onZoomChange: (callback) => {
+    const handler = (_event: Electron.IpcRendererEvent, delta: number): void => {
+      callback(delta)
+    }
+    ipcRenderer.on('zoom:change', handler)
+    return (): void => {
+      ipcRenderer.removeListener('zoom:change', handler)
+    }
+  },
   // PII
   analyzePii: (filePath: string) => ipcRenderer.invoke('pii:analyze', filePath),
   redactPii: (filePath: string, outputPath: string) => ipcRenderer.invoke('pii:redact', filePath, outputPath),

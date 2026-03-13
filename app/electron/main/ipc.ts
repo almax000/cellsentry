@@ -17,7 +17,7 @@ import { scanForPii } from '../pii/scanner'
 import { redactFile } from '../pii/redactor'
 import { extractDocument } from '../extraction/extractor'
 import { exportToJson, exportToCsv } from '../extraction/exporters'
-import { getLlmStatus, analyzeWithLlm, mergeJudgments } from '../llm/lifecycle'
+import { getLlmStatus, analyzeWithLlm, mergeJudgments, startLlm } from '../llm/lifecycle'
 import type { LlmIssueInput } from '../llm/types'
 
 function validateFilePath(filePath: unknown): filePath is string {
@@ -85,7 +85,7 @@ export function registerIpcHandlers(): void {
       const result = await analyzeExcel(filePath)
       sendProgress('rules', 100)
 
-      // Phase 2: LLM verification (graceful degradation)
+      // Phase 2: LLM verification
       let enrichedIssues = result.issues as Array<RendererIssue & {
         llmVerified?: boolean
         llmConfidence?: number
@@ -93,26 +93,18 @@ export function registerIpcHandlers(): void {
       }>
 
       if (result.issues.length > 0) {
-        try {
-          const status = await getLlmStatus()
-          if (status.available) {
-            sendProgress('ai', 0)
-            const llmInput = mapToLlmInput(result.issues)
-            const judgments = await analyzeWithLlm(llmInput)
+        sendProgress('ai', 0)
+        const llmInput = mapToLlmInput(result.issues)
+        const judgments = await analyzeWithLlm(llmInput)
 
-            if (judgments.length > 0) {
-              // mergeJudgments expects { ruleId, cellAddress } — wrap issues
-              const issuesForMerge = result.issues.map((i) => ({
-                ...i,
-                cellAddress: i.cell,
-              }))
-              enrichedIssues = mergeJudgments(issuesForMerge, judgments)
-            }
-            sendProgress('ai', 100)
-          }
-        } catch {
-          // LLM failure is non-fatal — continue with rules-only result
+        if (judgments.length > 0) {
+          const issuesForMerge = result.issues.map((i) => ({
+            ...i,
+            cellAddress: i.cell,
+          }))
+          enrichedIssues = mergeJudgments(issuesForMerge, judgments)
         }
+        sendProgress('ai', 100)
       }
 
       return {
@@ -249,6 +241,14 @@ export function registerIpcHandlers(): void {
       return await analyzeWithLlm(issues as Parameters<typeof analyzeWithLlm>[0])
     } catch (e) {
       return { error: String(e), judgments: [] }
+    }
+  })
+
+  ipcMain.handle('llm:start', async () => {
+    try {
+      return await startLlm()
+    } catch {
+      return { available: false, backend: 'none', modelLoaded: false }
     }
   })
 

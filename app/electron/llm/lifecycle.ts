@@ -33,6 +33,15 @@ export async function getLlmStatus(): Promise<LlmStatus> {
 }
 
 /**
+ * Start the LLM bridge explicitly.
+ * Called after model download to warm up the bridge.
+ */
+export async function startLlm(): Promise<LlmStatus> {
+  await llmBridge.start()
+  return llmBridge.status
+}
+
+/**
  * Send rule-engine issues to the LLM for validation.
  * Batches issues into groups of LLM_BATCH_SIZE to avoid overwhelming the model.
  */

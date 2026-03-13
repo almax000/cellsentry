@@ -20,6 +20,23 @@ export default function App(): JSX.Element {
     if (saved) window.api?.zoom?.set(parseFloat(saved))
   }, [])
 
+  useEffect(() => {
+    if (!window.api?.onZoomChange) return
+    const unsubscribe = window.api.onZoomChange((delta) => {
+      if (delta === 0) {
+        window.api.zoom.set(0)
+        localStorage.setItem('cellsentry-zoom', '0')
+      } else {
+        window.api.zoom.get().then((current) => {
+          const next = Math.max(-3, Math.min(3, current + delta * 0.5))
+          window.api.zoom.set(next)
+          localStorage.setItem('cellsentry-zoom', String(next))
+        })
+      }
+    })
+    return unsubscribe
+  }, [])
+
   return (
     <ErrorBoundary>
       <ThemeProvider>

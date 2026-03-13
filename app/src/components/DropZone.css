@@ -133,8 +133,20 @@
 }
 
 .drop-zone-actions .btn {
-  font-size: 12px;
-  padding: 5px 12px;
+  font-size: 12.5px;
+  padding: 7px 16px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  font-weight: 500;
+  border-radius: 6px;
+  transition: all var(--transition);
+}
+
+.drop-zone-actions .btn:hover {
+  background: var(--brand-subtle);
+  border-color: var(--brand);
+  color: var(--brand);
 }
 
 .drop-zone-error {

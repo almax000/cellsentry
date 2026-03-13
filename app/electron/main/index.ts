@@ -146,9 +146,30 @@ function createAppMenu(): void {
       { role: 'toggleDevTools' as const },
       { type: 'separator' as const },
     ] : []),
-    { role: 'resetZoom' },
-    { role: 'zoomIn' },
-    { role: 'zoomOut' },
+    {
+      label: 'Actual Size',
+      accelerator: 'CmdOrCtrl+0',
+      click: (): void => {
+        const win = BrowserWindow.getAllWindows()[0]
+        if (win) win.webContents.send('zoom:change', 0)
+      }
+    },
+    {
+      label: 'Zoom In',
+      accelerator: 'CmdOrCtrl+=',
+      click: (): void => {
+        const win = BrowserWindow.getAllWindows()[0]
+        if (win) win.webContents.send('zoom:change', 1)
+      }
+    },
+    {
+      label: 'Zoom Out',
+      accelerator: 'CmdOrCtrl+-',
+      click: (): void => {
+        const win = BrowserWindow.getAllWindows()[0]
+        if (win) win.webContents.send('zoom:change', -1)
+      }
+    },
     { type: 'separator' },
     { role: 'togglefullscreen' }
   ]

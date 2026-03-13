@@ -33,7 +33,16 @@ export default function SettingsPage(): JSX.Element {
     localStorage.setItem('cellsentry-zoom', String(ZOOM_STEPS[clamped]))
   }, [])
 
-  const currentLang = i18n.language?.startsWith('zh') ? 'zh' : 'en'
+  const SUPPORTED_LANGS = [
+    { code: 'en', label: 'English' },
+    { code: 'zh', label: '中文' },
+    { code: 'ja', label: '日本語' },
+    { code: 'ko', label: '한국어' },
+    { code: 'de', label: 'Deutsch' },
+    { code: 'fr', label: 'Français' },
+    { code: 'es', label: 'Español' },
+  ] as const
+  const currentLang = SUPPORTED_LANGS.find(l => i18n.language?.startsWith(l.code))?.code ?? 'en'
 
   return (
     <div className="settings-container view-enter">
@@ -97,22 +106,16 @@ export default function SettingsPage(): JSX.Element {
           </div>
           <div className="settings-row">
             <div className="settings-label">{t('language')}</div>
-            <div className="theme-selector">
-              <button
-                className={`theme-option${currentLang === 'en' ? ' active' : ''}`}
-                data-testid="settings-lang-en"
-                onClick={() => i18n.changeLanguage('en')}
-              >
-                English
-              </button>
-              <button
-                className={`theme-option${currentLang === 'zh' ? ' active' : ''}`}
-                data-testid="settings-lang-zh"
-                onClick={() => i18n.changeLanguage('zh')}
-              >
-                中文
-              </button>
-            </div>
+            <select
+              className="lang-select"
+              data-testid="settings-lang-select"
+              value={currentLang}
+              onChange={(e) => i18n.changeLanguage(e.target.value)}
+            >
+              {SUPPORTED_LANGS.map(({ code, label }) => (
+                <option key={code} value={code}>{label}</option>
+              ))}
+            </select>
           </div>
         </div>
       </div>

@@ -1,8 +1,10 @@
+import { useState, useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import Sidebar from './Sidebar'
 import Header from './Header'
 import ConnectionBanner from './ConnectionBanner'
+import ModelDownloadModal from './modals/ModelDownloadModal'
 import { GridIcon, ShieldCheckIcon, CheckIcon } from './icons'
 import './Layout.css'
 
@@ -10,6 +12,23 @@ export default function Layout(): JSX.Element {
   const { t } = useTranslation('common')
   const location = useLocation()
   const platform = window.api?.platform || 'linux'
+  const [showModelModal, setShowModelModal] = useState(false)
+
+  useEffect(() => {
+    if (!window.api?.checkModelExists) return
+    window.api.checkModelExists()
+      .then((result) => {
+        if (!result.exists) setShowModelModal(true)
+      })
+      .catch(() => {})
+  }, [])
+
+  const handleModelReady = async (): Promise<void> => {
+    setShowModelModal(false)
+    try {
+      await window.api?.startLlm?.()
+    } catch { /* LLM start will be retried on first scan */ }
+  }
 
   const pageTitle = (): string => {
     const path = location.pathname
@@ -42,6 +61,7 @@ export default function Layout(): JSX.Element {
 
   return (
     <div className={`app-layout platform-${platform}`}>
+      {showModelModal && <ModelDownloadModal onClose={handleModelReady} />}
       <Sidebar />
       <div className="main-content">
         <Header title={pageTitle()} icon={pageIcon()} />

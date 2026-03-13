@@ -11,7 +11,7 @@ import { readWorkbook } from '../engine/excelReader'
 import { PII_PATTERNS } from './patterns'
 import { PiiType } from './types'
 import type { PiiFinding, PiiScanResult } from './types'
-import { getLlmStatus, analyzeWithLlmPii } from '../llm/lifecycle'
+import { analyzeWithLlmPii } from '../llm/lifecycle'
 import type { LlmCellContext } from '../llm/types'
 
 const LLM_CANDIDATE_LIMIT = 100
@@ -102,63 +102,52 @@ export async function scanForPii(filePath: string): Promise<PiiScanResult> {
       }
     }
 
-    // Pass 2: LLM secondary screening (optional)
-    try {
-      const status = await getLlmStatus()
-      if (status.available) {
-        const candidates: LlmCellContext[] = []
+    // Pass 2: LLM secondary screening
+    const candidates: LlmCellContext[] = []
 
-        for (const sheet of sheets) {
-          for (const cell of Object.values(sheet.cells)) {
-            if (candidates.length >= LLM_CANDIDATE_LIMIT) break
-            if (cell.dataType === 'empty' || cell.value == null) continue
-            const text = String(cell.value)
-            // Skip cells already flagged, formulas, pure numbers, and short text
-            if (regexFlaggedCells.has(`${sheet.name}!${cell.address}`)) continue
-            if (cell.formula) continue
-            if (/^\d+\.?\d*$/.test(text)) continue
-            if (text.length <= 10) continue
+    for (const sheet of sheets) {
+      for (const cell of Object.values(sheet.cells)) {
+        if (candidates.length >= LLM_CANDIDATE_LIMIT) break
+        if (cell.dataType === 'empty' || cell.value == null) continue
+        const text = String(cell.value)
+        if (regexFlaggedCells.has(`${sheet.name}!${cell.address}`)) continue
+        if (cell.formula) continue
+        if (/^\d+\.?\d*$/.test(text)) continue
+        if (text.length <= 10) continue
 
-            candidates.push({
-              address: `${sheet.name}!${cell.address}`,
-              value: text,
-            })
-          }
-          if (candidates.length >= LLM_CANDIDATE_LIMIT) break
-        }
-
-        if (candidates.length > 0) {
-          const llmFindings = await analyzeWithLlmPii(candidates)
-          for (const f of llmFindings) {
-            // Deduplicate by cell address
-            const alreadyFound = findings.some(
-              (existing) => `${existing.sheet_name}!${existing.cell}` === f.cellAddress
-            )
-            if (alreadyFound) continue
-
-            // Parse "Sheet1!A1" back into sheet + cell
-            const bangIdx = f.cellAddress.indexOf('!')
-            const sheetName = bangIdx > 0 ? f.cellAddress.substring(0, bangIdx) : 'Sheet1'
-            const cellAddr = bangIdx > 0 ? f.cellAddress.substring(bangIdx + 1) : f.cellAddress
-
-            // Get original cell value for masking
-            const origCell = candidates.find((c) => c.address === f.cellAddress)
-            const origValue = origCell?.value || ''
-
-            findings.push({
-              sheet_name: sheetName,
-              cell: cellAddr,
-              pii_type: f.piiType,
-              original_value: origValue,
-              masked_value: maskValue(origValue, f.piiType),
-              confidence: f.confidence,
-              pattern: 'ai-detected',
-            })
-          }
-        }
+        candidates.push({
+          address: `${sheet.name}!${cell.address}`,
+          value: text,
+        })
       }
-    } catch {
-      // LLM failure is non-fatal — continue with regex-only results
+      if (candidates.length >= LLM_CANDIDATE_LIMIT) break
+    }
+
+    if (candidates.length > 0) {
+      const llmFindings = await analyzeWithLlmPii(candidates)
+      for (const f of llmFindings) {
+        const alreadyFound = findings.some(
+          (existing) => `${existing.sheet_name}!${existing.cell}` === f.cellAddress
+        )
+        if (alreadyFound) continue
+
+        const bangIdx = f.cellAddress.indexOf('!')
+        const sheetName = bangIdx > 0 ? f.cellAddress.substring(0, bangIdx) : 'Sheet1'
+        const cellAddr = bangIdx > 0 ? f.cellAddress.substring(bangIdx + 1) : f.cellAddress
+
+        const origCell = candidates.find((c) => c.address === f.cellAddress)
+        const origValue = origCell?.value || ''
+
+        findings.push({
+          sheet_name: sheetName,
+          cell: cellAddr,
+          pii_type: f.piiType,
+          original_value: origValue,
+          masked_value: maskValue(origValue, f.piiType),
+          confidence: f.confidence,
+          pattern: 'ai-detected',
+        })
+      }
     }
 
     return {

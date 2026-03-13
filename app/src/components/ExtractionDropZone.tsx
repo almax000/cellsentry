@@ -1,4 +1,4 @@
-import { useState, useCallback, type DragEvent } from 'react'
+import { useState, useCallback, useEffect, type DragEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useSidecar } from '../hooks/useSidecar'
@@ -13,7 +13,14 @@ export default function ExtractionDropZone(): JSX.Element {
   const [error, setError] = useState('')
   const navigate = useNavigate()
   const { status, openFileDialog } = useSidecar()
-  const { startScan } = useScan()
+  const { scanState, scanMode, startScan } = useScan()
+
+  useEffect(() => {
+    if (scanMode === 'extraction') {
+      if (scanState === 'complete') navigate('/extract/results')
+      else if (scanState === 'scanning') navigate('/extract/scanning')
+    }
+  }, [])
 
   const validateFile = (name: string): boolean => {
     const ext = name.substring(name.lastIndexOf('.')).toLowerCase()

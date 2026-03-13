@@ -39,6 +39,8 @@ interface SidecarAPI {
   }
   // LLM
   getLlmStatus: () => Promise<{ available: boolean; backend: string; modelLoaded: boolean }>
+  startLlm: () => Promise<{ available: boolean; backend: string; modelLoaded: boolean }>
+  onZoomChange: (callback: (delta: number) => void) => () => void
   // PII
   analyzePii: (filePath: string) => Promise<AnalysisResult>
   redactPii: (filePath: string, outputPathOrIds: string | string[]) => Promise<{ success: boolean; outputPath?: string; error?: string }>

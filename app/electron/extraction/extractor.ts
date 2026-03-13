@@ -23,7 +23,7 @@ import type {
   FieldPattern,
 } from './types'
 import { DocumentType } from './types'
-import { getLlmStatus, analyzeWithLlmExtraction } from '../llm/lifecycle'
+import { analyzeWithLlmExtraction } from '../llm/lifecycle'
 import type { LlmCellContext } from '../llm/types'
 
 const HIGH_CONFIDENCE = 0.9
@@ -251,43 +251,33 @@ export async function extractDocument(filePath: string): Promise<ExtractionResul
 
     let docType = detection.type
 
-    // LLM fallback: invoke if template extraction is weak
+    // LLM enrichment: invoke if template extraction is weak
     if (allFields.length < LLM_TRIGGER_MIN_FIELDS || docType === DocumentType.UNKNOWN) {
-      try {
-        const status = await getLlmStatus()
-        if (status.available) {
-          const cellSamples = collectCellSamples(sheets)
-          if (cellSamples.length > 0) {
-            const llmResult = await analyzeWithLlmExtraction(cellSamples)
-            if (llmResult) {
-              // LLM can override document type if template couldn't detect it
-              if (docType === DocumentType.UNKNOWN && llmResult.documentType !== 'unknown') {
-                docType = llmResult.documentType as DocumentType
-              }
+      const cellSamples = collectCellSamples(sheets)
+      if (cellSamples.length > 0) {
+        const llmResult = await analyzeWithLlmExtraction(cellSamples)
+        if (llmResult) {
+          if (docType === DocumentType.UNKNOWN && llmResult.documentType !== 'unknown') {
+            docType = llmResult.documentType as DocumentType
+          }
 
-              // Add LLM fields that don't duplicate existing ones
-              const existingKeys = new Set(allFields.map((f) => f.key))
-              for (const f of llmResult.fields) {
-                if (existingKeys.has(f.key)) continue
-                // Parse "Sheet1!A1" address
-                const bangIdx = f.cellAddress.indexOf('!')
-                const sheetName = bangIdx > 0 ? f.cellAddress.substring(0, bangIdx) : sheets[0]?.name || 'Sheet1'
-                const cellAddr = bangIdx > 0 ? f.cellAddress.substring(bangIdx + 1) : f.cellAddress
+          const existingKeys = new Set(allFields.map((f) => f.key))
+          for (const f of llmResult.fields) {
+            if (existingKeys.has(f.key)) continue
+            const bangIdx = f.cellAddress.indexOf('!')
+            const sheetName = bangIdx > 0 ? f.cellAddress.substring(0, bangIdx) : sheets[0]?.name || 'Sheet1'
+            const cellAddr = bangIdx > 0 ? f.cellAddress.substring(bangIdx + 1) : f.cellAddress
 
-                allFields.push({
-                  key: f.key,
-                  label: f.label,
-                  value: f.value,
-                  cell: cellAddr,
-                  sheet_name: sheetName,
-                  confidence: f.confidence,
-                })
-              }
-            }
+            allFields.push({
+              key: f.key,
+              label: f.label,
+              value: f.value,
+              cell: cellAddr,
+              sheet_name: sheetName,
+              confidence: f.confidence,
+            })
           }
         }
-      } catch {
-        // LLM failure is non-fatal
       }
     }
 

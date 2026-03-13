@@ -39,7 +39,14 @@ export default function ModelDownloadModal({ onClose }: ModelDownloadModalProps)
     setMessage(t('modelDownload.startingDownload'))
 
     try {
-      await window.api.downloadModel()
+      const result = await window.api.downloadModel()
+      if (result.success) {
+        setPhase('done')
+        setMessage(t('modelDownload.modelIsReady'))
+      } else {
+        setPhase('error')
+        setError(t('modelDownload.downloadFailed'))
+      }
     } catch (err) {
       setPhase('error')
       setError(err instanceof Error ? err.message : t('modelDownload.downloadFailed'))
@@ -111,12 +118,9 @@ export default function ModelDownloadModal({ onClose }: ModelDownloadModalProps)
     if (!window.api?.onModelDownloadProgress) return
 
     const unsubscribe = window.api.onModelDownloadProgress((msg) => {
-      if (msg.status === 'complete') {
-        setPhase('done')
-        setMessage(t('modelDownload.modelIsReady'))
-      } else if (msg.status === 'failed' || msg.status === 'error') {
-        setPhase('error')
-        setError(msg.error || t('modelDownload.downloadFailed'))
+      if (msg.percent !== undefined) {
+        setProgress(msg.percent)
+        if (msg.message) setMessage(msg.message)
       }
     })
 
