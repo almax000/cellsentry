@@ -1,0 +1,17 @@
+{
+  "analyzingSpreadsheet": "Tabelle wird analysiert",
+  "analyzing": "Analyse läuft...",
+  "ruleEngineScan": "Regelbasierter Scan",
+  "aiVerification": "AI-Verifizierung",
+  "aiContextAnalysis": "AI-Kontextanalyse",
+  "aiDeepDiscovery": "AI-Tiefenanalyse",
+  "aiUnavailable": "AI-Modell nicht verfügbar — nur Regeln",
+  "elapsed": "{{time}}s vergangen",
+  "scanningBatch": "Datei {{current}} von {{total}} wird gescannt",
+  "batchComplete": "{{completed}}/{{total}} abgeschlossen",
+  "issuesFound": "{{count}} Probleme gefunden",
+  "issues": "{{count}} Probleme",
+  "sheets_one": "{{count}} Blatt",
+  "sheets_other": "{{count}} Blätter",
+  "cells": "{{count}} Zellen"
+}

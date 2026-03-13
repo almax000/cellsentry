@@ -1,0 +1,11 @@
+{
+  "title": "스프레드시트를 여기에 놓으세요",
+  "subtitle": "수식 오류, 불일치,\n데이터 무결성 문제를 스캔합니다",
+  "browse": "또는 파일 선택",
+  "selectMultiple": "여러 파일 선택",
+  "scanFolder": "폴더 스캔",
+  "errorNotConnected": "Python 사이드카가 연결되지 않았습니다",
+  "errorNoFiles": "지원되는 파일을 찾을 수 없습니다. .xlsx, .xls 또는 .csv를 사용해 주세요",
+  "errorNoFilesInFolder": "폴더에 스프레드시트 파일이 없습니다",
+  "errorFolderScan": "폴더 스캔에 실패했습니다"
+}

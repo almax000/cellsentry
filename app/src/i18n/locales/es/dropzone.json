@@ -1,0 +1,11 @@
+{
+  "title": "Arrastre sus hojas de cálculo aquí",
+  "subtitle": "Detecte errores de fórmula, inconsistencias\ny problemas de integridad de datos",
+  "browse": "o explorar archivos",
+  "selectMultiple": "Seleccionar varios archivos",
+  "scanFolder": "Analizar carpeta",
+  "errorNotConnected": "El sidecar de Python no está conectado",
+  "errorNoFiles": "No se encontraron archivos compatibles. Use .xlsx, .xls o .csv",
+  "errorNoFilesInFolder": "No se encontraron hojas de cálculo en la carpeta",
+  "errorFolderScan": "Error al analizar la carpeta"
+}

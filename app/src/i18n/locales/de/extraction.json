@@ -1,0 +1,31 @@
+{
+  "title": "Datenextraktion",
+  "dropTitle": "Strukturierte Daten extrahieren",
+  "dropSubtitle": "Ziehen Sie eine Rechnung, Quittung oder ein Finanzdokument hierher,\num Schlüsselfelder und Tabellen automatisch zu extrahieren",
+  "browse": "Dateien durchsuchen",
+  "scanning": "Daten werden extrahiert...",
+  "templateMatching": "Vorlagenabgleich",
+  "fieldExtraction": "Feldextraktion",
+  "documentType": "Dokumenttyp",
+  "detectedAs": "Erkannt als: {{type}}",
+  "fields": "Felder",
+  "tables": "Tabellen",
+  "noFields": "Keine Daten extrahiert",
+  "noFieldsMsg": "Kein bekanntes Dokumentformat erkannt.\nVersuchen Sie es mit Rechnungen, Quittungen oder Spesenabrechnungen.",
+  "exportJson": "Als JSON exportieren",
+  "exportCsv": "Als CSV exportieren",
+  "fieldName": "Feld",
+  "fieldValue": "Wert",
+  "documentTypes": {
+    "invoice": "Rechnung",
+    "receipt": "Quittung",
+    "expense_report": "Spesenabrechnung",
+    "purchase_order": "Bestellung",
+    "payroll": "Gehaltsabrechnung",
+    "unknown": "Unbekannt"
+  },
+  "extractedFields": "{{count}} Felder extrahiert",
+  "extractedTables": "{{count}} Tabellen erkannt",
+  "exportSuccess": "Erfolgreich exportiert",
+  "exportSavedTo": "Gespeichert unter {{path}}"
+}

@@ -1,0 +1,31 @@
+{
+  "appName": "CellSentry",
+  "cancel": "취소",
+  "confirm": "확인",
+  "close": "닫기",
+  "ok": "확인",
+  "soon": "출시 예정",
+  "dismiss": "닫기",
+  "scanAnother": "다른 파일 스캔",
+  "rescan": "다시 스캔",
+  "ai": "AI",
+  "rule": "규칙",
+  "file": "파일",
+  "connectionLost": "Python 엔진 연결이 끊어졌습니다 — 재연결 중…",
+  "sidebar": {
+    "spreadsheetAudit": "스프레드시트 감사",
+    "piiRedaction": "PII 마스킹",
+    "dataExtraction": "데이터 추출",
+    "settings": "설정"
+  },
+  "header": {
+    "spreadsheetAudit": "스프레드시트 감사",
+    "piiRedaction": "PII 마스킹",
+    "piiResults": "PII 결과",
+    "dataExtraction": "데이터 추출",
+    "extractionResults": "추출 결과",
+    "scanning": "스캔 중...",
+    "scanResults": "스캔 결과",
+    "settings": "설정"
+  }
+}

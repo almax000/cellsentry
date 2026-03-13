@@ -1,0 +1,11 @@
+{
+  "title": "スプレッドシートをここにドロップ",
+  "subtitle": "数式エラー、不整合、\nデータ整合性の問題をスキャンします",
+  "browse": "またはファイルを選択",
+  "selectMultiple": "複数ファイルを選択",
+  "scanFolder": "フォルダをスキャン",
+  "errorNotConnected": "Python サイドカーが接続されていません",
+  "errorNoFiles": "対応するファイルが見つかりません。.xlsx、.xls、または .csv をご使用ください",
+  "errorNoFilesInFolder": "フォルダ内にスプレッドシートが見つかりません",
+  "errorFolderScan": "フォルダのスキャンに失敗しました"
+}

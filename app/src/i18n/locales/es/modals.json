@@ -1,0 +1,23 @@
+{
+  "modelDownload": {
+    "checking": "Verificando...",
+    "downloading": "Descargando modelo IA",
+    "verifying": "Verificando integridad...",
+    "modelReady": "Modelo listo",
+    "downloadFailed": "Error en la descarga",
+    "checkingMsg": "Verificando modelo IA...",
+    "startingDownload": "Iniciando descarga...",
+    "verifyingChecksum": "Verificando suma de verificación...",
+    "modelIsReady": "El modelo está listo.",
+    "readySubtitle": "CellSentry está listo para analizar sus hojas de cálculo.",
+    "errorSubtitle": "Ocurrió un error durante la descarga.",
+    "oneTimeSubtitle": "Esta es una descarga única. El modelo IA se ejecuta completamente en su dispositivo.",
+    "sha256Check": "Verificación SHA-256...",
+    "getStarted": "Comenzar",
+    "retryDownload": "Reintentar descarga"
+  },
+  "confirm": {
+    "defaultConfirm": "Confirmar",
+    "defaultCancel": "Cancelar"
+  }
+}

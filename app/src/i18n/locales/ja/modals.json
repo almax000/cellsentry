@@ -1,0 +1,23 @@
+{
+  "modelDownload": {
+    "checking": "確認中...",
+    "downloading": "AI モデルをダウンロード中",
+    "verifying": "整合性を検証中...",
+    "modelReady": "モデル準備完了",
+    "downloadFailed": "ダウンロード失敗",
+    "checkingMsg": "AI モデルを確認しています...",
+    "startingDownload": "ダウンロードを開始しています...",
+    "verifyingChecksum": "チェックサムを検証中...",
+    "modelIsReady": "モデルの準備ができました。",
+    "readySubtitle": "CellSentry はスプレッドシートを分析する準備ができています。",
+    "errorSubtitle": "ダウンロード中にエラーが発生しました。",
+    "oneTimeSubtitle": "これは1回限りのダウンロードです。AI モデルはお使いのデバイス上で完全に動作します。",
+    "sha256Check": "SHA-256 チェック...",
+    "getStarted": "使い始める",
+    "retryDownload": "ダウンロードを再試行"
+  },
+  "confirm": {
+    "defaultConfirm": "確認",
+    "defaultCancel": "キャンセル"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "analyzingSpreadsheet": "Analizando hoja de cálculo",
+  "analyzing": "Analizando...",
+  "ruleEngineScan": "Análisis por motor de reglas",
+  "aiVerification": "Verificación IA",
+  "aiContextAnalysis": "Análisis contextual IA",
+  "aiDeepDiscovery": "Análisis profundo IA",
+  "aiUnavailable": "Modelo IA no disponible — solo reglas",
+  "elapsed": "{{time}}s transcurridos",
+  "scanningBatch": "Analizando archivo {{current}} de {{total}}",
+  "batchComplete": "{{completed}}/{{total}} completados",
+  "issuesFound": "{{count}} problemas encontrados",
+  "issues": "{{count}} problemas",
+  "sheets_one": "{{count}} hoja",
+  "sheets_other": "{{count}} hojas",
+  "cells": "{{count}} celdas"
+}

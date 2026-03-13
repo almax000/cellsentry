@@ -1,0 +1,31 @@
+{
+  "appName": "CellSentry",
+  "cancel": "Annuler",
+  "confirm": "Confirmer",
+  "close": "Fermer",
+  "ok": "OK",
+  "soon": "Bientôt",
+  "dismiss": "Ignorer",
+  "scanAnother": "Analyser un autre fichier",
+  "rescan": "Réanalyser",
+  "ai": "IA",
+  "rule": "Règle",
+  "file": "Fichier",
+  "connectionLost": "Moteur Python déconnecté — reconnexion en cours…",
+  "sidebar": {
+    "spreadsheetAudit": "Audit de tableur",
+    "piiRedaction": "Masquage PII",
+    "dataExtraction": "Extraction de données",
+    "settings": "Paramètres"
+  },
+  "header": {
+    "spreadsheetAudit": "Audit de tableur",
+    "piiRedaction": "Masquage PII",
+    "piiResults": "Résultats PII",
+    "dataExtraction": "Extraction de données",
+    "extractionResults": "Résultats d'extraction",
+    "scanning": "Analyse en cours...",
+    "scanResults": "Résultats de l'analyse",
+    "settings": "Paramètres"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "title": "Déposez vos tableurs ici",
+  "subtitle": "Détectez les erreurs de formule, les incohérences\net les problèmes d'intégrité des données",
+  "browse": "ou parcourir les fichiers",
+  "selectMultiple": "Sélectionner plusieurs fichiers",
+  "scanFolder": "Analyser un dossier",
+  "errorNotConnected": "Le sidecar Python n'est pas connecté",
+  "errorNoFiles": "Aucun fichier compatible trouvé. Utilisez .xlsx, .xls ou .csv",
+  "errorNoFilesInFolder": "Aucun tableur trouvé dans le dossier",
+  "errorFolderScan": "Échec de l'analyse du dossier"
+}
