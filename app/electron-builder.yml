@@ -1,5 +1,5 @@
 appId: com.cellsentry.app
-productName: CellSentry
+productName: CellSentry Beta
 directories:
   buildResources: resources
   output: dist
@@ -36,7 +36,7 @@ mac:
   entitlementsInherit: resources/entitlements.mac.plist
 
 dmg:
-  title: Install CellSentry
+  title: Install CellSentry Beta
   background: resources/dmg-background.png
   iconSize: 80
   iconTextSize: 12

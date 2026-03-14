@@ -9,7 +9,7 @@
     "startingDownload": "Download wird gestartet...",
     "verifyingChecksum": "Prüfsumme wird verifiziert...",
     "modelIsReady": "Modell ist bereit.",
-    "readySubtitle": "CellSentry ist bereit, Ihre Tabellen zu analysieren.",
+    "readySubtitle": "CellSentry Beta ist bereit, Ihre Tabellen zu analysieren.",
     "errorSubtitle": "Beim Download ist ein Fehler aufgetreten.",
     "oneTimeSubtitle": "Dies ist ein einmaliger Download. Das AI-Modell läuft vollständig auf Ihrem Gerät.",
     "sha256Check": "SHA-256-Prüfung...",

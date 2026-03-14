@@ -140,6 +140,19 @@
   opacity: 0.6;
 }
 
+/* ── Beta Badge ── */
+.beta-badge {
+  font-size: 10px;
+  font-weight: 700;
+  font-family: var(--font-sans);
+  letter-spacing: 0.5px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--brand);
+  color: #fff;
+  margin-left: 6px;
+}
+
 /* ── Update Progress ── */
 .update-progress {
   height: 4px;

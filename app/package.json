@@ -1,7 +1,7 @@
 {
   "name": "cellsentry",
-  "version": "1.0.1",
-  "description": "CellSentry — Excel Formula Error Detection",
+  "version": "1.0.0-beta.1",
+  "description": "CellSentry Beta — Local AI Toolbox for Your Data",
   "main": "./out/main/index.js",
   "author": "CellSentry",
   "license": "MIT",

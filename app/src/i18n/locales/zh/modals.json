@@ -9,7 +9,7 @@
     "startingDownload": "开始下载...",
     "verifyingChecksum": "正在验证校验和...",
     "modelIsReady": "模型已就绪。",
-    "readySubtitle": "CellSentry 已准备好分析您的表格。",
+    "readySubtitle": "CellSentry Beta 已准备好分析您的表格。",
     "errorSubtitle": "下载过程中发生错误。",
     "oneTimeSubtitle": "这是一次性下载。AI 模型完全在您的设备上运行。",
     "sha256Check": "SHA-256 校验中...",

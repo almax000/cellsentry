@@ -131,7 +131,8 @@ export default function SettingsPage(): JSX.Element {
               data-testid="settings-version"
               style={{ fontFamily: 'var(--font-mono)', fontSize: '12px' }}
             >
-              {version || '0.9.0'}
+              {version || '1.0.0-beta.1'}
+              <span className="beta-badge">BETA</span>
             </div>
           </div>
           <div className="settings-row">
