@@ -36,11 +36,6 @@ export default function SettingsPage(): JSX.Element {
   const SUPPORTED_LANGS = [
     { code: 'en', label: 'English' },
     { code: 'zh', label: '中文' },
-    { code: 'ja', label: '日本語' },
-    { code: 'ko', label: '한국어' },
-    { code: 'de', label: 'Deutsch' },
-    { code: 'fr', label: 'Français' },
-    { code: 'es', label: 'Español' },
   ] as const
   const currentLang = SUPPORTED_LANGS.find(l => i18n.language?.startsWith(l.code))?.code ?? 'en'
 

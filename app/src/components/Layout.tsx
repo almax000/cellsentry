@@ -59,9 +59,12 @@ export default function Layout(): JSX.Element {
   // Results pages use full-bleed split panel (no padding, no overflow)
   const isNoPad = location.pathname.includes('/results')
 
+  if (showModelModal) {
+    return <ModelDownloadModal onClose={handleModelReady} />
+  }
+
   return (
     <div className={`app-layout platform-${platform}`}>
-      {showModelModal && <ModelDownloadModal onClose={handleModelReady} />}
       <Sidebar />
       <div className="main-content">
         <Header title={pageTitle()} icon={pageIcon()} />

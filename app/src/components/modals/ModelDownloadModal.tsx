@@ -18,20 +18,8 @@ export default function ModelDownloadModal({ onClose }: ModelDownloadModalProps)
 
   const startDownload = useCallback(async () => {
     if (!window.api?.downloadModel) {
-      // Fallback: simulate progress if API not available
-      setPhase('downloading')
-      const interval = setInterval(() => {
-        setProgress((p) => {
-          if (p >= 100) {
-            clearInterval(interval)
-            setPhase('verifying')
-            setMessage(t('modelDownload.verifyingChecksum'))
-            setTimeout(() => setPhase('done'), 1500)
-            return 100
-          }
-          return p + 1.5
-        })
-      }, 80)
+      setPhase('error')
+      setError(t('modelDownload.downloadFailed'))
       return
     }
 
@@ -54,7 +42,6 @@ export default function ModelDownloadModal({ onClose }: ModelDownloadModalProps)
   }, [t])
 
   useEffect(() => {
-    // Check if model already exists
     const checkModel = async (): Promise<void> => {
       if (!window.api?.checkModelExists) {
         startDownload()
@@ -77,7 +64,7 @@ export default function ModelDownloadModal({ onClose }: ModelDownloadModalProps)
     checkModel()
   }, [startDownload, t])
 
-  // Listen for WebSocket progress updates
+  // Listen for download progress via IPC
   useEffect(() => {
     if (!window.api?.onScanProgress) return
 
@@ -104,16 +91,16 @@ export default function ModelDownloadModal({ onClose }: ModelDownloadModalProps)
     return unsubscribe
   }, [t])
 
-  // Escape key to close (only when done or error)
+  // Escape key: only allow closing when done (proceed to app)
   useEffect(() => {
     const handler = (e: KeyboardEvent): void => {
-      if (e.key === 'Escape' && (phase === 'done' || phase === 'error')) onClose()
+      if (e.key === 'Escape' && phase === 'done') onClose()
     }
     document.addEventListener('keydown', handler)
     return () => document.removeEventListener('keydown', handler)
   }, [onClose, phase])
 
-  // Also listen for model_download completion events
+  // Listen for model_download completion events
   useEffect(() => {
     if (!window.api?.onModelDownloadProgress) return
 
@@ -148,8 +135,9 @@ export default function ModelDownloadModal({ onClose }: ModelDownloadModalProps)
         : t('modelDownload.oneTimeSubtitle')
 
   return (
-    <div className="modal-overlay" onClick={phase === 'done' ? onClose : undefined}>
-      <div className="modal-card" data-testid="model-download-modal" onClick={(e) => e.stopPropagation()}>
+    <div className="model-download-page">
+      <div className="drag-region" />
+      <div className="model-download-card" data-testid="model-download-modal">
         <div className="modal-icon">
           {phase === 'done' ? (
             <CheckIcon size={24} />

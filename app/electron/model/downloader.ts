@@ -23,7 +23,7 @@ export const DEFAULT_MODEL: ModelInfo = {
   version: 'v3.0',
   size: 940 * 1024 * 1024,
   sha256: '4ae17b3886e4a5089671bf16aa133eaa6d8917a118bde6c75a54c1c3610f7cd3',
-  downloadUrl: 'https://github.com/almax000/cellsentry/releases/download/model-v3.0/cellsentry-1.5b-v3-q4km.gguf',
+  downloadUrl: 'https://huggingface.co/almax000/cellsentry-model/resolve/main/cellsentry-1.5b-v3-q4km.gguf',
   description: 'CellSentry multi-task model (audit + PII + extraction, Q4_K_M)'
 }
 
