@@ -234,8 +234,8 @@ function createDownloadWindow(): BrowserWindow {
       ? { trafficLightPosition: { x: 14, y: 14 } }
       : {
           titleBarOverlay: {
-            color: '#0f1117',
-            symbolColor: '#8b8f9a',
+            color: '#ffffff',
+            symbolColor: '#666666',
             height: 40
           }
         }),

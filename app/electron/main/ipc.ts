@@ -37,7 +37,8 @@ export function getModelsDir(): string {
 
 export function getDownloader(): ModelDownloader {
   if (!modelDownloader) {
-    modelDownloader = new ModelDownloader(getModelsDir())
+    const { app } = require('electron') as typeof import('electron')
+    modelDownloader = new ModelDownloader(getModelsDir(), undefined, app.getLocale())
   }
   return modelDownloader
 }

@@ -8,14 +8,24 @@ import {
 } from 'fs'
 import { join } from 'path'
 
+/** Minimal response interface compatible with both Electron net and Node.js http */
+interface DownloadResponse {
+  statusCode?: number
+  headers: Record<string, unknown>
+  on(event: 'data', listener: (chunk: Buffer) => void): unknown
+  on(event: 'end', listener: () => void): unknown
+  on(event: 'error', listener: (err: unknown) => void): unknown
+}
+
 export interface ModelInfo {
   name: string
   filename: string
   version: string
   size: number
   sha256: string
-  downloadUrl: string
-  mirrorUrl?: string
+  downloadUrl: string       // HuggingFace (global primary)
+  mirrorUrl?: string        // hf-mirror.com (global fallback)
+  cnPrimaryUrl?: string     // ModelScope (China primary)
   description: string
 }
 
@@ -27,6 +37,7 @@ export const DEFAULT_MODEL: ModelInfo = {
   sha256: '4ae17b3886e4a5089671bf16aa133eaa6d8917a118bde6c75a54c1c3610f7cd3',
   downloadUrl: 'https://huggingface.co/almax000/cellsentry-model/resolve/main/cellsentry-1.5b-v3-q4km.gguf',
   mirrorUrl: 'https://hf-mirror.com/almax000/cellsentry-model/resolve/main/cellsentry-1.5b-v3-q4km.gguf',
+  cnPrimaryUrl: 'https://modelscope.cn/models/almax000/cellsentry-model/resolve/master/cellsentry-1.5b-v3-q4km.gguf',
   description: 'CellSentry multi-task model (audit + PII + extraction, Q4_K_M)'
 }
 
@@ -35,14 +46,16 @@ export type ProgressCallback = (downloaded: number, total: number, message: stri
 export class ModelDownloader {
   private targetDir: string
   private modelInfo: ModelInfo
+  private locale: string
   private progressCallback: ProgressCallback | null = null
   private cancelled = false
   private _downloadPromise: Promise<boolean> | null = null
   private _currentRequest: Electron.ClientRequest | http.ClientRequest | null = null
 
-  constructor(targetDir: string, modelInfo?: ModelInfo) {
+  constructor(targetDir: string, modelInfo?: ModelInfo, locale?: string) {
     this.targetDir = targetDir
     this.modelInfo = modelInfo || DEFAULT_MODEL
+    this.locale = locale || 'en'
   }
 
   setProgressCallback(cb: ProgressCallback): void {
@@ -52,11 +65,7 @@ export class ModelDownloader {
   cancel(): void {
     this.cancelled = true
     if (this._currentRequest) {
-      if ('abort' in this._currentRequest) {
-        this._currentRequest.abort()
-      } else {
-        this._currentRequest.destroy()
-      }
+      this._currentRequest.abort()
       this._currentRequest = null
     }
   }
@@ -83,19 +92,31 @@ export class ModelDownloader {
     }
   }
 
+  private buildUrlList(): string[] {
+    const isChinese = this.locale.startsWith('zh')
+    if (isChinese) {
+      const urls: string[] = []
+      if (this.modelInfo.cnPrimaryUrl) urls.push(this.modelInfo.cnPrimaryUrl)
+      if (this.modelInfo.mirrorUrl) urls.push(this.modelInfo.mirrorUrl)
+      urls.push(this.modelInfo.downloadUrl)
+      return urls
+    }
+    const urls = [this.modelInfo.downloadUrl]
+    if (this.modelInfo.mirrorUrl) urls.push(this.modelInfo.mirrorUrl)
+    return urls
+  }
+
   private async _downloadWithRetry(): Promise<boolean> {
     if (!this.checkDiskSpace()) {
       throw new Error('Insufficient disk space. Need approximately 1 GB free.')
     }
 
-    // Build URL list: primary first, then mirror if available
-    const urls = [this.modelInfo.downloadUrl]
-    if (this.modelInfo.mirrorUrl) urls.push(this.modelInfo.mirrorUrl)
-
+    const urls = this.buildUrlList()
     let lastError: Error | undefined
-    for (const url of urls) {
-      const isMirror = url !== this.modelInfo.downloadUrl
-      const MAX_RETRIES = isMirror ? 3 : 2
+
+    for (let i = 0; i < urls.length; i++) {
+      const url = urls[i]
+      const MAX_RETRIES = 2
       for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
         try {
           return await this.doDownload(url)
@@ -108,11 +129,11 @@ export class ModelDownloader {
           await new Promise(r => setTimeout(r, delay))
         }
       }
-      // Clean up partial download before trying mirror
       this.cleanup()
-      if (isMirror) break
-      this.emitProgress(0, this.modelInfo.size, 'Switching to mirror...')
-      await new Promise(r => setTimeout(r, 1000))
+      if (i < urls.length - 1) {
+        this.emitProgress(0, this.modelInfo.size, 'Switching to next source...')
+        await new Promise(r => setTimeout(r, 1000))
+      }
     }
     throw lastError || new Error('Download failed')
   }
@@ -285,14 +306,14 @@ export class ModelDownloader {
 
   /** Shared response handler for both net and https transports */
   private handleResponse(
-    response: { statusCode: number; headers: Record<string, unknown>; on: (event: string, cb: (...args: unknown[]) => void) => void },
+    response: DownloadResponse,
     tempPath: string,
     finalPath: string,
     resumePos: number,
     resolve: (value: boolean) => void,
     reject: (reason: Error) => void
   ): void {
-    const statusCode = response.statusCode
+    const statusCode = response.statusCode || 0
 
     // Resume not supported — restart from scratch
     if (resumePos > 0 && statusCode !== 206) {
