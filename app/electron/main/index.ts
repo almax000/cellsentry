@@ -401,12 +401,16 @@ if (!gotTheLock) {
       const dlWin = createDownloadWindow()
 
       await new Promise<void>((resolve) => {
+        let downloadConfirmed = false
+
         ipcMain.once('model:download-complete', () => {
+          downloadConfirmed = true
           dlWin.close()
           resolve()
         })
         // If user force-quits the download window, exit the app
         dlWin.on('closed', () => {
+          if (downloadConfirmed) return
           if (!downloader.checkModelExists()) {
             app.quit()
           } else {
