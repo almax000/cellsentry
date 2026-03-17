@@ -230,6 +230,7 @@ function scanReducer(state: ScanContextState, action: ScanAction): ScanContextSt
       return { ...state, progress: action.progress }
 
     case 'ENGINE_DONE': {
+      if (state.enginesComplete >= 3) return state // guard against duplicate events
       const newCount = state.enginesComplete + 1
       let newResults = state.results
       let newPiiResults = state.piiResults
@@ -253,9 +254,17 @@ function scanReducer(state: ScanContextState, action: ScanAction): ScanContextSt
         }
       }
 
-      // Transition to complete when first engine delivers a result
       const hasAnyResult = newResults || newPiiResults || newExtractionResults
-      const newScanState = hasAnyResult && state.scanState === 'scanning' ? 'complete' as ScanState : state.scanState
+      const allDone = newCount >= 3
+      let newScanState: ScanState = state.scanState
+      let newError = state.error
+
+      if (hasAnyResult && state.scanState === 'scanning') {
+        newScanState = 'complete'
+      } else if (allDone && !hasAnyResult && state.scanState === 'scanning') {
+        newScanState = 'error'
+        newError = [newAuditError, newPiiError, newExtractionError].filter(Boolean).join(' | ')
+      }
 
       return {
         ...state,
@@ -267,6 +276,7 @@ function scanReducer(state: ScanContextState, action: ScanAction): ScanContextSt
         piiError: newPiiError,
         extractionError: newExtractionError,
         scanState: newScanState,
+        error: newError,
       }
     }
 

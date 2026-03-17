@@ -194,7 +194,11 @@ export function registerIpcHandlers(): void {
           }),
       ]
 
-      await Promise.allSettled(promises)
+      const settled = await Promise.allSettled(promises)
+      const allFailed = settled.every((r) => r.status === 'rejected')
+      if (allFailed) {
+        return { success: false, error: 'All analysis engines failed' }
+      }
       return { success: true }
     } catch (e) {
       logIpcError('analyze:all', filePath, e)

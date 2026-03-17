@@ -18,7 +18,7 @@ export default function DropZone(): JSX.Element {
   useEffect(() => {
     if (scanState === 'complete') navigate('/results')
     else if (scanState === 'scanning') navigate('/scanning')
-  }, [])
+  }, [scanState, navigate])
 
   const validateFile = (name: string): boolean => {
     const ext = name.substring(name.lastIndexOf('.')).toLowerCase()

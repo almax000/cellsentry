@@ -193,9 +193,9 @@ export default function ScanningPage(): JSX.Element {
             : t('elapsed', { time: (elapsed / 1000).toFixed(1) })}
         </div>
 
-        {scanState === 'error' && error && (
+        {scanState === 'error' && (error || auditError || piiError || extractionError) && (
           <div style={{ marginTop: 16, padding: '8px 12px', background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 6, color: '#991b1b', fontSize: 12, maxWidth: 400, wordBreak: 'break-all' }}>
-            {error}
+            {error || [auditError, piiError, extractionError].filter(Boolean).join(' | ')}
           </div>
         )}
       </div>

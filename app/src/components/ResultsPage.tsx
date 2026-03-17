@@ -133,9 +133,10 @@ export default function AuditResultsPage(): JSX.Element {
         ['info', t('filterInfo'), summary.info, 'var(--info)'],
       ]
 
-  const sheets = fileInfo?.sheets?.map((s) => s.name) || results?.issues?.[0]?.sheetName
-    ? [...new Set(results?.issues.map((i) => i.sheetName))]
-    : ['Sheet1']
+  const sheets = fileInfo?.sheets?.map((s) => s.name)
+    || (results?.issues?.[0]?.sheetName
+      ? [...new Set(results.issues.map((i) => i.sheetName))]
+      : ['Sheet1'])
 
   return (
     <>
