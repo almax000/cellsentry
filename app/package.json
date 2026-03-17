@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "electron-vite dev",
     "build": "electron-vite build",
-    "postinstall": "electron-builder install-app-deps",
+    "postinstall": "patch-package && electron-builder install-app-deps",
     "preview": "electron-vite preview",
     "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
     "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
@@ -43,6 +43,7 @@
     "electron": "^40.8.0",
     "electron-builder": "^25.1.8",
     "electron-vite": "^5.0.0",
+    "patch-package": "^8.0.1",
     "typescript": "^5.7.2",
     "vite": "^6.0.3"
   }

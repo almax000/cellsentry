@@ -1,0 +1,29 @@
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/worksheet-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/worksheet-xform.js
+index b389300..daa6321 100644
+--- a/node_modules/exceljs/lib/xlsx/xform/sheet/worksheet-xform.js
++++ b/node_modules/exceljs/lib/xlsx/xform/sheet/worksheet-xform.js
+@@ -450,13 +450,19 @@ class WorkSheetXform extends BaseXform {
+     const rels = (model.relationships || []).reduce((h, rel) => {
+       h[rel.Id] = rel;
+       if (rel.Type === RelType.Comments) {
+-        model.comments = options.comments[rel.Target].comments;
++        const commentsEntry = options.comments && options.comments[rel.Target];
++        if (commentsEntry) {
++          model.comments = commentsEntry.comments;
++        }
+       }
+       if (rel.Type === RelType.VmlDrawing && model.comments && model.comments.length) {
+-        const vmlComment = options.vmlDrawings[rel.Target].comments;
+-        model.comments.forEach((comment, index) => {
+-          comment.note = Object.assign({}, comment.note, vmlComment[index]);
+-        });
++        const vmlEntry = options.vmlDrawings && options.vmlDrawings[rel.Target];
++        if (vmlEntry) {
++          const vmlComment = vmlEntry.comments;
++          model.comments.forEach((comment, index) => {
++            comment.note = Object.assign({}, comment.note, vmlComment[index]);
++          });
++        }
+       }
+       return h;
+     }, {});
