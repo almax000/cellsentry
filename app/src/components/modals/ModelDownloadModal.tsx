@@ -64,33 +64,6 @@ export default function ModelDownloadModal({ onClose }: ModelDownloadModalProps)
     checkModel()
   }, [startDownload, t])
 
-  // Listen for download progress via IPC
-  useEffect(() => {
-    if (!window.api?.onScanProgress) return
-
-    const unsubscribe = window.api.onScanProgress((rawProgress) => {
-      const wsPhase = rawProgress.phase || ''
-      const wsPercent = rawProgress.percent ?? 0
-      const wsMessage = rawProgress.message || ''
-
-      if (wsPhase === 'download') {
-        if (wsMessage.toLowerCase().includes('verif')) {
-          setPhase('verifying')
-          setMessage(t('modelDownload.verifyingChecksum'))
-        } else if (wsMessage.toLowerCase().includes('complete')) {
-          setPhase('done')
-          setMessage(t('modelDownload.modelIsReady'))
-        } else {
-          setPhase('downloading')
-          setProgress(wsPercent)
-          setMessage(wsMessage)
-        }
-      }
-    })
-
-    return unsubscribe
-  }, [t])
-
   // Escape key: only allow closing when done (proceed to app)
   useEffect(() => {
     const handler = (e: KeyboardEvent): void => {

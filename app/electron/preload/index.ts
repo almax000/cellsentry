@@ -89,6 +89,7 @@ const api: SidecarAPI = {
         }
       }
     : undefined,
+  notifyModelReady: () => ipcRenderer.send('model:download-complete'),
   openFilePath: (filePath: string) => ipcRenderer.invoke('shell:open-path', filePath),
   getFilePathFromDrop: (file: File) => webUtils.getPathForFile(file),
   platform: process.platform,

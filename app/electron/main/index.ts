@@ -2,9 +2,9 @@ import { app, BrowserWindow, ipcMain, Menu, screen, shell } from 'electron'
 import { join } from 'path'
 import { readFileSync, writeFileSync, appendFileSync, mkdirSync } from 'fs'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import { registerIpcHandlers } from './ipc'
+import { registerIpcHandlers, getDownloader } from './ipc'
 import { initAutoUpdater, registerUpdaterIpc } from './updater'
-import { setupLlmLifecycle } from '../llm/lifecycle'
+import { setupLlmLifecycle, startLlm } from '../llm/lifecycle'
 
 const IS_TEST_MODE = process.env.CELLSENTRY_TEST_MODE === '1'
 
@@ -211,7 +211,56 @@ function createAppMenu(): void {
 }
 
 // ---------------------------------------------------------------------------
-// Create Window
+// Download Window (shown before main window when model is missing)
+// ---------------------------------------------------------------------------
+
+function createDownloadWindow(): BrowserWindow {
+  const IS_MAC = process.platform === 'darwin'
+  const { width, height } = screen.getPrimaryDisplay().workAreaSize
+  const WIN_W = 550, WIN_H = 420
+
+  const win = new BrowserWindow({
+    width: WIN_W,
+    height: WIN_H,
+    x: Math.round((width - WIN_W) / 2),
+    y: Math.round((height - WIN_H) / 2),
+    resizable: false,
+    minimizable: true,
+    maximizable: false,
+    fullscreenable: false,
+    show: false,
+    titleBarStyle: 'hidden',
+    ...(IS_MAC
+      ? { trafficLightPosition: { x: 14, y: 14 } }
+      : {
+          titleBarOverlay: {
+            color: '#0f1117',
+            symbolColor: '#8b8f9a',
+            height: 40
+          }
+        }),
+    webPreferences: {
+      preload: join(__dirname, '../preload/index.js'),
+      sandbox: false,
+      contextIsolation: true,
+      nodeIntegration: false,
+    },
+  })
+
+  win.on('ready-to-show', () => win.show())
+
+  // Load same renderer but with ?download=1 query param
+  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+    win.loadURL(process.env['ELECTRON_RENDERER_URL'] + '?download=1')
+  } else {
+    win.loadFile(join(__dirname, '../renderer/index.html'), { query: { download: '1' } })
+  }
+
+  return win
+}
+
+// ---------------------------------------------------------------------------
+// Main Window
 // ---------------------------------------------------------------------------
 
 function createWindow(): BrowserWindow {
@@ -305,7 +354,7 @@ if (!gotTheLock) {
     }
   })
 
-  app.whenReady().then(() => {
+  app.whenReady().then(async () => {
     electronApp.setAppUserModelId('com.cellsentry.app')
 
     app.on('browser-window-created', (_, window) => {
@@ -317,29 +366,56 @@ if (!gotTheLock) {
       app.dock?.setIcon(join(__dirname, '../../resources/icon.png'))
     }
 
-    // Content Security Policy
-    const { session } = require('electron')
-    session.defaultSession.webRequest.onHeadersReceived((details: Electron.OnHeadersReceivedListenerDetails, callback: (response: Electron.HeadersReceivedResponse) => void) => {
-      callback({
-        responseHeaders: {
-          ...details.responseHeaders,
-          'Content-Security-Policy': [
-            "default-src 'self';"
-            + " script-src 'self';"
-            + " style-src 'self' 'unsafe-inline';"
-            + " img-src 'self' data: blob:;"
-            + " font-src 'self' data:;"
-            + " connect-src 'self' https://github.com https://*.github.com;"
-          ]
-        }
+    // Content Security Policy (production only — Vite dev needs inline scripts)
+    if (!is.dev) {
+      const { session } = require('electron')
+      session.defaultSession.webRequest.onHeadersReceived((details: Electron.OnHeadersReceivedListenerDetails, callback: (response: Electron.HeadersReceivedResponse) => void) => {
+        callback({
+          responseHeaders: {
+            ...details.responseHeaders,
+            'Content-Security-Policy': [
+              "default-src 'self';"
+              + " script-src 'self';"
+              + " style-src 'self' 'unsafe-inline';"
+              + " img-src 'self' data: blob:;"
+              + " font-src 'self' data:;"
+              + " connect-src 'self' https://github.com https://*.github.com;"
+            ]
+          }
+        })
       })
-    })
+    }
 
     createAppMenu()
     registerIpcHandlers()
     registerTestIpcHandlers()
     registerUpdaterIpc()
     setupLlmLifecycle()
+
+    // Gate: check model before creating the main window
+    const skipModelCheck = IS_TEST_MODE
+    const downloader = getDownloader()
+    const modelExists = skipModelCheck || downloader.checkModelExists()
+
+    if (!modelExists) {
+      const dlWin = createDownloadWindow()
+
+      await new Promise<void>((resolve) => {
+        ipcMain.once('model:download-complete', () => {
+          dlWin.close()
+          resolve()
+        })
+        // If user force-quits the download window, exit the app
+        dlWin.on('closed', () => {
+          if (!downloader.checkModelExists()) {
+            app.quit()
+          } else {
+            resolve()
+          }
+        })
+      })
+    }
+
     const mainWindow = createWindow()
 
     // Register zoom handlers once (not inside createWindow to avoid duplicate registration)
@@ -352,6 +428,9 @@ if (!gotTheLock) {
     if (!is.dev) {
       initAutoUpdater(mainWindow)
     }
+
+    // Start LLM in background (model is guaranteed present now)
+    startLlm().catch(() => {})
 
     app.on('activate', () => {
       if (BrowserWindow.getAllWindows().length === 0) createWindow()

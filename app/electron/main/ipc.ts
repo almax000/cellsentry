@@ -7,7 +7,7 @@
 import { app, ipcMain, dialog, shell, BrowserWindow } from 'electron'
 import { readdirSync, statSync, existsSync } from 'fs'
 import { join, extname, normalize } from 'path'
-import { is } from '@electron-toolkit/utils'
+
 
 import { analyzeExcel, type RendererIssue } from '../engine/ruleEngine'
 import { getFileInfo, readFileCells } from '../engine/excelReader'
@@ -30,12 +30,14 @@ function validateFilePath(filePath: unknown): filePath is string {
 
 let modelDownloader: ModelDownloader | null = null
 
-function getDownloader(): ModelDownloader {
+export function getModelsDir(): string {
+  const { app } = require('electron') as typeof import('electron')
+  return join(app.getPath('userData'), 'models')
+}
+
+export function getDownloader(): ModelDownloader {
   if (!modelDownloader) {
-    const modelsDir = is.dev
-      ? join(__dirname, '..', '..', '..', 'models')
-      : join(process.resourcesPath, 'models')
-    modelDownloader = new ModelDownloader(modelsDir)
+    modelDownloader = new ModelDownloader(getModelsDir())
   }
   return modelDownloader
 }
@@ -186,24 +188,41 @@ export function registerIpcHandlers(): void {
 
   // ── Model ───────────────────────────────────────────────
   ipcMain.handle('sidecar:model-check', async () => {
+    if (process.env.CELLSENTRY_TEST_MODE === '1') {
+      return { exists: true }
+    }
     const downloader = getDownloader()
     return { exists: downloader.checkModelExists() }
   })
 
   ipcMain.handle('sidecar:model-download', async () => {
     const downloader = getDownloader()
-    const windows = BrowserWindow.getAllWindows()
-    const mainWindow = windows[0]
+    const win = BrowserWindow.getAllWindows()[0]
 
-    if (mainWindow) {
+    if (win) {
       downloader.setProgressCallback((downloaded, total, message) => {
-        mainWindow.webContents.send('sidecar:model-download-progress', {
-          downloaded,
-          total,
-          message,
-          percent: total > 0 ? Math.round((downloaded * 100) / total) : 0,
-        })
+        if (!win.isDestroyed()) {
+          win.webContents.send('sidecar:model-download-progress', {
+            downloaded,
+            total,
+            message,
+            percent: total > 0 ? Math.round((downloaded * 100) / total) : 0,
+          })
+        }
       })
+
+      // Cancel download if window closes
+      const onClose = (): void => { downloader.cancel() }
+      win.once('closed', onClose)
+
+      try {
+        const success = await downloader.download()
+        win.removeListener('closed', onClose)
+        return { success }
+      } catch (e) {
+        win.removeListener('closed', onClose)
+        return { success: false, error: String(e) }
+      }
     }
 
     try {

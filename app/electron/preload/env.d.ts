@@ -39,6 +39,7 @@ interface SidecarAPI {
   checkModelExists: () => Promise<{ exists: boolean; type: string }>
   downloadModel: () => Promise<{ success: boolean; status: string }>
   onModelDownloadProgress: (callback: (progress: ModelDownloadProgress) => void) => () => void
+  notifyModelReady: () => void
   checkForUpdates: () => Promise<void>
   downloadUpdate: () => Promise<void>
   installUpdate: () => void

@@ -63,7 +63,11 @@ class LlmBridge {
       const child = spawn(pythonBin, [scriptPath], {
         stdio: ['pipe', 'pipe', 'pipe'],
         cwd: getProjectRoot(),
-        env: { ...process.env, PYTHONUNBUFFERED: '1' },
+        env: {
+          ...process.env,
+          PYTHONUNBUFFERED: '1',
+          CELLSENTRY_MODEL_DIR: getModelDir(),
+        },
       })
 
       this.process = child
@@ -235,6 +239,11 @@ function getProjectRoot(): string {
     return join(__dirname, '..', '..', '..')
   }
   return join(process.resourcesPath)
+}
+
+function getModelDir(): string {
+  const { app } = require('electron') as typeof import('electron')
+  return join(app.getPath('userData'), 'models')
 }
 
 function getServerScriptPath(): string {
