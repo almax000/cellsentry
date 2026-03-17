@@ -103,6 +103,7 @@ export class ModelDownloader {
     }
     const urls = [this.modelInfo.downloadUrl]
     if (this.modelInfo.mirrorUrl) urls.push(this.modelInfo.mirrorUrl)
+    if (this.modelInfo.cnPrimaryUrl) urls.push(this.modelInfo.cnPrimaryUrl)
     return urls
   }
 
