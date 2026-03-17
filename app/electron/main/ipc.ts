@@ -5,8 +5,22 @@
  */
 
 import { app, ipcMain, dialog, shell, BrowserWindow } from 'electron'
-import { readdirSync, statSync, existsSync } from 'fs'
+import { readdirSync, statSync, existsSync, appendFileSync, mkdirSync } from 'fs'
 import { join, extname, normalize } from 'path'
+
+/** Write diagnostic error to crash-logs for remote debugging */
+function logIpcError(handler: string, filePath: string, error: unknown): void {
+  try {
+    const logsDir = join(app.getPath('userData'), 'crash-logs')
+    mkdirSync(logsDir, { recursive: true })
+    const ts = new Date().toISOString()
+    const msg = error instanceof Error ? `${error.message}\n${error.stack}` : String(error)
+    appendFileSync(
+      join(logsDir, 'ipc-errors.log'),
+      `[${ts}] ${handler} | path=${filePath} | ${msg}\n\n`
+    )
+  } catch { /* ignore */ }
+}
 
 
 import { analyzeExcel, type RendererIssue } from '../engine/ruleEngine'
@@ -117,6 +131,7 @@ export function registerIpcHandlers(): void {
         sheets: result.sheets,
       }
     } catch (e) {
+      logIpcError('sidecar:analyze', filePath, e)
       return { success: false, error: String(e), issues: [], summary: { total: 0, error: 0, warning: 0, info: 0 } }
     }
   })
@@ -124,7 +139,9 @@ export function registerIpcHandlers(): void {
   // ── File Info ───────────────────────────────────────────
   ipcMain.handle('sidecar:file-info', async (_event, filePath: string) => {
     if (!validateFilePath(filePath)) return { success: false, error: 'Invalid path' }
-    return getFileInfo(filePath)
+    const result = await getFileInfo(filePath)
+    if (!result.success) logIpcError('sidecar:file-info', filePath, result.error || 'unknown')
+    return result
   })
 
   // ── File Cells ──────────────────────────────────────────
@@ -278,8 +295,11 @@ export function registerIpcHandlers(): void {
       return { success: false, error: 'Invalid path' }
     }
     try {
-      return await scanForPii(filePath)
+      const result = await scanForPii(filePath)
+      if (!result.success) logIpcError('pii:analyze', filePath, result.error || 'unknown')
+      return result
     } catch (e) {
+      logIpcError('pii:analyze', filePath, e)
       return { success: false, error: String(e) }
     }
   })
@@ -301,8 +321,11 @@ export function registerIpcHandlers(): void {
       return { success: false, error: 'Invalid path' }
     }
     try {
-      return await extractDocument(filePath)
+      const result = await extractDocument(filePath)
+      if (!result.success) logIpcError('extraction:analyze', filePath, result.error || 'unknown')
+      return result
     } catch (e) {
+      logIpcError('extraction:analyze', filePath, e)
       return { success: false, error: String(e) }
     }
   })

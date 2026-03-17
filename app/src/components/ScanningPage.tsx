@@ -9,7 +9,7 @@ import './ScanningPage.css'
 export default function ScanningPage(): JSX.Element {
   const { t } = useTranslation('scanning')
   const navigate = useNavigate()
-  const { scanState, scanMode, fileInfo, progress, isBatch, batchFiles, batchIndex, batchResults } = useScan()
+  const { scanState, scanMode, fileInfo, progress, isBatch, batchFiles, batchIndex, batchResults, error } = useScan()
   const [elapsed, setElapsed] = useState(0)
   const [llmAvailable, setLlmAvailable] = useState<boolean | null>(null)
   const startTimeRef = useRef(Date.now())
@@ -61,7 +61,7 @@ export default function ScanningPage(): JSX.Element {
       const homePath = scanMode === 'pii' ? '/pii'
         : scanMode === 'extraction' ? '/extract'
         : '/'
-      const timer = setTimeout(() => navigate(homePath), 2000)
+      const timer = setTimeout(() => navigate(homePath), 8000)
       return () => clearTimeout(timer)
     }
   }, [scanState, scanMode, navigate])
@@ -219,6 +219,12 @@ export default function ScanningPage(): JSX.Element {
         <div className="scan-elapsed" data-testid="scanning-percent">
           {t('elapsed', { time: (elapsed / 1000).toFixed(1) })}
         </div>
+
+        {scanState === 'error' && error && (
+          <div style={{ marginTop: 16, padding: '8px 12px', background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 6, color: '#991b1b', fontSize: 12, maxWidth: 400, wordBreak: 'break-all' }}>
+            {error}
+          </div>
+        )}
       </div>
     </div>
   )
