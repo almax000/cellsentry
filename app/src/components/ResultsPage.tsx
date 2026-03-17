@@ -11,7 +11,7 @@ import './ResultsPage.css'
 
 type FilterKey = 'all' | SeverityLevel
 
-export default function ResultsPage(): JSX.Element {
+export default function AuditResultsPage(): JSX.Element {
   const { t } = useTranslation('results')
   const { t: tc } = useTranslation('common')
   const navigate = useNavigate()
@@ -36,8 +36,9 @@ export default function ResultsPage(): JSX.Element {
   }, [issues, filter])
 
   const avgConfidence = useMemo(() => {
-    if (issues.length === 0) return 0
-    return issues.reduce((sum, i) => sum + i.confidence, 0) / issues.length
+    const valid = issues.filter((i) => typeof i.confidence === 'number' && !isNaN(i.confidence))
+    if (valid.length === 0) return 0
+    return valid.reduce((sum, i) => sum + i.confidence, 0) / valid.length
   }, [issues])
 
   const handleIssueClick = useCallback(

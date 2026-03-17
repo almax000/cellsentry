@@ -5,6 +5,7 @@ import type {
   ScanProgress,
   AnalysisResult,
   AnalysisSummary,
+  ActiveView,
   PiiResult,
   PiiFinding,
   PiiSummary,
@@ -25,35 +26,45 @@ import { mapSeverity } from '../utils/format'
 // ── State ──
 
 interface ScanContextState {
-  // Single-file scan state (preserved for backward compat)
   scanState: ScanState
-  scanMode: ScanMode
+  scanMode: ScanMode // kept for backward compat (batch mode)
+  activeView: ActiveView
   filePath: string
   fileInfo: FileInfo | null
   progress: ScanProgress
+  // Per-engine results (populated progressively)
   results: AnalysisResult | null
   piiResults: PiiResult | null
   extractionResults: ExtractionResult | null
+  // Per-engine errors
+  auditError: string | null
+  piiError: string | null
+  extractionError: string | null
   error: string
+  enginesComplete: number
   // Batch scan state
   batchState: BatchState
   batchFiles: QueuedFile[]
   batchIndex: number
   batchResults: BatchResult | null
-  // Mode flag
   isBatch: boolean
 }
 
 const initialState: ScanContextState = {
   scanState: 'idle',
   scanMode: 'audit',
+  activeView: 'audit',
   filePath: '',
   fileInfo: null,
   progress: { phase: 'rules', percent: 0, message: '' },
   results: null,
   piiResults: null,
   extractionResults: null,
+  auditError: null,
+  piiError: null,
+  extractionError: null,
   error: '',
+  enginesComplete: 0,
   batchState: 'idle',
   batchFiles: [],
   batchIndex: -1,
@@ -66,10 +77,12 @@ const initialState: ScanContextState = {
 type ScanAction =
   | { type: 'START_SCAN'; filePath: string; fileInfo: FileInfo; mode?: ScanMode }
   | { type: 'UPDATE_PROGRESS'; progress: ScanProgress }
+  | { type: 'ENGINE_DONE'; engine: 'audit' | 'pii' | 'extraction'; result?: unknown; error?: string }
   | { type: 'SCAN_COMPLETE'; results: AnalysisResult }
   | { type: 'PII_COMPLETE'; results: PiiResult }
   | { type: 'EXTRACTION_COMPLETE'; results: ExtractionResult }
   | { type: 'SCAN_ERROR'; error: string }
+  | { type: 'SET_VIEW'; view: ActiveView }
   | { type: 'RESET' }
   | { type: 'START_BATCH'; files: QueuedFile[] }
   | { type: 'BATCH_FILE_START'; index: number }
@@ -88,109 +101,6 @@ function aggregateSummary(files: QueuedFile[]): AnalysisSummary {
     }
   }
   return { errors, warnings, info, total }
-}
-
-function scanReducer(state: ScanContextState, action: ScanAction): ScanContextState {
-  switch (action.type) {
-    case 'START_SCAN':
-      return {
-        ...initialState,
-        scanState: 'scanning',
-        scanMode: action.mode || 'audit',
-        filePath: action.filePath,
-        fileInfo: action.fileInfo,
-        isBatch: false,
-      }
-    case 'UPDATE_PROGRESS':
-      return { ...state, progress: action.progress }
-    case 'SCAN_COMPLETE':
-      return { ...state, scanState: 'complete', results: action.results }
-    case 'PII_COMPLETE':
-      return { ...state, scanState: 'complete', piiResults: action.results }
-    case 'EXTRACTION_COMPLETE':
-      return { ...state, scanState: 'complete', extractionResults: action.results }
-    case 'SCAN_ERROR':
-      return { ...state, scanState: 'error', error: action.error }
-    case 'RESET':
-      return initialState
-
-    // Batch actions
-    case 'START_BATCH':
-      return {
-        ...initialState,
-        isBatch: true,
-        batchState: 'scanning',
-        scanState: 'scanning',
-        batchFiles: action.files,
-        batchIndex: 0,
-        batchResults: {
-          files: action.files,
-          totalFiles: action.files.length,
-          completedFiles: 0,
-          aggregateSummary: { errors: 0, warnings: 0, info: 0, total: 0 },
-          startedAt: new Date().toISOString(),
-        },
-      }
-    case 'BATCH_FILE_START': {
-      const files = [...state.batchFiles]
-      files[action.index] = { ...files[action.index], status: 'scanning' }
-      return {
-        ...state,
-        batchFiles: files,
-        batchIndex: action.index,
-        filePath: files[action.index].path,
-        progress: { phase: 'rules', percent: 0, message: `Scanning ${files[action.index].name}...` },
-      }
-    }
-    case 'BATCH_FILE_COMPLETE': {
-      const files = [...state.batchFiles]
-      files[action.index] = { ...files[action.index], status: 'complete', result: action.result }
-      const completed = files.filter((f) => f.status === 'complete').length
-      return {
-        ...state,
-        batchFiles: files,
-        batchResults: state.batchResults
-          ? {
-              ...state.batchResults,
-              files,
-              completedFiles: completed,
-              aggregateSummary: aggregateSummary(files),
-            }
-          : null,
-      }
-    }
-    case 'BATCH_FILE_ERROR': {
-      const files = [...state.batchFiles]
-      files[action.index] = { ...files[action.index], status: 'error', error: action.error }
-      const completed = files.filter((f) => f.status === 'complete' || f.status === 'error').length
-      return {
-        ...state,
-        batchFiles: files,
-        batchResults: state.batchResults
-          ? { ...state.batchResults, files, completedFiles: completed }
-          : null,
-      }
-    }
-    case 'BATCH_COMPLETE':
-      return {
-        ...state,
-        batchState: 'complete',
-        scanState: 'complete',
-        batchResults: state.batchResults
-          ? {
-              ...state.batchResults,
-              completedAt: new Date().toISOString(),
-              aggregateSummary: aggregateSummary(state.batchFiles),
-            }
-          : null,
-        // Set results to the first file with issues for ResultsPage compat
-        results: state.batchFiles.find((f) => f.result && f.result.issues.length > 0)?.result
-          || state.batchFiles.find((f) => f.result)?.result
-          || null,
-      }
-    default:
-      return state
-  }
 }
 
 // ── Map raw sidecar issues ──
@@ -302,12 +212,164 @@ function mapExtractionResult(filePath: string, fileName: string, raw: Record<str
   }
 }
 
+// ── Reducer ──
+
+function scanReducer(state: ScanContextState, action: ScanAction): ScanContextState {
+  switch (action.type) {
+    case 'START_SCAN':
+      return {
+        ...initialState,
+        scanState: 'scanning',
+        scanMode: action.mode || 'audit',
+        activeView: (action.mode || 'audit') as ActiveView,
+        filePath: action.filePath,
+        fileInfo: action.fileInfo,
+        isBatch: false,
+      }
+    case 'UPDATE_PROGRESS':
+      return { ...state, progress: action.progress }
+
+    case 'ENGINE_DONE': {
+      const newCount = state.enginesComplete + 1
+      let newResults = state.results
+      let newPiiResults = state.piiResults
+      let newExtractionResults = state.extractionResults
+      let newAuditError = state.auditError
+      let newPiiError = state.piiError
+      let newExtractionError = state.extractionError
+
+      if (action.error) {
+        if (action.engine === 'audit') newAuditError = action.error
+        else if (action.engine === 'pii') newPiiError = action.error
+        else newExtractionError = action.error
+      } else if (action.result) {
+        const raw = action.result as Record<string, unknown>
+        if (action.engine === 'audit') {
+          newResults = mapRawResult(state.filePath, state.fileInfo?.fileName || '', raw)
+        } else if (action.engine === 'pii') {
+          newPiiResults = mapPiiResult(state.filePath, state.fileInfo?.fileName || '', raw)
+        } else {
+          newExtractionResults = mapExtractionResult(state.filePath, state.fileInfo?.fileName || '', raw)
+        }
+      }
+
+      // Transition to complete when first engine delivers a result
+      const hasAnyResult = newResults || newPiiResults || newExtractionResults
+      const newScanState = hasAnyResult && state.scanState === 'scanning' ? 'complete' as ScanState : state.scanState
+
+      return {
+        ...state,
+        enginesComplete: newCount,
+        results: newResults,
+        piiResults: newPiiResults,
+        extractionResults: newExtractionResults,
+        auditError: newAuditError,
+        piiError: newPiiError,
+        extractionError: newExtractionError,
+        scanState: newScanState,
+      }
+    }
+
+    // Legacy single-engine completions (used by batch mode + test triggers)
+    case 'SCAN_COMPLETE':
+      return { ...state, scanState: 'complete', results: action.results }
+    case 'PII_COMPLETE':
+      return { ...state, scanState: 'complete', piiResults: action.results }
+    case 'EXTRACTION_COMPLETE':
+      return { ...state, scanState: 'complete', extractionResults: action.results }
+
+    case 'SCAN_ERROR':
+      return { ...state, scanState: 'error', error: action.error }
+    case 'SET_VIEW':
+      return { ...state, activeView: action.view }
+    case 'RESET':
+      return initialState
+
+    // Batch actions (unchanged)
+    case 'START_BATCH':
+      return {
+        ...initialState,
+        isBatch: true,
+        batchState: 'scanning',
+        scanState: 'scanning',
+        batchFiles: action.files,
+        batchIndex: 0,
+        batchResults: {
+          files: action.files,
+          totalFiles: action.files.length,
+          completedFiles: 0,
+          aggregateSummary: { errors: 0, warnings: 0, info: 0, total: 0 },
+          startedAt: new Date().toISOString(),
+        },
+      }
+    case 'BATCH_FILE_START': {
+      const files = [...state.batchFiles]
+      files[action.index] = { ...files[action.index], status: 'scanning' }
+      return {
+        ...state,
+        batchFiles: files,
+        batchIndex: action.index,
+        filePath: files[action.index].path,
+        progress: { phase: 'rules', percent: 0, message: `Scanning ${files[action.index].name}...` },
+      }
+    }
+    case 'BATCH_FILE_COMPLETE': {
+      const files = [...state.batchFiles]
+      files[action.index] = { ...files[action.index], status: 'complete', result: action.result }
+      const completed = files.filter((f) => f.status === 'complete').length
+      return {
+        ...state,
+        batchFiles: files,
+        batchResults: state.batchResults
+          ? {
+              ...state.batchResults,
+              files,
+              completedFiles: completed,
+              aggregateSummary: aggregateSummary(files),
+            }
+          : null,
+      }
+    }
+    case 'BATCH_FILE_ERROR': {
+      const files = [...state.batchFiles]
+      files[action.index] = { ...files[action.index], status: 'error', error: action.error }
+      const completed = files.filter((f) => f.status === 'complete' || f.status === 'error').length
+      return {
+        ...state,
+        batchFiles: files,
+        batchResults: state.batchResults
+          ? { ...state.batchResults, files, completedFiles: completed }
+          : null,
+      }
+    }
+    case 'BATCH_COMPLETE':
+      return {
+        ...state,
+        batchState: 'complete',
+        scanState: 'complete',
+        batchResults: state.batchResults
+          ? {
+              ...state.batchResults,
+              completedAt: new Date().toISOString(),
+              aggregateSummary: aggregateSummary(state.batchFiles),
+            }
+          : null,
+        results: state.batchFiles.find((f) => f.result && f.result.issues.length > 0)?.result
+          || state.batchFiles.find((f) => f.result)?.result
+          || null,
+      }
+    default:
+      return state
+  }
+}
+
 // ── Context ──
 
 interface ScanContextValue extends ScanContextState {
   startScan: (filePath: string, mode?: ScanMode) => Promise<void>
   startBatchScan: (filePaths: Array<{ path: string; name: string; size: number }>) => Promise<void>
   selectBatchFile: (index: number) => void
+  setActiveView: (view: ActiveView) => void
   reset: () => void
 }
 
@@ -316,6 +378,7 @@ const ScanContext = createContext<ScanContextValue>({
   startScan: async () => {},
   startBatchScan: async () => {},
   selectBatchFile: () => {},
+  setActiveView: () => {},
   reset: () => {},
 })
 
@@ -324,7 +387,7 @@ const ScanContext = createContext<ScanContextValue>({
 export function ScanProvider({ children }: { children: ReactNode }): JSX.Element {
   const [state, dispatch] = useReducer(scanReducer, initialState)
 
-  // Subscribe to progress updates from sidecar WebSocket
+  // Subscribe to progress updates
   useEffect(() => {
     if (!window.api?.onScanProgress) return
 
@@ -340,8 +403,24 @@ export function ScanProvider({ children }: { children: ReactNode }): JSX.Element
     return unsubscribe
   }, [])
 
-  // Single-file scan (mode-aware)
-  const startScan = useCallback(async (filePath: string, mode: ScanMode = 'audit') => {
+  // Subscribe to per-engine progressive results
+  useEffect(() => {
+    if (!window.api?.onEngineDone) return
+
+    const unsubscribe = window.api.onEngineDone((data) => {
+      dispatch({
+        type: 'ENGINE_DONE',
+        engine: data.engine as 'audit' | 'pii' | 'extraction',
+        result: data.result,
+        error: data.error,
+      })
+    })
+
+    return unsubscribe
+  }, [])
+
+  // Unified single-file scan (runs all 3 engines)
+  const startScan = useCallback(async (filePath: string, mode?: ScanMode) => {
     if (!window.api) {
       dispatch({ type: 'SCAN_ERROR', error: 'Sidecar not available' })
       return
@@ -359,6 +438,7 @@ export function ScanProvider({ children }: { children: ReactNode }): JSX.Element
 
       dispatch({ type: 'START_SCAN', filePath, fileInfo, mode })
 
+      // Legacy single-mode scan for batch mode compatibility
       if (mode === 'pii') {
         const rawResult = await window.api.analyzePii(filePath)
         if (!rawResult.success) {
@@ -376,13 +456,12 @@ export function ScanProvider({ children }: { children: ReactNode }): JSX.Element
         const result = mapExtractionResult(filePath, fileInfo.fileName, rawResult as unknown as Record<string, unknown>)
         dispatch({ type: 'EXTRACTION_COMPLETE', results: result })
       } else {
-        const rawResult = await window.api.analyzeFile(filePath)
-        if (!rawResult.success) {
-          dispatch({ type: 'SCAN_ERROR', error: rawResult.error || 'Analysis failed' })
-          return
+        // Default: unified scan — fire all 3 engines, results arrive via ENGINE_DONE events
+        const response = await window.api.analyzeAll(filePath)
+        if (!response.success) {
+          dispatch({ type: 'SCAN_ERROR', error: response.error || 'Analysis failed' })
         }
-        const result = mapRawResult(filePath, fileInfo.fileName, rawResult as unknown as Record<string, unknown>)
-        dispatch({ type: 'SCAN_COMPLETE', results: result })
+        // Individual results dispatched via onEngineDone listener
       }
     } catch (err) {
       dispatch({
@@ -396,7 +475,7 @@ export function ScanProvider({ children }: { children: ReactNode }): JSX.Element
   useEffect(() => {
     if (!window.api?.onTestTriggerAnalysis) return
     const unsubscribe = window.api.onTestTriggerAnalysis((filePath) => {
-      startScan(filePath, 'audit')
+      startScan(filePath)
     })
     return unsubscribe
   }, [startScan])
@@ -417,7 +496,7 @@ export function ScanProvider({ children }: { children: ReactNode }): JSX.Element
     return unsubscribe
   }, [startScan])
 
-  // Batch scan — processes files sequentially
+  // Batch scan — processes files sequentially (audit only)
   const startBatchScan = useCallback(
     async (filePaths: Array<{ path: string; name: string; size: number }>) => {
       if (!window.api) {
@@ -466,7 +545,6 @@ export function ScanProvider({ children }: { children: ReactNode }): JSX.Element
     []
   )
 
-  // Select a specific file's results in batch mode
   const selectBatchFile = useCallback(
     (index: number) => {
       const file = state.batchFiles[index]
@@ -477,13 +555,17 @@ export function ScanProvider({ children }: { children: ReactNode }): JSX.Element
     [state.batchFiles]
   )
 
+  const setActiveView = useCallback((view: ActiveView) => {
+    dispatch({ type: 'SET_VIEW', view })
+  }, [])
+
   const reset = useCallback(() => {
     dispatch({ type: 'RESET' })
   }, [])
 
   return (
     <ScanContext.Provider
-      value={{ ...state, startScan, startBatchScan, selectBatchFile, reset }}
+      value={{ ...state, startScan, startBatchScan, selectBatchFile, setActiveView, reset }}
     >
       {children}
     </ScanContext.Provider>

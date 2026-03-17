@@ -48,6 +48,9 @@ interface SidecarAPI {
   // Extraction
   analyzeExtraction: (filePath: string) => Promise<AnalysisResult>
   exportExtraction: (filePath: string, format: string, outputPath?: string) => Promise<{ success: boolean; error?: string }>
+  // Unified scan
+  analyzeAll: (filePath: string) => Promise<{ success: boolean; error?: string }>
+  onEngineDone: (callback: (data: { engine: string; result?: unknown; error?: string }) => void) => () => void
 }
 
 interface FolderScanResult {

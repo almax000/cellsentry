@@ -13,13 +13,11 @@ export default function DropZone(): JSX.Element {
   const [error, setError] = useState('')
   const navigate = useNavigate()
   const { status, openFileDialog } = useSidecar()
-  const { scanState, scanMode, startScan, startBatchScan } = useScan()
+  const { scanState, startScan, startBatchScan } = useScan()
 
   useEffect(() => {
-    if (scanMode === 'audit') {
-      if (scanState === 'complete') navigate('/results')
-      else if (scanState === 'scanning') navigate('/scanning')
-    }
+    if (scanState === 'complete') navigate('/results')
+    else if (scanState === 'scanning') navigate('/scanning')
   }, [])
 
   const validateFile = (name: string): boolean => {

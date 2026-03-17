@@ -91,7 +91,7 @@ export default function PiiResultsPage(): JSX.Element {
 
   const handleRescan = useCallback(() => {
     reset()
-    navigate('/pii')
+    navigate('/')
   }, [reset, navigate])
 
   const handleRedactAll = useCallback(() => {

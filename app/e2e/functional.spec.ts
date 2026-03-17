@@ -34,12 +34,13 @@ test.describe('Sidebar', () => {
     await expect(dropZone).toBeVisible()
   })
 
-  test('PII nav navigates to PII page', async () => {
+  test('PII nav stays on home (unified flow)', async () => {
     const piiNav = page.locator('[data-testid="sidebar-nav-pii"]')
     await piiNav.click()
     await page.waitForTimeout(200)
 
-    await expect(page.locator('[data-testid="pii-dropzone-area"]')).toBeVisible()
+    // In unified flow, clicking PII from home stays on home dropzone
+    await expect(page.locator('[data-testid="dropzone-area"]')).toBeVisible()
 
     // Navigate back to audit
     await page.locator('[data-testid="sidebar-nav-audit"]').click()

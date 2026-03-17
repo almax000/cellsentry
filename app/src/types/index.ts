@@ -7,6 +7,8 @@ export type ScanPhase = 'rules' | 'enhance' | 'discover'
 
 export type ScanMode = 'audit' | 'pii' | 'extraction'
 
+export type ActiveView = 'audit' | 'pii' | 'extraction'
+
 export interface Issue {
   id: string
   sheetName: string

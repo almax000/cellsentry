@@ -145,18 +145,25 @@ export async function getFileInfo(
   success: boolean
   fileName?: string
   sheets?: Array<{ name: string; rows: number; cols: number }>
+  totalCells?: number
   error?: string
 }> {
   try {
     const wb = new Workbook()
     await wb.xlsx.readFile(filePath)
-    const sheets = wb.worksheets.map((ws) => ({
-      name: ws.name,
-      rows: ws.rowCount || 0,
-      cols: ws.columnCount || 0,
-    }))
+    let totalCells = 0
+    const sheets = wb.worksheets.map((ws) => {
+      let cellCount = 0
+      ws.eachRow((row) => { row.eachCell(() => { cellCount++ }) })
+      totalCells += cellCount
+      return {
+        name: ws.name,
+        rows: ws.rowCount || 0,
+        cols: ws.columnCount || 0,
+      }
+    })
     const parts = filePath.replace(/\\/g, '/').split('/')
-    return { success: true, fileName: parts[parts.length - 1], sheets }
+    return { success: true, fileName: parts[parts.length - 1], sheets, totalCells }
   } catch (e) {
     return { success: false, error: String(e) }
   }

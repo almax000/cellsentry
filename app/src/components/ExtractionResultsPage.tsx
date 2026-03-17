@@ -70,7 +70,7 @@ export default function ExtractionResultsPage(): JSX.Element {
 
   const handleRescan = useCallback(() => {
     reset()
-    navigate('/extract')
+    navigate('/')
   }, [reset, navigate])
 
   const handleExportJson = useCallback(() => {

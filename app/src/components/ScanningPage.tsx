@@ -9,37 +9,21 @@ import './ScanningPage.css'
 export default function ScanningPage(): JSX.Element {
   const { t } = useTranslation('scanning')
   const navigate = useNavigate()
-  const { scanState, scanMode, fileInfo, progress, isBatch, batchFiles, batchIndex, batchResults, error } = useScan()
+  const {
+    scanState, fileInfo, progress, error,
+    isBatch, batchFiles, batchIndex, batchResults,
+    results, piiResults, extractionResults,
+    auditError, piiError, extractionError,
+    enginesComplete,
+  } = useScan()
   const [elapsed, setElapsed] = useState(0)
-  const [llmAvailable, setLlmAvailable] = useState<boolean | null>(null)
   const startTimeRef = useRef(Date.now())
 
-  // Check LLM status for audit mode
-  useEffect(() => {
-    if (scanMode !== 'audit') return
-    window.api?.getLlmStatus?.()
-      .then((status) => setLlmAvailable(status?.available ?? false))
-      .catch(() => setLlmAvailable(false))
-  }, [scanMode])
-
-  const scanLayers = scanMode === 'pii'
-    ? [
-        { label: t('patternScanning', { ns: 'pii' }), phase: 'rules' as const },
-        { label: t('validation', { ns: 'pii' }), phase: 'enhance' as const },
-      ]
-    : scanMode === 'extraction'
-      ? [
-          { label: t('templateMatching', { ns: 'extraction' }), phase: 'rules' as const },
-          { label: t('fieldExtraction', { ns: 'extraction' }), phase: 'enhance' as const },
-        ]
-      : llmAvailable
-        ? [
-            { label: t('ruleEngineScan'), phase: 'rules' as const },
-            { label: t('aiVerification'), phase: 'ai' as const, isAi: true },
-          ]
-        : [
-            { label: t('ruleEngineScan'), phase: 'rules' as const },
-          ]
+  const scanLayers = [
+    { label: t('ruleEngineScan'), engine: 'audit' as const },
+    { label: t('piiDetection', { defaultValue: 'PII Detection' }), engine: 'pii' as const },
+    { label: t('dataExtraction', { defaultValue: 'Data Extraction' }), engine: 'extraction' as const },
+  ]
 
   useEffect(() => {
     startTimeRef.current = Date.now()
@@ -49,41 +33,33 @@ export default function ScanningPage(): JSX.Element {
     return () => clearInterval(timer)
   }, [])
 
+  // Navigate to results as soon as scan completes (first engine delivers results)
   useEffect(() => {
     if (scanState === 'complete') {
-      const resultsPath = scanMode === 'pii' ? '/pii/results'
-        : scanMode === 'extraction' ? '/extract/results'
-        : '/results'
-      const timer = setTimeout(() => navigate(resultsPath), 600)
+      const timer = setTimeout(() => navigate('/results'), 400)
       return () => clearTimeout(timer)
     }
     if (scanState === 'error') {
-      const homePath = scanMode === 'pii' ? '/pii'
-        : scanMode === 'extraction' ? '/extract'
-        : '/'
-      const timer = setTimeout(() => navigate(homePath), 8000)
+      const timer = setTimeout(() => navigate('/'), 8000)
       return () => clearTimeout(timer)
     }
-  }, [scanState, scanMode, navigate])
+  }, [scanState, navigate])
 
-  // Derive layer state from IPC progress.phase
-  const currentPhase = progress.phase || 'rules'
-
-  function getLayerState(layerPhase: string): 'done' | 'active' | 'pending' {
-    if (scanState === 'complete') return 'done'
-
-    const phaseOrder = ['rules', 'ai']
-    const currentIdx = phaseOrder.indexOf(currentPhase)
-    const layerIdx = phaseOrder.indexOf(layerPhase)
-
-    if (layerIdx < currentIdx) return 'done'
-    if (layerIdx === currentIdx) {
-      return progress.percent >= 100 ? 'done' : 'active'
+  function getEngineState(engine: 'audit' | 'pii' | 'extraction'): 'done' | 'error' | 'active' {
+    if (engine === 'audit') {
+      if (auditError) return 'error'
+      if (results) return 'done'
+    } else if (engine === 'pii') {
+      if (piiError) return 'error'
+      if (piiResults) return 'done'
+    } else {
+      if (extractionError) return 'error'
+      if (extractionResults) return 'done'
     }
-    return 'pending'
+    return 'active'
   }
 
-  // Batch mode
+  // Batch mode (unchanged)
   if (isBatch && batchFiles.length > 1) {
     const totalFiles = batchFiles.length
     const completedFiles = batchFiles.filter(
@@ -110,7 +86,6 @@ export default function ScanningPage(): JSX.Element {
             <div className="scan-subtitle">{currentFile.name}</div>
           )}
 
-          {/* Overall batch progress */}
           <div className="batch-progress">
             <div className="batch-progress-bar">
               <div
@@ -124,7 +99,6 @@ export default function ScanningPage(): JSX.Element {
             </div>
           </div>
 
-          {/* File list */}
           <div className="batch-file-list">
             {batchFiles.map((file, i) => (
               <div
@@ -163,7 +137,7 @@ export default function ScanningPage(): JSX.Element {
     )
   }
 
-  // Single file mode
+  // Single file — unified 3-engine scan
   const fileName = fileInfo?.fileName || t('analyzing')
   const sheetCount = fileInfo?.sheets?.length || 0
   const cellCount = fileInfo?.totalCells || 0
@@ -187,23 +161,24 @@ export default function ScanningPage(): JSX.Element {
 
         <div className="scan-layers" data-testid="scanning-phase">
           {scanLayers.map((layer, i) => {
-            const state = getLayerState(layer.phase)
+            const state = getEngineState(layer.engine)
 
             let className = 'scan-layer'
             if (state === 'done') className += ' done'
+            else if (state === 'error') className += ' error'
             else if (state === 'active') className += ' active'
 
             return (
               <div key={i} className={className}>
                 <div className="scan-layer-indicator">
-                  {state === 'done' ? '✓' : i + 1}
+                  {state === 'done' ? '✓' : state === 'error' ? '!' : i + 1}
                 </div>
                 <span>{layer.label}</span>
                 <div className="scan-layer-bar">
                   <div
                     className="scan-layer-fill"
                     style={{
-                      width: state === 'done' ? '100%' : state === 'active' ? '50%' : '0%',
+                      width: state === 'done' || state === 'error' ? '100%' : '50%',
                     }}
                   />
                 </div>
@@ -212,12 +187,10 @@ export default function ScanningPage(): JSX.Element {
           })}
         </div>
 
-        {llmAvailable === false && scanMode === 'audit' && (
-          <div className="scan-ai-badge unavailable">{t('aiUnavailable')}</div>
-        )}
-
         <div className="scan-elapsed" data-testid="scanning-percent">
-          {t('elapsed', { time: (elapsed / 1000).toFixed(1) })}
+          {enginesComplete > 0 && enginesComplete < 3
+            ? t('enginesProgress', { done: enginesComplete, total: 3, defaultValue: `${enginesComplete}/3 complete` })
+            : t('elapsed', { time: (elapsed / 1000).toFixed(1) })}
         </div>
 
         {scanState === 'error' && error && (

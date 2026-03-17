@@ -1,22 +1,20 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useScan } from '../context/ScanContext'
+import type { ActiveView } from '../types'
 import './Sidebar.css'
 
 interface NavItem {
-  id: string
+  id: ActiveView
   testId: string
-  path: string
   icon: JSX.Element
   labelKey: string
-  disabled?: boolean
-  soon?: boolean
 }
 
 const navItems: NavItem[] = [
   {
-    id: 'formula',
+    id: 'audit',
     testId: 'sidebar-nav-audit',
-    path: '/',
     labelKey: 'sidebar.spreadsheetAudit',
     icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -28,7 +26,6 @@ const navItems: NavItem[] = [
   {
     id: 'pii',
     testId: 'sidebar-nav-pii',
-    path: '/pii',
     labelKey: 'sidebar.piiRedaction',
     icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -38,9 +35,8 @@ const navItems: NavItem[] = [
     )
   },
   {
-    id: 'extract',
+    id: 'extraction',
     testId: 'sidebar-nav-extraction',
-    path: '/extract',
     labelKey: 'sidebar.dataExtraction',
     icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -57,31 +53,58 @@ export default function Sidebar(): JSX.Element {
   const { t } = useTranslation('common')
   const location = useLocation()
   const navigate = useNavigate()
+  const { activeView, setActiveView, results, piiResults, extractionResults } = useScan()
+
+  const isOnResults = location.pathname === '/results'
+
+  const getBadgeCount = (item: NavItem): number | null => {
+    if (!isOnResults) return null
+    switch (item.id) {
+      case 'audit': return results?.summary.total ?? null
+      case 'pii': return piiResults?.findings.length ?? null
+      case 'extraction': {
+        if (!extractionResults) return null
+        return (extractionResults.fields?.length || 0) + (extractionResults.tables?.length || 0)
+      }
+    }
+  }
+
+  const handleClick = (item: NavItem): void => {
+    if (isOnResults) {
+      setActiveView(item.id)
+    } else {
+      navigate('/')
+    }
+  }
 
   const isActive = (item: NavItem): boolean => {
-    if (item.path === '/') {
-      return location.pathname === '/' || location.pathname === '/scanning' || location.pathname === '/results'
-    }
-    return location.pathname.startsWith(item.path)
+    if (isOnResults) return activeView === item.id
+    if (location.pathname === '/' || location.pathname === '/scanning') return item.id === 'audit'
+    return false
   }
 
   return (
     <nav className="sidebar">
       <div className="sidebar-nav">
-        {navItems.map((item) => (
-          <div
-            key={item.id}
-            className={`sidebar-item ${isActive(item) ? 'active' : ''} ${item.disabled ? 'disabled' : ''}`}
-            data-testid={item.testId}
-            onClick={() => !item.disabled && navigate(item.path)}
-          >
-            <span className="sidebar-item-icon">{item.icon}</span>
-            <span className="sidebar-tooltip">
-              {t(item.labelKey)}
-              {item.soon && <span className="soon-tag">{t('soon')}</span>}
-            </span>
-          </div>
-        ))}
+        {navItems.map((item) => {
+          const badge = getBadgeCount(item)
+          return (
+            <div
+              key={item.id}
+              className={`sidebar-item ${isActive(item) ? 'active' : ''}`}
+              data-testid={item.testId}
+              onClick={() => handleClick(item)}
+            >
+              <span className="sidebar-item-icon">{item.icon}</span>
+              {badge !== null && badge > 0 && (
+                <span className="sidebar-badge">{badge > 99 ? '99+' : badge}</span>
+              )}
+              <span className="sidebar-tooltip">
+                {t(item.labelKey)}
+              </span>
+            </div>
+          )
+        })}
       </div>
       <div className="sidebar-spacer" />
       <div className="sidebar-footer">

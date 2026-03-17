@@ -23,13 +23,13 @@ function logIpcError(handler: string, filePath: string, error: unknown): void {
 }
 
 
-import { analyzeExcel, type RendererIssue } from '../engine/ruleEngine'
-import { getFileInfo, readFileCells } from '../engine/excelReader'
+import { analyzeExcel, analyzeExcelFromSheets, type RendererIssue } from '../engine/ruleEngine'
+import { getFileInfo, readFileCells, readWorkbook } from '../engine/excelReader'
 import { generateReport } from '../report/generator'
 import { ModelDownloader } from '../model/downloader'
-import { scanForPii } from '../pii/scanner'
+import { scanForPii, scanForPiiFromSheets } from '../pii/scanner'
 import { redactFile } from '../pii/redactor'
-import { extractDocument } from '../extraction/extractor'
+import { extractDocument, extractDocumentFromSheets } from '../extraction/extractor'
 import { exportToJson, exportToCsv } from '../extraction/exporters'
 import { getLlmStatus, analyzeWithLlm, mergeJudgments, startLlm } from '../llm/lifecycle'
 import type { LlmIssueInput } from '../llm/types'
@@ -133,6 +133,72 @@ export function registerIpcHandlers(): void {
     } catch (e) {
       logIpcError('sidecar:analyze', filePath, e)
       return { success: false, error: String(e), issues: [], summary: { total: 0, error: 0, warning: 0, info: 0 } }
+    }
+  })
+
+  // ── Unified Analysis (all 3 engines, read once) ─────────
+  ipcMain.handle('analyze:all', async (_event, filePath: string) => {
+    if (!validateFilePath(filePath)) {
+      return { success: false, error: 'Invalid path' }
+    }
+    try {
+      const { sheets } = await readWorkbook(filePath)
+      const win = getMainWindow()
+
+      const promises = [
+        analyzeExcelFromSheets(sheets)
+          .then((result) => {
+            // LLM verification for audit
+            const enrichAudit = async (): Promise<typeof result> => {
+              if (result.issues.length > 0) {
+                sendProgress('ai', 0)
+                const llmInput = mapToLlmInput(result.issues)
+                const judgments = await analyzeWithLlm(llmInput)
+                if (judgments.length > 0) {
+                  const issuesForMerge = result.issues.map((i) => ({ ...i, cellAddress: i.cell }))
+                  const enriched = mergeJudgments(issuesForMerge, judgments)
+                  return { ...result, issues: enriched }
+                }
+              }
+              return result
+            }
+            return enrichAudit().then((enriched) => {
+              win?.webContents.send('analyze:engine-done', { engine: 'audit', result: enriched })
+              return enriched
+            })
+          })
+          .catch((e) => {
+            logIpcError('analyze:all/audit', filePath, e)
+            win?.webContents.send('analyze:engine-done', { engine: 'audit', error: String(e) })
+            throw e
+          }),
+        scanForPiiFromSheets(sheets)
+          .then((result) => {
+            win?.webContents.send('analyze:engine-done', { engine: 'pii', result })
+            return result
+          })
+          .catch((e) => {
+            logIpcError('analyze:all/pii', filePath, e)
+            win?.webContents.send('analyze:engine-done', { engine: 'pii', error: String(e) })
+            throw e
+          }),
+        extractDocumentFromSheets(sheets)
+          .then((result) => {
+            win?.webContents.send('analyze:engine-done', { engine: 'extraction', result })
+            return result
+          })
+          .catch((e) => {
+            logIpcError('analyze:all/extraction', filePath, e)
+            win?.webContents.send('analyze:engine-done', { engine: 'extraction', error: String(e) })
+            throw e
+          }),
+      ]
+
+      await Promise.allSettled(promises)
+      return { success: true }
+    } catch (e) {
+      logIpcError('analyze:all', filePath, e)
+      return { success: false, error: String(e) }
     }
   })
 

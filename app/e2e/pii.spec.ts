@@ -17,37 +17,26 @@ test.afterAll(async () => {
   if (ctx) await teardownApp(ctx)
 })
 
-// ── PII DropZone ──────────────────────────────────────────────────────────
-
-test.describe('PII DropZone', () => {
-  test('PII DropZone is visible', async () => {
-    await page.locator('[data-testid="sidebar-nav-pii"]').click()
-    await page.waitForTimeout(300)
-
-    await expect(page.locator('[data-testid="pii-dropzone-area"]')).toBeVisible()
-  })
-
-  test('PII DropZone has browse button', async () => {
-    await expect(page.locator('[data-testid="pii-dropzone-browse-btn"]')).toBeVisible()
-  })
-})
-
-// ── PII Scan Flow ─────────────────────────────────────────────────────────
+// ── PII Scan Flow (unified) ─────────────────────────────────────────────
 
 test.describe('PII Scan', () => {
   test('PII scan completes with findings', async () => {
-    // Navigate to PII page
-    await page.locator('[data-testid="sidebar-nav-pii"]').click()
-    await page.waitForTimeout(300)
-
-    // Trigger PII scan and navigate to scanning page
+    // Trigger unified scan (all 3 engines) via test API
     await page.evaluate((filePath) => {
-      window.__TEST_API__?.triggerPiiScan(filePath)
-      window.location.hash = '#/pii/scanning'
+      window.__TEST_API__?.triggerFileAnalysis(filePath)
+      window.location.hash = '#/scanning'
     }, FIXTURE_PATH)
 
-    // Wait for results page (ScanningPage auto-navigates on complete)
-    await page.waitForSelector('[data-testid="pii-results-panel-left"]', { timeout: 15000 })
+    // Wait for scan to complete and auto-navigate to results
+    await page.waitForFunction(() => window.location.hash === '#/results', { timeout: 15000 })
+    await page.waitForTimeout(300)
+
+    // Switch to PII view via sidebar
+    await page.locator('[data-testid="sidebar-nav-pii"]').click()
+    await page.waitForTimeout(500)
+
+    // Verify PII results panel is visible
+    await expect(page.locator('[data-testid="pii-results-panel-left"]')).toBeVisible({ timeout: 5000 })
 
     // Verify at least one finding card exists
     await expect(page.locator('[data-testid="pii-finding-card-0"]')).toBeVisible()
@@ -78,6 +67,6 @@ test.describe('PII Scan', () => {
     await page.locator('[data-testid="pii-results-rescan-btn"]').click()
     await page.waitForTimeout(300)
 
-    await expect(page.locator('[data-testid="pii-dropzone-area"]')).toBeVisible()
+    await expect(page.locator('[data-testid="dropzone-area"]')).toBeVisible()
   })
 })

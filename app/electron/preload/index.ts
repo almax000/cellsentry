@@ -116,6 +116,17 @@ const api: SidecarAPI = {
   analyzeExtraction: (filePath: string) => ipcRenderer.invoke('extraction:analyze', filePath),
   exportExtraction: (filePath: string, format: string, outputPath: string) =>
     ipcRenderer.invoke('extraction:export', filePath, format, outputPath),
+  // Unified scan
+  analyzeAll: (filePath: string) => ipcRenderer.invoke('analyze:all', filePath),
+  onEngineDone: (callback: (data: { engine: string; result?: unknown; error?: string }) => void) => {
+    const handler = (_event: Electron.IpcRendererEvent, data: { engine: string; result?: unknown; error?: string }): void => {
+      callback(data)
+    }
+    ipcRenderer.on('analyze:engine-done', handler)
+    return (): void => {
+      ipcRenderer.removeListener('analyze:engine-done', handler)
+    }
+  },
 }
 
 contextBridge.exposeInMainWorld('api', api)

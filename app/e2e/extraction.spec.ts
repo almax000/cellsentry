@@ -17,37 +17,26 @@ test.afterAll(async () => {
   if (ctx) await teardownApp(ctx)
 })
 
-// ── Extraction DropZone ───────────────────────────────────────────────────
-
-test.describe('Extraction DropZone', () => {
-  test('Extraction DropZone is visible', async () => {
-    await page.locator('[data-testid="sidebar-nav-extraction"]').click()
-    await page.waitForTimeout(300)
-
-    await expect(page.locator('[data-testid="extraction-dropzone-area"]')).toBeVisible()
-  })
-
-  test('Extraction DropZone has browse button', async () => {
-    await expect(page.locator('[data-testid="extraction-dropzone-browse-btn"]')).toBeVisible()
-  })
-})
-
-// ── Extraction Scan Flow ──────────────────────────────────────────────────
+// ── Extraction Scan Flow (unified) ──────────────────────────────────────
 
 test.describe('Extraction Scan', () => {
   test('Extraction scan detects invoice', async () => {
-    // Navigate to extraction page
-    await page.locator('[data-testid="sidebar-nav-extraction"]').click()
-    await page.waitForTimeout(300)
-
-    // Trigger extraction scan and navigate to scanning page
+    // Trigger unified scan (all 3 engines) via test API
     await page.evaluate((filePath) => {
-      window.__TEST_API__?.triggerExtractionScan(filePath)
-      window.location.hash = '#/extract/scanning'
+      window.__TEST_API__?.triggerFileAnalysis(filePath)
+      window.location.hash = '#/scanning'
     }, FIXTURE_PATH)
 
-    // Wait for results page
-    await page.waitForSelector('[data-testid="extraction-results-panel-left"]', { timeout: 15000 })
+    // Wait for scan to complete and auto-navigate to results
+    await page.waitForFunction(() => window.location.hash === '#/results', { timeout: 15000 })
+    await page.waitForTimeout(300)
+
+    // Switch to Extraction view via sidebar
+    await page.locator('[data-testid="sidebar-nav-extraction"]').click()
+    await page.waitForTimeout(500)
+
+    // Verify extraction results panel is visible
+    await expect(page.locator('[data-testid="extraction-results-panel-left"]')).toBeVisible({ timeout: 5000 })
 
     // Document type should show invoice
     const docType = page.locator('[data-testid="extraction-doc-type"]')

@@ -53,6 +53,10 @@ test.describe('Flow: Single file scan', () => {
 
 test.describe('Flow: Full navigation', () => {
   test('visit every page via sidebar', async () => {
+    // Navigate to home first (in case previous test left us on /results)
+    await page.evaluate(() => { window.location.hash = '#/' })
+    await page.waitForTimeout(300)
+
     // Home (DropZone)
     await page.locator('[data-testid="sidebar-nav-audit"]').click()
     await page.waitForTimeout(300)

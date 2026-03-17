@@ -209,12 +209,10 @@ function collectCellSamples(sheets: SheetContext[]): LlmCellContext[] {
   return cells
 }
 
-export async function extractDocument(filePath: string): Promise<ExtractionResult> {
+export async function extractDocumentFromSheets(sheets: SheetContext[]): Promise<ExtractionResult> {
   const start = Date.now()
 
   try {
-    const { sheets } = await readWorkbook(filePath)
-
     if (sheets.length === 0) {
       return {
         success: false,
@@ -300,4 +298,9 @@ export async function extractDocument(filePath: string): Promise<ExtractionResul
       error: e instanceof Error ? e.message : String(e),
     }
   }
+}
+
+export async function extractDocument(filePath: string): Promise<ExtractionResult> {
+  const { sheets } = await readWorkbook(filePath)
+  return extractDocumentFromSheets(sheets)
 }

@@ -65,6 +65,9 @@ interface SidecarAPI {
   // Extraction
   analyzeExtraction: (filePath: string) => Promise<unknown>
   exportExtraction: (filePath: string, format: string, outputPath: string) => Promise<unknown>
+  // Unified scan
+  analyzeAll: (filePath: string) => Promise<{ success: boolean; error?: string }>
+  onEngineDone: (callback: (data: { engine: string; result?: unknown; error?: string }) => void) => () => void
 }
 
 interface TestAPI {

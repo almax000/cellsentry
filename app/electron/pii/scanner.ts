@@ -8,6 +8,7 @@
  */
 
 import { readWorkbook } from '../engine/excelReader'
+import type { SheetContext } from '../engine/types'
 import { PII_PATTERNS } from './patterns'
 import { PiiType } from './types'
 import type { PiiFinding, PiiScanResult } from './types'
@@ -66,11 +67,10 @@ function maskValue(value: string, piiType: string): string {
  * If the LLM is available, unflagged text cells are sent for secondary
  * screening to catch soft PII (names, addresses) that regex cannot detect.
  */
-export async function scanForPii(filePath: string): Promise<PiiScanResult> {
+export async function scanForPiiFromSheets(sheets: SheetContext[]): Promise<PiiScanResult> {
   const start = Date.now()
 
   try {
-    const { sheets } = await readWorkbook(filePath)
     const findings: PiiFinding[] = []
     const regexFlaggedCells = new Set<string>() // "Sheet!A1" keys
 
@@ -165,4 +165,9 @@ export async function scanForPii(filePath: string): Promise<PiiScanResult> {
       error: String(e),
     }
   }
+}
+
+export async function scanForPii(filePath: string): Promise<PiiScanResult> {
+  const { sheets } = await readWorkbook(filePath)
+  return scanForPiiFromSheets(sheets)
 }

@@ -85,14 +85,13 @@ function mapToRendererIssue(issue: EngineIssue, index: number): RendererIssue {
   }
 }
 
-export async function analyzeExcel(
-  filePath: string,
+export async function analyzeExcelFromSheets(
+  sheets: SheetContext[],
 ): Promise<{
   issues: RendererIssue[]
   summary: { total: number; error: number; warning: number; info: number }
   sheets: string[]
 }> {
-  const { sheets } = await readWorkbook(filePath)
   const excelRules = RuleRegistry.getExcelRules()
   const sheetRules = RuleRegistry.getSheetRules()
   const engineIssues: EngineIssue[] = []
@@ -134,4 +133,15 @@ export async function analyzeExcel(
     summary,
     sheets: sheets.map((s) => s.name),
   }
+}
+
+export async function analyzeExcel(
+  filePath: string,
+): Promise<{
+  issues: RendererIssue[]
+  summary: { total: number; error: number; warning: number; info: number }
+  sheets: string[]
+}> {
+  const { sheets } = await readWorkbook(filePath)
+  return analyzeExcelFromSheets(sheets)
 }
