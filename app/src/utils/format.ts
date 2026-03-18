@@ -16,7 +16,8 @@ export function formatFileSize(bytes: number): string {
 }
 
 export function formatConfidence(value: number): string {
-  return `${Math.round(value * 100)}%`
+  const n = typeof value === 'number' && !isNaN(value) ? value : 0
+  return `${Math.round(n * 100)}%`
 }
 
 export function severityColor(level: SeverityLevel): string {

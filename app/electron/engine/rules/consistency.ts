@@ -20,6 +20,7 @@ import {
 } from '../types'
 import { columnToNumber, extractCellReferences, getColumnLetter } from '../utils'
 import { RuleRegistry } from '../registry'
+import { msg } from '../locale'
 
 // ── Helper types & functions ─────────────────────────────────────────
 
@@ -231,13 +232,13 @@ export const InconsistentFormulaRule: BaseRule = {
       const suggestedFormula = suggestCorrectFormula(dominantPattern, cellRow, cellCol)
 
       return createIssue(this, {
-        message: `公式不一致：${cell.address} 的公式模式与相邻单元格不同`,
+        message: msg(`Inconsistent formula: ${cell.address} pattern differs from adjacent cells`, `公式不一致：${cell.address} 的公式模式与相邻单元格不同`),
         cellAddress: cell.address,
         sheetName: context.name,
         formula: cell.formula,
         confidence: ConfidenceLevel.MEDIUM,
         correctFormula: suggestedFormula,
-        suggestion: `检查公式是否应该为 ${suggestedFormula}`,
+        suggestion: msg(`Check if the formula should be ${suggestedFormula}`, `检查公式是否应该为 ${suggestedFormula}`),
         details: {
           current_formula: cell.formula,
           suggested_formula: suggestedFormula,
@@ -287,18 +288,21 @@ export const EmptyCellReferencesRule: BaseRule = {
 
     if (emptyRefs.length > 0) {
       const shownRefs = emptyRefs.slice(0, 5)
-      let msg = `公式引用空单元格：${shownRefs.join(', ')}`
+      let issueMsg = msg(
+        `Formula references empty cells: ${shownRefs.join(', ')}`,
+        `公式引用空单元格：${shownRefs.join(', ')}`,
+      )
       if (emptyRefs.length > 5) {
-        msg += ` 等 ${emptyRefs.length} 个`
+        issueMsg += msg(` and ${emptyRefs.length - 5} more`, ` 等 ${emptyRefs.length} 个`)
       }
 
       return createIssue(this, {
-        message: msg,
+        message: issueMsg,
         cellAddress: cell.address,
         sheetName: context.name,
         formula: cell.formula,
         confidence: ConfidenceLevel.LOW,
-        suggestion: '空单元格在计算中被视为 0。检查这是否是预期行为，或者数据尚未填充完整。',
+        suggestion: msg('Empty cells are treated as 0 in calculations. Check if this is expected or if data is incomplete.', '空单元格在计算中被视为 0。检查这是否是预期行为，或者数据尚未填充完整。'),
         details: {
           empty_references: emptyRefs,
           total_empty: emptyRefs.length,
@@ -354,12 +358,12 @@ export const TwoDigitYearRule: BaseRule = {
         const interpretedYear = yearVal < 30 ? 2000 + yearVal : 1900 + yearVal
 
         return createIssue(this, {
-          message: `两位数年份：'${valueStr}' 中的 '${yearStr}' 可能被解释为 ${interpretedYear}`,
+          message: msg(`Two-digit year: '${yearStr}' in '${valueStr}' may be interpreted as ${interpretedYear}`, `两位数年份：'${valueStr}' 中的 '${yearStr}' 可能被解释为 ${interpretedYear}`),
           cellAddress: cell.address,
           sheetName: context.name,
           confidence: ConfidenceLevel.MEDIUM,
           currentValue: valueStr,
-          suggestion: `建议使用四位数年份（如 ${interpretedYear}）以避免歧义`,
+          suggestion: msg(`Use four-digit year (e.g. ${interpretedYear}) to avoid ambiguity`, `建议使用四位数年份（如 ${interpretedYear}）以避免歧义`),
           details: {
             two_digit_year: yearStr,
             interpreted_as: interpretedYear,

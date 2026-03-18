@@ -13,6 +13,7 @@ import {
   isTextNumber,
 } from '../types'
 import { RuleRegistry } from '../registry'
+import { msg } from '../locale'
 
 // ── HiddenCharsRule ──────────────────────────────────────────────────
 
@@ -47,13 +48,13 @@ export const HiddenCharsRule: BaseRule = {
     // Leading/trailing whitespace
     if (visibleLen !== actualLen) {
       return createIssue(this, {
-        message: `检测到隐藏字符：单元格 ${cell.address} 包含前后空格或不可见字符`,
+        message: msg(`Hidden characters: cell ${cell.address} has leading/trailing spaces or invisible characters`, `检测到隐藏字符：单元格 ${cell.address} 包含前后空格或不可见字符`),
         cellAddress: cell.address,
         sheetName: context.name,
         confidence: ConfidenceLevel.HIGH,
         currentValue: JSON.stringify(value),
         expectedValue: JSON.stringify(value.trim()),
-        suggestion: '使用 TRIM() 函数清除前后空格，或使用 CLEAN() 函数清除不可打印字符',
+        suggestion: msg('Use TRIM() to remove spaces, or CLEAN() to remove non-printable characters', '使用 TRIM() 函数清除前后空格，或使用 CLEAN() 函数清除不可打印字符'),
         details: {
           actual_len: actualLen,
           visible_len: visibleLen,
@@ -66,12 +67,12 @@ export const HiddenCharsRule: BaseRule = {
     for (const char of HIDDEN_CHARS) {
       if (value.includes(char)) {
         return createIssue(this, {
-          message: `检测到隐藏字符：单元格 ${cell.address} 包含不可见字符`,
+          message: msg(`Hidden characters: cell ${cell.address} contains invisible characters`, `检测到隐藏字符：单元格 ${cell.address} 包含不可见字符`),
           cellAddress: cell.address,
           sheetName: context.name,
           confidence: ConfidenceLevel.HIGH,
           currentValue: JSON.stringify(value),
-          suggestion: '使用 SUBSTITUTE() 或 CLEAN() 函数清除不可见字符',
+          suggestion: msg('Use SUBSTITUTE() or CLEAN() to remove invisible characters', '使用 SUBSTITUTE() 或 CLEAN() 函数清除不可见字符'),
           details: {
             hidden_char: JSON.stringify(char),
             actual_len: actualLen,
@@ -83,11 +84,11 @@ export const HiddenCharsRule: BaseRule = {
     // CellInfo-level hidden char flags
     if (cell.hasHiddenChars || cell.lenActual !== cell.lenVisible) {
       return createIssue(this, {
-        message: `检测到隐藏字符：单元格 ${cell.address} 的实际长度与可见长度不一致`,
+        message: msg(`Hidden characters: cell ${cell.address} actual length differs from visible length`, `检测到隐藏字符：单元格 ${cell.address} 的实际长度与可见长度不一致`),
         cellAddress: cell.address,
         sheetName: context.name,
         confidence: ConfidenceLevel.HIGH,
-        suggestion: '使用 TRIM() 和 CLEAN() 函数清理数据',
+        suggestion: msg('Use TRIM() and CLEAN() to sanitize data', '使用 TRIM() 和 CLEAN() 函数清理数据'),
         details: {
           len_actual: cell.lenActual,
           len_visible: cell.lenVisible,
@@ -112,16 +113,15 @@ export const TextNumberRule: BaseRule = {
   checkExcel(cell, context) {
     if (isTextNumber(cell)) {
       return createIssue(this, {
-        message: `文本型数字：单元格 ${cell.address} 包含存储为文本的数字`,
+        message: msg(`Text-as-number: cell ${cell.address} contains a number stored as text`, `文本型数字：单元格 ${cell.address} 包含存储为文本的数字`),
         cellAddress: cell.address,
         sheetName: context.name,
         confidence: ConfidenceLevel.HIGH,
         currentValue: cell.value,
-        suggestion:
-          "将文本转换为数字：\n" +
-          '1. 选中单元格 → 数据 → 分列 → 完成\n' +
-          '2. 或在旁边输入 =VALUE(A1)\n' +
-          "3. 或选中后点击绿色三角选择'转换为数字'",
+        suggestion: msg(
+          'Convert text to number:\n1. Select cell → Data → Text to Columns → Finish\n2. Or enter =VALUE(A1) in an adjacent cell\n3. Or select and click the green triangle → Convert to Number',
+          "将文本转换为数字：\n1. 选中单元格 → 数据 → 分列 → 完成\n2. 或在旁边输入 =VALUE(A1)\n3. 或选中后点击绿色三角选择'转换为数字'",
+        ),
         details: { data_type: cell.dataType },
       })
     }

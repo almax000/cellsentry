@@ -25,6 +25,9 @@
   <img src="assets/app-dropzone.png" alt="Drop zone — drag and drop spreadsheets" width="700">
 </p>
 <p align="center">
+  <img src="assets/app-audit.png" alt="Formula Audit — detect errors with confidence scoring" width="700">
+</p>
+<p align="center">
   <img src="assets/app-pii.png" alt="PII Detection — find and redact sensitive data" width="700">
 </p>
 <p align="center">

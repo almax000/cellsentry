@@ -114,7 +114,7 @@ function mapRawResult(filePath: string, fileName: string, rawResult: Record<stri
       formula: (ri.formula as string) || '',
       ruleId: (ri.rule_id as string) || (ri.ruleId as string) || '',
       severity: mapSeverity((ri.severity as string) || 'medium'),
-      confidence: (ri.confidence as number) || 0.8,
+      confidence: typeof ri.confidence === 'number' ? ri.confidence : Number(ri.confidence) || 0.8,
       message: (ri.message as string) || '',
       suggestion: (ri.suggestion as string) || '',
       category: (ri.category as string) || '',

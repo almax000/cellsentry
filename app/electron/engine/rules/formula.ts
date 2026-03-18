@@ -30,6 +30,7 @@ import {
 } from '../utils'
 import { SUMMARY_KEYWORDS } from '../keywords'
 import { RuleRegistry } from '../registry'
+import { msg } from '../locale'
 
 export const VALID_FUNCTIONS: ReadonlySet<string> = new Set([
   // Math
@@ -127,12 +128,12 @@ export const CircularReferenceRule: BaseRule = {
 
     if (refs.includes(cellAddr)) {
       return createIssue(this, {
-        message: `循环引用：${cellAddr} 的公式引用了自身`,
+        message: msg(`Circular reference: ${cellAddr} formula references itself`, `循环引用：${cellAddr} 的公式引用了自身`),
         cellAddress: cellAddr,
         sheetName: context.name,
         formula: cell.formula,
         confidence: ConfidenceLevel.HIGH,
-        suggestion: '移除公式中对自身的引用，或使用启用迭代计算（仅限财务建模场景）',
+        suggestion: msg('Remove self-reference from the formula, or enable iterative calculation (financial modeling only)', '移除公式中对自身的引用，或使用启用迭代计算（仅限财务建模场景）'),
         details: { rule: 'circular_reference', self_ref: cellAddr },
       })
     }
@@ -161,13 +162,13 @@ export const FunctionSpellingRule: BaseRule = {
       const correctFunc = COMMON_MISSPELLINGS.get(func)
       if (correctFunc) {
         return createIssue(this, {
-          message: `函数拼写错误：${func} 应该是 ${correctFunc}`,
+          message: msg(`Function misspelling: ${func} should be ${correctFunc}`, `函数拼写错误：${func} 应该是 ${correctFunc}`),
           cellAddress: cell.address,
           sheetName: context.name,
           formula: cell.formula,
           confidence: ConfidenceLevel.HIGH,
           correctFormula: cell.formula!.toUpperCase().replace(func, correctFunc),
-          suggestion: `将 ${func} 改为 ${correctFunc}`,
+          suggestion: msg(`Replace ${func} with ${correctFunc}`, `将 ${func} 改为 ${correctFunc}`),
           details: { wrong: func, correct: correctFunc },
         })
       }
@@ -177,13 +178,13 @@ export const FunctionSpellingRule: BaseRule = {
         const similar = findSimilarFunction(func)
         if (similar) {
           return createIssue(this, {
-            message: `函数拼写错误：${func} 可能应该是 ${similar}`,
+            message: msg(`Function misspelling: ${func} may be ${similar}`, `函数拼写错误：${func} 可能应该是 ${similar}`),
             cellAddress: cell.address,
             sheetName: context.name,
             formula: cell.formula,
             confidence: ConfidenceLevel.MEDIUM,
             correctFormula: cell.formula!.toUpperCase().replace(func, similar),
-            suggestion: `检查是否应该使用 ${similar}`,
+            suggestion: msg(`Check if you meant to use ${similar}`, `检查是否应该使用 ${similar}`),
             details: { wrong: func, suggest: similar },
           })
         }
@@ -238,13 +239,13 @@ export const SumRangeRule: BaseRule = {
 
     if (consecutiveBelow > 0) {
       return createIssue(this, {
-        message: `SUM 范围不完整：${colStart}${rowStart}:${colEnd}${rowEnd} 下方还有 ${consecutiveBelow} 个数值未被包含`,
+        message: msg(`Incomplete SUM range: ${colStart}${rowStart}:${colEnd}${rowEnd} has ${consecutiveBelow} more values below not included`, `SUM 范围不完整：${colStart}${rowStart}:${colEnd}${rowEnd} 下方还有 ${consecutiveBelow} 个数值未被包含`),
         cellAddress: cell.address,
         sheetName: context.name,
         formula: cell.formula,
         confidence: ConfidenceLevel.HIGH,
         expectedValue: `=SUM(${colStart}${rowStart}:${colEnd}${rowEnd + consecutiveBelow})`,
-        suggestion: `建议扩展范围至 ${colEnd}${rowEnd + consecutiveBelow}`,
+        suggestion: msg(`Consider extending range to ${colEnd}${rowEnd + consecutiveBelow}`, `建议扩展范围至 ${colEnd}${rowEnd + consecutiveBelow}`),
         details: {
           original_range: `${colStart}${rowStart}:${colEnd}${rowEnd}`,
           missing_rows: consecutiveBelow,
@@ -272,12 +273,12 @@ export const SumRangeRule: BaseRule = {
 
     if (missingBelow.length > 0) {
       return createIssue(this, {
-        message: `SUM 范围可能不完整：${colStart}${rowStart}:${colEnd}${rowEnd} 下方第 ${missingBelow[0]} 行有数据未被包含`,
+        message: msg(`SUM range may be incomplete: ${colStart}${rowStart}:${colEnd}${rowEnd} has data at row ${missingBelow[0]} not included`, `SUM 范围可能不完整：${colStart}${rowStart}:${colEnd}${rowEnd} 下方第 ${missingBelow[0]} 行有数据未被包含`),
         cellAddress: cell.address,
         sheetName: context.name,
         formula: cell.formula,
         confidence: ConfidenceLevel.MEDIUM,
-        suggestion: '检查是否需要扩展 SUM 范围以包含更多数据',
+        suggestion: msg('Check if the SUM range should be extended to include more data', '检查是否需要扩展 SUM 范围以包含更多数据'),
         details: {
           original_range: `${colStart}${rowStart}:${colEnd}${rowEnd}`,
           potential_missing_rows: missingBelow,
@@ -335,13 +336,12 @@ export const TypeMismatchRule: BaseRule = {
             (lookupType === 'number' && targetColType === 'text')
           ) {
             return createIssue(this, {
-              message: `类型不匹配：${funcName} 查找值为 ${lookupType}，目标列为 ${targetColType}`,
+              message: msg(`Type mismatch: ${funcName} lookup value is ${lookupType}, target column is ${targetColType}`, `类型不匹配：${funcName} 查找值为 ${lookupType}，目标列为 ${targetColType}`),
               cellAddress: cell.address,
               sheetName: context.name,
               formula: cell.formula,
               confidence: ConfidenceLevel.HIGH,
-              suggestion:
-                '统一数据类型：使用 VALUE() 将文本转数字，或用 TEXT() 将数字转文本',
+              suggestion: msg('Unify data types: use VALUE() to convert text to number, or TEXT() to convert number to text', '统一数据类型：使用 VALUE() 将文本转数字，或用 TEXT() 将数字转文本'),
               details: {
                 lookup_value_ref: lookupValueRef,
                 lookup_type: lookupType,

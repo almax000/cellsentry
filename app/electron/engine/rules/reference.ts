@@ -13,6 +13,7 @@ import {
   isFormula,
 } from '../types'
 import { RuleRegistry } from '../registry'
+import { msg } from '../locale'
 
 export const ExternalReferenceRule: BaseRule = {
   ruleId: 'EXTERNAL_REF_INVALID',
@@ -36,16 +37,15 @@ export const ExternalReferenceRule: BaseRule = {
         const invalidLinks = (workbookContext['invalid_links'] as string[]) ?? []
         if (invalidLinks.includes(externalFile)) {
           return createIssue(this, {
-            message: `外部引用无效：引用的文件 [${externalFile}] 不存在或已移动`,
+            message: msg(`Invalid external reference: file [${externalFile}] does not exist or has been moved`, `外部引用无效：引用的文件 [${externalFile}] 不存在或已移动`),
             cellAddress: cell.address,
             sheetName: context.name,
             formula,
             confidence: ConfidenceLevel.HIGH,
-            suggestion:
-              '解决方案：\n' +
-              '1. 检查引用的文件是否存在于指定路径\n' +
-              "2. 使用'编辑链接'功能更新文件路径\n" +
-              '3. 或将外部数据复制到当前工作簿',
+            suggestion: msg(
+              'Solutions:\n1. Check if the referenced file exists at the specified path\n2. Use Edit Links to update the file path\n3. Or copy external data into the current workbook',
+              "解决方案：\n1. 检查引用的文件是否存在于指定路径\n2. 使用'编辑链接'功能更新文件路径\n3. 或将外部数据复制到当前工作簿",
+            ),
             details: { external_file: externalFile },
           })
         }
@@ -58,12 +58,12 @@ export const ExternalReferenceRule: BaseRule = {
       (typeof cell.value === 'string' && String(cell.value).includes('#REF!'))
     ) {
       return createIssue(this, {
-        message: `引用错误：单元格 ${cell.address} 包含无效引用 #REF!`,
+        message: msg(`Reference error: cell ${cell.address} contains invalid reference #REF!`, `引用错误：单元格 ${cell.address} 包含无效引用 #REF!`),
         cellAddress: cell.address,
         sheetName: context.name,
         formula,
         confidence: ConfidenceLevel.HIGH,
-        suggestion: '检查公式引用的单元格或区域是否已被删除',
+        suggestion: msg('Check whether the cells or ranges referenced by the formula have been deleted', '检查公式引用的单元格或区域是否已被删除'),
         details: { error_type: '#REF!' },
       })
     }

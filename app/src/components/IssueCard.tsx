@@ -42,7 +42,7 @@ export default function IssueCard({
             <span
               className="confidence-fill"
               style={{
-                width: `${issue.confidence * 100}%`,
+                width: `${(issue.confidence || 0) * 100}%`,
                 background:
                   issue.confidence > 0.85
                     ? 'var(--brand)'

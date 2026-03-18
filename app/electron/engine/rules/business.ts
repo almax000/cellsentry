@@ -23,6 +23,7 @@ import {
   isNumeric,
 } from '../types'
 import { getColumnLetter } from '../utils'
+import { msg } from '../locale'
 import {
   MARGIN_KEYWORDS,
   NON_FORMULA_KEYWORDS,
@@ -61,11 +62,11 @@ export const MarginMissingDivRule: BaseRule = {
       if (valueCell && isFormula(valueCell) && !hasDivision(valueCell.formula!)) {
         issues.push(
           createIssue(this, {
-            message: `'${labelCell.value}' 应该是比率指标，但公式中缺少除法运算`,
+            message: msg(`'${labelCell.value}' should be a ratio metric, but formula is missing division`, `'${labelCell.value}' 应该是比率指标，但公式中缺少除法运算`),
             cellAddress: `B${row}`,
             sheetName: context.name,
             formula: valueCell.formula,
-            suggestion: '比率指标公式应包含除法，例如: =毛利润/营业收入',
+            suggestion: msg('Ratio formulas should include division, e.g.: =GrossProfit/Revenue', '比率指标公式应包含除法，例如: =毛利润/营业收入'),
             currentValue: valueCell.formula,
           }),
         )
@@ -98,12 +99,12 @@ export const MarginMissingDivRule: BaseRule = {
         for (const [row, formula] of formulasWithoutDiv) {
           issues.push(
             createIssue(this, {
-              message: `'${headerCell.value}' 列中此行公式缺少除法（同列其他行有除法）`,
+              message: msg(`'${headerCell.value}' column: this row's formula is missing division (other rows have it)`, `'${headerCell.value}' 列中此行公式缺少除法（同列其他行有除法）`),
               cellAddress: `${colLetter}${row}`,
               sheetName: context.name,
               formula,
               currentValue: formula,
-              suggestion: '比率指标公式应包含除法，例如: =毛利润/营业收入',
+              suggestion: msg('Ratio formulas should include division, e.g.: =GrossProfit/Revenue', '比率指标公式应包含除法，例如: =毛利润/营业收入'),
             }),
           )
         }
@@ -111,12 +112,12 @@ export const MarginMissingDivRule: BaseRule = {
         for (const [row, formula] of formulasWithoutDiv) {
           issues.push(
             createIssue(this, {
-              message: `'${headerCell.value}' 应该是比率指标，但公式中缺少除法运算`,
+              message: msg(`'${headerCell.value}' should be a ratio metric, but formula is missing division`, `'${headerCell.value}' 应该是比率指标，但公式中缺少除法运算`),
               cellAddress: `${colLetter}${row}`,
               sheetName: context.name,
               formula,
               currentValue: formula,
-              suggestion: '比率指标公式应包含除法，例如: =毛利润/营业收入',
+              suggestion: msg('Ratio formulas should include division, e.g.: =GrossProfit/Revenue', '比率指标公式应包含除法，例如: =毛利润/营业收入'),
             }),
           )
         }
@@ -157,12 +158,12 @@ export const RatioMissingDivRule: BaseRule = {
       if (valueCell && isFormula(valueCell) && !hasDivision(valueCell.formula!)) {
         issues.push(
           createIssue(this, {
-            message: `'${labelCell.value}' 表示占比，但公式中缺少除法运算`,
+            message: msg(`'${labelCell.value}' represents a ratio, but formula is missing division`, `'${labelCell.value}' 表示占比，但公式中缺少除法运算`),
             cellAddress: `B${row}`,
             sheetName: context.name,
             formula: valueCell.formula,
             currentValue: valueCell.formula,
-            suggestion: '占比指标公式应包含除法，例如: =费用/收入',
+            suggestion: msg('Ratio formulas should include division, e.g.: =Expense/Revenue', '占比指标公式应包含除法，例如: =费用/收入'),
           }),
         )
       }
@@ -191,13 +192,12 @@ export const DoublePercentageRule: BaseRule = {
         if (cell.formula!.includes('*100') || cell.formula!.includes('* 100')) {
           issues.push(
             createIssue(this, {
-              message:
-                '公式中已乘以100，但单元格格式也设置为百分比，导致显示值放大100倍',
+              message: msg('Formula multiplies by 100 but cell format is also percentage — displayed value is inflated 100x', '公式中已乘以100，但单元格格式也设置为百分比，导致显示值放大100倍'),
               cellAddress: cell.address,
               sheetName: context.name,
               formula: cell.formula,
               currentValue: cell.formula,
-              suggestion: "移除公式中的'*100'，保留百分比格式即可",
+              suggestion: msg("Remove '*100' from the formula and keep percentage format", "移除公式中的'*100'，保留百分比格式即可"),
             }),
           )
         }
@@ -306,11 +306,11 @@ export const HardcodedSummaryRule: BaseRule = {
         if (hasDataAbove) {
           issues.push(
             createIssue(this, {
-              message: `汇总行 '${labelCell.value}' 使用了硬编码值而非公式`,
+              message: msg(`Summary row '${labelCell.value}' uses a hardcoded value instead of a formula`, `汇总行 '${labelCell.value}' 使用了硬编码值而非公式`),
               cellAddress: `${getColumnLetter(col)}${row}`,
               sheetName: context.name,
               currentValue: v,
-              suggestion: '建议使用SUM公式汇总上方数据',
+              suggestion: msg('Consider using a SUM formula to aggregate the data above', '建议使用SUM公式汇总上方数据'),
             }),
           )
         }
@@ -391,11 +391,11 @@ export const HardcodedFormulaColRule: BaseRule = {
             continue
           issues.push(
             createIssue(this, {
-              message: `此列 ${Math.round(formulaRatio * 100)}% 的单元格使用公式，但 ${colLetter}${row} 是硬编码数值`,
+              message: msg(`${Math.round(formulaRatio * 100)}% of cells in this column use formulas, but ${colLetter}${row} is a hardcoded value`, `此列 ${Math.round(formulaRatio * 100)}% 的单元格使用公式，但 ${colLetter}${row} 是硬编码数值`),
               cellAddress: `${colLetter}${row}`,
               sheetName: context.name,
               currentValue: val,
-              suggestion: '建议改用公式（如引用上期余额或其他单元格）',
+              suggestion: msg('Consider using a formula instead (e.g. referencing prior balance or other cells)', '建议改用公式（如引用上期余额或其他单元格）'),
             }),
           )
         }
@@ -468,12 +468,12 @@ export const FormulaColInconsistencyRule: BaseRule = {
           const expectedCols = [...mostCommonPattern].sort().join(', ')
           issues.push(
             createIssue(this, {
-              message: `同列其他公式引用列 ${expectedCols}，但此行引用了不同的列 (${unexpected})`,
+              message: msg(`Other formulas in this column reference columns ${expectedCols}, but this row references different columns (${unexpected})`, `同列其他公式引用列 ${expectedCols}，但此行引用了不同的列 (${unexpected})`),
               cellAddress: `${colLetter}${row}`,
               sheetName: context.name,
               formula,
               currentValue: formula,
-              suggestion: `检查是否应该引用列 ${expectedCols}`,
+              suggestion: msg(`Check if this formula should reference columns ${expectedCols}`, `检查是否应该引用列 ${expectedCols}`),
             }),
           )
         }

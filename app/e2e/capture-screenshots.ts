@@ -1,5 +1,9 @@
 /**
  * Standalone screenshot capture script for the website.
+ *
+ * Unified scan flow: triggerFileAnalysis runs all 3 engines on one file.
+ * Sidebar view-switching captures each engine's results separately.
+ *
  * Run: cd app && npx tsx e2e/capture-screenshots.ts
  */
 import { _electron as electron } from '@playwright/test'
@@ -7,9 +11,7 @@ import { join } from 'path'
 import { startMockSidecar } from './mock-sidecar'
 
 const WEBSITE_SCREENSHOTS = join(__dirname, '..', '..', 'website', 'public', 'screenshots')
-const AUDIT_FIXTURE = join(__dirname, '..', '..', 'data', 'corpus', 'en', 'mixed_errors.xlsx')
-const PII_FIXTURE = join(__dirname, 'fixtures', 'pii-test-data.xlsx')
-const EXTRACTION_FIXTURE = join(__dirname, 'fixtures', 'invoice-test-data.xlsx')
+const COMBINED_FIXTURE = join(__dirname, 'fixtures', 'combined-test-data.xlsx')
 
 async function main() {
   console.log('Starting mock sidecar...')
@@ -29,68 +31,45 @@ async function main() {
   await page.waitForLoadState('domcontentloaded')
   await page.waitForTimeout(1500)
 
-  // Set a good viewport size
   await page.setViewportSize({ width: 1200, height: 800 })
   await page.waitForTimeout(500)
 
-  // 1. DropZone (empty state)
+  // 1. DropZone (home page = empty state)
   console.log('Capturing: DropZone...')
-  await page.locator('[data-testid="sidebar-nav-audit"]').click()
-  await page.waitForTimeout(500)
   await page.screenshot({ path: join(WEBSITE_SCREENSHOTS, 'app-dropzone.png') })
   console.log('  -> app-dropzone.png')
 
-  // 2. Audit results
-  console.log('Capturing: Audit results...')
-  await page.locator('[data-testid="sidebar-nav-audit"]').click()
-  await page.waitForTimeout(300)
+  // 2. Unified scan — triggers all 3 engines
+  console.log('Starting unified scan...')
   await page.evaluate((filePath) => {
     window.__TEST_API__?.triggerFileAnalysis(filePath)
-    window.location.hash = '#/scanning'
-  }, AUDIT_FIXTURE)
-  // Wait for results to auto-navigate (same pattern as PII/extraction)
+  }, COMBINED_FIXTURE)
+
+  // Wait for audit results (default view after scan)
   try {
     await page.waitForSelector('[data-testid="results-panel-left"]', { timeout: 15000 })
   } catch {
-    // fallback — navigate manually if auto-nav didn't happen
     await page.evaluate(() => { window.location.hash = '#/results' })
+    await page.waitForTimeout(1000)
   }
   await page.waitForTimeout(1000)
+
+  // 3. Audit results (default active view)
+  console.log('Capturing: Audit results...')
   await page.screenshot({ path: join(WEBSITE_SCREENSHOTS, 'app-audit.png') })
   console.log('  -> app-audit.png')
 
-  // 3. PII results
+  // 4. PII results — switch view via sidebar
   console.log('Capturing: PII results...')
-  await page.locator('[data-testid="sidebar-nav-pii"]').click()
-  await page.waitForTimeout(500)
-  await page.evaluate((filePath) => {
-    window.__TEST_API__?.triggerPiiScan(filePath)
-    window.location.hash = '#/pii/scanning'
-  }, PII_FIXTURE)
-  // Wait for results to auto-navigate
-  try {
-    await page.waitForSelector('[data-testid="pii-results-panel-left"]', { timeout: 15000 })
-  } catch {
-    // fallback
-  }
+  await page.locator('[data-testid="sidebar-nav-pii"]').click({ force: true })
   await page.waitForTimeout(1000)
   await page.screenshot({ path: join(WEBSITE_SCREENSHOTS, 'app-pii.png') })
   console.log('  -> app-pii.png')
 
-  // 4. Extraction results
+  // 5. Extraction results — switch view via sidebar
   console.log('Capturing: Extraction results...')
-  await page.locator('[data-testid="sidebar-nav-extraction"]').click()
-  await page.waitForTimeout(500)
-  await page.evaluate((filePath) => {
-    window.__TEST_API__?.triggerExtractionScan(filePath)
-    window.location.hash = '#/extract/scanning'
-  }, EXTRACTION_FIXTURE)
-  try {
-    await page.waitForSelector('[data-testid="extraction-results"]', { timeout: 15000 })
-  } catch {
-    // fallback
-  }
-  await page.waitForTimeout(2000)
+  await page.locator('[data-testid="sidebar-nav-extraction"]').click({ force: true })
+  await page.waitForTimeout(1000)
   await page.screenshot({ path: join(WEBSITE_SCREENSHOTS, 'app-extraction.png') })
   console.log('  -> app-extraction.png')
 
