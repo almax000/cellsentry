@@ -13,6 +13,7 @@
   "file": "File",
   "connectionLost": "Python engine disconnected — reconnecting…",
   "sidebar": {
+    "home": "Home",
     "spreadsheetAudit": "Spreadsheet Audit",
     "piiRedaction": "PII Redaction",
     "dataExtraction": "Data Extraction",

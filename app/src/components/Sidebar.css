@@ -87,10 +87,22 @@
 .sidebar-item.disabled {
   opacity: 0.3;
   cursor: default;
+  pointer-events: none;
 }
 
 .sidebar-item.disabled::before {
   display: none;
+}
+
+/* Home button — slightly larger icon, separator below */
+.sidebar-home {
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+}
+
+.sidebar-home-icon {
+  width: 28px !important;
+  height: 28px !important;
 }
 
 .sidebar-item-icon {

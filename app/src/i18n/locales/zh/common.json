@@ -13,6 +13,7 @@
   "file": "文件",
   "connectionLost": "Python 引擎已断开 — 正在重新连接…",
   "sidebar": {
+    "home": "首页",
     "spreadsheetAudit": "表格审计",
     "piiRedaction": "隐私脱敏",
     "dataExtraction": "数据提取",

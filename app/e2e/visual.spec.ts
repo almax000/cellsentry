@@ -24,22 +24,28 @@ test('sidebar is 72px wide with no logo element', async () => {
   const width = await sidebar.evaluate((el) => el.getBoundingClientRect().width)
   expect(width).toBe(72)
 
-  // Logo was removed — sidebar-logo should not exist
-  await expect(page.locator('.sidebar-logo')).toHaveCount(0)
+  // Home button should exist at top of sidebar
+  await expect(page.locator('[data-testid="sidebar-nav-home"]')).toBeVisible()
 })
 
-test('sidebar items are 48x48 with 24px icons', async () => {
-  const item = page.locator('.sidebar-item').first()
-  await expect(item).toBeVisible()
+test('sidebar items are 48x48 with correct icon sizes', async () => {
+  // Home button has 28px icon
+  const home = page.locator('[data-testid="sidebar-nav-home"]')
+  await expect(home).toBeVisible()
+  const homeSvg = home.locator('svg')
+  await expect(homeSvg).toHaveAttribute('width', '28')
+  await expect(homeSvg).toHaveAttribute('height', '28')
 
-  const box = await item.evaluate((el) => {
+  // Engine items have 24px icons
+  const auditItem = page.locator('[data-testid="sidebar-nav-audit"]')
+  const box = await auditItem.evaluate((el) => {
     const rect = el.getBoundingClientRect()
     return { width: rect.width, height: rect.height }
   })
   expect(box.width).toBe(48)
   expect(box.height).toBe(48)
 
-  const svg = item.locator('svg')
+  const svg = auditItem.locator('svg')
   await expect(svg).toHaveAttribute('width', '24')
   await expect(svg).toHaveAttribute('height', '24')
 })

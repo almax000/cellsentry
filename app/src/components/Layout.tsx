@@ -3,17 +3,28 @@ import { useTranslation } from 'react-i18next'
 import Sidebar from './Sidebar'
 import Header from './Header'
 import ConnectionBanner from './ConnectionBanner'
+import { useScan } from '../context/ScanContext'
 import { GridIcon, ShieldCheckIcon, CheckIcon } from './icons'
 import './Layout.css'
 
 export default function Layout(): JSX.Element {
   const { t } = useTranslation('common')
   const location = useLocation()
+  const { activeView } = useScan()
   const platform = window.api?.platform || 'linux'
 
   const pageTitle = (): string => {
     const path = location.pathname
     if (path === '/settings') return t('header.settings')
+    if (path === '/scanning') return t('header.scanning')
+    if (path === '/results') {
+      switch (activeView) {
+        case 'pii': return t('header.piiResults')
+        case 'extraction': return t('header.extractionResults')
+        default: return t('header.scanResults')
+      }
+    }
+    // Legacy routes
     if (path.startsWith('/pii')) {
       if (path.includes('scanning')) return t('header.scanning')
       if (path.includes('results')) return t('header.piiResults')
@@ -24,8 +35,6 @@ export default function Layout(): JSX.Element {
       if (path.includes('results')) return t('header.extractionResults')
       return t('header.dataExtraction')
     }
-    if (path === '/scanning') return t('header.scanning')
-    if (path === '/results') return t('header.scanResults')
     return t('header.spreadsheetAudit')
   }
 

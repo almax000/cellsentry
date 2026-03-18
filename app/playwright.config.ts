@@ -37,6 +37,10 @@ export default defineConfig({
     {
       name: 'extraction',
       testMatch: /extraction\.spec\.ts/
+    },
+    {
+      name: 'sidebar-ux',
+      testMatch: /sidebar-ux\.spec\.ts/
     }
   ]
 })

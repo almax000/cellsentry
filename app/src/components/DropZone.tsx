@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, type DragEvent } from 'react'
+import { useState, useCallback, useEffect, useRef, type DragEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useSidecar } from '../hooks/useSidecar'
@@ -14,9 +14,11 @@ export default function DropZone(): JSX.Element {
   const navigate = useNavigate()
   const { status, openFileDialog } = useSidecar()
   const { scanState, startScan, startBatchScan } = useScan()
+  const didStartScan = useRef(false)
 
   useEffect(() => {
-    if (scanState === 'complete') navigate('/results')
+    if (scanState === 'scanning') didStartScan.current = true
+    if (scanState === 'complete' && didStartScan.current) navigate('/results')
     else if (scanState === 'scanning') navigate('/scanning')
   }, [scanState, navigate])
 

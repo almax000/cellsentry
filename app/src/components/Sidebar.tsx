@@ -1,6 +1,8 @@
 import { useLocation, useNavigate } from 'react-router-dom'
+import { flushSync } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { useScan } from '../context/ScanContext'
+import { CellSentryMark } from './icons'
 import type { ActiveView } from '../types'
 import './Sidebar.css'
 
@@ -53,9 +55,21 @@ export default function Sidebar(): JSX.Element {
   const { t } = useTranslation('common')
   const location = useLocation()
   const navigate = useNavigate()
-  const { activeView, setActiveView, results, piiResults, extractionResults } = useScan()
+  const {
+    activeView, setActiveView,
+    results, piiResults, extractionResults,
+    auditError, piiError, extractionError,
+  } = useScan()
 
   const isOnResults = location.pathname === '/results'
+
+  const isEngineEnabled = (id: ActiveView): boolean => {
+    switch (id) {
+      case 'audit': return !!(results || auditError)
+      case 'pii': return !!(piiResults || piiError)
+      case 'extraction': return !!(extractionResults || extractionError)
+    }
+  }
 
   const getBadgeCount = (item: NavItem): number | null => {
     if (!isOnResults) return null
@@ -69,31 +83,53 @@ export default function Sidebar(): JSX.Element {
     }
   }
 
-  const handleClick = (item: NavItem): void => {
+  const handleEngineClick = (item: NavItem): void => {
+    if (!isEngineEnabled(item.id)) return
     if (isOnResults) {
       setActiveView(item.id)
     } else {
-      navigate('/')
+      flushSync(() => setActiveView(item.id))
+      navigate('/results')
     }
   }
 
-  const isActive = (item: NavItem): boolean => {
-    if (isOnResults) return activeView === item.id
-    if (location.pathname === '/' || location.pathname === '/scanning') return item.id === 'audit'
-    return false
+  const handleHomeClick = (): void => {
+    navigate('/')
   }
+
+  const isActive = (item: NavItem): boolean => {
+    return isOnResults && activeView === item.id
+  }
+
+  const isHomeActive = !isOnResults && location.pathname !== '/settings'
 
   return (
     <nav className="sidebar">
       <div className="sidebar-nav">
+        {/* Home button */}
+        <div
+          className={`sidebar-item sidebar-home ${isHomeActive ? 'active' : ''}`}
+          data-testid="sidebar-nav-home"
+          onClick={handleHomeClick}
+        >
+          <span className="sidebar-item-icon sidebar-home-icon">
+            <CellSentryMark size={28} />
+          </span>
+          <span className="sidebar-tooltip">
+            {t('appName')}
+          </span>
+        </div>
+
+        {/* Engine nav items */}
         {navItems.map((item) => {
+          const enabled = isEngineEnabled(item.id)
           const badge = getBadgeCount(item)
           return (
             <div
               key={item.id}
-              className={`sidebar-item ${isActive(item) ? 'active' : ''}`}
+              className={`sidebar-item ${isActive(item) ? 'active' : ''} ${!enabled ? 'disabled' : ''}`}
               data-testid={item.testId}
-              onClick={() => handleClick(item)}
+              onClick={() => handleEngineClick(item)}
             >
               <span className="sidebar-item-icon">{item.icon}</span>
               {badge !== null && badge > 0 && (

@@ -69,16 +69,6 @@ function sendProgress(phase: string, percent: number): void {
   }
 }
 
-/** Map RendererIssue confidence string → number */
-function confidenceToNumber(c: string): number {
-  switch (c) {
-    case 'high': return 0.9
-    case 'medium': return 0.7
-    case 'low': return 0.5
-    default: return 0.7
-  }
-}
-
 /** Map RendererIssue[] → LlmIssueInput[] for the LLM bridge */
 function mapToLlmInput(issues: RendererIssue[]): LlmIssueInput[] {
   return issues.map((i) => ({
@@ -87,7 +77,7 @@ function mapToLlmInput(issues: RendererIssue[]): LlmIssueInput[] {
     sheetName: i.sheet,
     formula: i.formula || '',
     message: i.message,
-    confidence: confidenceToNumber(i.confidence),
+    confidence: i.confidence,
   }))
 }
 
@@ -102,7 +92,7 @@ export function registerIpcHandlers(): void {
       const result = await analyzeExcel(filePath)
       sendProgress('rules', 100)
 
-      // Phase 2: LLM verification
+      // Phase 2: LLM verification (graceful degradation)
       let enrichedIssues = result.issues as Array<RendererIssue & {
         llmVerified?: boolean
         llmConfidence?: number
@@ -110,18 +100,22 @@ export function registerIpcHandlers(): void {
       }>
 
       if (result.issues.length > 0) {
-        sendProgress('ai', 0)
-        const llmInput = mapToLlmInput(result.issues)
-        const judgments = await analyzeWithLlm(llmInput)
+        try {
+          sendProgress('ai', 0)
+          const llmInput = mapToLlmInput(result.issues)
+          const judgments = await analyzeWithLlm(llmInput)
 
-        if (judgments.length > 0) {
-          const issuesForMerge = result.issues.map((i) => ({
-            ...i,
-            cellAddress: i.cell,
-          }))
-          enrichedIssues = mergeJudgments(issuesForMerge, judgments)
+          if (judgments.length > 0) {
+            const issuesForMerge = result.issues.map((i) => ({
+              ...i,
+              cellAddress: i.cell,
+            }))
+            enrichedIssues = mergeJudgments(issuesForMerge, judgments)
+          }
+          sendProgress('ai', 100)
+        } catch (llmErr) {
+          logIpcError('sidecar:analyze/llm', filePath, llmErr)
         }
-        sendProgress('ai', 100)
       }
 
       return {
@@ -148,16 +142,20 @@ export function registerIpcHandlers(): void {
       const promises = [
         analyzeExcelFromSheets(sheets)
           .then((result) => {
-            // LLM verification for audit
+            // LLM verification for audit (graceful degradation — LLM failure must not lose rule results)
             const enrichAudit = async (): Promise<typeof result> => {
               if (result.issues.length > 0) {
-                sendProgress('ai', 0)
-                const llmInput = mapToLlmInput(result.issues)
-                const judgments = await analyzeWithLlm(llmInput)
-                if (judgments.length > 0) {
-                  const issuesForMerge = result.issues.map((i) => ({ ...i, cellAddress: i.cell }))
-                  const enriched = mergeJudgments(issuesForMerge, judgments)
-                  return { ...result, issues: enriched }
+                try {
+                  sendProgress('ai', 0)
+                  const llmInput = mapToLlmInput(result.issues)
+                  const judgments = await analyzeWithLlm(llmInput)
+                  if (judgments.length > 0) {
+                    const issuesForMerge = result.issues.map((i) => ({ ...i, cellAddress: i.cell }))
+                    const enriched = mergeJudgments(issuesForMerge, judgments)
+                    return { ...result, issues: enriched }
+                  }
+                } catch (llmErr) {
+                  logIpcError('analyze:all/audit-llm', '', llmErr)
                 }
               }
               return result

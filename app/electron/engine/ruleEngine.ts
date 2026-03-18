@@ -21,7 +21,7 @@ export interface RendererIssue {
   category: string
   layer: string
   suggestion: string
-  confidence: string
+  confidence: number
   currentValue: unknown
   expectedValue: unknown
   correctFormula: string | null
@@ -55,6 +55,14 @@ function issueTypeToCategory(type: IssueType): string {
   }
 }
 
+function confidenceToNumber(c: ConfidenceLevel): number {
+  switch (c) {
+    case ConfidenceLevel.HIGH: return 0.9
+    case ConfidenceLevel.MEDIUM: return 0.7
+    case ConfidenceLevel.LOW: return 0.5
+  }
+}
+
 function confidenceToSeverity(c: ConfidenceLevel): 'error' | 'warning' | 'info' {
   switch (c) {
     case ConfidenceLevel.HIGH:
@@ -78,7 +86,7 @@ function mapToRendererIssue(issue: EngineIssue, index: number): RendererIssue {
     category: issueTypeToCategory(issue.issueType),
     layer: 'rule',
     suggestion: issue.suggestion,
-    confidence: issue.confidence,
+    confidence: confidenceToNumber(issue.confidence),
     currentValue: issue.currentValue,
     expectedValue: issue.expectedValue,
     correctFormula: issue.correctFormula,

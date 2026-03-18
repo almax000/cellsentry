@@ -58,7 +58,7 @@ test.describe('Flow: Full navigation', () => {
     await page.waitForTimeout(300)
 
     // Home (DropZone)
-    await page.locator('[data-testid="sidebar-nav-audit"]').click()
+    await page.locator('[data-testid="sidebar-nav-home"]').click()
     await page.waitForTimeout(300)
     await expect(page.locator('[data-testid="dropzone-area"]')).toBeVisible()
     await page.screenshot({ path: join(screenshotDir, 'flow4-01-home.png') })
@@ -70,7 +70,7 @@ test.describe('Flow: Full navigation', () => {
     await page.screenshot({ path: join(screenshotDir, 'flow4-02-settings.png') })
 
     // Back to home
-    await page.locator('[data-testid="sidebar-nav-audit"]').click()
+    await page.locator('[data-testid="sidebar-nav-home"]').click()
     await page.waitForTimeout(300)
     await expect(page.locator('[data-testid="dropzone-area"]')).toBeVisible()
     await page.screenshot({ path: join(screenshotDir, 'flow4-03-back-home.png') })
@@ -101,7 +101,7 @@ test.describe('Flow: Export options', () => {
     }
 
     // Navigate back home
-    await page.locator('[data-testid="sidebar-nav-audit"]').click()
+    await page.locator('[data-testid="sidebar-nav-home"]').click()
     await page.waitForTimeout(300)
   })
 })

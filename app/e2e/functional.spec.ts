@@ -17,7 +17,7 @@ test.afterAll(async () => {
 // ── Sidebar Navigation ─────────────────────────────────────────────────
 
 test.describe('Sidebar', () => {
-  test('navigates to Settings and back', async () => {
+  test('navigates to Settings and back via Home', async () => {
     const settingsNav = page.locator('[data-testid="sidebar-nav-settings"]')
     await settingsNav.click()
     await page.waitForTimeout(300)
@@ -25,31 +25,32 @@ test.describe('Sidebar', () => {
     const settingsContainer = page.locator('.settings-container')
     await expect(settingsContainer).toBeVisible()
 
-    // Navigate back to home
-    const auditNav = page.locator('[data-testid="sidebar-nav-audit"]')
-    await auditNav.click()
+    // Navigate back to home via Home button
+    const homeNav = page.locator('[data-testid="sidebar-nav-home"]')
+    await homeNav.click()
     await page.waitForTimeout(300)
 
     const dropZone = page.locator('[data-testid="dropzone-area"]')
     await expect(dropZone).toBeVisible()
   })
 
-  test('PII nav stays on home (unified flow)', async () => {
+  test('engine nav items are disabled before scan', async () => {
+    const auditNav = page.locator('[data-testid="sidebar-nav-audit"]')
     const piiNav = page.locator('[data-testid="sidebar-nav-pii"]')
-    await piiNav.click()
-    await page.waitForTimeout(200)
+    const extractionNav = page.locator('[data-testid="sidebar-nav-extraction"]')
 
-    // In unified flow, clicking PII from home stays on home dropzone
+    // All engine items should be disabled (no scan results)
+    await expect(auditNav).toHaveClass(/disabled/)
+    await expect(piiNav).toHaveClass(/disabled/)
+    await expect(extractionNav).toHaveClass(/disabled/)
+
+    // Home should still show dropzone
     await expect(page.locator('[data-testid="dropzone-area"]')).toBeVisible()
-
-    // Navigate back to audit
-    await page.locator('[data-testid="sidebar-nav-audit"]').click()
-    await page.waitForTimeout(200)
   })
 
-  test('active nav item has pill indicator', async () => {
-    const auditItem = page.locator('[data-testid="sidebar-nav-audit"]')
-    const classes = await auditItem.getAttribute('class')
+  test('Home button has active indicator on home page', async () => {
+    const homeItem = page.locator('[data-testid="sidebar-nav-home"]')
+    const classes = await homeItem.getAttribute('class')
     expect(classes).toContain('active')
   })
 })
@@ -59,7 +60,7 @@ test.describe('Sidebar', () => {
 test.describe('DropZone', () => {
   test('shows browse, batch, and folder buttons', async () => {
     // Ensure we're on home
-    await page.locator('[data-testid="sidebar-nav-audit"]').click()
+    await page.locator('[data-testid="sidebar-nav-home"]').click()
     await page.waitForTimeout(300)
 
     await expect(page.locator('[data-testid="dropzone-browse-btn"]')).toBeVisible()
@@ -115,7 +116,7 @@ test.describe('Settings', () => {
 test.describe('Export', () => {
   test('export button exists on results page', async () => {
     // Navigate to home first to ensure we can trigger a scan flow later
-    await page.locator('[data-testid="sidebar-nav-audit"]').click()
+    await page.locator('[data-testid="sidebar-nav-home"]').click()
     await page.waitForTimeout(300)
   })
 })
