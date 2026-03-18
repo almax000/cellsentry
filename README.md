@@ -21,6 +21,16 @@
 
 > **Note**: CellSentry is an experimental research project in active development. The AI model is a fine-tuned 1.5B parameter SLM — expect rough edges. Feedback and contributions welcome.
 
+<p align="center">
+  <img src="assets/app-dropzone.png" alt="Drop zone — drag and drop spreadsheets" width="700">
+</p>
+<p align="center">
+  <img src="assets/app-pii.png" alt="PII Detection — find and redact sensitive data" width="700">
+</p>
+<p align="center">
+  <img src="assets/app-extraction.png" alt="Data Extraction — structured field and table extraction" width="700">
+</p>
+
 ## What is CellSentry?
 
 CellSentry is a desktop app that explores using local small language models (SLMs) for spreadsheet intelligence tasks. It combines a deterministic rule engine with an optional 1.5B LLM for three analysis modes:
@@ -103,6 +113,13 @@ cd app && npm run build:mac
 cd app && npm run build:win
 ```
 
+### Run Tests
+
+```bash
+cd app && npm run typecheck     # Type checking
+cd app && npx playwright test   # E2E tests (requires build first)
+```
+
 ## Tech Stack
 
 - [Electron](https://www.electronjs.org/) — cross-platform desktop framework
@@ -137,7 +154,8 @@ app/
 ## Feedback & Community
 
 - **Bug reports & feature requests** — [GitHub Issues](https://github.com/almax000/cellsentry/issues)
-- **Questions & feedback** — [@almax000 on X](https://x.com/almax000)
+- **Questions & discussion** — [GitHub Discussions](https://github.com/almax000/cellsentry/discussions)
+- **Updates** — [@almax000 on X](https://x.com/almax000)
 
 ## Contributing
 

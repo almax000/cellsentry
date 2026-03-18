@@ -20,7 +20,7 @@ jobs:
         run: cd app && npm ci
 
       - name: Type check
-        run: cd app && npm run typecheck:node
+        run: cd app && npm run typecheck
 
       - name: Build
         run: cd app && npx electron-vite build
