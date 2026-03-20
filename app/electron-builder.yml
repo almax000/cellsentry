@@ -47,14 +47,17 @@ dmg:
       y: 220
       type: link
       path: /Applications
-    - x: 270
-      y: 340
+    - x: 200
+      y: 130
       type: file
-      path: resources/DMG_README.txt
-      name: README.txt
+      path: resources/Install Guide.rtf
+    - x: 340
+      y: 130
+      type: file
+      path: resources/安装指南.rtf
   window:
     width: 540
-    height: 420
+    height: 380
 
 publish:
   provider: github

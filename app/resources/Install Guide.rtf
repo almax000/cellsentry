@@ -1,0 +1,31 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2868
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica-Light;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0\fs28 \cf0 ============================================================\
+  CellSentry Beta \'97 Installation Guide\
+============================================================\
+\
+STEP 1: Drag "CellSentry Beta" to the Applications folder.\
+\
+STEP 2: If macOS says the app "is damaged" or "can't be\
+        opened", open Terminal and run:\
+\
+        xattr -cr /Applications/CellSentry\\ Beta.app\
+\
+        Then open the app again.\
+\
+STEP 3: On first launch, the AI model (~1 GB) will download\
+        automatically. This takes 1-2 minutes.\
+\
+WHY THIS HAPPENS: CellSentry is open source (MIT) and not\
+signed with an Apple Developer certificate ($99/year).\
+macOS quarantines unsigned apps downloaded from the internet.\
+The xattr command removes this quarantine flag.\
+\
+Website:  https://cellsentry.pro\
+GitHub:   https://github.com/almax000/cellsentry\
+Support:  https://github.com/almax000/cellsentry/issues\
+}
