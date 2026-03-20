@@ -356,7 +356,7 @@ if (!gotTheLock) {
   })
 
   app.whenReady().then(async () => {
-    setEngineLocale(app.getLocale())
+    setEngineLocale(process.env.CELLSENTRY_FORCE_LOCALE || app.getLocale())
     electronApp.setAppUserModelId('com.cellsentry.app')
 
     app.on('browser-window-created', (_, window) => {

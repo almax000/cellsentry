@@ -23,11 +23,17 @@ async function main() {
     env: {
       ...process.env,
       NODE_ENV: 'production',
-      CELLSENTRY_TEST_MODE: '1'
+      CELLSENTRY_TEST_MODE: '1',
+      CELLSENTRY_FORCE_LOCALE: 'en'
     }
   })
 
   const page = await app.firstWindow()
+  await page.waitForLoadState('domcontentloaded')
+
+  // Force renderer to English locale via i18next localStorage key
+  await page.evaluate(() => localStorage.setItem('cellsentry-language', 'en'))
+  await page.reload()
   await page.waitForLoadState('domcontentloaded')
   await page.waitForTimeout(1500)
 
