@@ -89,27 +89,6 @@ jobs:
           echo "=== electron-builder output ==="
           ls -lh app/dist/*.dmg app/dist/*.zip app/dist/latest-mac.yml 2>/dev/null || true
 
-      - name: Upload DMG artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: CellSentry-macOS-DMG
-          path: app/dist/*.dmg
-          retention-days: 7
-
-      - name: Upload ZIP artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: CellSentry-macOS-ZIP
-          path: app/dist/*.zip
-          retention-days: 7
-
-      - name: Upload auto-updater manifest
-        uses: actions/upload-artifact@v4
-        with:
-          name: CellSentry-macOS-UpdateManifest
-          path: app/dist/latest-mac.yml
-          retention-days: 7
-
       - name: Upload to GitHub Release (if tag)
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2

@@ -95,20 +95,6 @@ jobs:
           dir app\dist\*.exe
           dir app\dist\latest.yml 2>$null
 
-      - name: Upload installer artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: CellSentry-Windows-Installer
-          path: app/dist/*Setup*.exe
-          retention-days: 7
-
-      - name: Upload auto-updater manifest
-        uses: actions/upload-artifact@v4
-        with:
-          name: CellSentry-Windows-UpdateManifest
-          path: app/dist/latest.yml
-          retention-days: 7
-
       - name: Upload to GitHub Release (if tag)
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
