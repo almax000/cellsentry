@@ -1,28 +1,13 @@
-// IPC wrapper for sidecar communication
-// All calls go through window.api (exposed by preload via contextBridge)
+// Renderer-side IPC wrapper.
+// All v1.x calls (analyzeFile / getFileInfo / scan-progress) removed.
+// v2 medical-pipeline calls will be added in W1 Step 1.2 (medical/ scaffold).
 
-export async function getHealth(): Promise<{ status: string; version: string }> {
+export async function getHealth(): Promise<{ status: string; engine: string; version: string }> {
   return window.api.getHealth()
 }
 
-export async function getModelStatus(): Promise<{
-  loaded: boolean
-  name: string
-  size: string
-}> {
+export async function getModelStatus(): Promise<{ loaded: boolean; backend: string }> {
   return window.api.getModelStatus()
-}
-
-export async function analyzeFile(filePath: string): Promise<AnalysisResult> {
-  return window.api.analyzeFile(filePath)
-}
-
-export async function getFileInfo(filePath: string): Promise<FileInfo> {
-  return window.api.getFileInfo(filePath)
-}
-
-export function onScanProgress(callback: (progress: ScanProgress) => void): () => void {
-  return window.api.onScanProgress(callback)
 }
 
 export async function openFileDialog(): Promise<string | null> {

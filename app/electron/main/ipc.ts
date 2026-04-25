@@ -1,12 +1,16 @@
 /**
- * IPC handler registration — replaces fetchSidecar HTTP calls with direct TS calls.
+ * IPC handler registration for CellSentry v2.0 (medical pseudonymization).
  *
- * Each handler maps to a former Python sidecar endpoint.
+ * v1.x audit/PII/extraction handlers removed. v2 medical handlers will be
+ * added in W1 Step 1.2 (medical/ scaffold) and W2-W3 (real implementations).
  */
 
 import { app, ipcMain, dialog, shell, BrowserWindow } from 'electron'
-import { readdirSync, statSync, existsSync, appendFileSync, mkdirSync } from 'fs'
-import { join, extname, normalize } from 'path'
+import { appendFileSync, mkdirSync } from 'fs'
+import { join, normalize } from 'path'
+
+import { ModelDownloader } from '../model/downloader'
+import { getLlmStatus, analyzeWithLlm, startLlm } from '../llm/lifecycle'
 
 /** Write diagnostic error to crash-logs for remote debugging */
 function logIpcError(handler: string, filePath: string, error: unknown): void {
@@ -22,18 +26,6 @@ function logIpcError(handler: string, filePath: string, error: unknown): void {
   } catch { /* ignore */ }
 }
 
-
-import { analyzeExcel, analyzeExcelFromSheets, type RendererIssue } from '../engine/ruleEngine'
-import { getFileInfo, readFileCells, readWorkbook } from '../engine/excelReader'
-import { generateReport } from '../report/generator'
-import { ModelDownloader } from '../model/downloader'
-import { scanForPii, scanForPiiFromSheets } from '../pii/scanner'
-import { redactFile } from '../pii/redactor'
-import { extractDocument, extractDocumentFromSheets } from '../extraction/extractor'
-import { exportToJson, exportToCsv } from '../extraction/exporters'
-import { getLlmStatus, analyzeWithLlm, mergeJudgments, startLlm } from '../llm/lifecycle'
-import type { LlmIssueInput } from '../llm/types'
-
 function validateFilePath(filePath: unknown): filePath is string {
   if (typeof filePath !== 'string' || filePath.length === 0) return false
   if (filePath.length > 1024) return false
@@ -45,238 +37,25 @@ function validateFilePath(filePath: unknown): filePath is string {
 let modelDownloader: ModelDownloader | null = null
 
 export function getModelsDir(): string {
-  const { app } = require('electron') as typeof import('electron')
   return join(app.getPath('userData'), 'models')
 }
 
 export function getDownloader(): ModelDownloader {
   if (!modelDownloader) {
-    const { app } = require('electron') as typeof import('electron')
     modelDownloader = new ModelDownloader(getModelsDir(), undefined, app.getLocale())
   }
   return modelDownloader
 }
 
-function getMainWindow(): BrowserWindow | null {
-  const windows = BrowserWindow.getAllWindows()
-  return windows[0] || null
-}
-
-function sendProgress(phase: string, percent: number): void {
-  const win = getMainWindow()
-  if (win) {
-    win.webContents.send('sidecar:scan-progress', { phase, percent, message: '' })
-  }
-}
-
-/** Map RendererIssue[] → LlmIssueInput[] for the LLM bridge */
-function mapToLlmInput(issues: RendererIssue[]): LlmIssueInput[] {
-  return issues.map((i) => ({
-    ruleId: i.ruleId,
-    cellAddress: i.cell,
-    sheetName: i.sheet,
-    formula: i.formula || '',
-    message: i.message,
-    confidence: i.confidence,
-  }))
-}
-
 export function registerIpcHandlers(): void {
-  // ── Analysis ────────────────────────────────────────────
-  ipcMain.handle('sidecar:analyze', async (_event, filePath: string) => {
-    if (!validateFilePath(filePath)) {
-      return { success: false, error: 'Invalid path', issues: [], summary: { total: 0, error: 0, warning: 0, info: 0 } }
-    }
-    try {
-      // Phase 1: Rule engine
-      const result = await analyzeExcel(filePath)
-      sendProgress('rules', 100)
-
-      // Phase 2: LLM verification (graceful degradation)
-      let enrichedIssues = result.issues as Array<RendererIssue & {
-        llmVerified?: boolean
-        llmConfidence?: number
-        llmReasoning?: string
-      }>
-
-      if (result.issues.length > 0) {
-        try {
-          sendProgress('ai', 0)
-          const llmInput = mapToLlmInput(result.issues)
-          const judgments = await analyzeWithLlm(llmInput)
-
-          if (judgments.length > 0) {
-            const issuesForMerge = result.issues.map((i) => ({
-              ...i,
-              cellAddress: i.cell,
-            }))
-            enrichedIssues = mergeJudgments(issuesForMerge, judgments)
-          }
-          sendProgress('ai', 100)
-        } catch (llmErr) {
-          logIpcError('sidecar:analyze/llm', filePath, llmErr)
-        }
-      }
-
-      return {
-        success: true,
-        issues: enrichedIssues,
-        summary: result.summary,
-        sheets: result.sheets,
-      }
-    } catch (e) {
-      logIpcError('sidecar:analyze', filePath, e)
-      return { success: false, error: String(e), issues: [], summary: { total: 0, error: 0, warning: 0, info: 0 } }
-    }
+  // ── Health (kept for ConnectionBanner / backward compat) ─────────
+  ipcMain.handle('sidecar:health', async () => {
+    return { status: 'ok', engine: 'typescript', version: app.getVersion() }
   })
 
-  // ── Unified Analysis (all 3 engines, read once) ─────────
-  ipcMain.handle('analyze:all', async (_event, filePath: string) => {
-    if (!validateFilePath(filePath)) {
-      return { success: false, error: 'Invalid path' }
-    }
-    try {
-      const { sheets } = await readWorkbook(filePath)
-      const win = getMainWindow()
-
-      const promises = [
-        analyzeExcelFromSheets(sheets)
-          .then((result) => {
-            // LLM verification for audit (graceful degradation — LLM failure must not lose rule results)
-            const enrichAudit = async (): Promise<typeof result> => {
-              if (result.issues.length > 0) {
-                try {
-                  sendProgress('ai', 0)
-                  const llmInput = mapToLlmInput(result.issues)
-                  const judgments = await analyzeWithLlm(llmInput)
-                  if (judgments.length > 0) {
-                    const issuesForMerge = result.issues.map((i) => ({ ...i, cellAddress: i.cell }))
-                    const enriched = mergeJudgments(issuesForMerge, judgments)
-                    return { ...result, issues: enriched }
-                  }
-                } catch (llmErr) {
-                  logIpcError('analyze:all/audit-llm', '', llmErr)
-                }
-              }
-              return result
-            }
-            return enrichAudit().then((enriched) => {
-              win?.webContents.send('analyze:engine-done', { engine: 'audit', result: enriched })
-              return enriched
-            })
-          })
-          .catch((e) => {
-            logIpcError('analyze:all/audit', filePath, e)
-            win?.webContents.send('analyze:engine-done', { engine: 'audit', error: String(e) })
-            throw e
-          }),
-        scanForPiiFromSheets(sheets)
-          .then((result) => {
-            win?.webContents.send('analyze:engine-done', { engine: 'pii', result })
-            return result
-          })
-          .catch((e) => {
-            logIpcError('analyze:all/pii', filePath, e)
-            win?.webContents.send('analyze:engine-done', { engine: 'pii', error: String(e) })
-            throw e
-          }),
-        extractDocumentFromSheets(sheets)
-          .then((result) => {
-            win?.webContents.send('analyze:engine-done', { engine: 'extraction', result })
-            return result
-          })
-          .catch((e) => {
-            logIpcError('analyze:all/extraction', filePath, e)
-            win?.webContents.send('analyze:engine-done', { engine: 'extraction', error: String(e) })
-            throw e
-          }),
-      ]
-
-      const settled = await Promise.allSettled(promises)
-      const allFailed = settled.every((r) => r.status === 'rejected')
-      if (allFailed) {
-        return { success: false, error: 'All analysis engines failed' }
-      }
-      return { success: true }
-    } catch (e) {
-      logIpcError('analyze:all', filePath, e)
-      return { success: false, error: String(e) }
-    }
-  })
-
-  // ── File Info ───────────────────────────────────────────
-  ipcMain.handle('sidecar:file-info', async (_event, filePath: string) => {
-    if (!validateFilePath(filePath)) return { success: false, error: 'Invalid path' }
-    const result = await getFileInfo(filePath)
-    if (!result.success) logIpcError('sidecar:file-info', filePath, result.error || 'unknown')
-    return result
-  })
-
-  // ── File Cells ──────────────────────────────────────────
-  ipcMain.handle('sidecar:file-cells', async (_event, filePath: string, sheet: string, range: string) => {
-    if (!validateFilePath(filePath)) return { success: false, error: 'Invalid path' }
-    return readFileCells(filePath, sheet, range)
-  })
-
-  // ── Open File in System App ───────────────────────────────
-  ipcMain.handle('shell:open-path', async (_event, filePath: string) => {
-    if (!validateFilePath(filePath)) return { success: false, error: 'Invalid path' }
-    const result = await shell.openPath(filePath)
-    return { success: !result, error: result || undefined }
-  })
-
-  // ── Report ──────────────────────────────────────────────
-  ipcMain.handle('sidecar:report-generate', async (_event, data: { issues: unknown[]; fileName: string }) => {
-    const issues = (data.issues || []).map((i: unknown) => {
-      const issue = i as Record<string, unknown>
-      return {
-        sheet_name: String(issue.sheet || issue.sheet_name || ''),
-        cell_address: String(issue.cell || issue.cell_address || ''),
-        severity: String(issue.severity || 'low'),
-        message: String(issue.message || ''),
-        suggestion: String(issue.suggestion || ''),
-      }
-    })
-    const html = generateReport(issues, data.fileName)
-    return html
-  })
-
-  // ── Folder Scan ─────────────────────────────────────────
-  ipcMain.handle('sidecar:scan-folder', async (_event, folderPath: string) => {
-    if (!validateFilePath(folderPath)) {
-      return { success: false, error: 'Invalid path', files: [], total: 0 }
-    }
-    const extensions = new Set(['.xlsx', '.xls', '.csv'])
-    const files: Array<{ path: string; name: string; size: number }> = []
-
-    function walk(dir: string, depth = 0): void {
-      if (depth > 5) return
-      try {
-        const entries = readdirSync(dir, { withFileTypes: true })
-        for (const entry of entries) {
-          const fullPath = join(dir, entry.name)
-          if (entry.isDirectory()) {
-            walk(fullPath, depth + 1)
-          } else if (extensions.has(extname(entry.name).toLowerCase())) {
-            files.push({ path: fullPath, name: entry.name, size: statSync(fullPath).size })
-          }
-        }
-      } catch { /* skip inaccessible dirs */ }
-    }
-
-    try {
-      walk(folderPath)
-      return { success: true, files, total: files.length }
-    } catch (e) {
-      return { success: false, error: String(e), files: [], total: 0 }
-    }
-  })
-
-  // ── Model ───────────────────────────────────────────────
+  // ── Model lifecycle (will be refactored in Step 1.3 for multi-model) ─
   ipcMain.handle('sidecar:model-check', async () => {
-    if (process.env.CELLSENTRY_TEST_MODE === '1') {
-      return { exists: true }
-    }
+    if (process.env.CELLSENTRY_TEST_MODE === '1') return { exists: true }
     const downloader = getDownloader()
     return { exists: downloader.checkModelExists() }
   })
@@ -297,7 +76,6 @@ export function registerIpcHandlers(): void {
         }
       })
 
-      // Cancel download if window closes
       const onClose = (): void => { downloader.cancel() }
       win.once('closed', onClose)
 
@@ -319,11 +97,6 @@ export function registerIpcHandlers(): void {
     }
   })
 
-  // ── Health ──────────────────────────────────────────────
-  ipcMain.handle('sidecar:health', async () => {
-    return { status: 'ok', engine: 'typescript', version: app.getVersion() }
-  })
-
   ipcMain.handle('sidecar:model-status', async () => {
     const downloader = getDownloader()
     return {
@@ -332,7 +105,7 @@ export function registerIpcHandlers(): void {
     }
   })
 
-  // ── LLM ───────────────────────────────────────────────
+  // ── LLM bridge (v2 will use this for safety-net pass + OCR) ──────
   ipcMain.handle('llm:status', async () => {
     try {
       return await getLlmStatus()
@@ -357,59 +130,18 @@ export function registerIpcHandlers(): void {
     }
   })
 
-  // ── PII ───────────────────────────────────────────────
-  ipcMain.handle('pii:analyze', async (_event, filePath: string) => {
-    if (!validateFilePath(filePath)) {
-      return { success: false, error: 'Invalid path' }
-    }
-    try {
-      const result = await scanForPii(filePath)
-      if (!result.success) logIpcError('pii:analyze', filePath, result.error || 'unknown')
-      return result
-    } catch (e) {
-      logIpcError('pii:analyze', filePath, e)
-      return { success: false, error: String(e) }
-    }
+  // ── Shell / dialogs (kept) ───────────────────────────────────────
+  ipcMain.handle('shell:open-path', async (_event, filePath: string) => {
+    if (!validateFilePath(filePath)) return { success: false, error: 'Invalid path' }
+    const result = await shell.openPath(filePath)
+    return { success: !result, error: result || undefined }
   })
 
-  ipcMain.handle('pii:redact', async (_event, filePath: string, outputPath: string) => {
-    if (!validateFilePath(filePath) || !validateFilePath(outputPath)) {
-      return { success: false, error: 'Invalid path' }
-    }
-    try {
-      return await redactFile(filePath, outputPath)
-    } catch (e) {
-      return { success: false, error: String(e) }
-    }
-  })
-
-  // ── Extraction ────────────────────────────────────────
-  ipcMain.handle('extraction:analyze', async (_event, filePath: string) => {
-    if (!validateFilePath(filePath)) {
-      return { success: false, error: 'Invalid path' }
-    }
-    try {
-      const result = await extractDocument(filePath)
-      if (!result.success) logIpcError('extraction:analyze', filePath, result.error || 'unknown')
-      return result
-    } catch (e) {
-      logIpcError('extraction:analyze', filePath, e)
-      return { success: false, error: String(e) }
-    }
-  })
-
-  ipcMain.handle('extraction:export', async (_event, _filePath: string, format: string, _outputPath: string) => {
-    // Export is handled client-side with data from the analysis result.
-    // This handler is a placeholder for future server-side export if needed.
-    return { success: false, error: `Server-side export not implemented for format: ${format}` }
-  })
-
-  // ── File Dialogs ────────────────────────────────────────
   ipcMain.handle('dialog:open-file', async () => {
     const result = await dialog.showOpenDialog({
       properties: ['openFile'],
       filters: [
-        { name: 'Spreadsheets', extensions: ['xlsx', 'xls', 'csv'] },
+        { name: 'Documents', extensions: ['pdf', 'jpg', 'jpeg', 'png', 'heic', 'webp', 'txt'] },
         { name: 'All Files', extensions: ['*'] },
       ],
     })
@@ -420,7 +152,7 @@ export function registerIpcHandlers(): void {
     const result = await dialog.showOpenDialog({
       properties: ['openFile', 'multiSelections'],
       filters: [
-        { name: 'Spreadsheets', extensions: ['xlsx', 'xls', 'csv'] },
+        { name: 'Documents', extensions: ['pdf', 'jpg', 'jpeg', 'png', 'heic', 'webp', 'txt'] },
         { name: 'All Files', extensions: ['*'] },
       ],
     })
@@ -433,4 +165,7 @@ export function registerIpcHandlers(): void {
     })
     return result.canceled ? null : result.filePaths[0]
   })
+
+  // ── Defensive: silence error logs for handlers that may not exist on v1->v2 boundary
+  void logIpcError
 }

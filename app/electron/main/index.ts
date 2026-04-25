@@ -3,7 +3,6 @@ import { join } from 'path'
 import { readFileSync, writeFileSync, appendFileSync, mkdirSync } from 'fs'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { registerIpcHandlers, getDownloader } from './ipc'
-import { setEngineLocale } from '../engine/locale'
 import { initAutoUpdater, registerUpdaterIpc } from './updater'
 import { setupLlmLifecycle, startLlm } from '../llm/lifecycle'
 
@@ -356,7 +355,6 @@ if (!gotTheLock) {
   })
 
   app.whenReady().then(async () => {
-    setEngineLocale(process.env.CELLSENTRY_FORCE_LOCALE || app.getLocale())
     electronApp.setAppUserModelId('com.cellsentry.app')
 
     app.on('browser-window-created', (_, window) => {

@@ -1,4 +1,6 @@
-import type { SeverityLevel } from '../types'
+// v1.x severity helpers (severityColor / severityLabel / mapSeverity / SeverityLevel)
+// removed in W1 Step 1.1. v2 medical pipeline uses a different audit-log model
+// that will be re-introduced in W3 along with Mapping editor + diff viewer UI.
 
 export function formatDuration(ms: number): string {
   if (ms < 1000) return `${ms}ms`
@@ -18,40 +20,4 @@ export function formatFileSize(bytes: number): string {
 export function formatConfidence(value: number): string {
   const n = typeof value === 'number' && !isNaN(value) ? value : 0
   return `${Math.round(n * 100)}%`
-}
-
-export function severityColor(level: SeverityLevel): string {
-  switch (level) {
-    case 'error':
-      return 'var(--danger)'
-    case 'warning':
-      return 'var(--warning)'
-    case 'info':
-      return 'var(--info)'
-  }
-}
-
-export function severityLabel(level: SeverityLevel): string {
-  switch (level) {
-    case 'error':
-      return 'Critical'
-    case 'warning':
-      return 'Warning'
-    case 'info':
-      return 'Info'
-  }
-}
-
-/** Map sidecar severity (high/medium/low) to our SeverityLevel */
-export function mapSeverity(raw: string): SeverityLevel {
-  switch (raw) {
-    case 'high':
-      return 'error'
-    case 'medium':
-      return 'warning'
-    case 'low':
-      return 'info'
-    default:
-      return 'warning'
-  }
 }

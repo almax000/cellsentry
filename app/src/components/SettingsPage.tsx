@@ -9,7 +9,8 @@ const ZOOM_LABELS = ['67%', '80%', '90%', '100%', '110%', '125%', '150%']
 export default function SettingsPage(): JSX.Element {
   const { t } = useTranslation('settings')
   const { i18n } = useTranslation()
-  const { modelLoaded, modelName, version } = useSidecar()
+  const { modelLoaded, version } = useSidecar()
+  const modelName = 'cellsentry-model'
   const [zoomIndex, setZoomIndex] = useState(3) // default 100%
   const [updateStatus, setUpdateStatus] = useState<UpdateStatus | null>(null)
 

@@ -1,5 +1,19 @@
 /// <reference types="vite/client" />
 
+// Renderer-side ambient types for CellSentry v2.0.
+// v1.x types (Issue / AnalysisResult / FileInfo / ScanProgress / FileCellsResult /
+// FolderScanResult / analyzePii / analyzeExtraction / analyzeAll / etc.) removed
+// in W1 Step 1.1. v2 medical-pipeline types will land in W1 Step 1.2.
+
+interface ModelDownloadProgress {
+  downloaded?: number
+  total?: number
+  percent?: number
+  message?: string
+  status?: string
+  error?: string
+}
+
 interface UpdateStatus {
   status: 'checking' | 'available' | 'not-available' | 'downloading' | 'downloaded' | 'error'
   version?: string
@@ -8,126 +22,46 @@ interface UpdateStatus {
 }
 
 interface SidecarAPI {
-  getHealth: () => Promise<{ status: string; version: string }>
-  getModelStatus: () => Promise<{ loaded: boolean; name: string; size: string }>
-  analyzeFile: (filePath: string) => Promise<AnalysisResult>
-  getFileInfo: (filePath: string) => Promise<FileInfo>
-  onScanProgress: (callback: (progress: ScanProgress) => void) => () => void
-  getFileCells: (filePath: string, sheet: string, range: string) => Promise<FileCellsResult>
-  generateReport: (data: { issues: unknown[]; fileName: string }) => Promise<string>
+  // Health + version
+  getHealth: () => Promise<{ status: string; engine: string; version: string }>
+  getModelStatus: () => Promise<{ loaded: boolean; backend: string }>
+
+  // Dialogs
   openFileDialog: () => Promise<string | null>
   openFilesDialog: () => Promise<string[] | null>
   openFolderDialog: () => Promise<string | null>
-  scanFolder: (folderPath: string) => Promise<FolderScanResult>
-  checkModelExists: () => Promise<{ exists: boolean; type: string }>
-  downloadModel: () => Promise<{ success: boolean; status: string }>
+
+  // Model download
+  checkModelExists: () => Promise<{ exists: boolean }>
+  downloadModel: () => Promise<{ success: boolean; error?: string }>
   onModelDownloadProgress: (callback: (progress: ModelDownloadProgress) => void) => () => void
   notifyModelReady: () => void
+
+  // Auto-updater
   checkForUpdates: () => Promise<void>
   downloadUpdate: () => Promise<void>
   installUpdate: () => void
   onUpdateStatus: (callback: (status: UpdateStatus) => void) => () => void
-  onTestTriggerAnalysis?: (callback: (filePath: string) => void) => () => void
-  onTestTriggerPiiScan?: (callback: (filePath: string) => void) => () => void
-  onTestTriggerExtractionScan?: (callback: (filePath: string) => void) => () => void
-  onTestResetState?: (callback: () => void) => () => void
+
+  // Shell
   openFilePath: (filePath: string) => Promise<{ success: boolean; error?: string }>
   getFilePathFromDrop: (file: File) => string
   platform: string
+
+  // Zoom
   zoom: {
     get: () => Promise<number>
     set: (level: number) => Promise<void>
   }
-  // LLM
+  onZoomChange: (callback: (delta: number) => void) => () => void
+
+  // LLM bridge (v2 medical pipeline uses this for safety-net pass + OCR)
   getLlmStatus: () => Promise<{ available: boolean; backend: string; modelLoaded: boolean }>
   startLlm: () => Promise<{ available: boolean; backend: string; modelLoaded: boolean }>
-  onZoomChange: (callback: (delta: number) => void) => () => void
-  // PII
-  analyzePii: (filePath: string) => Promise<AnalysisResult>
-  redactPii: (filePath: string, outputPathOrIds: string | string[]) => Promise<{ success: boolean; outputPath?: string; error?: string }>
-  // Extraction
-  analyzeExtraction: (filePath: string) => Promise<AnalysisResult>
-  exportExtraction: (filePath: string, format: string, outputPath?: string) => Promise<{ success: boolean; error?: string }>
-  // Unified scan
-  analyzeAll: (filePath: string) => Promise<{ success: boolean; error?: string }>
-  onEngineDone: (callback: (data: { engine: string; result?: unknown; error?: string }) => void) => () => void
-}
-
-interface FolderScanResult {
-  success: boolean
-  files: Array<{ path: string; name: string; size: number }>
-  total: number
-  error?: string
-}
-
-interface ModelDownloadProgress {
-  type: string
-  phase?: string
-  percent?: number
-  message?: string
-  status?: string
-  error?: string
-}
-
-interface AnalysisResult {
-  success: boolean
-  issues: Issue[]
-  total_issues: number
-  duration?: number
-  scannedAt?: string
-  summary?: {
-    errors: number
-    warnings: number
-    info: number
-    total: number
-  }
-  error?: string
-}
-
-interface FileCellsResult {
-  success: boolean
-  columns?: string[]
-  rows?: { value: string; formula: string }[][]
-  sheetName?: string
-  error?: string
-}
-
-interface Issue {
-  sheet_name: string
-  cell_address: string
-  severity: 'high' | 'medium' | 'low'
-  rule_id: string
-  message: string
-  suggestion: string
-  confidence: number
-}
-
-interface FileInfo {
-  success?: boolean
-  exists?: boolean
-  name?: string
-  fileName?: string
-  size?: string
-  fileSize?: number
-  sheets?: Array<{ name: string; rows: number; columns: number; cells: number }>
-  cellCount?: number
-  totalCells?: number
-}
-
-interface ScanProgress {
-  stage?: string
-  phase?: string
-  progress?: number
-  percent?: number
-  message: string
 }
 
 interface TestAPI {
   getRouterPath: () => Promise<string>
-  getScanState: () => Promise<string>
-  triggerFileAnalysis: (filePath: string) => Promise<void>
-  triggerPiiScan: (filePath: string) => void
-  triggerExtractionScan: (filePath: string) => void
   resetState: () => void
 }
 

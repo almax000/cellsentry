@@ -6,8 +6,6 @@ import { ScanProvider } from './context/ScanContext'
 import ErrorBoundary from './components/ErrorBoundary'
 import Layout from './components/Layout'
 import DropZone from './components/DropZone'
-import ScanningPage from './components/ScanningPage'
-import UnifiedResultsPage from './components/UnifiedResultsPage'
 import SettingsPage from './components/SettingsPage'
 
 export default function App(): JSX.Element {
@@ -40,18 +38,13 @@ export default function App(): JSX.Element {
           <ScanProvider>
             <Routes>
               <Route element={<Layout />}>
-                {/* Unified flow */}
                 <Route path="/" element={<DropZone />} />
-                <Route path="/scanning" element={<ScanningPage />} />
-                <Route path="/results" element={<UnifiedResultsPage />} />
                 <Route path="/settings" element={<SettingsPage />} />
-                {/* Legacy redirects */}
-                <Route path="/pii" element={<Navigate to="/" replace />} />
-                <Route path="/pii/scanning" element={<Navigate to="/scanning" replace />} />
-                <Route path="/pii/results" element={<Navigate to="/results" replace />} />
-                <Route path="/extract" element={<Navigate to="/" replace />} />
-                <Route path="/extract/scanning" element={<Navigate to="/scanning" replace />} />
-                <Route path="/extract/results" element={<Navigate to="/results" replace />} />
+                <Route path="/scanning" element={<Navigate to="/" replace />} />
+                <Route path="/results" element={<Navigate to="/" replace />} />
+                <Route path="/pii/*" element={<Navigate to="/" replace />} />
+                <Route path="/extract/*" element={<Navigate to="/" replace />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
               </Route>
             </Routes>
           </ScanProvider>

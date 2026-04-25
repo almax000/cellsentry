@@ -4,21 +4,16 @@ import LanguageDetector from 'i18next-browser-languagedetector'
 
 import enCommon from './locales/en/common.json'
 import enDropzone from './locales/en/dropzone.json'
-import enScanning from './locales/en/scanning.json'
-import enResults from './locales/en/results.json'
 import enSettings from './locales/en/settings.json'
 import enModals from './locales/en/modals.json'
-import enPii from './locales/en/pii.json'
-import enExtraction from './locales/en/extraction.json'
 
 import zhCommon from './locales/zh/common.json'
 import zhDropzone from './locales/zh/dropzone.json'
-import zhScanning from './locales/zh/scanning.json'
-import zhResults from './locales/zh/results.json'
 import zhSettings from './locales/zh/settings.json'
 import zhModals from './locales/zh/modals.json'
-import zhPii from './locales/zh/pii.json'
-import zhExtraction from './locales/zh/extraction.json'
+
+// v2 W1 Step 1.1: removed scanning/results/pii/extraction namespaces.
+// v2 medical-pipeline copy will be added under new namespaces in W2-W4.
 
 i18n
   .use(LanguageDetector)
@@ -28,25 +23,17 @@ i18n
       en: {
         common: enCommon,
         dropzone: enDropzone,
-        scanning: enScanning,
-        results: enResults,
         settings: enSettings,
         modals: enModals,
-        pii: enPii,
-        extraction: enExtraction,
       },
       zh: {
         common: zhCommon,
         dropzone: zhDropzone,
-        scanning: zhScanning,
-        results: zhResults,
         settings: zhSettings,
         modals: zhModals,
-        pii: zhPii,
-        extraction: zhExtraction,
-      }
+      },
     },
-    ns: ['common', 'dropzone', 'scanning', 'results', 'settings', 'modals', 'pii', 'extraction'],
+    ns: ['common', 'dropzone', 'settings', 'modals'],
     defaultNS: 'common',
     fallbackLng: 'en',
     detection: {
