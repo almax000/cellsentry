@@ -13,13 +13,16 @@
     "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
     "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "test:e2e": "npx playwright test",
     "test:visual": "npx playwright test --project=visual",
     "test:functional": "npx playwright test --project=functional",
     "test:flow": "npx playwright test --project=flow",
     "test:pii": "npx playwright test --project=pii",
     "test:extraction": "npx playwright test --project=extraction",
-    "test:ci": "electron-vite build && npm run typecheck:node && npx playwright test",
+    "test:ci": "electron-vite build && npm run typecheck:node && npm run test && npx playwright test",
     "build:win": "npm run build && npx electron-builder --win --x64",
     "build:mac": "npm run build && npx electron-builder --mac"
   },
@@ -40,11 +43,14 @@
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.4",
+    "@vitest/ui": "^4.1.5",
     "electron": "^40.8.0",
     "electron-builder": "^25.1.8",
     "electron-vite": "^5.0.0",
+    "happy-dom": "^20.9.0",
     "patch-package": "^8.0.1",
     "typescript": "^5.7.2",
-    "vite": "^6.0.3"
+    "vite": "^6.0.3",
+    "vitest": "^4.1.5"
   }
 }
