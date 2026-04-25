@@ -10,6 +10,7 @@ import { appendFileSync, mkdirSync } from 'fs'
 import { join, normalize } from 'path'
 
 import { ModelDownloader } from '../model/downloader'
+import { OCR_MODEL_V2 } from '../model/registry'
 import { getLlmStatus, analyzeWithLlm, startLlm } from '../llm/lifecycle'
 
 /** Write diagnostic error to crash-logs for remote debugging */
@@ -42,7 +43,12 @@ export function getModelsDir(): string {
 
 export function getDownloader(): ModelDownloader {
   if (!modelDownloader) {
-    modelDownloader = new ModelDownloader(getModelsDir(), undefined, app.getLocale())
+    // OCR_MODEL_V2 is the W1 default; W2 will introduce a multi-model
+    // orchestration that downloads OCR + safety-net in sequence. Until then,
+    // OCR_MODEL_V2.files is empty (registry placeholder), which makes
+    // checkModelExists() return true vacuously and download() a no-op success.
+    // The app launches in stub-only mode without forcing a download dialog.
+    modelDownloader = new ModelDownloader(getModelsDir(), OCR_MODEL_V2, app.getLocale())
   }
   return modelDownloader
 }
@@ -164,6 +170,81 @@ export function registerIpcHandlers(): void {
       properties: ['openDirectory'],
     })
     return result.canceled ? null : result.filePaths[0]
+  })
+
+  // ── Medical pipeline (v2). Stubs only — real implementations land W3-W4. ─
+  //
+  // Each handler invokes the corresponding stub in `electron/medical/*` which
+  // throws `TODO: ...` with the milestone tag. We catch and return `{error: ...}`
+  // so renderer code can render a clear "not yet implemented" state instead of
+  // crashing on uncaught IPC rejections. Once real implementations land, the
+  // throw paths go away naturally.
+
+  ipcMain.handle('medical:ingest', async (_event, source: unknown) => {
+    try {
+      const { runPipeline } = await import('../medical/pipeline/orchestrator')
+      // Stub forwards to orchestrator; orchestrator throws TODO until W2-W4.
+      // Renderer should treat the error response as "feature not ready."
+      return await runPipeline({ source: source as never, mapping_path: '', preview_only: true })
+    } catch (e) {
+      logIpcError('medical:ingest', '', e)
+      return { error: e instanceof Error ? e.message : String(e) }
+    }
+  })
+
+  ipcMain.handle('medical:scan-collisions', async (_event, mappingPath: unknown, chunks: unknown) => {
+    try {
+      const { scanForCollisions } = await import('../medical/mapping/collisionScan')
+      const { loadMapping } = await import('../medical/mapping/parser')
+      if (typeof mappingPath !== 'string' || !Array.isArray(chunks)) {
+        return { error: 'medical:scan-collisions invalid args' }
+      }
+      const mapping = await loadMapping(mappingPath)
+      return scanForCollisions({ mapping, chunks: chunks as string[] })
+    } catch (e) {
+      return { error: e instanceof Error ? e.message : String(e) }
+    }
+  })
+
+  ipcMain.handle('medical:preview', async (_event, request: unknown) => {
+    try {
+      const { runPipeline } = await import('../medical/pipeline/orchestrator')
+      return await runPipeline({ ...(request as object), preview_only: true } as never)
+    } catch (e) {
+      return { error: e instanceof Error ? e.message : String(e) }
+    }
+  })
+
+  ipcMain.handle('medical:redact', async (_event, request: unknown) => {
+    try {
+      const { runPipeline } = await import('../medical/pipeline/orchestrator')
+      return await runPipeline({ ...(request as object), preview_only: false } as never)
+    } catch (e) {
+      return { error: e instanceof Error ? e.message : String(e) }
+    }
+  })
+
+  ipcMain.handle('medical:get-audit-log', async (_event, archiveDir: unknown, limit: unknown) => {
+    try {
+      const { readAuditLog } = await import('../medical/audit/logger')
+      if (typeof archiveDir !== 'string') return { error: 'medical:get-audit-log invalid archiveDir' }
+      const lim = typeof limit === 'number' ? limit : undefined
+      return await readAuditLog(archiveDir, lim)
+    } catch (e) {
+      return { error: e instanceof Error ? e.message : String(e) }
+    }
+  })
+
+  ipcMain.handle('medical:export-map', async (_event, mappingPath: unknown, destPath: unknown) => {
+    try {
+      if (typeof mappingPath !== 'string' || typeof destPath !== 'string') {
+        return { success: false, error: 'medical:export-map invalid args' }
+      }
+      // Real impl in W4: copy mapping to destPath with permission gates + audit entry.
+      return { success: false, error: 'TODO: W4 — export-map not implemented' }
+    } catch (e) {
+      return { success: false, error: e instanceof Error ? e.message : String(e) }
+    }
   })
 
   // ── Defensive: silence error logs for handlers that may not exist on v1->v2 boundary

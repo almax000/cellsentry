@@ -56,6 +56,19 @@ const api: SidecarAPI = {
 
   getLlmStatus: () => ipcRenderer.invoke('llm:status'),
   startLlm: () => ipcRenderer.invoke('llm:start'),
+
+  // ── Medical pipeline (v2). Stubs until W3-W4. ────────────────────────
+  medical: {
+    ingest: (source: MedicalIngestSource) => ipcRenderer.invoke('medical:ingest', source),
+    scanCollisions: (mappingPath: string, chunks: string[]) =>
+      ipcRenderer.invoke('medical:scan-collisions', mappingPath, chunks),
+    preview: (request: MedicalPipelineRequest) => ipcRenderer.invoke('medical:preview', request),
+    redact: (request: MedicalPipelineRequest) => ipcRenderer.invoke('medical:redact', request),
+    getAuditLog: (archiveDir: string, limit?: number) =>
+      ipcRenderer.invoke('medical:get-audit-log', archiveDir, limit),
+    exportMap: (mappingPath: string, destPath: string) =>
+      ipcRenderer.invoke('medical:export-map', mappingPath, destPath),
+  },
 }
 
 contextBridge.exposeInMainWorld('api', api)

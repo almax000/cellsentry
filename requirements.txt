@@ -1,0 +1,22 @@
+# CellSentry v2.0 Python dependencies
+#
+# These are NOT required for the W1 server skeleton — that runs on stock
+# Python 3.9+ with no external packages. They get installed at the start of
+# W2 / W3 when real OCR + safety-net models come online.
+#
+# Install on Mac (per AD8 / AD2 / AD6):
+#     pip install -r requirements.txt
+#
+# Install on Windows: not required for v2.0-beta.1 (server runs in
+# stub-only mode on Windows; OCR + safety-net are Mac MLX-only per AD7).
+
+# OCR backend — DeepSeek-OCR via mlx-community/DeepSeek-OCR-8bit (per AD6).
+# Pinned to >=0.2.0 because earlier versions don't expose the load API used
+# in scripts/llm_server.py W2 implementation.
+mlx-vlm>=0.2.0
+
+# Safety-net LLM — Qwen2.5-3B-Instruct-4bit (per AD2).
+# Pinned to >=0.20.0 for make_sampler API (older `temp` kwarg removed).
+mlx-lm>=0.20.0
+
+# Note: mlx itself is a transitive dep of both above; no need to list it.

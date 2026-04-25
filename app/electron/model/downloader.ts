@@ -1,3 +1,25 @@
+/**
+ * ModelDownloader — fetches AI model weights from a region-aware URL list.
+ *
+ * v2.0 refactor (W1 Step 1.3 / AD10):
+ *   - `ModelInfo` is now a discriminated union `SingleFileModel | DirectoryModel`.
+ *   - SingleFileModel preserves the v1 GGUF shape (still works for any orphaned
+ *     v1 disk file the user wants to verify) but is no longer the default; v1
+ *     `DEFAULT_MODEL` constant is deleted.
+ *   - DirectoryModel iterates a `files: ModelFile[]` list, downloading each
+ *     entry to a subdirectory under `targetDir` with per-file sha256
+ *     verification and aggregate progress.
+ *   - Locale routing (HF / hf-mirror.com / ModelScope) preserved from v1, with
+ *     the same priority: zh-CN → MS → mirror → HF; otherwise HF → mirror → MS.
+ *   - Pure helpers (`buildUrls*`, `aggregateModelSize`, `checkModelOnDisk`) are
+ *     module-exported so vitest can cover them without network.
+ *
+ * Platform-split HTTP (preserved from v1, see ROADMAP 2026-03-17 entry):
+ *   - macOS uses Electron `net.request()` (Chromium stack, system-proxy aware)
+ *   - Windows / Linux use Node.js `https`/`http` (works on corporate networks
+ *     where Chromium fails)
+ */
+
 import { net } from 'electron'
 import https from 'https'
 import http from 'http'
@@ -8,7 +30,139 @@ import {
 } from 'fs'
 import { join } from 'path'
 
-/** Minimal response interface compatible with both Electron net and Node.js http */
+// ---------------------------------------------------------------------------
+// Types — discriminated union
+// ---------------------------------------------------------------------------
+
+interface ModelMeta {
+  /** Display name for UI / logs. */
+  name: string
+  version: string
+  description: string
+}
+
+export interface SingleFileModel extends ModelMeta {
+  kind: 'single-file'
+  filename: string
+  size: number
+  sha256: string
+  /** Primary URL — typically HuggingFace. */
+  downloadUrl: string
+  /** Optional fallback (e.g. hf-mirror.com). */
+  mirrorUrl?: string
+  /** Optional China-primary URL (e.g. ModelScope). */
+  cnPrimaryUrl?: string
+}
+
+export interface ModelFile {
+  /** Path relative to the model directory (e.g. `config.json` or `model-00001-of-00003.safetensors`). */
+  path: string
+  size: number
+  sha256: string
+}
+
+export interface DirectoryModel extends ModelMeta {
+  kind: 'directory'
+  /** Subdirectory name under `targetDir` where files land (e.g. `deepseek-ocr-8bit`). */
+  localDirName: string
+  files: ModelFile[]
+  /** Sum of `files[].size`. Cached to avoid recomputing on every progress emit. */
+  aggregateSize: number
+  baseUrls: {
+    /** HuggingFace base — required. Each file URL = `${hf}/${file.path}`. */
+    hf: string
+    /** hf-mirror.com base — optional global fallback. */
+    mirror?: string
+    /** ModelScope base — optional China primary. */
+    ms?: string
+  }
+}
+
+export type ModelInfo = SingleFileModel | DirectoryModel
+
+// ---------------------------------------------------------------------------
+// Pure helpers (no I/O — covered by vitest)
+// ---------------------------------------------------------------------------
+
+/**
+ * Locale-aware URL ordering for a single-file model.
+ * - `zh-*` locale: prefer cnPrimaryUrl (MS) → mirror → main (HF)
+ * - other:         prefer downloadUrl (HF) → mirror → cnPrimaryUrl (MS)
+ */
+export function buildUrlsForSingleFile(model: SingleFileModel, locale: string): string[] {
+  const isChinese = locale.startsWith('zh')
+  const urls: string[] = []
+  if (isChinese) {
+    if (model.cnPrimaryUrl) urls.push(model.cnPrimaryUrl)
+    if (model.mirrorUrl) urls.push(model.mirrorUrl)
+    urls.push(model.downloadUrl)
+  } else {
+    urls.push(model.downloadUrl)
+    if (model.mirrorUrl) urls.push(model.mirrorUrl)
+    if (model.cnPrimaryUrl) urls.push(model.cnPrimaryUrl)
+  }
+  return urls
+}
+
+/**
+ * Locale-aware URL ordering for one file inside a directory model.
+ * Each base URL gets `/${file.path}` appended.
+ */
+export function buildUrlsForDirectoryFile(
+  model: DirectoryModel,
+  file: ModelFile,
+  locale: string,
+): string[] {
+  const isChinese = locale.startsWith('zh')
+  const urls: string[] = []
+  const append = (base?: string): void => {
+    if (base) urls.push(`${base.replace(/\/+$/, '')}/${file.path.replace(/^\/+/, '')}`)
+  }
+  if (isChinese) {
+    append(model.baseUrls.ms)
+    append(model.baseUrls.mirror)
+    append(model.baseUrls.hf)
+  } else {
+    append(model.baseUrls.hf)
+    append(model.baseUrls.mirror)
+    append(model.baseUrls.ms)
+  }
+  return urls
+}
+
+/** Total bytes the user must download to fully install the model. */
+export function aggregateModelSize(model: ModelInfo): number {
+  if (model.kind === 'single-file') return model.size
+  return model.files.reduce((acc, f) => acc + f.size, 0)
+}
+
+/**
+ * On-disk completeness check. For directory models, returns true iff every
+ * `files[]` entry exists at expected size. Empty `files: []` → vacuously true,
+ * which is the W1 placeholder behavior (registry hasn't filled in real data
+ * yet, app launches without download flow until W2 swaps in real metadata).
+ */
+export function checkModelOnDisk(model: ModelInfo, targetDir: string): boolean {
+  if (model.kind === 'single-file') {
+    const path = join(targetDir, model.filename)
+    if (!existsSync(path)) return false
+    const sz = statSync(path).size
+    return model.size > 0 ? sz === model.size : true
+  }
+  // directory
+  for (const f of model.files) {
+    const path = join(targetDir, model.localDirName, f.path)
+    if (!existsSync(path)) return false
+    const sz = statSync(path).size
+    if (f.size > 0 && sz !== f.size) return false
+  }
+  return true
+}
+
+// ---------------------------------------------------------------------------
+// Class
+// ---------------------------------------------------------------------------
+
 interface DownloadResponse {
   statusCode?: number
   headers: Record<string, unknown>
@@ -17,44 +171,35 @@ interface DownloadResponse {
   on(event: 'error', listener: (err: unknown) => void): unknown
 }
 
-export interface ModelInfo {
-  name: string
-  filename: string
-  version: string
-  size: number
-  sha256: string
-  downloadUrl: string       // HuggingFace (global primary)
-  mirrorUrl?: string        // hf-mirror.com (global fallback)
-  cnPrimaryUrl?: string     // ModelScope (China primary)
-  description: string
-}
-
-export const DEFAULT_MODEL: ModelInfo = {
-  name: 'CellSentry 1.5B v3 Q4KM',
-  filename: 'cellsentry-1.5b-v3-q4km.gguf',
-  version: 'v3.0',
-  size: 986_047_968,
-  sha256: '4ae17b3886e4a5089671bf16aa133eaa6d8917a118bde6c75a54c1c3610f7cd3',
-  downloadUrl: 'https://huggingface.co/almax000/cellsentry-model/resolve/main/cellsentry-1.5b-v3-q4km.gguf',
-  mirrorUrl: 'https://hf-mirror.com/almax000/cellsentry-model/resolve/main/cellsentry-1.5b-v3-q4km.gguf',
-  cnPrimaryUrl: 'https://modelscope.cn/models/almax000/cellsentry-model/resolve/master/cellsentry-1.5b-v3-q4km.gguf',
-  description: 'CellSentry multi-task model (audit + PII + extraction, Q4_K_M)'
+interface FileTask {
+  /** Absolute path of the .downloading temp file. */
+  tempPath: string
+  /** Absolute path of the final file location. */
+  finalPath: string
+  /** Expected total bytes (informational; servers may return different). */
+  expectedSize: number
+  /** Hex sha256, lowercase. Empty string skips verification. */
+  expectedSha256: string
+  /** Human-readable label for progress messages. */
+  label: string
 }
 
 export type ProgressCallback = (downloaded: number, total: number, message: string) => void
 
 export class ModelDownloader {
-  private targetDir: string
-  private modelInfo: ModelInfo
-  private locale: string
+  private readonly targetDir: string
+  private readonly modelInfo: ModelInfo
+  private readonly locale: string
   private progressCallback: ProgressCallback | null = null
   private cancelled = false
   private _downloadPromise: Promise<boolean> | null = null
   private _currentRequest: Electron.ClientRequest | http.ClientRequest | null = null
+  /** For directory mode: bytes already downloaded across completed files. */
+  private _aggregateOffset = 0
 
-  constructor(targetDir: string, modelInfo?: ModelInfo, locale?: string) {
+  constructor(targetDir: string, modelInfo: ModelInfo, locale?: string) {
     this.targetDir = targetDir
-    this.modelInfo = modelInfo || DEFAULT_MODEL
+    this.modelInfo = modelInfo
     this.locale = locale || 'en'
   }
 
@@ -70,21 +215,21 @@ export class ModelDownloader {
     }
   }
 
-  getModelPath(): string {
-    return join(this.targetDir, this.modelInfo.filename)
+  /** Path the user-visible model lives at on disk (file or directory). */
+  getModelLocalPath(): string {
+    if (this.modelInfo.kind === 'single-file') {
+      return join(this.targetDir, this.modelInfo.filename)
+    }
+    return join(this.targetDir, this.modelInfo.localDirName)
   }
 
   checkModelExists(): boolean {
-    const modelPath = this.getModelPath()
-    if (!existsSync(modelPath)) return false
-    const actualSize = statSync(modelPath).size
-    return this.modelInfo.size > 0 ? actualSize === this.modelInfo.size : true
+    return checkModelOnDisk(this.modelInfo, this.targetDir)
   }
 
   async download(): Promise<boolean> {
-    // If already downloading, return the same promise (handles React StrictMode double-mount)
     if (this._downloadPromise) return this._downloadPromise
-    this._downloadPromise = this._downloadWithRetry()
+    this._downloadPromise = this._dispatchDownload()
     try {
       return await this._downloadPromise
     } finally {
@@ -92,27 +237,76 @@ export class ModelDownloader {
     }
   }
 
-  private buildUrlList(): string[] {
-    const isChinese = this.locale.startsWith('zh')
-    if (isChinese) {
-      const urls: string[] = []
-      if (this.modelInfo.cnPrimaryUrl) urls.push(this.modelInfo.cnPrimaryUrl)
-      if (this.modelInfo.mirrorUrl) urls.push(this.modelInfo.mirrorUrl)
-      urls.push(this.modelInfo.downloadUrl)
-      return urls
+  // ── Dispatch by kind ───────────────────────────────────────────────────
+
+  private async _dispatchDownload(): Promise<boolean> {
+    if (!this.checkDiskSpace()) {
+      throw new Error('Insufficient disk space.')
     }
-    const urls = [this.modelInfo.downloadUrl]
-    if (this.modelInfo.mirrorUrl) urls.push(this.modelInfo.mirrorUrl)
-    if (this.modelInfo.cnPrimaryUrl) urls.push(this.modelInfo.cnPrimaryUrl)
-    return urls
+    if (this.modelInfo.kind === 'single-file') {
+      return this._downloadSingleFile(this.modelInfo)
+    }
+    return this._downloadDirectory(this.modelInfo)
   }
 
-  private async _downloadWithRetry(): Promise<boolean> {
-    if (!this.checkDiskSpace()) {
-      throw new Error('Insufficient disk space. Need approximately 1 GB free.')
+  private async _downloadSingleFile(model: SingleFileModel): Promise<boolean> {
+    this._aggregateOffset = 0
+    const urls = buildUrlsForSingleFile(model, this.locale)
+    const task: FileTask = {
+      tempPath: join(this.targetDir, `${model.filename}.downloading`),
+      finalPath: join(this.targetDir, model.filename),
+      expectedSize: model.size,
+      expectedSha256: model.sha256,
+      label: model.filename,
+    }
+    return this._downloadOneFileWithFallback(urls, task, model.size)
+  }
+
+  private async _downloadDirectory(model: DirectoryModel): Promise<boolean> {
+    if (model.files.length === 0) {
+      // Registry placeholder — W1 default state. Treat as no-op success so
+      // the app can launch without forcing the user through a download flow
+      // that has no real data behind it.
+      this.emitProgress(0, 0,
+        'v2 model registry has no files yet (W2 fills this in after AD9 verification).')
+      return true
     }
 
-    const urls = this.buildUrlList()
+    mkdirSync(join(this.targetDir, model.localDirName), { recursive: true })
+    this._aggregateOffset = 0
+
+    for (const file of model.files) {
+      if (this.cancelled) return false
+      const urls = buildUrlsForDirectoryFile(model, file, this.locale)
+      const subDir = join(this.targetDir, model.localDirName)
+      // Mirror nested paths (e.g. "tokenizer/added_tokens.json").
+      const finalPath = join(subDir, file.path)
+      const fileDir = join(finalPath, '..')
+      mkdirSync(fileDir, { recursive: true })
+
+      const task: FileTask = {
+        tempPath: `${finalPath}.downloading`,
+        finalPath,
+        expectedSize: file.size,
+        expectedSha256: file.sha256,
+        label: `${model.localDirName}/${file.path}`,
+      }
+      const ok = await this._downloadOneFileWithFallback(urls, task, model.aggregateSize)
+      if (!ok) return false
+      this._aggregateOffset += file.size
+    }
+
+    this.emitProgress(model.aggregateSize, model.aggregateSize, 'Download complete')
+    return true
+  }
+
+  // ── Single-file download with URL-list fallback + retry ────────────────
+
+  private async _downloadOneFileWithFallback(
+    urls: string[],
+    task: FileTask,
+    aggregateTotal: number,
+  ): Promise<boolean> {
     let lastError: Error | undefined
 
     for (let i = 0; i < urls.length; i++) {
@@ -120,87 +314,50 @@ export class ModelDownloader {
       const MAX_RETRIES = 2
       for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
         try {
-          return await this.doDownload(url)
+          return await this._fetchOneFile(url, task, aggregateTotal)
         } catch (err) {
           if (this.cancelled) return false
           lastError = err instanceof Error ? err : new Error(String(err))
           if (attempt === MAX_RETRIES) break
           const delay = Math.pow(2, attempt) * 1000
-          this.emitProgress(0, this.modelInfo.size, `Network error. Retrying in ${delay / 1000}s...`)
+          this.emitProgress(this._aggregateOffset, aggregateTotal,
+            `Network error on ${task.label}. Retrying in ${delay / 1000}s…`)
           await new Promise(r => setTimeout(r, delay))
         }
       }
-      this.cleanup()
+      this.cleanupTask(task)
       if (i < urls.length - 1) {
-        this.emitProgress(0, this.modelInfo.size, 'Switching to next source...')
+        this.emitProgress(this._aggregateOffset, aggregateTotal, 'Switching to next source…')
         await new Promise(r => setTimeout(r, 1000))
       }
     }
-    throw lastError || new Error('Download failed')
+    throw lastError || new Error(`Download failed: ${task.label}`)
   }
 
-  cleanup(): void {
-    const tempPath = this.getTempPath()
-    try {
-      if (existsSync(tempPath)) unlinkSync(tempPath)
-    } catch { /* ignore */ }
-  }
-
-  private checkDiskSpace(): boolean {
-    try {
-      mkdirSync(this.targetDir, { recursive: true })
-      const stats = statfsSync(this.targetDir)
-      const freeBytes = BigInt(stats.bavail) * BigInt(stats.bsize)
-      const required = BigInt(Math.ceil(this.modelInfo.size * 1.1))
-      return freeBytes >= required
-    } catch {
-      return true
-    }
-  }
-
-  private async doDownload(url: string): Promise<boolean> {
-    // macOS: use Electron net module (respects system proxy)
-    // Windows: use Node.js https (more compatible with corporate environments)
+  private async _fetchOneFile(url: string, task: FileTask, aggregateTotal: number): Promise<boolean> {
     if (process.platform === 'darwin') {
-      return this.doDownloadNet(url)
+      return this._fetchOneFileNet(url, task, aggregateTotal)
     }
-    return this.doDownloadNode(url)
+    return this._fetchOneFileNode(url, task, aggregateTotal)
   }
 
-  /** Download using Electron's net module (Chromium stack, proxy-aware) */
-  private async doDownloadNet(url: string): Promise<boolean> {
+  /** macOS: use Electron net module (proxy-aware). */
+  private _fetchOneFileNet(url: string, task: FileTask, aggregateTotal: number): Promise<boolean> {
     this.cancelled = false
-    mkdirSync(this.targetDir, { recursive: true })
-
-    const tempPath = this.getTempPath()
-    const finalPath = this.getModelPath()
 
     let resumePos = 0
     try {
-      if (existsSync(tempPath)) {
-        resumePos = statSync(tempPath).size
+      if (existsSync(task.tempPath)) {
+        resumePos = statSync(task.tempPath).size
       }
-    } catch { /* file may have been renamed between check and stat */ }
+    } catch { /* ignore */ }
 
-    this.emitProgress(resumePos, this.modelInfo.size, 'Connecting...')
+    this.emitProgress(this._aggregateOffset + resumePos, aggregateTotal, `Connecting (${task.label})…`)
 
     return new Promise((resolve, reject) => {
-      const headers: Record<string, string> = {
-        'User-Agent': 'CellSentry/1.0'
-      }
-      if (resumePos > 0) {
-        headers['Range'] = `bytes=${resumePos}-`
-      }
-
-      const req = net.request({
-        method: 'GET',
-        url,
-        redirect: 'follow',
-      })
-
-      for (const [key, value] of Object.entries(headers)) {
-        req.setHeader(key, value)
-      }
+      const req = net.request({ method: 'GET', url, redirect: 'follow' })
+      req.setHeader('User-Agent', 'CellSentry/2.0')
+      if (resumePos > 0) req.setHeader('Range', `bytes=${resumePos}-`)
 
       this._currentRequest = req
 
@@ -211,39 +368,32 @@ export class ModelDownloader {
 
       req.on('response', (response) => {
         clearTimeout(connectTimeout)
-        this.handleResponse(response, tempPath, finalPath, resumePos, resolve, reject)
+        this._handleResponse(response, task, resumePos, aggregateTotal, resolve, reject)
       })
-
       req.on('error', (err: Error) => {
         clearTimeout(connectTimeout)
         reject(new Error(`Request error: ${err.message}`))
       })
-
       req.end()
     })
   }
 
-  /** Download using Node.js https (works on Windows with corporate/restrictive networks) */
-  private async doDownloadNode(url: string): Promise<boolean> {
+  /** Windows / Linux: Node.js https.get() with manual redirect-follow. */
+  private async _fetchOneFileNode(url: string, task: FileTask, aggregateTotal: number): Promise<boolean> {
     this.cancelled = false
-    mkdirSync(this.targetDir, { recursive: true })
-
-    const tempPath = this.getTempPath()
-    const finalPath = this.getModelPath()
 
     let resumePos = 0
     try {
-      if (existsSync(tempPath)) {
-        resumePos = statSync(tempPath).size
+      if (existsSync(task.tempPath)) {
+        resumePos = statSync(task.tempPath).size
       }
-    } catch { /* file may have been renamed between check and stat */ }
+    } catch { /* ignore */ }
 
-    this.emitProgress(resumePos, this.modelInfo.size, 'Connecting...')
+    this.emitProgress(this._aggregateOffset + resumePos, aggregateTotal, `Connecting (${task.label})…`)
 
-    // Follow redirects manually (up to 5)
     let currentUrl = url
     for (let redirects = 0; redirects < 5; redirects++) {
-      const result = await this.nodeRequest(currentUrl, resumePos, tempPath, finalPath)
+      const result = await this._nodeRequest(currentUrl, resumePos, task, aggregateTotal)
       if (result.redirect) {
         currentUrl = result.redirectUrl!
         continue
@@ -253,11 +403,11 @@ export class ModelDownloader {
     throw new Error('Too many redirects')
   }
 
-  private nodeRequest(
+  private _nodeRequest(
     url: string,
     resumePos: number,
-    tempPath: string,
-    finalPath: string
+    task: FileTask,
+    aggregateTotal: number,
   ): Promise<{ success: boolean; redirect?: boolean; redirectUrl?: string }> {
     return new Promise((resolve, reject) => {
       const parsed = new URL(url)
@@ -268,7 +418,7 @@ export class ModelDownloader {
         port: parsed.port,
         path: parsed.pathname + parsed.search,
         headers: {
-          'User-Agent': 'CellSentry/1.0',
+          'User-Agent': 'CellSentry/2.0',
           ...(resumePos > 0 ? { Range: `bytes=${resumePos}-` } : {}),
         },
       }
@@ -277,22 +427,19 @@ export class ModelDownloader {
         clearTimeout(connectTimeout)
         const statusCode = response.statusCode || 0
 
-        // Handle redirects
         if ([301, 302, 303, 307, 308].includes(statusCode) && response.headers.location) {
           response.resume()
           resolve({ success: false, redirect: true, redirectUrl: response.headers.location })
           return
         }
 
-        this.handleResponse(response, tempPath, finalPath, resumePos,
+        this._handleResponse(response, task, resumePos, aggregateTotal,
           (success) => resolve({ success }),
-          reject
-        )
+          reject)
       })
 
       this._currentRequest = req
 
-      // Hard connection timeout — GFW may silently drop SYN packets
       const connectTimeout = setTimeout(() => {
         req.destroy()
         reject(new Error('Connection timed out'))
@@ -305,26 +452,27 @@ export class ModelDownloader {
     })
   }
 
-  /** Shared response handler for both net and https transports */
-  private handleResponse(
+  /** Shared response handler — drains body to disk, verifies sha256, renames temp → final. */
+  private _handleResponse(
     response: DownloadResponse,
-    tempPath: string,
-    finalPath: string,
-    resumePos: number,
+    task: FileTask,
+    initialResumePos: number,
+    aggregateTotal: number,
     resolve: (value: boolean) => void,
-    reject: (reason: Error) => void
+    reject: (reason: Error) => void,
   ): void {
+    let resumePos = initialResumePos
     const statusCode = response.statusCode || 0
 
-    // Resume not supported — restart from scratch
     if (resumePos > 0 && statusCode !== 206) {
       resumePos = 0
-      try { unlinkSync(tempPath) } catch { /* ignore */ }
+      try { unlinkSync(task.tempPath) } catch { /* ignore */ }
     }
 
     if (statusCode === 416) {
-      if (existsSync(tempPath)) {
-        renameSync(tempPath, finalPath)
+      // Range Not Satisfiable — already-complete temp file.
+      if (existsSync(task.tempPath)) {
+        renameSync(task.tempPath, task.finalPath)
         resolve(true)
       } else {
         reject(new Error('HTTP 416: Range Not Satisfiable'))
@@ -338,13 +486,13 @@ export class ModelDownloader {
     }
 
     const contentLength = response.headers['content-length'] as string | undefined
-    const totalSize = contentLength
+    const expectedFileSize = contentLength
       ? parseInt(contentLength, 10) + resumePos
-      : this.modelInfo.size
+      : task.expectedSize
 
     let downloaded = resumePos
-    const fileStream = createWriteStream(tempPath, {
-      flags: resumePos > 0 ? 'a' : 'w'
+    const fileStream = createWriteStream(task.tempPath, {
+      flags: resumePos > 0 ? 'a' : 'w',
     })
 
     response.on('data', (chunk: Buffer) => {
@@ -354,12 +502,12 @@ export class ModelDownloader {
       }
       fileStream.write(chunk)
       downloaded += chunk.length
-      const downloadedMB = downloaded / (1024 * 1024)
-      const totalMB = totalSize / (1024 * 1024)
+      const downloadedMB = (this._aggregateOffset + downloaded) / (1024 * 1024)
+      const totalMB = (aggregateTotal || expectedFileSize) / (1024 * 1024)
       this.emitProgress(
-        downloaded,
-        totalSize,
-        `Downloading... ${downloadedMB.toFixed(1)} MB / ${totalMB.toFixed(1)} MB`
+        this._aggregateOffset + downloaded,
+        aggregateTotal || expectedFileSize,
+        `Downloading ${task.label}… ${downloadedMB.toFixed(1)} MB / ${totalMB.toFixed(1)} MB`,
       )
     })
 
@@ -370,20 +518,21 @@ export class ModelDownloader {
           return
         }
 
-        if (this.modelInfo.sha256) {
-          this.emitProgress(downloaded, totalSize, 'Verifying checksum...')
-          if (!this.verifyChecksumSync(tempPath)) {
-            try { unlinkSync(tempPath) } catch { /* ignore */ }
-            reject(new Error('Checksum verification failed'))
+        if (task.expectedSha256) {
+          this.emitProgress(this._aggregateOffset + downloaded, aggregateTotal,
+            `Verifying ${task.label}…`)
+          if (!verifyChecksumSync(task.tempPath, task.expectedSha256)) {
+            try { unlinkSync(task.tempPath) } catch { /* ignore */ }
+            reject(new Error(
+              `Checksum mismatch for ${task.label} — expected sha256 ${task.expectedSha256.slice(0, 16)}…`))
             return
           }
         }
 
-        if (existsSync(finalPath)) {
-          try { unlinkSync(finalPath) } catch { /* ignore */ }
+        if (existsSync(task.finalPath)) {
+          try { unlinkSync(task.finalPath) } catch { /* ignore */ }
         }
-        renameSync(tempPath, finalPath)
-        this.emitProgress(totalSize, totalSize, 'Download complete')
+        renameSync(task.tempPath, task.finalPath)
         resolve(true)
       })
     })
@@ -399,28 +548,43 @@ export class ModelDownloader {
     })
   }
 
-  private getTempPath(): string {
-    return join(this.targetDir, `${this.modelInfo.filename}.downloading`)
+  // ── Misc helpers ────────────────────────────────────────────────────────
+
+  cleanupTask(task: FileTask): void {
+    try {
+      if (existsSync(task.tempPath)) unlinkSync(task.tempPath)
+    } catch { /* ignore */ }
+  }
+
+  private checkDiskSpace(): boolean {
+    try {
+      mkdirSync(this.targetDir, { recursive: true })
+      const stats = statfsSync(this.targetDir)
+      const freeBytes = BigInt(stats.bavail) * BigInt(stats.bsize)
+      const required = BigInt(Math.ceil(aggregateModelSize(this.modelInfo) * 1.1))
+      return freeBytes >= required
+    } catch {
+      return true
+    }
   }
 
   private emitProgress(downloaded: number, total: number, message: string): void {
     this.progressCallback?.(downloaded, total, message)
   }
+}
 
-  private verifyChecksumSync(filePath: string): boolean {
-    if (!this.modelInfo.sha256) return true
+// ---------------------------------------------------------------------------
+// Module-level checksum helper (also used by tests on temp fixtures)
+// ---------------------------------------------------------------------------
 
-    const hash = createHash('sha256')
-    const totalSize = statSync(filePath).size
-    const CHUNK_SIZE = 8192 * 1024 // 8MB
-
-    for (const chunk of readChunksSync(filePath, CHUNK_SIZE)) {
-      hash.update(chunk)
-    }
-
-    this.emitProgress(totalSize, totalSize, 'Verified')
-    return hash.digest('hex').toLowerCase() === this.modelInfo.sha256.toLowerCase()
+export function verifyChecksumSync(filePath: string, expectedSha256: string): boolean {
+  if (!expectedSha256) return true
+  const hash = createHash('sha256')
+  const CHUNK_SIZE = 8192 * 1024
+  for (const chunk of readChunksSync(filePath, CHUNK_SIZE)) {
+    hash.update(chunk)
   }
+  return hash.digest('hex').toLowerCase() === expectedSha256.toLowerCase()
 }
 
 function* readChunksSync(filePath: string, chunkSize: number): Generator<Buffer> {

@@ -19,6 +19,21 @@
 
 ---
 
+> ## 🔄 v2.0 Pivot in Progress
+>
+> CellSentry is being rewritten as a **local medical record pseudonymization tool**. The v1.x three-feature toolbox (audit / PII / extraction) is being replaced by a single focused tool: ingest images / PDFs / text, apply a user-provided real-name → pseudonym mapping with consistency across documents, and locally OCR + safety-net scan to flag missed names. Target: **v2.0.0-beta.1, around June 2026**.
+>
+> **What this means right now:**
+>
+> - **v1.1.0-beta.1 still works** — DMG / Setup.exe on the [latest release](https://github.com/almax000/cellsentry/releases/tag/v1.1.0-beta.1) remain functional and downloadable.
+> - **`main` branch is mid-rewrite** — code on `main` no longer matches the README below. The screenshots and feature descriptions describe v1; the running app on `main` is a stub showing "v2 coming soon."
+> - **No automatic v1 → v2 migration** — v2 is a re-focus, not an upgrade path. Different problem, different tool surface.
+> - **Why pivot:** v1 had zero meaningful adoption; the medical pseudonymization use-case is concrete (DrCrow health-AI video pipeline depends on it) and a better fit for a locally-run tool.
+>
+> Issues / PRs against v1 features will likely be closed as `wontfix` unless they affect v1.1.0-beta.1 stability. New v2 feedback is welcome — open an issue tagged `v2`.
+
+---
+
 > **Note**: CellSentry is an experimental research project in active development. The AI model is a fine-tuned 1.5B parameter SLM — expect rough edges. Feedback and contributions welcome.
 
 <p align="center">
