@@ -5,7 +5,7 @@ import { SidecarProvider } from './hooks/useSidecar'
 import { ScanProvider } from './context/ScanContext'
 import ErrorBoundary from './components/ErrorBoundary'
 import Layout from './components/Layout'
-import DropZone from './components/DropZone'
+import IngestWorkspace from './components/medical/IngestWorkspace'
 import SettingsPage from './components/SettingsPage'
 
 export default function App(): JSX.Element {
@@ -38,13 +38,15 @@ export default function App(): JSX.Element {
           <ScanProvider>
             <Routes>
               <Route element={<Layout />}>
-                <Route path="/" element={<DropZone />} />
+                <Route path="/" element={<Navigate to="/medical" replace />} />
+                <Route path="/medical" element={<IngestWorkspace />} />
                 <Route path="/settings" element={<SettingsPage />} />
-                <Route path="/scanning" element={<Navigate to="/" replace />} />
-                <Route path="/results" element={<Navigate to="/" replace />} />
-                <Route path="/pii/*" element={<Navigate to="/" replace />} />
-                <Route path="/extract/*" element={<Navigate to="/" replace />} />
-                <Route path="*" element={<Navigate to="/" replace />} />
+                {/* Legacy redirects from v1 routes */}
+                <Route path="/scanning" element={<Navigate to="/medical" replace />} />
+                <Route path="/results" element={<Navigate to="/medical" replace />} />
+                <Route path="/pii/*" element={<Navigate to="/medical" replace />} />
+                <Route path="/extract/*" element={<Navigate to="/medical" replace />} />
+                <Route path="*" element={<Navigate to="/medical" replace />} />
               </Route>
             </Routes>
           </ScanProvider>

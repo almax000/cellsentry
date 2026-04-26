@@ -1,0 +1,53 @@
+{
+  "workspace": {
+    "title": "Pseudonymize medical record",
+    "runCta": "Run pipeline ▶"
+  },
+  "dropzone": {
+    "title": "Drop image, PDF, or .txt here",
+    "subtitle": "or click to browse",
+    "aria": "Drop files or click to browse"
+  },
+  "queue": {
+    "aria": "Files queued for redaction",
+    "remove": "Remove {{name}} from queue",
+    "status": {
+      "ready": "Ready",
+      "running": "Running…",
+      "done": "Done",
+      "error": "Error"
+    }
+  },
+  "dateMode": {
+    "legend": "Date handling",
+    "preserve": "Preserve absolute dates (default)",
+    "offsetDays": "Offset by N days",
+    "bucketMonth": "Round to first of month",
+    "offsetDaysAria": "Number of days to offset"
+  },
+  "run": {
+    "disabledNoFile": "Drop a file first.",
+    "disabledNoMapping": "Add at least one patient to the mapping."
+  },
+  "pipeline": {
+    "scanningCollisions": "Pre-flight collision scan…",
+    "todoW4": "Pipeline orchestrator wiring lands in W4. The collision scan is live; redact + safety-net come next.",
+    "error": "Pipeline error: {{msg}}"
+  },
+  "collision": {
+    "title": "Pipeline blocked — name overlaps detected",
+    "summary": "{{count}} overlap(s) found. Resolve each before continuing.",
+    "foundIn": "Found in input:",
+    "cardHeading": "Mapping key: {{shorter}}",
+    "explain": "The longer name {{longer}} contains your mapping key {{shorter}} but is not itself in the mapping. Pseudonymizing {{shorter}} here would corrupt the legitimate longer name.",
+    "actionsAria": "Resolution options",
+    "actions": {
+      "add": "Add {{longer}} to mapping with new pseudonym",
+      "approve": "Approve partial match (treat {{shorter}} here as mapped)",
+      "skip": "Skip — leave both names as-is"
+    },
+    "cancel": "Cancel pipeline",
+    "continueReady": "Continue ▶",
+    "continueWithCount": "Continue ({{unresolved}} unresolved)"
+  }
+}

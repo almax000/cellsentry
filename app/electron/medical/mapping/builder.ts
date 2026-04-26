@@ -1,35 +1,87 @@
 /**
- * Counter-based pseudonym generator (per AD5 revised).
+ * Counter-based pseudonym generator (W3 Step 3.2 / AD5 revised).
  *
- * Auto-assignment: 1 → 患者A, 2 → 患者B, ..., 27 → 患者AA, 28 → 患者AB, ...
- * Counter persisted in YAML frontmatter `next_pseudonym_index: N`.
+ * Why counter (not deterministic hash):
+ *   v1 plan proposed `sha256(patient_id)[0:4] % 676` (4 hex × 26 codepoints)
+ *   which has a ~52% birthday-paradox collision rate at just 100 patients.
+ *   Even a 4-letter (26^4 = 457k) hash drops to <1% only up to ~200.
+ *   A counter is simpler and correct for any plausible patient count.
  *
- * Manual override always wins — if user sets `pseudonym: 老张`, builder records
- * that exact string and still increments the counter so future auto-assignments
- * don't reuse the index.
+ * Encoding:
+ *   index 0  → "A"
+ *   index 25 → "Z"
+ *   index 26 → "AA"   (not "BA" — Excel column naming)
+ *   index 51 → "AZ"
+ *   index 52 → "BA"
+ *   index 701 → "ZZ"
+ *   index 702 → "AAA"
  *
- * Real implementation in W3 Step 3.2.
+ * Pseudonym = "患者" + base26(index). User can override via manual `pseudonym`
+ * field; manual override always wins, but we still increment the counter so
+ * future auto-assignments don't reuse the index.
  */
 
 import type { PatientEntry, PseudonymMap } from '../types'
 
-/** base26 encoding: 0 → 'A', 25 → 'Z', 26 → 'AA', 27 → 'AB', ... */
-export function base26(_index: number): string {
-  throw new Error('TODO: W3 Step 3.2 — base26 encoder not implemented')
+/** Excel-column-style base-26 encoding. 0 → "A", 25 → "Z", 26 → "AA", … */
+export function base26(index: number): string {
+  if (!Number.isInteger(index) || index < 0) {
+    throw new RangeError(`base26 expects non-negative integer, got ${index}`)
+  }
+  let s = ''
+  let n = index
+  while (n >= 0) {
+    s = String.fromCharCode(65 + (n % 26)) + s
+    n = Math.floor(n / 26) - 1
+  }
+  return s
+}
+
+/** Computes the next auto-pseudonym for a given counter value. */
+export function nextPseudonym(currentIndex: number): { pseudonym: string; nextIndex: number } {
+  return {
+    pseudonym: `患者${base26(currentIndex)}`,
+    nextIndex: currentIndex + 1,
+  }
+}
+
+export interface AddPatientInput {
+  patient_id: string
+  real_name: string
+  aliases?: string[]
+  /** If omitted, an auto-pseudonym is assigned via the counter. */
+  pseudonym?: string
+  date_mode?: PatientEntry['date_mode']
+  date_offset_days?: number
+  additional_entities?: PatientEntry['additional_entities']
 }
 
 /**
- * Assigns next auto-pseudonym for a new patient given the current counter.
- * Returns the new pseudonym AND the next counter value (caller persists both).
+ * Adds a patient to the mapping. Manual `pseudonym` always wins; counter
+ * increments either way so future auto-assignments don't reuse the index.
+ *
+ * Returns a NEW map (immutable update; original `map` not modified) so the
+ * orchestrator can stage edits and confirm with one writer.ts call.
  */
-export function nextPseudonym(_currentIndex: number): { pseudonym: string; nextIndex: number } {
-  throw new Error('TODO: W3 Step 3.2 — counter assignment not implemented')
-}
+export function addPatient(map: PseudonymMap, input: AddPatientInput): PseudonymMap {
+  const isAuto = !input.pseudonym
+  const auto = isAuto ? nextPseudonym(map.next_pseudonym_index) : null
+  const pseudonym = input.pseudonym ?? auto!.pseudonym
+  const newIndex = auto?.nextIndex ?? map.next_pseudonym_index + 1 // increment even for manual
 
-/**
- * Adds a patient to the mapping. If `patient.pseudonym` is empty, auto-assigns
- * via counter; otherwise records the manual value but still increments counter.
- */
-export function addPatient(_map: PseudonymMap, _patient: Omit<PatientEntry, 'pseudonym'> & { pseudonym?: string }): PseudonymMap {
-  throw new Error('TODO: W3 Step 3.2 — patient append not implemented')
+  const entry: PatientEntry = {
+    patient_id: input.patient_id,
+    real_name: input.real_name,
+    aliases: input.aliases ?? [],
+    pseudonym,
+    date_mode: input.date_mode ?? 'preserve',
+    date_offset_days: input.date_offset_days,
+    additional_entities: input.additional_entities ?? [],
+  }
+
+  return {
+    ...map,
+    next_pseudonym_index: newIndex,
+    patients: [...map.patients, entry],
+  }
 }

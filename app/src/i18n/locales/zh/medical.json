@@ -1,0 +1,53 @@
+{
+  "workspace": {
+    "title": "医疗档案假名化",
+    "runCta": "运行流水线 ▶"
+  },
+  "dropzone": {
+    "title": "拖入图片、PDF 或 .txt 文件",
+    "subtitle": "或点击选择文件",
+    "aria": "拖入文件或点击选择"
+  },
+  "queue": {
+    "aria": "等待脱敏的文件",
+    "remove": "从队列中移除 {{name}}",
+    "status": {
+      "ready": "就绪",
+      "running": "运行中…",
+      "done": "完成",
+      "error": "错误"
+    }
+  },
+  "dateMode": {
+    "legend": "日期处理",
+    "preserve": "保留绝对日期（默认）",
+    "offsetDays": "整体偏移 N 天",
+    "bucketMonth": "按月对齐到月初",
+    "offsetDaysAria": "偏移天数"
+  },
+  "run": {
+    "disabledNoFile": "请先拖入一个档案。",
+    "disabledNoMapping": "至少在映射里加一个患者。"
+  },
+  "pipeline": {
+    "scanningCollisions": "预飞行冲突扫描中…",
+    "todoW4": "流水线编排在 W4 接入。冲突扫描已在线；脱敏 + 安全网下个里程碑。",
+    "error": "流水线错误: {{msg}}"
+  },
+  "collision": {
+    "title": "流水线阻塞 —— 检测到名称重叠",
+    "summary": "找到 {{count}} 处重叠。逐个解决后才能继续。",
+    "foundIn": "输入中发现:",
+    "cardHeading": "映射 key: {{shorter}}",
+    "explain": "较长名 {{longer}} 包含映射 key {{shorter}}，但本身不在映射里。在这里假名化 {{shorter}} 会污染合法长名。",
+    "actionsAria": "解决方式",
+    "actions": {
+      "add": "把 {{longer}} 加进映射，分配新假名",
+      "approve": "批准部分匹配（这里 {{shorter}} 当映射值）",
+      "skip": "跳过 —— 两个名字都保留原样"
+    },
+    "cancel": "取消流水线",
+    "continueReady": "继续 ▶",
+    "continueWithCount": "继续（{{unresolved}} 未解决）"
+  }
+}

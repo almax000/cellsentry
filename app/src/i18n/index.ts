@@ -3,17 +3,18 @@ import { initReactI18next } from 'react-i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
 
 import enCommon from './locales/en/common.json'
-import enDropzone from './locales/en/dropzone.json'
 import enSettings from './locales/en/settings.json'
 import enModals from './locales/en/modals.json'
+import enMedical from './locales/en/medical.json'
 
 import zhCommon from './locales/zh/common.json'
-import zhDropzone from './locales/zh/dropzone.json'
 import zhSettings from './locales/zh/settings.json'
 import zhModals from './locales/zh/modals.json'
+import zhMedical from './locales/zh/medical.json'
 
 // v2 W1 Step 1.1: removed scanning/results/pii/extraction namespaces.
-// v2 medical-pipeline copy will be added under new namespaces in W2-W4.
+// v2 W3 Step 3.6: added medical namespace; deleted dropzone (replaced by
+// medical/IngestWorkspace which uses its own copy in medical.json).
 
 i18n
   .use(LanguageDetector)
@@ -22,18 +23,18 @@ i18n
     resources: {
       en: {
         common: enCommon,
-        dropzone: enDropzone,
         settings: enSettings,
         modals: enModals,
+        medical: enMedical,
       },
       zh: {
         common: zhCommon,
-        dropzone: zhDropzone,
         settings: zhSettings,
         modals: zhModals,
+        medical: zhMedical,
       },
     },
-    ns: ['common', 'dropzone', 'settings', 'modals'],
+    ns: ['common', 'settings', 'modals', 'medical'],
     defaultNS: 'common',
     fallbackLng: 'en',
     detection: {

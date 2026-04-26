@@ -129,10 +129,85 @@ export function parseSafetyNetOutput(raw: string): SafetyNetFlag[] | null {
 /**
  * Run the safety-net pass.
  *
- * W2: not yet wired. The function is exported so orchestrator.ts can import
- * the type signature. W3 Step 3.1 wires this through the existing
- * `lifecycle.ts` `analyzeWithLlm` path.
+ * Calls the unified Python server's `analyze` method with the safety-net
+ * prompts. The Python side loads Qwen2.5-3B-Instruct lazily; the first call
+ * pays a one-time ~2-3 s import cost + ~5-10 s model load on Apple Silicon.
+ * Subsequent calls reuse the loaded model and run in ~3-8 s for typical
+ * medical-record sizes.
+ *
+ * Failure modes (UI must handle, see screen-4 design spec):
+ *   - bridge unavailable → `{ error, flagsUnsupported: true }` shape; UI shows
+ *     degraded banner; user manually scans output.
+ *   - model returns malformed JSON → `parseSafetyNetOutput` returns null;
+ *     surface as "AI returned unreadable response — retry or treat preview as final."
+ *   - model returns valid empty array / "none" sentinel → return `[]`; UI
+ *     skips screen 4 and routes straight to export.
+ *   - normal: returns parsed `SafetyNetFlag[]`; UI shows screen 4.
  */
-export async function runSafetyNet(_input: SafetyNetInput): Promise<SafetyNetFlag[]> {
-  throw new Error('TODO: W3 Step 3.1 — analyzeWithLlm not yet calling Qwen2.5-3B')
+
+// Note on dynamic import: `llm/bridge` imports the `electron` package at module
+// load time (for `net.request`), which vitest's happy-dom can't resolve. Pure
+// parser tests in safetyNet.test.ts import this file's parseSafetyNetOutput +
+// stripDecorations; if we top-level-imported llmBridge, those tests would fail
+// at module-load. Lazy import inside runSafetyNet keeps the pure path testable.
+
+export type SafetyNetOutcome =
+  | { kind: 'flags'; flags: SafetyNetFlag[]; latency_ms: number }
+  | { kind: 'unreadable'; raw: string; latency_ms: number }
+  | { kind: 'unavailable'; error: string; code: string }
+
+export async function runSafetyNet(input: SafetyNetInput): Promise<SafetyNetOutcome> {
+  const { llmBridge } = await import('../../llm/bridge')
+  const { buildSafetyNetChatMessages } = await import('./safetyNetPrompts')
+
+  if (!llmBridge.status.available) {
+    await llmBridge.start()
+  }
+  if (!llmBridge.status.available) {
+    return {
+      kind: 'unavailable',
+      error: 'Local AI bridge not available. Manually review the redacted output for missed names.',
+      code: 'bridge_unavailable',
+    }
+  }
+
+  const messages = buildSafetyNetChatMessages(input)
+
+  const response = await llmBridge.send({
+    method: 'analyze',
+    params: {
+      messages,
+      max_tokens: 2048,
+      // Low temperature: safety-net should be deterministic-ish, not creative.
+      temperature: 0.1,
+    },
+  })
+
+  if (response.error) {
+    return { kind: 'unavailable', error: response.error, code: 'bridge_error' }
+  }
+
+  const result = response.result as Record<string, unknown> | undefined
+  if (!result || typeof result !== 'object') {
+    return { kind: 'unavailable', error: 'safety-net returned empty response', code: 'empty_response' }
+  }
+
+  // Python may return error envelope OR success {text, latency_ms}.
+  if (typeof result.error === 'string') {
+    return {
+      kind: 'unavailable',
+      error: result.error,
+      code: typeof result.code === 'string' ? result.code : 'unknown',
+    }
+  }
+
+  const text = typeof result.text === 'string' ? result.text : ''
+  const latency_ms = typeof result.latency_ms === 'number' ? result.latency_ms : 0
+
+  const flags = parseSafetyNetOutput(text)
+  if (flags === null) {
+    return { kind: 'unreadable', raw: text, latency_ms }
+  }
+
+  return { kind: 'flags', flags, latency_ms }
 }
