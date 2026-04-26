@@ -31,7 +31,7 @@ import {
   parseMappingText,
 } from './parser'
 import { addPatient, base26, nextPseudonym } from './builder'
-import { serializeMapping, writeMapping } from './writer'
+import { listQuarantined, serializeMapping, writeMapping } from './writer'
 import type { PseudonymMap } from '../types'
 
 // ---------------------------------------------------------------------------
@@ -335,6 +335,108 @@ describe('round-trip stability', () => {
       // Header comment preserved.
       const text = readFileSync(path, 'utf-8')
       expect(text).toContain('CellSentry pseudonym map')
+    } finally {
+      rmSync(tmp, { recursive: true, force: true })
+    }
+  })
+})
+
+// ---------------------------------------------------------------------------
+// E014 quarantine — corrupt existing file is preserved before overwrite
+// ---------------------------------------------------------------------------
+
+describe('writeMapping — E014 quarantine on corrupt existing', () => {
+  it('quarantines a corrupt existing mapping before overwrite', async () => {
+    const tmp = mkdtempSync(join(tmpdir(), 'cs-quarantine-'))
+    try {
+      const path = join(tmp, 'pseudonym-map.md')
+      // Create a corrupt YAML file (e.g. broken from a hand-edit).
+      writeFileSync(path, 'version: 1\npatients:\n  - this is invalid: [\n', 'utf-8')
+
+      const newMap: PseudonymMap = {
+        version: 1,
+        next_pseudonym_index: 1,
+        source_path: path,
+        patients: [
+          {
+            patient_id: 'f-1',
+            real_name: '李四',
+            aliases: [],
+            pseudonym: '患者A',
+            date_mode: 'preserve',
+            additional_entities: [],
+          },
+        ],
+      }
+
+      await writeMapping(newMap)
+
+      // The new mapping is at the original path
+      const reloaded = await loadMapping(path)
+      expect(reloaded.patients[0].real_name).toBe('李四')
+
+      // The corrupt original was preserved in .corrupt/
+      const quarantined = await listQuarantined(tmp)
+      expect(quarantined.length).toBe(1)
+      const recovered = readFileSync(quarantined[0], 'utf-8')
+      expect(recovered).toContain('this is invalid')
+    } finally {
+      rmSync(tmp, { recursive: true, force: true })
+    }
+  })
+
+  it('does NOT quarantine when existing file parses cleanly', async () => {
+    const tmp = mkdtempSync(join(tmpdir(), 'cs-quarantine-'))
+    try {
+      const path = join(tmp, 'pseudonym-map.md')
+      // Valid existing file
+      writeFileSync(
+        path,
+        `version: 1
+next_pseudonym_index: 0
+patients: []
+`,
+        'utf-8',
+      )
+
+      const newMap: PseudonymMap = {
+        version: 1,
+        next_pseudonym_index: 1,
+        source_path: path,
+        patients: [
+          {
+            patient_id: 'f-1',
+            real_name: '张三',
+            aliases: [],
+            pseudonym: '患者A',
+            date_mode: 'preserve',
+            additional_entities: [],
+          },
+        ],
+      }
+
+      await writeMapping(newMap)
+      const quarantined = await listQuarantined(tmp)
+      expect(quarantined).toEqual([])
+    } finally {
+      rmSync(tmp, { recursive: true, force: true })
+    }
+  })
+
+  it('does NOT quarantine when target file does not exist (first write)', async () => {
+    const tmp = mkdtempSync(join(tmpdir(), 'cs-quarantine-'))
+    try {
+      const path = join(tmp, 'pseudonym-map.md')
+      // No file yet
+      const newMap: PseudonymMap = {
+        version: 1,
+        next_pseudonym_index: 0,
+        source_path: path,
+        patients: [],
+      }
+      await writeMapping(newMap)
+      const quarantined = await listQuarantined(tmp)
+      expect(quarantined).toEqual([])
     } finally {
       rmSync(tmp, { recursive: true, force: true })
     }

@@ -1,0 +1,32 @@
+Psychiatric Progress Note
+
+Patient: Jane Test-Patient
+DOB: 1985-09-20
+Visit Date: 2025-03-20
+Provider: Dr. Test-Therapist
+Clinic: Anytown Mental Health Associates
+
+Chief Complaint:
+Patient reports continued anxiety and difficulty sleeping for the past month.
+
+History of Present Illness:
+Jane Test-Patient is a 39-year-old female who presents for follow-up of generalized
+anxiety disorder. Since the last visit (February 18, 2025), she reports:
+- Increased work-related stress following promotion
+- Sleep onset latency 60-90 minutes most nights
+- Mid-morning panic episodes (3 in past two weeks, triggered by meetings)
+- Mood: 6/10 average; no SI/HI
+
+Medications:
+- Sertraline 100mg daily (since 2024-08-12)
+- Hydroxyzine 25mg PRN for panic
+
+Plan:
+1. Continue sertraline 100mg daily.
+2. Increase hydroxyzine to 50mg PRN; instruct on AM dosing prior to meetings.
+3. Behavioral: review CBT thought records weekly; goal 5 entries/week.
+4. Follow up in 4 weeks (April 17, 2025).
+5. Patient agreed to safety plan; emergency contact 911 / Crisis Line 988.
+
+Signed: Dr. Test-Therapist, MD
+Date: 3/20/2025

@@ -30,6 +30,10 @@ export default defineConfig({
     {
       name: 'sidebar-ux',
       testMatch: /sidebar-ux\.spec\.ts/
+    },
+    {
+      name: 'medical',
+      testMatch: /medical\.spec\.ts/
     }
   ]
 })

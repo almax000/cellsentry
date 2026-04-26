@@ -1,0 +1,26 @@
+Laboratory Test Report
+
+Patient: John Doe-Test
+DOB: 1978-05-12
+MRN: TEST-987654321
+Email: john.test@example.com
+Phone: 13912345678
+
+Specimen collected: March 15, 2025
+Specimen received: March 15, 2025
+
+Complete Blood Count:
+  WBC      6.8  K/uL  (normal 4.0-11.0)
+  RBC      4.5  M/uL  (normal 4.5-5.9)
+  HGB      14.2 g/dL  (normal 13.0-17.0)
+  HCT      42.1 %     (normal 40-50)
+  PLT      225  K/uL  (normal 150-400)
+
+Lipid Panel:
+  Total Cholesterol    198  mg/dL  (desirable < 200)
+  LDL                  125  mg/dL  (optimal < 100)
+  HDL                  52   mg/dL  (low risk > 60)
+  Triglycerides        108  mg/dL  (normal < 150)
+
+Comments: LDL slightly elevated. Recommend dietary review with primary care.
+Reviewed by Dr. Test-Consultant on 3/16/2025.
