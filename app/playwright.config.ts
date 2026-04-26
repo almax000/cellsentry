@@ -1,10 +1,11 @@
 import { defineConfig } from '@playwright/test'
 import { join } from 'path'
 
-// v2 W1 Step 1.1: removed pii / extraction / flow / functional projects.
-// Their spec files were deleted with v1.x engines. v2 medical-pipeline E2E
-// tests will be added in W3-W5 (mapping editor, audit diff, multi-doc,
-// regex-confirm, collision-warning).
+// v2 W1: removed pii / extraction / flow / functional projects with v1 engines.
+// v2 W6: removed visual + sidebar-ux specs — they tested DropZone-area,
+// sidebar engine items (Audit/PII/Extraction nav), and app-brand header
+// icons that no longer exist post-pivot. v2 E2E coverage lives in `medical`
+// (7 tests covering ingest → preview → safety-net per AD3 critical path).
 
 const reportDir = join(__dirname, '..', 'test_evidence', 'e2e-report')
 
@@ -23,14 +24,6 @@ export default defineConfig({
     video: 'on-first-retry'
   },
   projects: [
-    {
-      name: 'visual',
-      testMatch: /visual\.spec\.ts/
-    },
-    {
-      name: 'sidebar-ux',
-      testMatch: /sidebar-ux\.spec\.ts/
-    },
     {
       name: 'medical',
       testMatch: /medical\.spec\.ts/
