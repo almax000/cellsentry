@@ -12,6 +12,16 @@ export function initAutoUpdater(mainWindow: BrowserWindow): void {
   autoUpdater.autoDownload = false
   autoUpdater.autoInstallOnAppQuit = true
 
+  // v2 W4 Step 4.5 / Warning N2: `allowPrerelease` is a runtime AppUpdater
+  // property, NOT an electron-builder.yml field. We set it to false so v2+
+  // users don't auto-jump from a stable 2.0.0 to a future 2.x-beta. Note:
+  // this only constrains v2+ code; v1.1.0-beta.1 install base already has
+  // prerelease enabled by default (their installed version itself contains a
+  // prerelease tag). Migration sequencing — release v1.1.1 stable first, wait
+  // 48-72h for auto-update propagation, THEN tag v2.0.0-beta.1 — protects
+  // most v1 users from automatic v2 jump. Edge cases see V2UpgradeBanner.
+  autoUpdater.allowPrerelease = false
+
   autoUpdater.logger = {
     info: (msg: string) => console.log('[updater]', msg),
     warn: (msg: string) => console.warn('[updater]', msg),

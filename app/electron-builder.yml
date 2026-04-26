@@ -1,5 +1,5 @@
 appId: com.cellsentry.app
-productName: CellSentry Beta
+productName: CellSentry v2
 directories:
   buildResources: resources
   output: dist

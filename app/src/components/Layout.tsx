@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import Sidebar from './Sidebar'
 import Header from './Header'
 import ConnectionBanner from './ConnectionBanner'
+import V2UpgradeBanner from './medical/V2UpgradeBanner'
 import { GridIcon, ShieldCheckIcon } from './icons'
 import './Layout.css'
 
@@ -37,6 +38,7 @@ export default function Layout(): JSX.Element {
           <Outlet />
         </div>
       </div>
+      <V2UpgradeBanner />
     </div>
   )
 }

@@ -71,6 +71,8 @@ interface MedicalAPI {
   scanCollisions: (mappingPath: string, chunks: string[]) => Promise<MedicalCollisionWarning[] | { error: string }>
   preview: (request: MedicalPipelineRequest) => Promise<MedicalRedactionResult | { error: string }>
   redact: (request: MedicalPipelineRequest) => Promise<MedicalRedactionResult | { error: string }>
+  redactInline: (sourceText: string, mappingText: string, preview: boolean) =>
+    Promise<MedicalRedactionResult | { error: string }>
   getAuditLog: (archiveDir: string, limit?: number) => Promise<MedicalAuditEntry[] | { error: string }>
   exportMap: (mappingPath: string, destPath: string) => Promise<{ success: boolean; error?: string }>
 }

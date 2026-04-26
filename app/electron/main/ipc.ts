@@ -224,6 +224,24 @@ export function registerIpcHandlers(): void {
     }
   })
 
+  // Inline pipeline — accepts mapping + source as STRINGS (no file IO).
+  // Used by the IngestWorkspace textarea flow so we don't have to round-trip
+  // mapping text through the user's home directory just to run a preview.
+  ipcMain.handle(
+    'medical:redact-inline',
+    async (_event, sourceText: unknown, mappingText: unknown, preview: unknown) => {
+      try {
+        if (typeof sourceText !== 'string' || typeof mappingText !== 'string') {
+          return { error: 'medical:redact-inline expects sourceText + mappingText strings' }
+        }
+        const { runPipelineInline } = await import('../medical/pipeline/orchestrator')
+        return await runPipelineInline(sourceText, mappingText, preview === true)
+      } catch (e) {
+        return { error: e instanceof Error ? e.message : String(e) }
+      }
+    },
+  )
+
   ipcMain.handle('medical:get-audit-log', async (_event, archiveDir: unknown, limit: unknown) => {
     try {
       const { readAuditLog } = await import('../medical/audit/logger')

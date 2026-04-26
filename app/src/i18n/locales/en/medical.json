@@ -3,6 +3,11 @@
     "title": "Pseudonymize medical record",
     "runCta": "Run pipeline ▶"
   },
+  "source": {
+    "placeholder": "Paste medical record text here. (For images / scanned PDFs, install mlx_vlm + DeepSeek-OCR weights, then drop the file via the loader below.)",
+    "aria": "Source text input",
+    "loadFromFile": "Load .txt file…"
+  },
   "dropzone": {
     "title": "Drop image, PDF, or .txt here",
     "subtitle": "or click to browse",
@@ -27,12 +32,86 @@
   },
   "run": {
     "disabledNoFile": "Drop a file first.",
-    "disabledNoMapping": "Add at least one patient to the mapping."
+    "disabledNoMapping": "Add at least one patient to the mapping.",
+    "disabledNoSource": "Paste or load some text first."
   },
   "pipeline": {
     "scanningCollisions": "Pre-flight collision scan…",
+    "running": "Running pipeline (regex + collision + mapping + date)…",
+    "runningSafetyNet": "Running safety-net pass (this can take a few seconds)…",
     "todoW4": "Pipeline orchestrator wiring lands in W4. The collision scan is live; redact + safety-net come next.",
+    "txtOnlyForNow": "For W4 minimal viable, only .txt source files are supported through the loader. Paste image-extracted text into the textarea instead.",
+    "pasteHint": "Selected: {{path}}. Paste its contents into the textarea above (file-read IPC is W5 polish).",
+    "collisionApproved": "Collision overrides recorded. Click Run pipeline again to proceed.",
+    "exportedClipboard": "Exported {{count}} resolved flag(s); redacted text copied to clipboard.",
     "error": "Pipeline error: {{msg}}"
+  },
+  "done": {
+    "title": "Redaction complete",
+    "message": "Redacted text copied to clipboard. Paste it into your AI tool of choice; nothing left this machine un-redacted.",
+    "startOver": "Start over"
+  },
+  "diff": {
+    "title": "Redaction preview",
+    "summary": "{{count}} replacements applied",
+    "filterAria": "Filter replacements by reason",
+    "original": "Original",
+    "redacted": "Redacted",
+    "timelineHeading": "Replacements",
+    "timelineAria": "Replacement timeline",
+    "timelineEmpty": "No replacements match the current filter.",
+    "filter": {
+      "mapping": "Mapping",
+      "regex": "Regex",
+      "safety_net": "Safety-net",
+      "date": "Date"
+    },
+    "reason": {
+      "mapping": "mapping",
+      "regex": "regex",
+      "safety_net": "safety-net",
+      "date": "date"
+    },
+    "back": "◁ Back to mapping",
+    "copy": "Copy redacted",
+    "saveMd": "Save .md…",
+    "continue": "Continue to safety-net ▶",
+    "copyOnlyForNow": "Redacted text copied to clipboard. Real .md export lands in W5 polish."
+  },
+  "v2Banner": {
+    "title": "Welcome to CellSentry v2",
+    "intro": "CellSentry has shifted to a single-purpose tool: medical record pseudonymization, all local. The v1 Excel toolbox (audit / PII / extraction) has been removed.",
+    "bulletReplaced": "v1 features (formula audit, PII redaction, document extraction) are no longer in this app.",
+    "bulletV1Available": "v1.1.0-beta.1 is permanently downloadable from the GitHub release page.",
+    "bulletNoMigration": "There is no migration path — v2 is a re-focus, not an upgrade.",
+    "readMore": "Read the full pivot announcement →",
+    "dismiss": "Got it"
+  },
+  "safetyNet": {
+    "title": "Safety-net review — {{count}} names flagged",
+    "subtitle": "Local Qwen2.5-3B reviewed the redacted output. Decide each flag below.",
+    "cardHeading": "Suspicious name: {{name}}",
+    "contextLabel": "Context:",
+    "pseudonymPlaceholder": "e.g. 医师A",
+    "replacementPlaceholder": "e.g. [医生]",
+    "maskedPlaceholder": "redacted",
+    "actions": {
+      "add": "Add to mapping",
+      "replaceOnce": "Replace here only",
+      "dismiss": "Dismiss",
+      "defer": "Decide later"
+    },
+    "resolved": {
+      "add_to_mapping": "Added to mapping",
+      "replace_once": "Replaced in this output",
+      "dismissed": "Dismissed as false positive",
+      "deferred": "Deferred — left as-is"
+    },
+    "undo": "Undo",
+    "undoAria": "Undo this resolution",
+    "cancel": "◁ Back to preview",
+    "exportReady": "Export redacted ▶",
+    "exportWithCount": "Export ({{unresolved}} unresolved)"
   },
   "collision": {
     "title": "Pipeline blocked — name overlaps detected",

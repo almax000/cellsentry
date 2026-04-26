@@ -64,6 +64,8 @@ const api: SidecarAPI = {
       ipcRenderer.invoke('medical:scan-collisions', mappingPath, chunks),
     preview: (request: MedicalPipelineRequest) => ipcRenderer.invoke('medical:preview', request),
     redact: (request: MedicalPipelineRequest) => ipcRenderer.invoke('medical:redact', request),
+    redactInline: (sourceText: string, mappingText: string, preview: boolean) =>
+      ipcRenderer.invoke('medical:redact-inline', sourceText, mappingText, preview),
     getAuditLog: (archiveDir: string, limit?: number) =>
       ipcRenderer.invoke('medical:get-audit-log', archiveDir, limit),
     exportMap: (mappingPath: string, destPath: string) =>

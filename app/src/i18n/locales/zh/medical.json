@@ -3,6 +3,11 @@
     "title": "医疗档案假名化",
     "runCta": "运行流水线 ▶"
   },
+  "source": {
+    "placeholder": "把医疗档案文本粘贴在这里。（图片 / 扫描 PDF 需先安装 mlx_vlm + DeepSeek-OCR 权重，再用下面的加载按钮选文件。）",
+    "aria": "源文本输入",
+    "loadFromFile": "加载 .txt 文件…"
+  },
   "dropzone": {
     "title": "拖入图片、PDF 或 .txt 文件",
     "subtitle": "或点击选择文件",
@@ -27,12 +32,86 @@
   },
   "run": {
     "disabledNoFile": "请先拖入一个档案。",
-    "disabledNoMapping": "至少在映射里加一个患者。"
+    "disabledNoMapping": "至少在映射里加一个患者。",
+    "disabledNoSource": "请先粘贴或加载文本。"
   },
   "pipeline": {
     "scanningCollisions": "预飞行冲突扫描中…",
+    "running": "流水线运行中（regex + 冲突 + 映射 + 日期）…",
+    "runningSafetyNet": "安全网复查中（可能需要几秒）…",
     "todoW4": "流水线编排在 W4 接入。冲突扫描已在线；脱敏 + 安全网下个里程碑。",
+    "txtOnlyForNow": "W4 minimum viable 仅支持加载 .txt 源文件。其它格式请先在外部 OCR 后把文本粘贴进文本框。",
+    "pasteHint": "已选: {{path}}。把文件内容粘贴到上方文本框（文件读取 IPC 在 W5 polish 接）。",
+    "collisionApproved": "冲突已记录处理意见。再次点击 运行流水线 继续。",
+    "exportedClipboard": "已导出 {{count}} 条解决的 flag；脱敏文本已复制到剪贴板。",
     "error": "流水线错误: {{msg}}"
+  },
+  "done": {
+    "title": "脱敏完成",
+    "message": "脱敏文本已复制到剪贴板。粘贴给你信任的 AI；没有任何未脱敏内容离开这台机器。",
+    "startOver": "重新开始"
+  },
+  "diff": {
+    "title": "脱敏预览",
+    "summary": "已应用 {{count}} 处替换",
+    "filterAria": "按原因筛选替换",
+    "original": "原文",
+    "redacted": "脱敏后",
+    "timelineHeading": "替换列表",
+    "timelineAria": "替换时间线",
+    "timelineEmpty": "当前筛选下没有替换。",
+    "filter": {
+      "mapping": "映射",
+      "regex": "正则",
+      "safety_net": "安全网",
+      "date": "日期"
+    },
+    "reason": {
+      "mapping": "映射",
+      "regex": "正则",
+      "safety_net": "安全网",
+      "date": "日期"
+    },
+    "back": "◁ 返回映射",
+    "copy": "复制脱敏文本",
+    "saveMd": "保存 .md…",
+    "continue": "继续到安全网复查 ▶",
+    "copyOnlyForNow": "脱敏文本已复制到剪贴板。真正的 .md 导出在 W5 polish 接入。"
+  },
+  "v2Banner": {
+    "title": "欢迎使用 CellSentry v2",
+    "intro": "CellSentry 已转型为单一功能工具：本地医疗档案假名化。v1 Excel 工具箱（审计 / PII / 提取）已下线。",
+    "bulletReplaced": "v1 功能（公式审计、PII 脱敏、文档提取）已不在此版本中。",
+    "bulletV1Available": "v1.1.0-beta.1 仍永久可在 GitHub Release 页面下载。",
+    "bulletNoMigration": "没有迁移路径 —— v2 是重新聚焦，不是升级。",
+    "readMore": "阅读完整 pivot 公告 →",
+    "dismiss": "我知道了"
+  },
+  "safetyNet": {
+    "title": "安全网复查 —— flag 了 {{count}} 个名字",
+    "subtitle": "本地 Qwen2.5-3B 复查了脱敏输出。下面逐条决定。",
+    "cardHeading": "可疑名: {{name}}",
+    "contextLabel": "上下文:",
+    "pseudonymPlaceholder": "如 医师A",
+    "replacementPlaceholder": "如 [医生]",
+    "maskedPlaceholder": "已脱敏",
+    "actions": {
+      "add": "加进映射",
+      "replaceOnce": "仅在此处替换",
+      "dismiss": "忽略",
+      "defer": "延后决定"
+    },
+    "resolved": {
+      "add_to_mapping": "已加入映射",
+      "replace_once": "已在本输出中替换",
+      "dismissed": "已忽略为误报",
+      "deferred": "已延后 —— 保留原样"
+    },
+    "undo": "撤销",
+    "undoAria": "撤销此项决议",
+    "cancel": "◁ 返回预览",
+    "exportReady": "导出脱敏文件 ▶",
+    "exportWithCount": "导出（{{unresolved}} 未解决）"
   },
   "collision": {
     "title": "流水线阻塞 —— 检测到名称重叠",
