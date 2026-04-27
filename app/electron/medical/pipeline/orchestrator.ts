@@ -1,11 +1,17 @@
 /**
  * Pipeline orchestrator (lean rebuild — D31-D35).
  *
- * Stages in plan v3 order, post-ADR:
- *   1. Ingest          — OCR (image/PDF) or pass-through (text)
- *   2. Regex pass      — CN ID + mobile + email + 病历号/医保号/就诊号
- *   3. Mapping pass    — literalReplace (D19 reinterpreted: String.prototype.replaceAll
- *                        with longest-key-first ordering)
+ * Stages, post-ADR:
+ *   1. Ingest          — OCR (image/PDF) / mammoth (DOCX) / pass-through (text)
+ *   2. Mapping pass    — literalReplace (D19 / D33). Primary control: every key
+ *                        in the user mapping is replaced with its pseudonym
+ *                        (longest-key-first ordering). Covers all 6 PII
+ *                        categories: names + phone + address + ID + SS + employer.
+ *   3. Regex pass      — Fallback for PII not in the user mapping. Catches CN
+ *                        ID + mobile + email + 银行卡 + 病历号/医保号/就诊号.
+ *                        Runs AFTER mapping so user-supplied pseudonyms are
+ *                        respected (otherwise a regex would pre-empt e.g. a
+ *                        user's specific phone-number pseudonym).
  *   4. Audit log       — accumulated AuditEntry per stage transition
  *
  * REVOKED in lean rebuild (do NOT add back without ADR amendment per § 6.4):
@@ -221,26 +227,29 @@ interface FinishArgs {
 async function finishPipeline(args: FinishArgs): Promise<RedactionResult> {
   const { rawText, mapping, audit, allReplacements, timings, t_start } = args
 
-  // Stage 2: Regex pass
-  const t_regex = Date.now()
-  const { rewritten: regexRedacted, replacements: regexReplacements } = applyRegexPass(rawText)
-  timings.regex_ms = Date.now() - t_regex
-  allReplacements.push(...regexReplacements)
-
-  // Stage 3: Mapping pass (literalReplace, longest-key-first)
+  // Stage 2: Mapping pass FIRST (primary control per D33). User-supplied
+  // pseudonyms cover names + phone + address + ID + SS + employer; literal
+  // replaceAll with longest-key-first ordering.
   const t_mapping = Date.now()
-  const { output, replacements: mappingReplacements } =
-    await replaceWithMapping({ mapping, text: regexRedacted })
+  const { output: mappingRedacted, replacements: mappingReplacements } =
+    await replaceWithMapping({ mapping, text: rawText })
   timings.mapping_ms = Date.now() - t_mapping
   allReplacements.push(...mappingReplacements)
+
+  // Stage 3: Regex pass — fallback for PII NOT in the user mapping. Runs on
+  // the post-mapping text so user-supplied pseudonyms are respected.
+  const t_regex = Date.now()
+  const { rewritten: output, replacements: regexReplacements } = applyRegexPass(mappingRedacted)
+  timings.regex_ms = Date.now() - t_regex
+  allReplacements.push(...regexReplacements)
 
   audit.push({
     timestamp: now(),
     action: 'redact',
     content_hash: contentHash(output),
     details: {
-      regex_replacements: regexReplacements.length,
       mapping_replacements: mappingReplacements.length,
+      regex_replacements: regexReplacements.length,
     },
   })
   void audit // accumulator; not surfaced through RedactionResult yet

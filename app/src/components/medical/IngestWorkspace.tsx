@@ -34,7 +34,28 @@ interface RedactionResult {
 }
 
 const DEFAULT_MAPPING = `# CellSentry pseudonym map
-# Manage via the CellSentry app or hand-edit; the app respects manual changes.
+# Lean rebuild — D33 6 PII categories: names + phone + address + ID + SS + employer.
+# Replace this template with your own entries. Replacement is literal-string
+# replaceAll with longest-key-first ordering. Anything you don't list here that
+# matches a regex (CN ID / mobile / email / 医保号 etc.) gets masked as fallback.
+#
+# Example:
+#   patients:
+#     - patient_id: my-dad
+#       real_name: 张三
+#       aliases: [张先生]
+#       pseudonym: 患者A
+#       additional_entities:
+#         - real: 13812345678         # phone (will be replaced before regex masks it)
+#           pseudonym: 18800000000
+#         - real: 北京市朝阳区某某街100号  # address
+#           pseudonym: [住址]
+#         - real: 110105194912310123   # ID number
+#           pseudonym: [身份证-甲]
+#         - real: 京A123456789012345   # social-security / 医保号
+#           pseudonym: [医保号-甲]
+#         - real: 北京某某医院          # employer / institution
+#           pseudonym: [机构A]
 version: 1
 next_pseudonym_index: 0
 patients: []

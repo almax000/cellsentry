@@ -23,10 +23,20 @@ import type { PseudonymMap } from '../types'
 
 const HEADER_COMMENT = `# CellSentry pseudonym map
 # Manage via the CellSentry app or hand-edit; the app respects manual changes.
-# - patient_id: opaque identifier (any unique string)
-# - real_name + aliases: case-sensitive literal strings (replaceAll semantics)
-# - pseudonym: 患者A / 患者B / ... (auto) or any manual string
-# - additional_entities: family members or others to redact alongside the patient
+#
+# Schema (lean rebuild — D33 6 PII categories):
+#   - patient_id: opaque identifier (any unique string)
+#   - real_name + aliases: the patient's name + any aliases (case-sensitive)
+#   - pseudonym: 患者A / 患者B / ... (auto) or any manual string
+#   - additional_entities: a flat list of {real, pseudonym} pairs covering ANY
+#     other PII you want pseudonymized for this patient — phone numbers,
+#     addresses, ID numbers, social-security numbers, employer names, family
+#     member names, etc. Replacement is literal-string replaceAll with
+#     longest-key-first ordering, so put more-specific strings first if you
+#     have overlap (e.g. "北京市朝阳区" before "北京市").
+#
+# Regex fallback (runs AFTER user mapping, catches what your mapping missed):
+#   CN 18-digit ID + mobile + email + bank-card + 病历号 / 医保号 / 就诊号.
 
 `
 

@@ -70,6 +70,54 @@ describe('runPipeline — happy path on synthetic text', () => {
     })
   })
 
+  it('D33: user phone mapping wins over regex fallback (mapping-first order)', async () => {
+    const phoneMapping = `
+version: 1
+next_pseudonym_index: 1
+patients:
+  - patient_id: f-1
+    real_name: 张三
+    aliases: []
+    pseudonym: 患者A
+    additional_entities:
+      - real: 13812345678
+        pseudonym: '[手机号-甲]'
+`
+    await withMappingFile(phoneMapping, async (mappingPath) => {
+      const text = '张三 联系电话 13812345678 复诊。'
+      const result = await runPipeline({
+        source: { kind: 'text', content: text },
+        mapping_path: mappingPath,
+      })
+      // Mapping pseudonym wins; regex partial-mask `****5678` should NOT appear
+      expect(result.output).toContain('[手机号-甲]')
+      expect(result.output).not.toMatch(/\*+5678/)
+      expect(result.output).toContain('患者A')
+    })
+  })
+
+  it('D33: regex fallback catches PII not in user mapping', async () => {
+    const minimalMapping = `
+version: 1
+next_pseudonym_index: 1
+patients:
+  - patient_id: f-1
+    real_name: 张三
+    aliases: []
+    pseudonym: 患者A
+    additional_entities: []
+`
+    await withMappingFile(minimalMapping, async (mappingPath) => {
+      const text = '张三 联系 13812345678 (mapping has no phone).'
+      const result = await runPipeline({
+        source: { kind: 'text', content: text },
+        mapping_path: mappingPath,
+      })
+      expect(result.output).toContain('患者A')
+      expect(result.output).toMatch(/\*+5678/)
+    })
+  })
+
   it('returns pass-through for empty mapping', async () => {
     const emptyMapping = `version: 1\nnext_pseudonym_index: 0\npatients: []\n`
     await withMappingFile(emptyMapping, async (mappingPath) => {

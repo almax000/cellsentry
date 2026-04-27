@@ -47,26 +47,49 @@ function isStringArray(v: unknown): v is string[] {
   return Array.isArray(v) && v.every(x => typeof x === 'string')
 }
 
+/** Coerce primitive YAML values (string / number / bigint / boolean) to string.
+ *  Returns null when the value is missing or a non-primitive (object / array).
+ *  Lets users write `real: 13812345678` in YAML without quoting. */
+function coerceToString(v: unknown): string | null {
+  if (typeof v === 'string') return v
+  if (typeof v === 'number' || typeof v === 'bigint' || typeof v === 'boolean') return String(v)
+  return null
+}
+
+function coerceStringArray(v: unknown): string[] | null {
+  if (!Array.isArray(v)) return null
+  const out: string[] = []
+  for (const x of v) {
+    const s = coerceToString(x)
+    if (s === null) return null
+    out.push(s)
+  }
+  return out
+}
+
 function validatePatient(raw: unknown, idx: number): PatientEntry {
   if (!raw || typeof raw !== 'object') {
     throw new MappingParseError(`patients[${idx}] must be an object`)
   }
   const r = raw as Record<string, unknown>
-  if (typeof r.patient_id !== 'string' || r.patient_id.length === 0) {
+
+  const patient_id = coerceToString(r.patient_id)
+  if (patient_id === null || patient_id.length === 0) {
     throw new MappingParseError(`patients[${idx}].patient_id missing or empty`)
   }
-  if (typeof r.real_name !== 'string' || r.real_name.length === 0) {
+  const real_name = coerceToString(r.real_name)
+  if (real_name === null || real_name.length === 0) {
     throw new MappingParseError(`patients[${idx}].real_name missing or empty`)
   }
-  if (typeof r.pseudonym !== 'string' || r.pseudonym.length === 0) {
+  const pseudonym = coerceToString(r.pseudonym)
+  if (pseudonym === null || pseudonym.length === 0) {
     throw new MappingParseError(`patients[${idx}].pseudonym missing or empty`)
   }
-  const aliases = r.aliases ?? []
-  if (!isStringArray(aliases)) {
+  const aliasesRaw = r.aliases ?? []
+  const aliases = coerceStringArray(aliasesRaw)
+  if (aliases === null) {
     throw new MappingParseError(`patients[${idx}].aliases must be an array of strings`)
   }
-  // Reject empty alias entries — they'd inject blank-string keys into the
-  // mapping and silently match the empty string everywhere.
   if (aliases.some(a => a.length === 0)) {
     throw new MappingParseError(`patients[${idx}].aliases contains an empty string`)
   }
@@ -79,20 +102,22 @@ function validatePatient(raw: unknown, idx: number): PatientEntry {
       throw new MappingParseError(`patients[${idx}].additional_entities[${j}] must be an object`)
     }
     const ee = e as Record<string, unknown>
-    if (typeof ee.real !== 'string' || ee.real.length === 0) {
+    const real = coerceToString(ee.real)
+    if (real === null || real.length === 0) {
       throw new MappingParseError(`patients[${idx}].additional_entities[${j}].real missing`)
     }
-    if (typeof ee.pseudonym !== 'string' || ee.pseudonym.length === 0) {
+    const ps = coerceToString(ee.pseudonym)
+    if (ps === null || ps.length === 0) {
       throw new MappingParseError(`patients[${idx}].additional_entities[${j}].pseudonym missing`)
     }
-    return { real: ee.real, pseudonym: ee.pseudonym }
+    return { real, pseudonym: ps }
   })
 
   return {
-    patient_id: r.patient_id,
-    real_name: r.real_name,
+    patient_id,
+    real_name,
     aliases,
-    pseudonym: r.pseudonym,
+    pseudonym,
     additional_entities: additionalValidated,
   }
 }
