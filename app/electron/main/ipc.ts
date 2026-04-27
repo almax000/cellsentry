@@ -139,7 +139,7 @@ export function registerIpcHandlers(): void {
     const result = await dialog.showOpenDialog({
       properties: ['openFile'],
       filters: [
-        { name: 'Documents', extensions: ['pdf', 'jpg', 'jpeg', 'png', 'heic', 'webp', 'txt'] },
+        { name: 'Documents', extensions: ['pdf', 'docx', 'jpg', 'jpeg', 'png', 'heic', 'webp', 'txt', 'md'] },
         { name: 'All Files', extensions: ['*'] },
       ],
     })
@@ -150,7 +150,7 @@ export function registerIpcHandlers(): void {
     const result = await dialog.showOpenDialog({
       properties: ['openFile', 'multiSelections'],
       filters: [
-        { name: 'Documents', extensions: ['pdf', 'jpg', 'jpeg', 'png', 'heic', 'webp', 'txt'] },
+        { name: 'Documents', extensions: ['pdf', 'docx', 'jpg', 'jpeg', 'png', 'heic', 'webp', 'txt', 'md'] },
         { name: 'All Files', extensions: ['*'] },
       ],
     })

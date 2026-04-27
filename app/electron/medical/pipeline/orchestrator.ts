@@ -43,6 +43,14 @@ async function readSourceText(request: PipelineRequest): Promise<{ text: string;
   if (src.kind === 'text') {
     return { text: src.content, ocrUsed: false }
   }
+  if (src.kind === 'docx') {
+    const { extractDocxText } = await import('../ocr/docxLoader')
+    const result = await extractDocxText(src.path)
+    if (result === null) {
+      throw new PipelineError(`Could not extract text from DOCX: ${src.path}`, 'ingest')
+    }
+    return { text: result.text, ocrUsed: false }
+  }
   if (src.kind === 'pdf') {
     // Try digital PDF fallback first; fall back to OCR if no text layer.
     const { tryDigitalPdf } = await import('../ocr/digitalPdfFallback')
@@ -51,7 +59,7 @@ async function readSourceText(request: PipelineRequest): Promise<{ text: string;
       return { text: digital.text, ocrUsed: false }
     }
   }
-  // image / scanned PDF → real OCR via the unified Python server.
+  // image / scanned PDF → real OCR via the active engine (PaddleOCR-VL default).
   const { ocrViaLlmBridge, isOcrError } = await import('../ocr/bridge')
   const ocr = await ocrViaLlmBridge({ source: { kind: 'path', path: src.path } })
   if (isOcrError(ocr)) {

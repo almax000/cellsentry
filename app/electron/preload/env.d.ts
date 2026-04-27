@@ -3,7 +3,7 @@
 // includes — keep the two MedicalAPI declarations in lockstep.
 
 interface MedicalIngestSource {
-  kind: 'image' | 'pdf' | 'text'
+  kind: 'image' | 'pdf' | 'docx' | 'text'
   path?: string
   content?: string
 }

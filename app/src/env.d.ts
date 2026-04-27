@@ -6,7 +6,7 @@
 // mirrors this for the main+preload tsconfig. Keep all three in sync.
 
 interface MedicalIngestSource {
-  kind: 'image' | 'pdf' | 'text'
+  kind: 'image' | 'pdf' | 'docx' | 'text'
   path?: string
   content?: string
 }

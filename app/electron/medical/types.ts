@@ -112,6 +112,7 @@ export interface AuditEntry {
 export type IngestSource =
   | { kind: 'image'; path: string }
   | { kind: 'pdf'; path: string }
+  | { kind: 'docx'; path: string }
   | { kind: 'text'; content: string }
 
 export interface PipelineRequest {
