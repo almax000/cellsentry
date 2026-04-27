@@ -1,42 +1,30 @@
 /**
- * Pipeline orchestrator (W3 Step 3.7 / deferred from W3 closure).
+ * Pipeline orchestrator (lean rebuild — D31-D35).
  *
- * Glues every engine stage in plan v3 order:
+ * Stages in plan v3 order, post-ADR:
  *   1. Ingest          — OCR (image/PDF) or pass-through (text)
- *   2. Regex pass      — CN ID + mobile + email + 病历号/医保号/就诊号 (findRegexPii)
- *   3. Collision scan  — BLOCK if unresolved overlaps (`张三` / `张三丰`)
- *   4. Mapping pass    — jieba whole-token + English word-boundary
- *   5. Date handler    — per patient.date_mode (stub until W4 Step 4.3)
- *   6. Safety-net      — flag missed names; optional (graceful skip if unavailable)
- *   7. Audit log       — accumulate AuditEntry per stage transition
+ *   2. Regex pass      — CN ID + mobile + email + 病历号/医保号/就诊号
+ *   3. Mapping pass    — literalReplace (D19 reinterpreted: String.prototype.replaceAll
+ *                        with longest-key-first ordering)
+ *   4. Audit log       — accumulated AuditEntry per stage transition
  *
- * The orchestrator never silently drops PII — if a stage fails, it surfaces
- * the failure to UI and blocks. Graceful degradation only on optional
- * safety-net (e.g. when `analyze_available: false` in the Python server status).
- *
- * Span semantics in the returned RedactionResult:
- *   For W3 step 3.7 we track replacements per-stage with spans relative to
- *   the INPUT of that stage. The UI diff viewer (W4 Step 4.1) re-anchors
- *   them to the original-vs-final diff. Storing native per-stage spans
- *   keeps each engine simple and avoids span-shift bookkeeping that would
- *   propagate bugs.
+ * REVOKED in lean rebuild (do NOT add back without ADR amendment per § 6.4):
+ *   - Collision pre-scan (AD3)
+ *   - Date handler (AD4)
+ *   - Safety-net LLM pass (D21 / AD2)
  */
 
 import { createHash } from 'crypto'
 
-import { loadMapping } from '../mapping/parser'
-import { scanForCollisions } from '../mapping/collisionScan'
-import { replaceWithMapping } from '../mapping/jiebaEngine'
+import { loadMapping, parseMappingText } from '../mapping/parser'
+import { replaceWithMapping } from '../mapping/literalReplace'
 import { applyMasking, findRegexPii } from '../regex/patterns'
-import { runSafetyNet } from './safetyNet'
 import type {
   AuditEntry,
-  CollisionWarning,
   PipelineRequest,
   PseudonymMap,
   RedactionResult,
   Replacement,
-  SafetyNetFlag,
 } from '../types'
 
 // ---------------------------------------------------------------------------
@@ -80,8 +68,7 @@ export class PipelineError extends Error {
   constructor(
     message: string,
     public readonly stage:
-      | 'ingest' | 'mapping_load' | 'regex' | 'collision' | 'mapping_replace'
-      | 'date_handler' | 'safety_net' | 'ocr_failed',
+      | 'ingest' | 'mapping_load' | 'regex' | 'mapping_replace' | 'ocr_failed',
     public readonly details: Record<string, unknown> = {},
   ) {
     super(message)
@@ -127,15 +114,13 @@ function applyRegexPass(text: string): { rewritten: string; replacements: Replac
 }
 
 // ---------------------------------------------------------------------------
-// Main entry point
+// Main entry points
 // ---------------------------------------------------------------------------
 
 export async function runPipeline(request: PipelineRequest): Promise<RedactionResult> {
   const t_start = Date.now()
   const audit: AuditEntry[] = []
   const allReplacements: Replacement[] = []
-  let collisions: CollisionWarning[] = []
-  let pendingFlags: SafetyNetFlag[] = []
 
   const timings: RedactionResult['timings'] = {
     regex_ms: 0,
@@ -143,7 +128,7 @@ export async function runPipeline(request: PipelineRequest): Promise<RedactionRe
     total_ms: 0,
   }
 
-  // ── Stage 1: Ingest ───────────────────────────────────────────────────
+  // Stage 1: Ingest
   const t_ingest = Date.now()
   const { text: rawText, ocrUsed } = await readSourceText(request)
   if (ocrUsed) timings.ocr_ms = Date.now() - t_ingest
@@ -159,7 +144,7 @@ export async function runPipeline(request: PipelineRequest): Promise<RedactionRe
     },
   })
 
-  // ── Stage 1.5: Load mapping ───────────────────────────────────────────
+  // Stage 1.5: Load mapping
   let mapping: PseudonymMap
   try {
     mapping = await loadMapping(request.mapping_path)
@@ -170,146 +155,13 @@ export async function runPipeline(request: PipelineRequest): Promise<RedactionRe
     )
   }
 
-  // ── Stage 2: Regex pass ───────────────────────────────────────────────
-  const t_regex = Date.now()
-  const { rewritten: regexRedacted, replacements: regexReplacements } = applyRegexPass(rawText)
-  timings.regex_ms = Date.now() - t_regex
-  allReplacements.push(...regexReplacements)
-
-  // ── Stage 3: Collision pre-scan ───────────────────────────────────────
-  // Run on the ORIGINAL raw text (before regex rewrites). Mapping keys are
-  // names — the regex pass only touches IDs/numbers, so collision results
-  // are the same either way; using raw text is simpler to reason about.
-  collisions = scanForCollisions({ mapping, chunks: [rawText] })
-  if (collisions.length > 0) {
-    audit.push({
-      timestamp: now(),
-      action: 'collision_warning',
-      content_hash: contentHash(rawText),
-      details: { collision_count: collisions.length },
-    })
-    timings.total_ms = Date.now() - t_start
-    // Block: return early with collisions populated. UI surfaces the panel
-    // (per `_design/v2/screen-2-collision-warning.md`).
-    return {
-      output: rawText,
-      replacements: [],
-      pending_flags: [],
-      collisions,
-      timings,
-    }
-  }
-
-  // ── Stage 4: Mapping pass (jieba whole-token + ASCII word-boundary) ───
-  const t_mapping = Date.now()
-  const { output: mappingRedacted, replacements: mappingReplacements } =
-    await replaceWithMapping({ mapping, text: regexRedacted })
-  timings.mapping_ms = Date.now() - t_mapping
-  allReplacements.push(...mappingReplacements)
-
-  audit.push({
-    timestamp: now(),
-    action: 'redact',
-    content_hash: contentHash(mappingRedacted),
-    details: {
-      regex_replacements: regexReplacements.length,
-      mapping_replacements: mappingReplacements.length,
-    },
-  })
-
-  // ── Stage 5: Date handler (per AD4 / W4 Step 4.3) ─────────────────────
-  // Applies the mode of the FIRST patient in the mapping; for multi-patient
-  // documents the orchestrator picks the dominant mode. (Future iteration:
-  // partition the doc per patient; doable once we have per-section attribution
-  // — W6+ work.)
-  let dateHandled = mappingRedacted
-  let dateReplacements: Replacement[] = []
-  if (mapping.patients.length > 0 && mapping.patients[0].date_mode !== 'preserve') {
-    const { applyDateMode } = await import('./dateHandler')
-    const dateResult = applyDateMode({
-      text: mappingRedacted,
-      mode: mapping.patients[0].date_mode,
-      offset_days: mapping.patients[0].date_offset_days,
-    })
-    dateHandled = dateResult.output
-    dateReplacements = dateResult.replacements
-    allReplacements.push(...dateReplacements)
-  }
-  void dateReplacements // referenced through allReplacements
-
-  // ── Stage 6: Safety-net (optional, graceful skip) ─────────────────────
-  // Preview-only mode skips the safety-net since it's slow (~3-8 s) and the
-  // user is just inspecting; full redact run does it.
-  if (!request.preview_only) {
-    const knownPseudonyms: string[] = []
-    for (const p of mapping.patients) {
-      knownPseudonyms.push(p.pseudonym)
-      for (const ae of p.additional_entities) knownPseudonyms.push(ae.pseudonym)
-    }
-    const t_safety = Date.now()
-    const safetyOutcome = await runSafetyNet({
-      redacted_text: dateHandled,
-      known_pseudonyms: knownPseudonyms,
-    })
-    timings.safety_net_ms = Date.now() - t_safety
-
-    if (safetyOutcome.kind === 'flags') {
-      pendingFlags = safetyOutcome.flags
-      if (pendingFlags.length > 0) {
-        audit.push({
-          timestamp: now(),
-          action: 'safety_net_flag',
-          content_hash: contentHash(dateHandled),
-          details: { flag_count: pendingFlags.length },
-        })
-      }
-    }
-    // 'unreadable' or 'unavailable' → skip (UI shows degraded banner per
-    // screen-4 spec). Don't fail the pipeline; user can finalize with a
-    // manual review.
-  }
-
-  timings.total_ms = Date.now() - t_start
-
-  return {
-    output: dateHandled,
-    replacements: allReplacements,
-    pending_flags: pendingFlags,
-    collisions: [],
-    timings,
-  }
+  return finishPipeline({ rawText, mapping, audit, allReplacements, timings, t_start })
 }
-
-// ---------------------------------------------------------------------------
-// Convenience export — read mapping path + run pipeline against text
-// ---------------------------------------------------------------------------
-
-export async function runPipelineFromText(
-  text: string,
-  mappingPath: string,
-  preview = false,
-): Promise<RedactionResult> {
-  return runPipeline({
-    source: { kind: 'text', content: text },
-    mapping_path: mappingPath,
-    preview_only: preview,
-  })
-}
-
-// ---------------------------------------------------------------------------
-// Inline-mapping entry — for the renderer-side flow that holds mapping text
-// in component state and doesn't want to round-trip through the file system.
-// Same pipeline as runPipeline but accepts a parsed PseudonymMap object directly.
-// ---------------------------------------------------------------------------
-
-import { parseMappingText } from '../mapping/parser'
 
 export async function runPipelineInline(
   text: string,
   mappingText: string,
-  preview = false,
 ): Promise<RedactionResult> {
-  // Parse + validate mapping (throws PipelineError-equivalent on bad YAML).
   let mapping: PseudonymMap
   try {
     mapping = parseMappingText(mappingText, '<inline>')
@@ -320,26 +172,8 @@ export async function runPipelineInline(
     )
   }
 
-  return runPipelineWithMapping(text, mapping, preview)
-}
-
-/** Lower-level entry — used by both inline + path-based callers. */
-async function runPipelineWithMapping(
-  text: string,
-  mapping: PseudonymMap,
-  preview: boolean,
-): Promise<RedactionResult> {
   const t_start = Date.now()
   const audit: AuditEntry[] = []
-  const allReplacements: Replacement[] = []
-  let pendingFlags: SafetyNetFlag[] = []
-
-  const timings: RedactionResult['timings'] = {
-    regex_ms: 0,
-    mapping_ms: 0,
-    total_ms: 0,
-  }
-
   audit.push({
     timestamp: now(),
     action: 'ingest',
@@ -347,72 +181,67 @@ async function runPipelineWithMapping(
     details: { ocr_used: false, source_kind: 'text', char_count: text.length },
   })
 
-  // Stage 2: regex
+  const timings: RedactionResult['timings'] = {
+    regex_ms: 0,
+    mapping_ms: 0,
+    total_ms: 0,
+  }
+
+  return finishPipeline({
+    rawText: text,
+    mapping,
+    audit,
+    allReplacements: [],
+    timings,
+    t_start,
+  })
+}
+
+// ---------------------------------------------------------------------------
+// Shared finish: regex → mapping → audit. Used by both entry points.
+// ---------------------------------------------------------------------------
+
+interface FinishArgs {
+  rawText: string
+  mapping: PseudonymMap
+  audit: AuditEntry[]
+  allReplacements: Replacement[]
+  timings: RedactionResult['timings']
+  t_start: number
+}
+
+async function finishPipeline(args: FinishArgs): Promise<RedactionResult> {
+  const { rawText, mapping, audit, allReplacements, timings, t_start } = args
+
+  // Stage 2: Regex pass
   const t_regex = Date.now()
-  const { rewritten: regexRedacted, replacements: regexReplacements } = applyRegexPass(text)
+  const { rewritten: regexRedacted, replacements: regexReplacements } = applyRegexPass(rawText)
   timings.regex_ms = Date.now() - t_regex
   allReplacements.push(...regexReplacements)
 
-  // Stage 3: collision pre-scan
-  const collisions = scanForCollisions({ mapping, chunks: [text] })
-  if (collisions.length > 0) {
-    audit.push({ timestamp: now(), action: 'collision_warning', details: { collision_count: collisions.length } })
-    timings.total_ms = Date.now() - t_start
-    return { output: text, replacements: [], pending_flags: [], collisions, timings }
-  }
-
-  // Stage 4: mapping
+  // Stage 3: Mapping pass (literalReplace, longest-key-first)
   const t_mapping = Date.now()
-  const { output: mappingRedacted, replacements: mappingReplacements } =
+  const { output, replacements: mappingReplacements } =
     await replaceWithMapping({ mapping, text: regexRedacted })
   timings.mapping_ms = Date.now() - t_mapping
   allReplacements.push(...mappingReplacements)
 
-  // Stage 5: date handler
-  let dateHandled = mappingRedacted
-  if (mapping.patients.length > 0 && mapping.patients[0].date_mode !== 'preserve') {
-    const { applyDateMode } = await import('./dateHandler')
-    const dateResult = applyDateMode({
-      text: mappingRedacted,
-      mode: mapping.patients[0].date_mode,
-      offset_days: mapping.patients[0].date_offset_days,
-    })
-    dateHandled = dateResult.output
-    allReplacements.push(...dateResult.replacements)
-  }
-
-  // Stage 6: safety-net (skipped in preview)
-  if (!preview) {
-    const knownPseudonyms: string[] = []
-    for (const p of mapping.patients) {
-      knownPseudonyms.push(p.pseudonym)
-      for (const ae of p.additional_entities) knownPseudonyms.push(ae.pseudonym)
-    }
-    const t_safety = Date.now()
-    const safetyOutcome = await runSafetyNet({
-      redacted_text: dateHandled,
-      known_pseudonyms: knownPseudonyms,
-    })
-    timings.safety_net_ms = Date.now() - t_safety
-    if (safetyOutcome.kind === 'flags') {
-      pendingFlags = safetyOutcome.flags
-    }
-  }
-
   audit.push({
     timestamp: now(),
     action: 'redact',
-    content_hash: contentHash(dateHandled),
-    details: { replacement_count: allReplacements.length },
+    content_hash: contentHash(output),
+    details: {
+      regex_replacements: regexReplacements.length,
+      mapping_replacements: mappingReplacements.length,
+    },
   })
-  void audit
+  void audit // accumulator; not surfaced through RedactionResult yet
 
   timings.total_ms = Date.now() - t_start
+
   return {
-    output: dateHandled,
+    output,
     replacements: allReplacements,
-    pending_flags: pendingFlags,
-    collisions: [],
     timings,
   }
 }

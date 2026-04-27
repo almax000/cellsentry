@@ -19,7 +19,7 @@ import { useTranslation } from 'react-i18next'
 
 import './AuditDiffViewer.css'
 
-type Reason = 'mapping' | 'regex' | 'safety_net' | 'date'
+type Reason = 'mapping' | 'regex'
 
 interface Replacement {
   original: string
@@ -46,11 +46,11 @@ export default function AuditDiffViewer({
 }: AuditDiffViewerProps): JSX.Element {
   const { t } = useTranslation('medical')
   const [activeFilters, setActiveFilters] = useState<Set<Reason>>(
-    () => new Set<Reason>(['mapping', 'regex', 'safety_net', 'date']),
+    () => new Set<Reason>(['mapping', 'regex']),
   )
 
   const counts = useMemo<Record<Reason, number>>(() => {
-    const c: Record<Reason, number> = { mapping: 0, regex: 0, safety_net: 0, date: 0 }
+    const c: Record<Reason, number> = { mapping: 0, regex: 0 }
     for (const r of replacements) c[r.reason]++
     return c
   }, [replacements])
@@ -94,7 +94,7 @@ export default function AuditDiffViewer({
 
       {/* Filter chips */}
       <div className="diff-filters" role="group" aria-label={t('diff.filterAria')}>
-        {(['mapping', 'regex', 'safety_net', 'date'] as Reason[]).map(reason => (
+        {(['mapping', 'regex'] as Reason[]).map(reason => (
           <button
             key={reason}
             className={`diff-filter diff-filter-${reason} ${activeFilters.has(reason) ? 'active' : ''}`}

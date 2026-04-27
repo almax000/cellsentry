@@ -62,8 +62,6 @@
 
 .diff-filter-mapping .diff-filter-dot { background: #2b7d3e; }
 .diff-filter-regex .diff-filter-dot { background: #1e90ff; }
-.diff-filter-safety_net .diff-filter-dot { background: #f59e0b; }
-.diff-filter-date .diff-filter-dot { background: #8b5cf6; }
 
 /* Two-pane diff */
 .diff-panes {
@@ -114,8 +112,6 @@
 
 .diff-mark-mapping { background: rgba(43, 125, 62, 0.18); color: #1f5e2d; }
 .diff-mark-regex { background: rgba(30, 144, 255, 0.18); color: #1d4ed8; }
-.diff-mark-safety_net { background: rgba(245, 158, 11, 0.22); color: #92400e; }
-.diff-mark-date { background: rgba(139, 92, 246, 0.18); color: #6d28d9; }
 
 /* Timeline */
 .diff-timeline {
@@ -167,8 +163,6 @@
 
 .diff-timeline-row.diff-row-mapping { border-left: 3px solid #2b7d3e; }
 .diff-timeline-row.diff-row-regex { border-left: 3px solid #1e90ff; }
-.diff-timeline-row.diff-row-safety_net { border-left: 3px solid #f59e0b; }
-.diff-timeline-row.diff-row-date { border-left: 3px solid #8b5cf6; }
 
 .diff-row-original {
   font-family: ui-monospace, monospace;

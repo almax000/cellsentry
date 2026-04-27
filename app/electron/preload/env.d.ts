@@ -2,45 +2,27 @@
 // Mirrors app/src/env.d.ts because tsconfig.web and tsconfig.node are disjoint
 // includes — keep the two MedicalAPI declarations in lockstep.
 
-type MedicalDateMode = 'preserve' | 'offset_days' | 'bucket_month'
-
 interface MedicalIngestSource {
   kind: 'image' | 'pdf' | 'text'
   path?: string
   content?: string
 }
 
-interface MedicalCollisionWarning {
-  longer: string
-  shorter: string
-  contexts: string[]
-}
-
 interface MedicalReplacement {
   original: string
   pseudonym: string
   span: [number, number]
-  reason: 'mapping' | 'regex' | 'safety_net' | 'date'
+  reason: 'mapping' | 'regex'
   pattern_type?: string
-}
-
-interface MedicalSafetyNetFlag {
-  name: string
-  context: string
-  confidence: number
-  suggested_replacement?: string
 }
 
 interface MedicalRedactionResult {
   output: string
   replacements: MedicalReplacement[]
-  pending_flags: MedicalSafetyNetFlag[]
-  collisions: MedicalCollisionWarning[]
   timings: {
     ocr_ms?: number
     regex_ms: number
     mapping_ms: number
-    safety_net_ms?: number
     total_ms: number
   }
 }
@@ -48,19 +30,11 @@ interface MedicalRedactionResult {
 interface MedicalPipelineRequest {
   source: MedicalIngestSource
   mapping_path: string
-  preview_only: boolean
 }
 
 interface MedicalAuditEntry {
   timestamp: string
-  action:
-    | 'ingest'
-    | 'collision_warning'
-    | 'collision_resolved'
-    | 'redact'
-    | 'safety_net_flag'
-    | 'safety_net_resolved'
-    | 'export'
+  action: 'ingest' | 'redact' | 'export'
   patient_id?: string
   content_hash?: string
   details?: Record<string, unknown>
@@ -68,10 +42,8 @@ interface MedicalAuditEntry {
 
 interface MedicalAPI {
   ingest: (source: MedicalIngestSource) => Promise<{ text: string; ocr_used: boolean } | { error: string }>
-  scanCollisions: (mappingPath: string, chunks: string[]) => Promise<MedicalCollisionWarning[] | { error: string }>
-  preview: (request: MedicalPipelineRequest) => Promise<MedicalRedactionResult | { error: string }>
   redact: (request: MedicalPipelineRequest) => Promise<MedicalRedactionResult | { error: string }>
-  redactInline: (sourceText: string, mappingText: string, preview: boolean) =>
+  redactInline: (sourceText: string, mappingText: string) =>
     Promise<MedicalRedactionResult | { error: string }>
   getAuditLog: (archiveDir: string, limit?: number) => Promise<MedicalAuditEntry[] | { error: string }>
   exportMap: (mappingPath: string, destPath: string) => Promise<{ success: boolean; error?: string }>
@@ -127,11 +99,11 @@ interface SidecarAPI {
   }
   onZoomChange: (callback: (delta: number) => void) => () => void
 
-  // LLM bridge (used by v2 medical pipeline)
+  // LLM bridge (used by v2 medical pipeline for OCR)
   getLlmStatus: () => Promise<{ available: boolean; backend: string; modelLoaded: boolean }>
   startLlm: () => Promise<{ available: boolean; backend: string; modelLoaded: boolean }>
 
-  // Medical pipeline (v2). Stubs until W3-W4 real implementations land.
+  // Medical pipeline (v2 lean rebuild — D31-D35).
   medical: MedicalAPI
 }
 

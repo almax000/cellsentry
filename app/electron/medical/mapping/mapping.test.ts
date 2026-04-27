@@ -1,23 +1,24 @@
 /**
- * Unit tests for parser + builder + writer (W3 Step 3.2).
+ * Unit tests for parser + builder + writer (lean rebuild).
  *
- * Plan v3 mandated 15 cases:
- *   - valid YAML
- *   - missing patient_id
- *   - duplicate alias within patient
- *   - alias collision across patients
- *   - incremental append
- *   - counter persists across writes
+ * Plan v3 mandated cases that survive the lean rebuild:
+ *   - valid YAML (one + multi-patient)
+ *   - empty file → empty mapping
+ *   - missing patient_id rejected
+ *   - empty alias string rejected
+ *   - alias collision across patients (within-mapping uniqueness — different
+ *     concept from the deleted cross-text collisionScan)
+ *   - additional_entities validated
+ *   - incremental append + counter discipline
  *   - counter overflow past Z
  *   - manual override wins
- *
- * Plus extras discovered while writing:
- *   - empty file → empty mapping
- *   - invalid date_mode rejected
- *   - empty alias string rejected
- *   - additional_entities validation
  *   - round-trip stability
  *   - base26 boundary cases
+ *   - E014 quarantine on corrupt existing
+ *
+ * Removed (per ADR — D21/AD3/AD4 revoked):
+ *   - date_mode validation
+ *   - date_offset_days persistence
  */
 
 import { describe, it, expect } from 'vitest'
@@ -98,7 +99,6 @@ patients:
     real_name: 张三
     aliases: [张先生]
     pseudonym: 患者A
-    date_mode: preserve
     additional_entities: []
 `
     const map = parseMappingText(text, '/tmp/m.md')
@@ -146,19 +146,6 @@ patients:
     expect(() => parseMappingText(text, '/tmp/m.md')).toThrow(/empty string/)
   })
 
-  it('rejects invalid date_mode', () => {
-    const text = `
-version: 1
-next_pseudonym_index: 1
-patients:
-  - patient_id: f-1
-    real_name: 张三
-    pseudonym: 患者A
-    date_mode: invalid_mode
-`
-    expect(() => parseMappingText(text, '/tmp/m.md')).toThrow(/date_mode/)
-  })
-
   it('rejects unsupported version', () => {
     const text = `version: 2\nnext_pseudonym_index: 0\n`
     expect(() => parseMappingText(text, '/tmp/m.md')).toThrow(/version/)
@@ -169,7 +156,7 @@ patients:
     expect(() => parseMappingText(text, '/tmp/m.md')).toThrow(/next_pseudonym_index/)
   })
 
-  it('rejects alias collision across patients', () => {
+  it('rejects alias collision across patients (within-mapping uniqueness)', () => {
     const text = `
 version: 1
 next_pseudonym_index: 2
@@ -290,7 +277,6 @@ describe('round-trip stability', () => {
           real_name: '张三',
           aliases: ['张先生', 'Zhang San'],
           pseudonym: '患者A',
-          date_mode: 'preserve',
           additional_entities: [{ real: '李四', pseudonym: '家属A' }],
         },
         {
@@ -298,8 +284,6 @@ describe('round-trip stability', () => {
           real_name: '王五',
           aliases: [],
           pseudonym: '患者B',
-          date_mode: 'offset_days',
-          date_offset_days: 30,
           additional_entities: [],
         },
       ],
@@ -323,16 +307,13 @@ describe('round-trip stability', () => {
             real_name: '张三',
             aliases: ['张先生'],
             pseudonym: '患者A',
-            date_mode: 'preserve',
             additional_entities: [],
           },
         ],
       }
       await writeMapping(original)
-      // File on disk should be parseable.
       const loaded = await loadMapping(path)
       expect(loaded.patients[0].real_name).toBe('张三')
-      // Header comment preserved.
       const text = readFileSync(path, 'utf-8')
       expect(text).toContain('CellSentry pseudonym map')
     } finally {
@@ -350,7 +331,6 @@ describe('writeMapping — E014 quarantine on corrupt existing', () => {
     const tmp = mkdtempSync(join(tmpdir(), 'cs-quarantine-'))
     try {
       const path = join(tmp, 'pseudonym-map.md')
-      // Create a corrupt YAML file (e.g. broken from a hand-edit).
       writeFileSync(path, 'version: 1\npatients:\n  - this is invalid: [\n', 'utf-8')
 
       const newMap: PseudonymMap = {
@@ -363,7 +343,6 @@ describe('writeMapping — E014 quarantine on corrupt existing', () => {
             real_name: '李四',
             aliases: [],
             pseudonym: '患者A',
-            date_mode: 'preserve',
             additional_entities: [],
           },
         ],
@@ -371,11 +350,9 @@ describe('writeMapping — E014 quarantine on corrupt existing', () => {
 
       await writeMapping(newMap)
 
-      // The new mapping is at the original path
       const reloaded = await loadMapping(path)
       expect(reloaded.patients[0].real_name).toBe('李四')
 
-      // The corrupt original was preserved in .corrupt/
       const quarantined = await listQuarantined(tmp)
       expect(quarantined.length).toBe(1)
       const recovered = readFileSync(quarantined[0], 'utf-8')
@@ -389,7 +366,6 @@ describe('writeMapping — E014 quarantine on corrupt existing', () => {
     const tmp = mkdtempSync(join(tmpdir(), 'cs-quarantine-'))
     try {
       const path = join(tmp, 'pseudonym-map.md')
-      // Valid existing file
       writeFileSync(
         path,
         `version: 1
@@ -409,7 +385,6 @@ patients: []
             real_name: '张三',
             aliases: [],
             pseudonym: '患者A',
-            date_mode: 'preserve',
             additional_entities: [],
           },
         ],
@@ -427,7 +402,6 @@ patients: []
     const tmp = mkdtempSync(join(tmpdir(), 'cs-quarantine-'))
     try {
       const path = join(tmp, 'pseudonym-map.md')
-      // No file yet
       const newMap: PseudonymMap = {
         version: 1,
         next_pseudonym_index: 0,

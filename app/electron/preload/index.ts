@@ -57,15 +57,12 @@ const api: SidecarAPI = {
   getLlmStatus: () => ipcRenderer.invoke('llm:status'),
   startLlm: () => ipcRenderer.invoke('llm:start'),
 
-  // ── Medical pipeline (v2). Stubs until W3-W4. ────────────────────────
+  // ── Medical pipeline (v2 lean rebuild — D31-D35) ─────────────────────
   medical: {
     ingest: (source: MedicalIngestSource) => ipcRenderer.invoke('medical:ingest', source),
-    scanCollisions: (mappingPath: string, chunks: string[]) =>
-      ipcRenderer.invoke('medical:scan-collisions', mappingPath, chunks),
-    preview: (request: MedicalPipelineRequest) => ipcRenderer.invoke('medical:preview', request),
     redact: (request: MedicalPipelineRequest) => ipcRenderer.invoke('medical:redact', request),
-    redactInline: (sourceText: string, mappingText: string, preview: boolean) =>
-      ipcRenderer.invoke('medical:redact-inline', sourceText, mappingText, preview),
+    redactInline: (sourceText: string, mappingText: string) =>
+      ipcRenderer.invoke('medical:redact-inline', sourceText, mappingText),
     getAuditLog: (archiveDir: string, limit?: number) =>
       ipcRenderer.invoke('medical:get-audit-log', archiveDir, limit),
     exportMap: (mappingPath: string, destPath: string) =>

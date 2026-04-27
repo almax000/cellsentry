@@ -51,8 +51,6 @@ export interface AddPatientInput {
   aliases?: string[]
   /** If omitted, an auto-pseudonym is assigned via the counter. */
   pseudonym?: string
-  date_mode?: PatientEntry['date_mode']
-  date_offset_days?: number
   additional_entities?: PatientEntry['additional_entities']
 }
 
@@ -74,8 +72,6 @@ export function addPatient(map: PseudonymMap, input: AddPatientInput): Pseudonym
     real_name: input.real_name,
     aliases: input.aliases ?? [],
     pseudonym,
-    date_mode: input.date_mode ?? 'preserve',
-    date_offset_days: input.date_offset_days,
     additional_entities: input.additional_entities ?? [],
   }
 

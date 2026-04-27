@@ -4,7 +4,7 @@
     "runCta": "Run pipeline ▶"
   },
   "source": {
-    "placeholder": "Paste medical record text here. (For images / scanned PDFs, install mlx_vlm + DeepSeek-OCR weights, then drop the file via the loader below.)",
+    "placeholder": "Paste medical record text here. (For images / scanned PDFs, install mlx_vlm + the OCR weights, then drop the file via the loader below.)",
     "aria": "Source text input",
     "loadFromFile": "Load .txt file…"
   },
@@ -23,27 +23,16 @@
       "error": "Error"
     }
   },
-  "dateMode": {
-    "legend": "Date handling",
-    "preserve": "Preserve absolute dates (default)",
-    "offsetDays": "Offset by N days",
-    "bucketMonth": "Round to first of month",
-    "offsetDaysAria": "Number of days to offset"
-  },
   "run": {
     "disabledNoFile": "Drop a file first.",
     "disabledNoMapping": "Add at least one patient to the mapping.",
     "disabledNoSource": "Paste or load some text first."
   },
   "pipeline": {
-    "scanningCollisions": "Pre-flight collision scan…",
-    "running": "Running pipeline (regex + collision + mapping + date)…",
-    "runningSafetyNet": "Running safety-net pass (this can take a few seconds)…",
-    "todoW4": "Pipeline orchestrator wiring lands in W4. The collision scan is live; redact + safety-net come next.",
-    "txtOnlyForNow": "For W4 minimal viable, only .txt source files are supported through the loader. Paste image-extracted text into the textarea instead.",
-    "pasteHint": "Selected: {{path}}. Paste its contents into the textarea above (file-read IPC is W5 polish).",
-    "collisionApproved": "Collision overrides recorded. Click Run pipeline again to proceed.",
-    "exportedClipboard": "Exported {{count}} resolved flag(s); redacted text copied to clipboard.",
+    "running": "Running pipeline (regex + mapping)…",
+    "txtOnlyForNow": "Only .txt source files are supported through the loader; for images / PDFs install mlx_vlm + OCR weights and drop the file directly.",
+    "pasteHint": "Selected: {{path}}. Paste its contents into the textarea above.",
+    "exportedClipboard": "Redacted text copied to clipboard.",
     "error": "Pipeline error: {{msg}}"
   },
   "done": {
@@ -62,21 +51,17 @@
     "timelineEmpty": "No replacements match the current filter.",
     "filter": {
       "mapping": "Mapping",
-      "regex": "Regex",
-      "safety_net": "Safety-net",
-      "date": "Date"
+      "regex": "Regex"
     },
     "reason": {
       "mapping": "mapping",
-      "regex": "regex",
-      "safety_net": "safety-net",
-      "date": "date"
+      "regex": "regex"
     },
     "back": "◁ Back to mapping",
     "copy": "Copy redacted",
     "saveMd": "Save .md…",
-    "continue": "Continue to safety-net ▶",
-    "copyOnlyForNow": "Redacted text copied to clipboard. Real .md export lands in W5 polish."
+    "continue": "Export ▶",
+    "copyOnlyForNow": "Redacted text copied to clipboard."
   },
   "v2Banner": {
     "title": "Welcome to CellSentry v2",
@@ -86,47 +71,5 @@
     "bulletNoMigration": "There is no migration path — v2 is a re-focus, not an upgrade.",
     "readMore": "Read the full pivot announcement →",
     "dismiss": "Got it"
-  },
-  "safetyNet": {
-    "title": "Safety-net review — {{count}} names flagged",
-    "subtitle": "Local Qwen2.5-3B reviewed the redacted output. Decide each flag below.",
-    "cardHeading": "Suspicious name: {{name}}",
-    "contextLabel": "Context:",
-    "pseudonymPlaceholder": "e.g. 医师A",
-    "replacementPlaceholder": "e.g. [医生]",
-    "maskedPlaceholder": "redacted",
-    "actions": {
-      "add": "Add to mapping",
-      "replaceOnce": "Replace here only",
-      "dismiss": "Dismiss",
-      "defer": "Decide later"
-    },
-    "resolved": {
-      "add_to_mapping": "Added to mapping",
-      "replace_once": "Replaced in this output",
-      "dismissed": "Dismissed as false positive",
-      "deferred": "Deferred — left as-is"
-    },
-    "undo": "Undo",
-    "undoAria": "Undo this resolution",
-    "cancel": "◁ Back to preview",
-    "exportReady": "Export redacted ▶",
-    "exportWithCount": "Export ({{unresolved}} unresolved)"
-  },
-  "collision": {
-    "title": "Pipeline blocked — name overlaps detected",
-    "summary": "{{count}} overlap(s) found. Resolve each before continuing.",
-    "foundIn": "Found in input:",
-    "cardHeading": "Mapping key: {{shorter}}",
-    "explain": "The longer name {{longer}} contains your mapping key {{shorter}} but is not itself in the mapping. Pseudonymizing {{shorter}} here would corrupt the legitimate longer name.",
-    "actionsAria": "Resolution options",
-    "actions": {
-      "add": "Add {{longer}} to mapping with new pseudonym",
-      "approve": "Approve partial match (treat {{shorter}} here as mapped)",
-      "skip": "Skip — leave both names as-is"
-    },
-    "cancel": "Cancel pipeline",
-    "continueReady": "Continue ▶",
-    "continueWithCount": "Continue ({{unresolved}} unresolved)"
   }
 }

@@ -24,9 +24,8 @@ import type { PseudonymMap } from '../types'
 const HEADER_COMMENT = `# CellSentry pseudonym map
 # Manage via the CellSentry app or hand-edit; the app respects manual changes.
 # - patient_id: opaque identifier (any unique string)
-# - real_name + aliases: case-sensitive; jieba uses these as user-dict keys
+# - real_name + aliases: case-sensitive literal strings (replaceAll semantics)
 # - pseudonym: 患者A / 患者B / ... (auto) or any manual string
-# - date_mode: preserve | offset_days | bucket_month
 # - additional_entities: family members or others to redact alongside the patient
 
 `
@@ -40,8 +39,6 @@ export function serializeMapping(map: PseudonymMap): string {
       real_name: p.real_name,
       aliases: p.aliases,
       pseudonym: p.pseudonym,
-      date_mode: p.date_mode,
-      ...(p.date_offset_days !== undefined ? { date_offset_days: p.date_offset_days } : {}),
       additional_entities: p.additional_entities,
     })),
   }

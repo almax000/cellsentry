@@ -1,37 +1,25 @@
 /**
- * Ingest + Mapping workspace — v2 main work surface (W3 Step 3.6 / W4 Step 4.x wiring).
+ * Ingest + Mapping workspace — v2 lean rebuild (D31-D35).
  *
- * Spec: `_design/v2/screen-1-ingest-mapping.md`. This is screen 1 of 4 in the
- * v2 medical pseudonymization flow. After Run pipeline, transitions:
- *   1. Ingest + Mapping     ← this file (phase: 'ingest')
- *   2. Collision warning    ← CollisionWarningPanel.tsx (overlay when collisions found)
- *   3. Redaction preview    ← AuditDiffViewer (phase: 'preview')
- *   4. Safety-net review    ← SafetyNetReview (phase: 'safety-net', when flags exist)
+ * Phases reduced from 4 to 3:
+ *   1. Ingest          ← this file (phase: 'ingest') — textarea + MappingEditor
+ *   2. Redaction preview ← AuditDiffViewer (phase: 'preview')
+ *   3. Done            ← post-export confirmation (phase: 'done')
  *
- * For W4 the source-text input is a paste-textarea AND a file drop zone.
- * Drop a `.txt` to populate the textarea (real OCR for image/PDF needs the
- * user to install mlx_vlm + download DeepSeek-OCR weights — pipeline path
- * works through the orchestrator's OCR stage when those are present).
+ * REVOKED in lean rebuild (do not re-add without ADR amendment):
+ *   - Collision warning overlay (AD3)
+ *   - Date-mode selector (AD4)
+ *   - Safety-net review (D21 / AD2)
  */
 
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import MappingEditor from './MappingEditor'
-import DateModeSelector from './DateModeSelector'
-import CollisionWarningPanel from './CollisionWarningPanel'
 import AuditDiffViewer from './AuditDiffViewer'
-import SafetyNetReview from './SafetyNetReview'
 import './IngestWorkspace.css'
 
-type DateMode = 'preserve' | 'offset_days' | 'bucket_month'
-type Phase = 'ingest' | 'preview' | 'safety-net' | 'done'
-
-interface CollisionWarning {
-  longer: string
-  shorter: string
-  contexts: string[]
-}
+type Phase = 'ingest' | 'preview' | 'done'
 
 interface RedactionResult {
   output: string
@@ -39,16 +27,9 @@ interface RedactionResult {
     original: string
     pseudonym: string
     span: [number, number]
-    reason: 'mapping' | 'regex' | 'safety_net' | 'date'
+    reason: 'mapping' | 'regex'
     pattern_type?: string
   }>
-  pending_flags: Array<{
-    name: string
-    context: string
-    confidence: number
-    suggested_replacement?: string
-  }>
-  collisions: CollisionWarning[]
   timings: { total_ms: number }
 }
 
@@ -65,16 +46,9 @@ export default function IngestWorkspace(): JSX.Element {
   const [phase, setPhase] = useState<Phase>('ingest')
   const [sourceText, setSourceText] = useState('')
   const [mappingText, setMappingText] = useState(DEFAULT_MAPPING)
-  const [dateMode, setDateMode] = useState<DateMode>('preserve')
-  const [offsetDays, setOffsetDays] = useState(30)
-  const [collisions, setCollisions] = useState<CollisionWarning[] | null>(null)
   const [pipelineMessage, setPipelineMessage] = useState<string | null>(null)
-  const [previewResult, setPreviewResult] = useState<RedactionResult | null>(null)
-  const [finalResult, setFinalResult] = useState<RedactionResult | null>(null)
+  const [result, setResult] = useState<RedactionResult | null>(null)
 
-  void dateMode; void offsetDays  // applied via mapping YAML date_mode field; UI affordance is informational for now
-
-  // ── File drop / browse populates the textarea ──────────────────────────
   const handleBrowseAndLoad = async (): Promise<void> => {
     const path = await window.api?.openFileDialog?.()
     if (!path) return
@@ -82,104 +56,61 @@ export default function IngestWorkspace(): JSX.Element {
       setPipelineMessage(t('pipeline.txtOnlyForNow'))
       return
     }
-    // Read the .txt content via shell open is wrong; read inline via IPC.
-    // For W4 minimal viable, we just paste path → fetch via fs in main isn't
-    // exposed through the renderer. Surface a hint to the user.
     setPipelineMessage(t('pipeline.pasteHint', { path }))
   }
 
-  // ── Run pipeline ───────────────────────────────────────────────────────
   const canRun = sourceText.trim().length > 0 && mappingText.trim().length > 0
 
-  const runPreview = async (): Promise<void> => {
+  const runRedact = async (): Promise<void> => {
     setPipelineMessage(t('pipeline.running'))
-    setCollisions(null)
-    setPreviewResult(null)
+    setResult(null)
 
-    const result = await window.api?.medical?.redactInline?.(sourceText, mappingText, true)
-    if (!result) {
+    const response = await window.api?.medical?.redactInline?.(sourceText, mappingText)
+    if (!response) {
       setPipelineMessage(t('pipeline.error', { msg: 'no IPC' }))
       return
     }
-    if ('error' in result) {
-      setPipelineMessage(t('pipeline.error', { msg: result.error }))
+    if ('error' in response) {
+      setPipelineMessage(t('pipeline.error', { msg: response.error }))
       return
     }
 
     setPipelineMessage(null)
-    if (result.collisions.length > 0) {
-      setCollisions(result.collisions)
-      return
-    }
-    setPreviewResult(result as RedactionResult)
+    setResult(response as RedactionResult)
     setPhase('preview')
   }
 
-  const runFinal = async (): Promise<void> => {
-    setPipelineMessage(t('pipeline.runningSafetyNet'))
-    const result = await window.api?.medical?.redactInline?.(sourceText, mappingText, false)
-    if (!result || 'error' in result) {
-      setPipelineMessage(t('pipeline.error', { msg: result && 'error' in result ? result.error : 'no IPC' }))
-      return
-    }
-    setPipelineMessage(null)
-    setFinalResult(result as RedactionResult)
-    if (result.pending_flags.length > 0) {
-      setPhase('safety-net')
-    } else {
-      setPhase('done')
-    }
-  }
-
-  // ── Keyboard shortcuts ─────────────────────────────────────────────────
   useEffect(() => {
     const handler = (e: KeyboardEvent): void => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'r' && canRun && phase === 'ingest') {
         e.preventDefault()
-        runPreview()
+        runRedact()
       }
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
   }, [canRun, phase]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── Phase: preview (AuditDiffViewer) ───────────────────────────────────
-  if (phase === 'preview' && previewResult) {
+  if (phase === 'preview' && result) {
     return (
       <AuditDiffViewer
         originalText={sourceText}
-        redactedText={previewResult.output}
-        replacements={previewResult.replacements}
+        redactedText={result.output}
+        replacements={result.replacements}
         onBack={() => {
           setPhase('ingest')
-          setPreviewResult(null)
+          setResult(null)
         }}
-        onContinue={() => {
-          runFinal()
-        }}
-      />
-    )
-  }
-
-  // ── Phase: safety-net review ───────────────────────────────────────────
-  if (phase === 'safety-net' && finalResult) {
-    return (
-      <SafetyNetReview
-        flags={finalResult.pending_flags}
-        onCancel={() => setPhase('preview')}
-        onExport={async (resolutions) => {
-          // For W4 minimal: copy redacted text to clipboard. Real export
-          // (write .md, audit log .json) is W5 polish.
-          await navigator.clipboard.writeText(finalResult.output)
-          setPipelineMessage(t('pipeline.exportedClipboard', { count: resolutions.length }))
+        onContinue={async () => {
+          await navigator.clipboard.writeText(result.output)
+          setPipelineMessage(t('pipeline.exportedClipboard'))
           setPhase('done')
         }}
       />
     )
   }
 
-  // ── Phase: done ────────────────────────────────────────────────────────
-  if (phase === 'done' && finalResult) {
+  if (phase === 'done' && result) {
     return (
       <div className="ingest-workspace view-enter">
         <header className="ingest-header">
@@ -192,8 +123,7 @@ export default function IngestWorkspace(): JSX.Element {
           className="ingest-run-cta"
           onClick={() => {
             setPhase('ingest')
-            setPreviewResult(null)
-            setFinalResult(null)
+            setResult(null)
             setSourceText('')
             setPipelineMessage(null)
           }}
@@ -204,14 +134,13 @@ export default function IngestWorkspace(): JSX.Element {
     )
   }
 
-  // ── Phase: ingest (default) ────────────────────────────────────────────
   return (
     <div className="ingest-workspace view-enter">
       <header className="ingest-header">
         <h1 className="ingest-title">{t('workspace.title')}</h1>
         <button
           className="ingest-run-cta"
-          onClick={runPreview}
+          onClick={runRedact}
           disabled={!canRun}
           aria-disabled={!canRun}
           aria-describedby={!canRun ? 'run-disabled-reason' : undefined}
@@ -222,7 +151,6 @@ export default function IngestWorkspace(): JSX.Element {
       </header>
 
       <div className="ingest-panes">
-        {/* Left pane — source text input */}
         <section className="ingest-left">
           <textarea
             className="ingest-source-textarea"
@@ -241,19 +169,9 @@ export default function IngestWorkspace(): JSX.Element {
           </button>
         </section>
 
-        {/* Right pane — mapping editor + date mode */}
         <section className="ingest-right">
           <div className="mapping-editor-wrap">
             <MappingEditor value={mappingText} onChange={setMappingText} />
-          </div>
-
-          <div className="ingest-date-mode">
-            <DateModeSelector
-              mode={dateMode}
-              onChange={setDateMode}
-              offsetDays={offsetDays}
-              onOffsetChange={setOffsetDays}
-            />
           </div>
         </section>
       </div>
@@ -270,21 +188,6 @@ export default function IngestWorkspace(): JSX.Element {
             ? t('run.disabledNoSource')
             : t('run.disabledNoMapping')}
         </div>
-      )}
-
-      {/* Collision warning overlay */}
-      {collisions && collisions.length > 0 && (
-        <CollisionWarningPanel
-          collisions={collisions}
-          onCancel={() => {
-            setCollisions(null)
-            setPipelineMessage(null)
-          }}
-          onContinue={() => {
-            setCollisions(null)
-            setPipelineMessage(t('pipeline.collisionApproved'))
-          }}
-        />
       )}
     </div>
   )

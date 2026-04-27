@@ -11,7 +11,7 @@ import { join, normalize } from 'path'
 
 import { ModelDownloader } from '../model/downloader'
 import { OCR_MODEL_V2 } from '../model/registry'
-import { getLlmStatus, analyzeWithLlm, startLlm } from '../llm/lifecycle'
+import { getLlmStatus, startLlm } from '../llm/lifecycle'
 
 /** Write diagnostic error to crash-logs for remote debugging */
 function logIpcError(handler: string, filePath: string, error: unknown): void {
@@ -120,14 +120,6 @@ export function registerIpcHandlers(): void {
     }
   })
 
-  ipcMain.handle('llm:analyze', async (_event, issues: unknown[]) => {
-    try {
-      return await analyzeWithLlm(issues as Parameters<typeof analyzeWithLlm>[0])
-    } catch (e) {
-      return { error: String(e), judgments: [] }
-    }
-  })
-
   ipcMain.handle('llm:start', async () => {
     try {
       return await startLlm()
@@ -183,34 +175,9 @@ export function registerIpcHandlers(): void {
   ipcMain.handle('medical:ingest', async (_event, source: unknown) => {
     try {
       const { runPipeline } = await import('../medical/pipeline/orchestrator')
-      // Stub forwards to orchestrator; orchestrator throws TODO until W2-W4.
-      // Renderer should treat the error response as "feature not ready."
-      return await runPipeline({ source: source as never, mapping_path: '', preview_only: true })
+      return await runPipeline({ source: source as never, mapping_path: '' })
     } catch (e) {
       logIpcError('medical:ingest', '', e)
-      return { error: e instanceof Error ? e.message : String(e) }
-    }
-  })
-
-  ipcMain.handle('medical:scan-collisions', async (_event, mappingPath: unknown, chunks: unknown) => {
-    try {
-      const { scanForCollisions } = await import('../medical/mapping/collisionScan')
-      const { loadMapping } = await import('../medical/mapping/parser')
-      if (typeof mappingPath !== 'string' || !Array.isArray(chunks)) {
-        return { error: 'medical:scan-collisions invalid args' }
-      }
-      const mapping = await loadMapping(mappingPath)
-      return scanForCollisions({ mapping, chunks: chunks as string[] })
-    } catch (e) {
-      return { error: e instanceof Error ? e.message : String(e) }
-    }
-  })
-
-  ipcMain.handle('medical:preview', async (_event, request: unknown) => {
-    try {
-      const { runPipeline } = await import('../medical/pipeline/orchestrator')
-      return await runPipeline({ ...(request as object), preview_only: true } as never)
-    } catch (e) {
       return { error: e instanceof Error ? e.message : String(e) }
     }
   })
@@ -218,24 +185,24 @@ export function registerIpcHandlers(): void {
   ipcMain.handle('medical:redact', async (_event, request: unknown) => {
     try {
       const { runPipeline } = await import('../medical/pipeline/orchestrator')
-      return await runPipeline({ ...(request as object), preview_only: false } as never)
+      return await runPipeline(request as never)
     } catch (e) {
       return { error: e instanceof Error ? e.message : String(e) }
     }
   })
 
   // Inline pipeline — accepts mapping + source as STRINGS (no file IO).
-  // Used by the IngestWorkspace textarea flow so we don't have to round-trip
-  // mapping text through the user's home directory just to run a preview.
+  // Used by IngestWorkspace textarea flow so mapping text doesn't round-trip
+  // through disk just to run redaction.
   ipcMain.handle(
     'medical:redact-inline',
-    async (_event, sourceText: unknown, mappingText: unknown, preview: unknown) => {
+    async (_event, sourceText: unknown, mappingText: unknown) => {
       try {
         if (typeof sourceText !== 'string' || typeof mappingText !== 'string') {
           return { error: 'medical:redact-inline expects sourceText + mappingText strings' }
         }
         const { runPipelineInline } = await import('../medical/pipeline/orchestrator')
-        return await runPipelineInline(sourceText, mappingText, preview === true)
+        return await runPipelineInline(sourceText, mappingText)
       } catch (e) {
         return { error: e instanceof Error ? e.message : String(e) }
       }

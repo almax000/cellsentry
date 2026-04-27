@@ -20,26 +20,21 @@
  *       real_name: 张三
  *       aliases: [张先生, Zhang San]
  *       pseudonym: 患者A
- *       date_mode: preserve
  *       additional_entities: []
  *     - patient_id: family-002
  *       real_name: 王五
  *       aliases: []
  *       pseudonym: 患者B
- *       date_mode: offset_days
- *       date_offset_days: 30
  */
 
 import { readFile } from 'fs/promises'
 import { parse as yamlParse } from 'yaml'
 
-import type { DateMode, PatientEntry, PseudonymMap } from '../types'
+import type { PatientEntry, PseudonymMap } from '../types'
 
 // ---------------------------------------------------------------------------
 // Validation
 // ---------------------------------------------------------------------------
-
-const VALID_DATE_MODES: readonly DateMode[] = ['preserve', 'offset_days', 'bucket_month']
 
 export class MappingParseError extends Error {
   constructor(message: string, public readonly path?: string) {
@@ -75,12 +70,6 @@ function validatePatient(raw: unknown, idx: number): PatientEntry {
   if (aliases.some(a => a.length === 0)) {
     throw new MappingParseError(`patients[${idx}].aliases contains an empty string`)
   }
-  const dateMode: DateMode = (r.date_mode as DateMode) ?? 'preserve'
-  if (!VALID_DATE_MODES.includes(dateMode)) {
-    throw new MappingParseError(
-      `patients[${idx}].date_mode must be one of: ${VALID_DATE_MODES.join(', ')}`,
-    )
-  }
   const additional = r.additional_entities ?? []
   if (!Array.isArray(additional)) {
     throw new MappingParseError(`patients[${idx}].additional_entities must be an array`)
@@ -99,16 +88,11 @@ function validatePatient(raw: unknown, idx: number): PatientEntry {
     return { real: ee.real, pseudonym: ee.pseudonym }
   })
 
-  const offsetDays = r.date_offset_days
-  const offset = typeof offsetDays === 'number' ? offsetDays : undefined
-
   return {
     patient_id: r.patient_id,
     real_name: r.real_name,
     aliases,
     pseudonym: r.pseudonym,
-    date_mode: dateMode,
-    date_offset_days: offset,
     additional_entities: additionalValidated,
   }
 }
