@@ -10,6 +10,7 @@ import { spawn, ChildProcess } from 'child_process'
 import { join } from 'path'
 import { existsSync } from 'fs'
 import { is } from '@electron-toolkit/utils'
+import { selectOcrModel } from '../model/tierSelector'
 import type { LlmRequest, LlmResponse, LlmStatus } from './types'
 
 const REQUEST_TIMEOUT_MS = 60_000
@@ -67,6 +68,7 @@ class LlmBridge {
           ...process.env,
           PYTHONUNBUFFERED: '1',
           CELLSENTRY_MODEL_DIR: getModelDir(),
+          CELLSENTRY_OCR_DIRNAME: getActiveOcrDirName(),
         },
       })
 
@@ -244,6 +246,13 @@ function getProjectRoot(): string {
 function getModelDir(): string {
   const { app } = require('electron') as typeof import('electron')
   return join(app.getPath('userData'), 'models')
+}
+
+/** Default OCR model directory the python server should preload — matches
+ *  the active tier from tierSelector. Engine layer can still override per
+ *  request via params.model_dir. */
+function getActiveOcrDirName(): string {
+  return selectOcrModel().localDirName
 }
 
 function getServerScriptPath(): string {

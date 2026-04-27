@@ -10,7 +10,7 @@ import { appendFileSync, mkdirSync } from 'fs'
 import { join, normalize } from 'path'
 
 import { ModelDownloader } from '../model/downloader'
-import { OCR_MODEL_V2 } from '../model/registry'
+import { selectOcrModel } from '../model/tierSelector'
 import { getLlmStatus, startLlm } from '../llm/lifecycle'
 
 /** Write diagnostic error to crash-logs for remote debugging */
@@ -43,12 +43,11 @@ export function getModelsDir(): string {
 
 export function getDownloader(): ModelDownloader {
   if (!modelDownloader) {
-    // OCR_MODEL_V2 is the W1 default; W2 will introduce a multi-model
-    // orchestration that downloads OCR + safety-net in sequence. Until then,
-    // OCR_MODEL_V2.files is empty (registry placeholder), which makes
-    // checkModelExists() return true vacuously and download() a no-op success.
-    // The app launches in stub-only mode without forcing a download dialog.
-    modelDownloader = new ModelDownloader(getModelsDir(), OCR_MODEL_V2, app.getLocale())
+    // Day 5: tier auto-selected by RAM (PaddleOCR-VL bf16 / 8bit / 4bit) or
+    // overridden via CELLSENTRY_OCR_TIER env var. Engine layer reads the
+    // same selection so the downloaded model matches what gets loaded.
+    const model = selectOcrModel()
+    modelDownloader = new ModelDownloader(getModelsDir(), model, app.getLocale())
   }
   return modelDownloader
 }

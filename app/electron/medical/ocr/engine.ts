@@ -15,6 +15,7 @@
  */
 
 import { llmBridge } from '../../llm/bridge'
+import { selectOcrTier } from '../../model/tierSelector'
 import type { OcrError, OcrResult } from '../types'
 import type { OcrRequest } from './types'
 
@@ -125,10 +126,12 @@ export function makeDeepSeekOcr2Engine(): OcrEngine {
 /**
  * Returns the user-active OCR engine.
  *
- * Day 2: hardcoded to PaddleOCR-VL-1.5-bf16. Day 5 will replace with:
- *   - Read user override from Settings (if any)
- *   - Else pick PaddleOCR-VL quantization tier from RAM (Day 5)
+ * Day 5: tier picked by selectOcrTier() (CELLSENTRY_OCR_TIER env override
+ * or RAM-based auto-select). DS-OCR-2 fallback selected when the user has
+ * overridden the tier explicitly.
  */
 export function getActiveOcrEngine(): OcrEngine {
-  return makePaddleOcrVlEngine('bf16')
+  const tier = selectOcrTier()
+  if (tier === 'ds-ocr-2') return makeDeepSeekOcr2Engine()
+  return makePaddleOcrVlEngine(tier)
 }
