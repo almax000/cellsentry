@@ -1,22 +1,24 @@
-# CellSentry v2.0 Python dependencies
+# CellSentry v2 Python dependencies
 #
-# These are NOT required for the W1 server skeleton — that runs on stock
-# Python 3.9+ with no external packages. They get installed at the start of
-# W2 / W3 when real OCR + safety-net models come online.
+# v2.0 ships with OCR DISABLED by default. Modern Chinese hospital records are
+# digital PDFs and DOCX exports — pdf-parse + mammoth.js handle those without
+# Python. For the rare image-input case, users can extract text via system OCR
+# (macOS Live Text / Windows OCR API) and paste, which is on par with our
+# OCR engine for standard printed Chinese (per D31 + 2026-04-28 audit).
 #
-# Install on Mac (per AD8 / AD2 / AD6):
-#     pip install -r requirements.txt
+# These deps only matter if the user opts into image OCR via:
+#   CELLSENTRY_OCR_TIER={bf16|8bit|4bit|ds-ocr-2} npm run dev
 #
-# Install on Windows: not required for v2.0-beta.1 (server runs in
-# stub-only mode on Windows; OCR + safety-net are Mac MLX-only per AD7).
+# Install when you actually need image OCR:
+#   pip install -r requirements.txt
+#
+# Then download via app first-launch flow.
 
-# OCR backend — DeepSeek-OCR via mlx-community/DeepSeek-OCR-8bit (per AD6).
-# Pinned to >=0.2.0 because earlier versions don't expose the load API used
-# in scripts/llm_server.py W2 implementation.
-mlx-vlm>=0.2.0
+# OCR backend — PaddleOCR-VL 1.5 via mlx-community (Apache 2.0).
+# v0.3.10 added PaddleOCR-VL support; we pin >=0.4.0 for stability +
+# Falcon-OCR / Gemma 4 fixes that landed in 0.4.x.
+mlx-vlm>=0.4.0
 
-# Safety-net LLM — Qwen2.5-3B-Instruct-4bit (per AD2).
-# Pinned to >=0.20.0 for make_sampler API (older `temp` kwarg removed).
-mlx-lm>=0.20.0
-
-# Note: mlx itself is a transitive dep of both above; no need to list it.
+# Note: mlx itself is a transitive dep; no need to list it.
+# REVOKED in lean rebuild (2026-04-27): mlx-lm was here for the Qwen2.5-3B
+# safety-net pass that ADR D21 / AD2 cut.

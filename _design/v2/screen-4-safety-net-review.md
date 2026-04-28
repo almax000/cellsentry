@@ -1,5 +1,14 @@
 # Screen 4 — Safety-Net Review
 
+> ⚠️ **REVOKED 2026-04-27** (ADR `adr-d20-thru-d31-cellsentry-lean-pivot.md` § D21 / AD2).
+> The Qwen2.5-3B safety-net pass was cut as part of the lean rebuild — D31
+> repositions CellSentry as a video-prop tool where the user's own mapping
+> covers their own family/friends, removing the need for an LLM to flag
+> "missed names". Implementation files (`safetyNet.ts`, `safetyNetPrompts.ts`,
+> `SafetyNetReview.tsx`) and the 1.75 GB Qwen weight registry entry deleted
+> in lean rebuild Day 1 commit `ef01bde`. This file kept as historical context.
+
+
 > After Qwen2.5-3B has reviewed the redacted output and flagged any names
 > that look like real people but weren't in the user's mapping. User
 > resolves each flag (add to mapping / replace manually / dismiss). After

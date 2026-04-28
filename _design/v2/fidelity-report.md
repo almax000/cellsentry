@@ -1,5 +1,13 @@
 # v2 UI 1:1 Fidelity Report (W6 Step 6.3)
 
+> ⚠️ **POST-LEAN REBUILD NOTE (2026-04-27):** Screens 2 (Collision Warning)
+> and 4 (Safety-Net Review) were REVOKED in the lean rebuild — both UI
+> components and their backing engines deleted. The fidelity matrix below
+> still describes pre-revocation state for Screens 1 + 3 (those still exist).
+> When evaluating "what's actually built today", treat Screens 2 + 4 sections
+> as deprecated.
+
+
 > Compares the implemented UI in `app/src/components/medical/` against the
 > design specs in `_design/v2/screen-{1..4}-*.md` per the frontend-workflow
 > rule. Deviations are classified as either **Design wrong → ADR** (the spec

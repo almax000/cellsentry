@@ -1,21 +1,22 @@
 /**
- * RAM-based OCR tier auto-selection (lean rebuild — D35).
+ * OCR tier selection (lean rebuild — D35 + 2026-04-28 audit).
  *
- * Picks the right PaddleOCR-VL quantization based on total system RAM:
- *
- *   ≥ 12 GiB binary  → bf16   (covers 16 GB Macs, ample headroom for unified memory)
- *   ≥  6 GiB binary  → 8-bit  (covers 8 GB Macs)
- *   <  6 GiB binary  → 4-bit  (rare; only old Intel Macs)
- *
- * The thresholds are 75 % of the marketing-GB equivalent so we don't get
- * tripped up by tiny variations in `os.totalmem()` reporting.
+ * Default = 'disabled'. v2.0 ships without OCR by default because:
+ *   - Modern Chinese hospital records are digital PDFs / DOCX (D34 stack
+ *     handles those without OCR)
+ *   - For image inputs, system OCR (macOS Live Text / Windows OCR API) is
+ *     local, free, and on par with our engine for standard printed Chinese
+ *   - Saves the 1.82 GB PaddleOCR-VL download on first-launch UX
  *
  * Override paths (in priority order):
  *   1. CELLSENTRY_OCR_TIER env var (`bf16` | `8bit` | `4bit` | `ds-ocr-2`)
- *   2. RAM-based auto-selection (default)
+ *   2. Default: 'disabled' (no model download, image input shows hint)
  *
- * Day 6 polish wires a Settings UI option that writes the env var so the
- * choice persists across restarts.
+ * If user opts in via env var, the matching DirectoryModel is returned and
+ * the main process triggers the download flow on next launch.
+ *
+ * Day 8+ may add a Settings UI toggle that writes the env var so the choice
+ * persists. Until then, OCR is power-user / DrCrow-demo only.
  */
 
 import { totalmem } from 'os'
@@ -32,9 +33,9 @@ const GIB = 1024 * 1024 * 1024
 const BF16_THRESHOLD = 12 * GIB
 const Q8_THRESHOLD = 6 * GIB
 
-export type OcrTier = 'bf16' | '8bit' | '4bit' | 'ds-ocr-2'
+export type OcrTier = 'disabled' | 'bf16' | '8bit' | '4bit' | 'ds-ocr-2'
 
-const TIER_TO_MODEL: Record<OcrTier, DirectoryModel> = {
+const TIER_TO_MODEL: Record<Exclude<OcrTier, 'disabled'>, DirectoryModel> = {
   bf16: PADDLEOCR_VL_BF16,
   '8bit': PADDLEOCR_VL_8BIT,
   '4bit': PADDLEOCR_VL_4BIT,
@@ -43,26 +44,43 @@ const TIER_TO_MODEL: Record<OcrTier, DirectoryModel> = {
 
 function readOverride(): OcrTier | null {
   const raw = process.env.CELLSENTRY_OCR_TIER
-  if (raw === 'bf16' || raw === '8bit' || raw === '4bit' || raw === 'ds-ocr-2') {
+  if (
+    raw === 'disabled' ||
+    raw === 'bf16' ||
+    raw === '8bit' ||
+    raw === '4bit' ||
+    raw === 'ds-ocr-2'
+  ) {
     return raw
   }
   return null
 }
 
-export function autoTierFromRam(totalBytes: number): OcrTier {
+/** Pure RAM-to-tier mapping. Used when user opts in but doesn't pick a tier
+ *  explicitly — picks the right PaddleOCR-VL quantization for their machine. */
+export function autoTierFromRam(totalBytes: number): Exclude<OcrTier, 'disabled' | 'ds-ocr-2'> {
   if (totalBytes >= BF16_THRESHOLD) return 'bf16'
   if (totalBytes >= Q8_THRESHOLD) return '8bit'
   return '4bit'
 }
 
-/** Returns the active OCR tier (override > RAM-based auto-select). */
+/** Returns the active OCR tier. Default 'disabled'; env override switches on. */
 export function selectOcrTier(): OcrTier {
   const override = readOverride()
+  if (override === 'disabled') return 'disabled'
   if (override) return override
-  return autoTierFromRam(totalmem())
+  // Default: OCR off. User must opt in via CELLSENTRY_OCR_TIER.
+  return 'disabled'
 }
 
-/** Returns the active OCR DirectoryModel — used by ModelDownloader + engine. */
-export function selectOcrModel(): DirectoryModel {
-  return TIER_TO_MODEL[selectOcrTier()]
+/** Returns the active OCR DirectoryModel, or null when OCR is disabled. */
+export function selectOcrModel(): DirectoryModel | null {
+  const tier = selectOcrTier()
+  if (tier === 'disabled') return null
+  return TIER_TO_MODEL[tier]
+}
+
+/** True when the user has opted into image OCR. */
+export function isOcrEnabled(): boolean {
+  return selectOcrTier() !== 'disabled'
 }

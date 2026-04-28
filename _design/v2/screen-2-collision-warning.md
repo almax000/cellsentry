@@ -1,5 +1,14 @@
 # Screen 2 — Collision Warning Panel (NEW per AD3)
 
+> ⚠️ **REVOKED 2026-04-27** (ADR `adr-d20-thru-d31-cellsentry-lean-pivot.md` § AD3).
+> The cross-text collision pre-scan was cut as part of the lean rebuild —
+> D19 reinterpreted as literal `String.prototype.replaceAll` with longest-key-first
+> ordering removes the `张三 / 张三丰` ambiguity at its source (user provides both
+> if both are mapped). Implementation files (`collisionScan.ts`,
+> `CollisionWarningPanel.tsx`) deleted in lean rebuild Day 1 commit `ef01bde`.
+> This file kept as historical context for fidelity-report.md cross-references.
+
+
 > Pre-flight gate. Catches the `张三 / 张三丰` problem before redaction
 > corrupts a legitimate longer name. Pipeline is BLOCKED until the user
 > resolves every flagged overlap.

@@ -41,14 +41,16 @@ export function getModelsDir(): string {
   return join(app.getPath('userData'), 'models')
 }
 
-export function getDownloader(): ModelDownloader {
-  if (!modelDownloader) {
-    // Day 5: tier auto-selected by RAM (PaddleOCR-VL bf16 / 8bit / 4bit) or
-    // overridden via CELLSENTRY_OCR_TIER env var. Engine layer reads the
-    // same selection so the downloaded model matches what gets loaded.
-    const model = selectOcrModel()
-    modelDownloader = new ModelDownloader(getModelsDir(), model, app.getLocale())
-  }
+export function getDownloader(): ModelDownloader | null {
+  if (modelDownloader) return modelDownloader
+  // Day 7 (2026-04-28 audit): default OCR is 'disabled' — selectOcrModel()
+  // returns null. Main process skips the download gate entirely when this
+  // returns null, so first-launch UX has no 1.82 GB download.
+  // User opts in via CELLSENTRY_OCR_TIER env var; the matching DirectoryModel
+  // gets returned and the gate triggers on next launch.
+  const model = selectOcrModel()
+  if (model === null) return null
+  modelDownloader = new ModelDownloader(getModelsDir(), model, app.getLocale())
   return modelDownloader
 }
 
@@ -62,11 +64,15 @@ export function registerIpcHandlers(): void {
   ipcMain.handle('sidecar:model-check', async () => {
     if (process.env.CELLSENTRY_TEST_MODE === '1') return { exists: true }
     const downloader = getDownloader()
+    if (!downloader) return { exists: true } // OCR disabled → no model needed
     return { exists: downloader.checkModelExists() }
   })
 
   ipcMain.handle('sidecar:model-download', async () => {
     const downloader = getDownloader()
+    if (!downloader) {
+      return { success: true } // OCR disabled — download is a no-op
+    }
     const win = BrowserWindow.getAllWindows()[0]
 
     if (win) {
@@ -104,6 +110,9 @@ export function registerIpcHandlers(): void {
 
   ipcMain.handle('sidecar:model-status', async () => {
     const downloader = getDownloader()
+    if (!downloader) {
+      return { loaded: false, backend: 'none' } // OCR disabled
+    }
     return {
       loaded: downloader.checkModelExists(),
       backend: process.platform === 'darwin' ? 'mlx' : 'llama-cpp',

@@ -392,12 +392,16 @@ if (!gotTheLock) {
     registerUpdaterIpc()
     setupLlmLifecycle()
 
-    // Gate: check model before creating the main window
+    // Gate: check model before creating the main window. OCR is disabled by
+    // default (per D31 + 2026-04-28 audit), so getDownloader() returns null
+    // unless the user opted in via CELLSENTRY_OCR_TIER. Null downloader skips
+    // the gate entirely — main window opens immediately.
     const skipModelCheck = IS_TEST_MODE
     const downloader = getDownloader()
-    const modelExists = skipModelCheck || downloader.checkModelExists()
+    const modelExists =
+      skipModelCheck || downloader === null || downloader.checkModelExists()
 
-    if (!modelExists) {
+    if (!modelExists && downloader !== null) {
       const dlWin = createDownloadWindow()
 
       await new Promise<void>((resolve) => {

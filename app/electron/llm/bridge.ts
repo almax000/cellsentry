@@ -10,7 +10,7 @@ import { spawn, ChildProcess } from 'child_process'
 import { join } from 'path'
 import { existsSync } from 'fs'
 import { is } from '@electron-toolkit/utils'
-import { selectOcrModel } from '../model/tierSelector'
+import { isOcrEnabled, selectOcrModel } from '../model/tierSelector'
 import type { LlmRequest, LlmResponse, LlmStatus } from './types'
 
 const REQUEST_TIMEOUT_MS = 60_000
@@ -36,6 +36,15 @@ class LlmBridge {
 
   async start(): Promise<boolean> {
     if (this.process) return this._status.available
+
+    // Day 7 audit: when OCR is disabled (default), no Python subprocess is
+    // needed — the bridge only services the OCR method now (safety-net was
+    // revoked). Skip spawn entirely so first-launch UX has no Python
+    // discovery / subprocess cost.
+    if (!isOcrEnabled()) {
+      this._status = { available: false, backend: 'none', modelLoaded: false }
+      return false
+    }
 
     // Prevent concurrent start attempts
     if (this.starting) return this.starting
@@ -250,9 +259,11 @@ function getModelDir(): string {
 
 /** Default OCR model directory the python server should preload — matches
  *  the active tier from tierSelector. Engine layer can still override per
- *  request via params.model_dir. */
+ *  request via params.model_dir. Returns empty string when OCR is disabled
+ *  (subprocess never spawns in that case anyway, but defensive). */
 function getActiveOcrDirName(): string {
-  return selectOcrModel().localDirName
+  const model = selectOcrModel()
+  return model?.localDirName ?? ''
 }
 
 function getServerScriptPath(): string {

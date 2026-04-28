@@ -124,14 +124,16 @@ export function makeDeepSeekOcr2Engine(): OcrEngine {
 }
 
 /**
- * Returns the user-active OCR engine.
+ * Returns the user-active OCR engine, or null when OCR is disabled (default).
  *
- * Day 5: tier picked by selectOcrTier() (CELLSENTRY_OCR_TIER env override
- * or RAM-based auto-select). DS-OCR-2 fallback selected when the user has
- * overridden the tier explicitly.
+ * Day 7 (2026-04-28 audit): default tier is 'disabled' — modern Chinese
+ * hospital records are digital PDFs / DOCX (handled without OCR). For the
+ * rare image input, users can use system OCR (macOS Live Text / Windows OCR
+ * API) and paste. Opt in via CELLSENTRY_OCR_TIER env var.
  */
-export function getActiveOcrEngine(): OcrEngine {
+export function getActiveOcrEngine(): OcrEngine | null {
   const tier = selectOcrTier()
+  if (tier === 'disabled') return null
   if (tier === 'ds-ocr-2') return makeDeepSeekOcr2Engine()
   return makePaddleOcrVlEngine(tier)
 }

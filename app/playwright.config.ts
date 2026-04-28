@@ -5,7 +5,8 @@ import { join } from 'path'
 // v2 W6: removed visual + sidebar-ux specs — they tested DropZone-area,
 // sidebar engine items (Audit/PII/Extraction nav), and app-brand header
 // icons that no longer exist post-pivot. v2 E2E coverage lives in `medical`
-// (7 tests covering ingest → preview → safety-net per AD3 critical path).
+// covering the lean ingest → preview round-trip (collision panel + safety-net
+// review revoked in 2026-04-27 lean rebuild).
 
 const reportDir = join(__dirname, '..', 'test_evidence', 'e2e-report')
 
