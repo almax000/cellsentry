@@ -5,112 +5,64 @@
 <h1 align="center">CellSentry <sup>BETA</sup></h1>
 
 <p align="center">
-  <strong>An experimental local AI toolbox for spreadsheet analysis</strong>
+  <strong>Local medical record pseudonymization. Strip names and identifiers before you send a record to AI.</strong>
   <br>
-  Audit formulas, detect PII, and extract structured data — your data never leaves your machine.
+  Your medical records never leave your computer un-redacted.
 </p>
 
 <p align="center">
   <a href="https://github.com/almax000/cellsentry/releases/latest"><img src="https://img.shields.io/github/v/release/almax000/cellsentry?style=flat-square&label=beta" alt="Beta Release"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="MIT License"></a>
-  <a href="https://huggingface.co/almax000/cellsentry-model"><img src="https://img.shields.io/badge/%F0%9F%A4%97-Model-yellow?style=flat-square" alt="HuggingFace Model"></a>
   <a href="https://github.com/almax000/cellsentry/releases"><img src="https://img.shields.io/github/downloads/almax000/cellsentry/total?style=flat-square" alt="Downloads"></a>
 </p>
 
 ---
 
-> ## 🔄 v2.0 Pivot in Progress
+> ## ⚠️ v2 is a re-focus, not an upgrade
 >
-> CellSentry is being rewritten as a **local medical record pseudonymization tool**. The v1.x three-feature toolbox (audit / PII / extraction) is being replaced by a single focused tool: ingest images / PDFs / text, apply a user-provided real-name → pseudonym mapping with consistency across documents, and locally OCR + safety-net scan to flag missed names. Target: **v2.0.0-beta.1, around June 2026**.
+> CellSentry v1.x was a three-feature Excel toolbox (formula audit / PII redaction / data extraction). **v2 is a different tool** — a single-purpose medical record pseudonymization desktop app. v1.1.0-beta.1 still works and is permanently downloadable from the [v1 release tag](https://github.com/almax000/cellsentry/releases/tag/v1.1.0-beta.1). There is no migration path between them.
 >
-> **What this means right now:**
->
-> - **v1.1.0-beta.1 still works** — DMG / Setup.exe on the [latest release](https://github.com/almax000/cellsentry/releases/tag/v1.1.0-beta.1) remain functional and downloadable.
-> - **`main` branch is mid-rewrite** — code on `main` no longer matches the README below. The screenshots and feature descriptions describe v1; the running app on `main` is a stub showing "v2 coming soon."
-> - **No automatic v1 → v2 migration** — v2 is a re-focus, not an upgrade path. Different problem, different tool surface.
-> - **Why pivot:** v1 had zero meaningful adoption; the medical pseudonymization use-case is concrete (DrCrow health-AI video pipeline depends on it) and a better fit for a locally-run tool.
->
-> Issues / PRs against v1 features will likely be closed as `wontfix` unless they affect v1.1.0-beta.1 stability. New v2 feedback is welcome — open an issue tagged `v2`.
+> The full pivot story: [cellsentry.pro/blog/v2-pivot](https://cellsentry.pro/blog/v2-pivot).
 
 ---
 
-> **Note**: CellSentry is an experimental research project in active development. The AI model is a fine-tuned 1.5B parameter SLM — expect rough edges. Feedback and contributions welcome.
+## What is CellSentry v2?
 
-<p align="center">
-  <img src="assets/app-dropzone.png" alt="Drop zone — drag and drop spreadsheets" width="700">
-</p>
-<p align="center">
-  <img src="assets/app-audit.png" alt="Formula Audit — detect errors with confidence scoring" width="700">
-</p>
-<p align="center">
-  <img src="assets/app-pii.png" alt="PII Detection — find and redact sensitive data" width="700">
-</p>
-<p align="center">
-  <img src="assets/app-extraction.png" alt="Data Extraction — structured field and table extraction" width="700">
-</p>
+CellSentry v2 is a desktop app for Mac and Windows that lets you safely send medical records to AI services (Claude / ChatGPT / Gemini / etc.) by stripping personally identifying information **locally first** — before any data leaves your machine.
 
-## What is CellSentry?
+**You provide a mapping** of the strings you want pseudonymized — names, phone numbers, addresses, ID numbers, social-security numbers, employer names — paired with what each should be replaced with. CellSentry runs three local stages:
 
-CellSentry is a desktop app that explores using local small language models (SLMs) for spreadsheet intelligence tasks. It combines a deterministic rule engine with an optional 1.5B LLM for three analysis modes:
+1. **Ingest** — plain text passes through; digital PDFs go through `pdf-parse`; DOCX through `mammoth.js`. Modern Chinese hospital records are overwhelmingly digital exports, so most inputs need no model download.
+2. **Mapping** — literal `String.prototype.replaceAll`, longest-key-first ordering. Same person + same phone + same address always become the same pseudonyms across every document — that consistency is what makes follow-up questions to the AI useful.
+3. **Regex fallback** — catches what your mapping missed: Chinese 18-digit ID (with GB 11643 checksum), mobile, email, Luhn-checked bank cards, plus label-anchored 病历号 / 医保号 / 就诊号. Runs after mapping, so user-supplied pseudonyms always win over fallback masks.
 
-### Formula Audit
+The redacted text comes out the other end and is automatically copied to your clipboard. Paste it into whichever AI you trust.
 
-- **23 audit rules** in 7 categories: consistency, references, logic, hardcoding, structure, style, complexity
-- **Batch scanning** — drag & drop multiple files or folders
-- **Confidence scoring** — each issue rated High / Medium / Low
-- **AI verification** — optional local LLM confirms or dismisses findings (graceful degradation when unavailable)
-- **Export reports** — HTML, PDF, or marked Excel files
+## Image input
 
-### PII Detection
+By default, image OCR is **off**. Modern Chinese hospital records are digital PDFs / DOCX exports — those handle without a model download. For image input there are two paths:
 
-- **12 regex patterns** across 2 locales (US, CN)
-- Detects: SSN, phone numbers, email, national IDs, credit cards, IBAN, passport numbers
-- **Validators**: Luhn algorithm (credit cards), CN ID checksum
-- **Masking preview** — see redacted values before exporting
-- Cell-level highlighting with confidence scores
+- **Easy** — extract text using **macOS Live Text** or the **Windows OCR API**, both local and free, then paste into CellSentry. They're on par with our optional engine for standard printed Chinese.
+- **Power-user** — set `CELLSENTRY_OCR_TIER=8bit` (or `bf16` / `4bit` / `ds-ocr-2`) and restart. PaddleOCR-VL 1.5 (Apache 2.0) downloads on next launch (1.10–1.82 GB depending on RAM tier).
 
-### Data Extraction
-
-- **5 document types**: invoice, receipt, purchase order, expense report, payroll
-- **Bilingual templates** — English and Chinese header matching
-- Field extraction: invoice number, date, vendor, totals, line items
-- **Table detection** — automatic header/row identification
-- **Export**: JSON or CSV structured output
+Cloud OCR services are explicitly forbidden in the codebase — image data never leaves your machine.
 
 ## Download
 
-> **Beta release** — expect bugs. Please [report issues](https://github.com/almax000/cellsentry/issues) you encounter.
+> **Beta release** — expect rough edges. Please [report issues](https://github.com/almax000/cellsentry/issues) you encounter.
 
 | Platform | Download |
 |----------|----------|
 | macOS | [CellSentry.dmg](https://github.com/almax000/cellsentry/releases/latest) |
 | Windows | [CellSentry-Setup.exe](https://github.com/almax000/cellsentry/releases/latest) |
 
-## AI Model
+## Limitations + scope
 
-CellSentry uses a fine-tuned local SLM for AI-enhanced analysis. The model:
+- **Not HIPAA-compliant.** CellSentry is a personal local tool. No audit logging at the level a covered entity requires, no business associate agreement, no penetration testing. Clinicians handling patient PHI in a professional capacity should talk to their compliance lead.
+- **CN-focused regex.** The validated regex pass covers Chinese identifiers (CN ID, mobile, 病历号 / 医保号 / 就诊号). Other locales work via your mapping but the regex fallback won't catch unmapped non-CN structured IDs.
+- **No automatic name detection.** v2 deliberately does not auto-detect Chinese names — auto-NER misses 15-30% of them. The contract is: you list the strings you want redacted; CellSentry guarantees they're replaced consistently across all your documents.
 
-- **[almax000/cellsentry-model](https://huggingface.co/almax000/cellsentry-model)** on HuggingFace (~940 MB, GGUF)
-- Fine-tuned from [Qwen2.5-1.5B](https://huggingface.co/Qwen/Qwen2.5-1.5B) with LoRA
-- Multi-task: formula audit verification, PII classification, data extraction
-- Runs entirely on your machine (MLX on Mac, llama.cpp on Windows)
-- Downloads automatically on first launch
-- **Gracefully degrades** — all three features work without the model
-
-Manual download:
-
-```bash
-huggingface-cli download almax000/cellsentry-model cellsentry-1.5b-v3-q4km.gguf --local-dir ./models
-```
-
-### Current Limitations
-
-- Model trained on English and Chinese data only
-- PII patterns cover US and CN formats (no EU/JP/KR patterns yet)
-- Extraction templates for 5 document types
-- 1024 token context — large spreadsheets need chunking
-
-## Build from Source
+## Build from source
 
 ```bash
 git clone https://github.com/almax000/cellsentry.git
@@ -119,9 +71,9 @@ npm install
 npm run dev
 ```
 
-**Requirements:** Node.js 20+, npm
+**Requirements:** Node.js 20+, npm. Optional: Python 3.10+ + `pip install -r requirements.txt` if you opt into image OCR.
 
-### Build Installers
+### Build installers
 
 ```bash
 # macOS
@@ -131,49 +83,49 @@ cd app && npm run build:mac
 cd app && npm run build:win
 ```
 
-### Run Tests
+### Run tests
 
 ```bash
 cd app && npm run typecheck     # Type checking
+cd app && npm test              # Unit tests (vitest)
 cd app && npx playwright test   # E2E tests (requires build first)
 ```
 
-## Tech Stack
+## Tech stack
 
 - [Electron](https://www.electronjs.org/) — cross-platform desktop framework
-- [React](https://react.dev/) — UI components
-- [TypeScript](https://www.typescriptlang.org/) — type-safe codebase
-- [ExcelJS](https://github.com/exceljs/exceljs) — Excel file parsing
-- [Qwen2.5-1.5B](https://huggingface.co/Qwen/Qwen2.5-1.5B) — base model for AI features
-- [electron-vite](https://electron-vite.org/) — build tooling
+- [React](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
+- [pdf-parse](https://www.npmjs.com/package/pdf-parse) — digital PDF text extraction
+- [mammoth.js](https://github.com/mwilliamson/mammoth.js) — DOCX text extraction
+- (Optional) [mlx-vlm](https://github.com/Blaizzy/mlx-vlm) + [PaddleOCR-VL 1.5](https://huggingface.co/mlx-community/PaddleOCR-VL-1.5-bf16) — Apple Silicon image OCR when opted in
 
-## Project Structure
+## Project structure
 
 ```
 app/
-├── electron/           # Main process
-│   ├── engine/         # Rule engine (23 rules, 7 categories)
-│   ├── pii/            # PII scanner (12 patterns, 2 locales)
-│   ├── extraction/     # Document extractor (5 doc types)
-│   ├── llm/            # Local LLM bridge (graceful degradation)
-│   ├── model/          # Model downloader (HuggingFace)
-│   ├── report/         # HTML report generator
-│   ├── excel/          # Excel cell marker
-│   └── main/           # Electron main + IPC
-├── src/                # Renderer (React)
-│   ├── components/     # UI components
-│   ├── context/        # Scan state management
-│   ├── i18n/           # Translations (EN/ZH)
-│   └── hooks/          # React hooks
-├── e2e/                # Playwright E2E tests
-└── resources/          # App icons, DMG background
+├── electron/
+│   ├── medical/             # Pseudonymization engine
+│   │   ├── mapping/         # parser + builder + writer + literalReplace
+│   │   ├── regex/           # CN-validated patterns
+│   │   ├── pipeline/        # orchestrator (ingest → mapping → regex)
+│   │   ├── ocr/             # OcrEngine abstraction + PaddleOCR-VL / DS-OCR-2 (opt-in)
+│   │   └── audit/           # Append-only audit log
+│   ├── llm/                 # Python subprocess bridge (only spawned when OCR is opted-in)
+│   ├── model/               # Model downloader + RAM-tier selection
+│   └── main/                # Electron main + IPC handlers
+├── src/
+│   ├── components/medical/  # IngestWorkspace + MappingEditor + AuditDiffViewer
+│   └── i18n/                # EN + ZH-CN translations
+├── e2e/                     # Playwright E2E tests
+└── resources/               # App icons, DMG background
+scripts/
+└── llm_server.py            # OCR-only Python subprocess (opt-in)
 ```
 
-## Feedback & Community
+## Feedback & community
 
 - **Bug reports & feature requests** — [GitHub Issues](https://github.com/almax000/cellsentry/issues)
 - **Questions & discussion** — [GitHub Discussions](https://github.com/almax000/cellsentry/discussions)
-- **Updates** — [@almax000 on X](https://x.com/almax000)
 
 ## Contributing
 
