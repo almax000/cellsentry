@@ -116,38 +116,71 @@ These primitives let a web app achieve the **same trust model** as Electron with
 - Electron build pipeline (electron-vite, electron-builder.yml, .github/workflows/build-mac.yml + build-windows.yml): retired; replaced with Next.js static export + CF Pages deploy
 - v1.1.0-beta.1 desktop release: still permanently available at v1 release tag; v2 desktop builds were never publicly shipped, so no EOL announcement needed
 
-## 6. Feasibility verification (pending — researcher dispatched 2026-04-29)
+## 6. Feasibility verification (researcher report, 2026-04-29)
 
-Before debate, CellSentry session has dispatched a researcher agent to verify:
+**Overall verdict: Conditional Go.** Architecture is feasible, no structural blockers, but three risks demand pre-commitment mitigations + one finding materially changes the proposed PDF redaction architecture.
 
-1. **OCR in browser** — PP-OCRv4 ONNX → onnxruntime-web compatibility, latency benchmarks, bbox output, package maintenance status; Tesseract.js fallback comparison
-2. **CJK tokenization** — jieba-wasm latest status; Intl.Segmenter `'zh'` quality comparison for "扩张三次" type cases
-3. **CSP `connect-src 'none'` enforcement** — edge cases (data:, blob:, WASM streaming, Service Worker fetch interception); real-world success stories
-4. **PWA + Service Worker offline** — caching strategy for ~50 MB asset bundle; Workbox vs hand-rolled; iOS Safari behavior
-5. **File handling** — File System Access API support matrix; large-PDF handling; output write-back strategy
-6. **Output rendering** — pdf-lib for PDF overlay redaction; Canvas for image; DOCX writer (or punt to PDF); text Unicode block conventions
-7. **Existing in-browser PII redaction tools** — predecessor projects, lessons learned
+### Per-dimension assessment
 
-Researcher report will be appended here as Section 6 (this section, replacing this stub) before plan-debate runs. **Do not run plan-debate without it.**
+| # | Dimension | Verdict | Key data |
+|---|---|---|---|
+| 1 | Image OCR (PP-OCRv4 mobile + onnxruntime-web) | ⚠️ Feasible with caveats | 20-30 MB OCR payload; **2-4s/page on M-class desktop, 6-12s on mobile, 15-30s on old Android**. Bbox output native. Best library: `ppu-paddle-ocr` v5.1.1 (released 12 days ago). **Use PP-OCRv4 mobile (~16 MB), NOT v5 (~81 MB)**. iOS Safari has known WASM-SIMD/JSEP bugs (issues #15644, #26827) — must avoid JSEP path |
+| 2 | CJK tokenization | ✓ Feasible | **`Intl.Segmenter` ('zh', granularity:'word') is Baseline-supported (Chrome 87+, Safari 14.1+, Firefox 125+) and 0 KB.** Quality: ICU's Chinese breaker ~85-92% vs jieba ~93-97% on general text. **Recommendation: Intl.Segmenter primary, jieba-wasm (~2 MB compressed) as opt-in fallback for medical-specific terms** |
+| 3 | CSP `connect-src 'none'` | ✓ Feasible with companions | Blocks fetch/XHR/WebSocket/EventSource/beacon. **Two required companions**: `script-src 'self' 'wasm-unsafe-eval'` (else WASM compile rejected); precache wasm in SW + load via `caches.match` then `WebAssembly.compile(arrayBuffer)` (cannot use `instantiateStreaming` under `connect-src 'none'`). SW registration uses `script-src`, not `connect-src` — unaffected |
+| 4 | PWA + Service Worker offline (~50 MB bundle) | ⚠️ Caveats on iOS | Chrome desktop: trivial. **Safari ~50 MB Cache API limit — at cliff edge**. iOS ITP: 7-day eviction for non-installed PWAs (installed = exempt since iOS 16.4). Realistic payload: **26-30 MB core, 36-40 MB with all fallbacks** — fits under 50 MB. Use Workbox precache + CacheFirst |
+| 5 | File handling | ⚠️ Caveats (Safari/Firefox) | `showSaveFilePicker`: Chrome/Edge only (~74% global). **Firefox + Safari: never**. Fallback: blob+anchor download → works 100% but no folder choice. PDF.js needs page-by-page `page.cleanup()` for large files |
+| 6 | **Output rendering — CRITICAL FINDING** | ✗ Naive overlay BLOCKER → ✓ Rasterize-and-rebuild required | **pdf-lib black-rectangle overlay does NOT actually redact** — text layer remains, copy/search/screen-reader extractable. This is the Manafort-2019 / Trump-Russia-filings failure mode. **Must rasterize each PDF page (200-300 DPI) → draw black on canvas → embed JPEG into new PDF**. Loses: PDF/A compliance, signatures, searchability, file size 5-10× larger. DOCX format-preservation: no mature pure-browser library; v1 = drop formatting, v1.5 = direct OOXML XML edit (~300 LOC, JSZip + DOM walk on `word/document.xml`) |
+| 7 | Predecessors | ✓ Validated | 2redact.com (Tesseract.js, commercial closed-source); AutoRedact (75⭐, Tesseract, English-only); redactpdf (~6 commits, vanilla JS, demonstrates <500 LOC viable). **No production-quality browser app does Chinese medical OCR + redaction** — CellSentry first-mover in this niche |
 
-## 7. Risk register
+### Architectural revisions vs the § 3 proposal
+
+The § 3 proposal mentioned PaddleOCR-VL → PP-OCRv4 swap. Researcher findings necessitate three additional adjustments:
+
+1. **PDF redaction is rasterize-and-rebuild, not overlay** (§ 6 finding above). Output is image-only PDFs; ~5-10× source size; loses signatures + searchability. **This is non-negotiable for safety** — overlay would ship a fake-redaction. Document trade-offs in user-facing copy: "Redacted PDFs are intentionally non-searchable; the redaction is permanent."
+2. **Intl.Segmenter primary, jieba-wasm fallback** (not jieba primary as § 3 implied). Saves ~2 MB bundle in default path. Jieba kept as opt-in for users hitting domain-specific edge cases.
+3. **COOP+COEP headers required** on `/app/*` for SharedArrayBuffer (needed by onnxruntime-web threaded path). Cloudflare Pages supports `_headers` file for this; trivial to ship.
+
+### Top 3 Risks (researcher-ranked)
+
+1. **OCR latency on mobile / older hardware unusable** (High impact). 15-30s/page on mid-range Android = users close tab. **Mitigation**: scope mobile to "view-only/preview"; require desktop for actual redaction work; show live "estimated time" counter on upload screen.
+2. **PDF rasterize output quality + size** (Medium-High impact). 5-10× size growth; clinicians sharing redacted records may have downstream tools that expect text-PDF. **Mitigation**: default to safe rasterize-and-rebuild; offer explicit "Fast mode (overlay only — text still extractable)" toggle with stern warning for users who want screen-share-only redaction.
+3. **iOS Safari second-class citizen** (Medium impact). 50 MB cache cliff + 7-day eviction + no save picker + no install prompt + WASM bugs. **Mitigation**: render iOS-specific share-menu install banner with screenshots; drop PP-OCRv5 from iOS path entirely; document "for full power use desktop browser" prominently.
+
+### Existing precedent for the trust pitch
+
+`digidigital/CoverUP` (~100⭐, Python desktop) markets itself with: *"The content of the redacted PDF is converted to images, so it is impossible to copy the remaining visible text without OCR"* — this is **the exact reassurance phrasing CellSentry should adapt** for the rasterize-and-rebuild output. The user-facing language is already validated.
+
+### Sources
+
+Full source list (40+ links covering caniuse, MDN, GitHub issues, HuggingFace model cards, browser-OCR project comparisons, ICU CJK breaker docs, PDF redaction failure analyses) preserved in researcher transcript at `/private/tmp/claude-501/-Users-jojo-Documents-cellsentry-dev/7cc11f88-53eb-47f1-8841-a07a31c461b7/tasks/a81a8f6e36a3fb2a6.output`. Key citations:
+- ppu-paddle-ocr v5.1.1: github.com/PT-Perkasa-Pilar-Utama/ppu-paddle-ocr
+- ONNX Runtime Web iOS issues: microsoft/onnxruntime#15644, #26827
+- PDF redaction failure precedent: xugj520.cn/en/archives/pdf-redaction-failures-data-exposed.html
+- Intl.Segmenter Baseline: web.dev/blog/intl-segmenter
+- digidigital/CoverUP rasterize trust phrasing: github.com/digidigital/CoverUP
+- 2redact.com architecture (Tesseract+pdf.js+pdf-lib, rasterize-and-rebuild): 2redact.com
+
+## 7. Risk register (post-researcher)
 
 | Risk | Likelihood | Impact | Mitigation if hit |
 |---|---|---|---|
-| onnxruntime-web + PP-OCRv4 too slow for usable demo (>20s/page) | Medium | High | Tesseract.js fallback (worse Chinese accuracy ~75-85%); or accept Electron-hybrid for OCR only |
-| iOS Safari PWA install + offline broken on common iOS versions | Medium | Medium | Document desktop-browser-first; iOS gets "open in browser" path |
-| CSP `connect-src 'none'` blocks something we forgot (e.g., Service Worker registration) | Low | Medium | Researcher must verify edge cases |
-| jieba-wasm has known browser compat regression in latest version | Low | Medium | Pin to known-good version; or swap to Intl.Segmenter |
-| Audience perception "web = upload" doesn't reverse despite UX work | Low | High (strategic) | DrCrow video script can dedicate 30s to F12 demonstration; if perception still resists, revert to Electron-hybrid |
+| **Mobile / older hardware OCR latency unusable** (researcher #1) | Medium-High | High | Scope mobile to view-only; require desktop for redaction; live ETA counter |
+| **PDF rasterize output 5-10× source size + lost signatures** (researcher #2) | High (it WILL happen) | Medium-High | Default rasterize (safe); opt-in "Fast mode = overlay only, text extractable" with warning |
+| **iOS Safari degraded (50 MB cliff, 7-day eviction, WASM bugs)** (researcher #3) | High (architectural reality) | Medium | iOS-specific share-menu install banner; drop v5 from iOS; "use desktop for full power" copy |
+| Audience perception "web = upload" doesn't reverse despite UX work | Low | High (strategic) | DrCrow video script dedicates 30s to F12 demonstration; if perception resists, revert to Electron-hybrid |
+| CSP/COOP/COEP misconfigured on Cloudflare Pages, breaking threads | Low | Medium | `_headers` file with required CSP + COOP+COEP; verify in DevTools after deploy |
+| WebKit 26 / iOS 16.4+ ONNX Runtime Web bugs hit production users | Medium | Medium | Avoid JSEP path entirely; pin to plain WASM SIMD; if bugs hit, fallback to Tesseract.js for affected sessions |
 
 ---
 
 ## Status checklist for DrCrow before running plan-debate
 
-- [ ] Section 6 (researcher feasibility report) appended
-- [ ] CellSentry session has confirmed `archive/v2-electron` branch + `electron-era-eol` tag pushed (✅ done 2026-04-29)
-- [ ] CellSentry session has confirmed `web` branch created (✅ done 2026-04-29)
+- [x] Section 6 (researcher feasibility report) appended (2026-04-29)
+- [x] CellSentry session has confirmed `archive/v2-electron` branch + `electron-era-eol` tag pushed (2026-04-29)
+- [x] CellSentry session has confirmed `web` branch created (2026-04-29)
 - [ ] DrCrow side: ready to renumber decisions (D36 placeholder, may shift) and update PROJECT-BIBLE.md § 五
+
+**ADR is now ready for plan-debate.** All three pre-conditions met. Next action: DrCrow runs `/plan-debate` (architect → reviewer → revision → user approval), produces verdict, sends back ADR-D36 confirmation to CellSentry session.
 
 ---
 
