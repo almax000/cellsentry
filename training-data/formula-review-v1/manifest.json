@@ -1,0 +1,137 @@
+{
+  "seed": 42,
+  "labels": [
+    "real_error",
+    "false_positive"
+  ],
+  "language": "English pilot; original benchmark includes mixed Chinese context",
+  "split_policy": "counterfactual groups and input presentation templates held out; business categories shared",
+  "original_benchmark_sha256": "97193606bcf9f38c3682f7f3ed5edb18ad3841270b060b4ef48ed4833de5a386",
+  "splits": {
+    "train": {
+      "count": 1800,
+      "sha256": "29c2c898e9ed867974a39e61e48d31869d90d6a1832b3619825d857baf442687",
+      "labels": {
+        "False": 900,
+        "True": 900
+      },
+      "categories": {
+        "if_boundary": 100,
+        "lookup_column": 100,
+        "lookup_exact": 100,
+        "relative_reference": 100,
+        "iferror": 100,
+        "self_reference": 100,
+        "rounding": 100,
+        "percent_scale": 100,
+        "duplicate_total": 100,
+        "sign": 100,
+        "date_order": 100,
+        "sum_range": 100,
+        "average_total": 100,
+        "text_number": 100,
+        "division_zero": 100,
+        "absolute_reference": 100,
+        "broken_reference": 100,
+        "count": 100
+      },
+      "templates": [
+        "ledger",
+        "structured"
+      ]
+    },
+    "validation": {
+      "count": 180,
+      "sha256": "a84c7701458c94793c60ac8373d562da8e9d1ea4a46b13108bfd386ec5fafd8a",
+      "labels": {
+        "True": 90,
+        "False": 90
+      },
+      "categories": {
+        "duplicate_total": 10,
+        "lookup_exact": 10,
+        "sign": 10,
+        "date_order": 10,
+        "average_total": 10,
+        "percent_scale": 10,
+        "count": 10,
+        "lookup_column": 10,
+        "if_boundary": 10,
+        "broken_reference": 10,
+        "self_reference": 10,
+        "iferror": 10,
+        "sum_range": 10,
+        "division_zero": 10,
+        "text_number": 10,
+        "relative_reference": 10,
+        "rounding": 10,
+        "absolute_reference": 10
+      },
+      "templates": [
+        "table"
+      ]
+    },
+    "test": {
+      "count": 360,
+      "sha256": "afe037340d38d0d1cd14f3f1d7e9143f589a8faa9f8d0361a5d43df43e6499b2",
+      "labels": {
+        "True": 180,
+        "False": 180
+      },
+      "categories": {
+        "iferror": 20,
+        "if_boundary": 20,
+        "absolute_reference": 20,
+        "sign": 20,
+        "percent_scale": 20,
+        "self_reference": 20,
+        "average_total": 20,
+        "lookup_column": 20,
+        "relative_reference": 20,
+        "duplicate_total": 20,
+        "text_number": 20,
+        "division_zero": 20,
+        "date_order": 20,
+        "count": 20,
+        "sum_range": 20,
+        "rounding": 20,
+        "broken_reference": 20,
+        "lookup_exact": 20
+      },
+      "templates": [
+        "memo"
+      ]
+    },
+    "benchmark": {
+      "count": 180,
+      "sha256": "e23c3f69463bb0effb5e5095c4fc58ad61b57b09bf28e472e54b62488eb319ea",
+      "labels": {
+        "True": 90,
+        "False": 90
+      },
+      "categories": {
+        "division_zero": 10,
+        "self_reference": 10,
+        "broken_reference": 10,
+        "sum_range": 10,
+        "average_total": 10,
+        "percent_scale": 10,
+        "absolute_reference": 10,
+        "relative_reference": 10,
+        "lookup_exact": 10,
+        "lookup_column": 10,
+        "if_boundary": 10,
+        "text_number": 10,
+        "duplicate_total": 10,
+        "sign": 10,
+        "date_order": 10,
+        "rounding": 10,
+        "count": 10,
+        "iferror": 10
+      },
+      "templates": [
+        "structured"
+      ]
+    }
+  }
+}

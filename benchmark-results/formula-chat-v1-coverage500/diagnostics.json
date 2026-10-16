@@ -1,0 +1,65 @@
+{
+  "audit_decision": {
+    "tp": 80,
+    "tn": 90,
+    "fp": 0,
+    "fn": 10,
+    "unscorable": 0
+  },
+  "audit_decision_correct": 170,
+  "audit_total": 180,
+  "audit_identity_mismatch": 0,
+  "request_errors": 0,
+  "output_truncated": 1,
+  "prompt_tokens_max": 262,
+  "completion_tokens_max": 420,
+  "summed_request_seconds": 460.519,
+  "median_seconds": 0.513,
+  "p95_seconds": 2.251,
+  "errors": {
+    "wrong_judgment_or_identity": 10,
+    "invalid_json": 240,
+    "missed_extra_or_wrong_pii": 21,
+    "invalid_schema": 10,
+    "output_truncated": 1
+  },
+  "presentation_normalized": {
+    "audit": {
+      "total": 180,
+      "content_correct": 170,
+      "fences_removed": 0
+    },
+    "pii": {
+      "total": 160,
+      "content_correct": 81,
+      "fences_removed": 65
+    },
+    "extraction": {
+      "total": 160,
+      "content_correct": 122,
+      "fences_removed": 136
+    }
+  },
+  "embedded_json_content": {
+    "audit": {
+      "total": 180,
+      "content_correct": 170,
+      "unique_json": 180,
+      "ambiguous_json": 0
+    },
+    "pii": {
+      "total": 160,
+      "content_correct": 93,
+      "unique_json": 155,
+      "ambiguous_json": 1
+    },
+    "extraction": {
+      "total": 160,
+      "content_correct": 122,
+      "unique_json": 157,
+      "ambiguous_json": 0
+    }
+  },
+  "reasoning_present": 0,
+  "total_completion_tokens": 52550
+}

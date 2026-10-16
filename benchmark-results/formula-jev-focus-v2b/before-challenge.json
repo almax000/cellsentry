@@ -1,0 +1,26 @@
+{
+  "count": 100,
+  "accuracy": 0.72,
+  "macro_f1": 0.7189883580891208,
+  "nll": 2.7395995184250035,
+  "brier": 0.26506798071881227,
+  "paired_groups": 50,
+  "paired_accuracy": 0.48,
+  "confusion": {
+    "tp": 33,
+    "tn": 39,
+    "fp": 11,
+    "fn": 17
+  },
+  "seconds": 7.275,
+  "categories": {
+    "lookup_column": {
+      "count": 50,
+      "correct": 26
+    },
+    "sum_range": {
+      "count": 50,
+      "correct": 46
+    }
+  }
+}

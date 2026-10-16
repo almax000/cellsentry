@@ -1,0 +1,3846 @@
+{
+  "validation": [
+    {
+      "id": "CANCEL2-validation-04-000-0",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-validation-02-000-0",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-validation-10-000-0",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-validation-07-000-0",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-validation-09-000-0",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-validation-08-000-0",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-validation-05-000-0",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-validation-00-000-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-validation-06-000-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-validation-03-000-0",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-validation-11-000-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-validation-01-000-0",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-validation-04-000-1",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-validation-02-000-1",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-validation-10-000-1",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-validation-07-000-1",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-validation-09-000-1",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-validation-08-000-1",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-validation-05-000-1",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-validation-00-000-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-validation-06-000-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-validation-03-000-1",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-validation-11-000-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-validation-01-000-1",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-validation-04-001-0",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-validation-02-001-0",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-validation-10-001-0",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-validation-07-001-0",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-validation-09-001-0",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-validation-08-001-0",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-validation-05-001-0",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-validation-00-001-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-validation-06-001-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-validation-03-001-0",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-validation-11-001-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-validation-01-001-0",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-validation-04-001-1",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-validation-02-001-1",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-validation-10-001-1",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-validation-07-001-1",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-validation-09-001-1",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-validation-08-001-1",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-validation-05-001-1",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-validation-00-001-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-validation-06-001-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-validation-03-001-1",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-validation-11-001-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-validation-01-001-1",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-validation-04-002-0",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-validation-02-002-0",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-validation-10-002-0",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-validation-07-002-0",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-validation-09-002-0",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-validation-08-002-0",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-validation-05-002-0",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-validation-00-002-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-validation-06-002-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-validation-03-002-0",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-validation-11-002-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-validation-01-002-0",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-validation-04-002-1",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-validation-02-002-1",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-validation-10-002-1",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-validation-07-002-1",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-validation-09-002-1",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-validation-08-002-1",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-validation-05-002-1",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-validation-00-002-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-validation-06-002-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-validation-03-002-1",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-validation-11-002-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-validation-01-002-1",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-validation-04-003-0",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-validation-02-003-0",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-validation-10-003-0",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-validation-07-003-0",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-validation-09-003-0",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-validation-08-003-0",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-validation-05-003-0",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-validation-00-003-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-validation-06-003-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-validation-03-003-0",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-validation-11-003-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-validation-01-003-0",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-validation-04-003-1",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-validation-02-003-1",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-validation-10-003-1",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-validation-07-003-1",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-validation-09-003-1",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-validation-08-003-1",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-validation-05-003-1",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-validation-00-003-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-validation-06-003-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-validation-03-003-1",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-validation-11-003-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-validation-01-003-1",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-validation-04-004-0",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-validation-02-004-0",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-validation-10-004-0",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-validation-07-004-0",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-validation-09-004-0",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-validation-08-004-0",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-validation-05-004-0",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-validation-00-004-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-validation-06-004-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-validation-03-004-0",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-validation-11-004-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-validation-01-004-0",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-validation-04-004-1",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-validation-02-004-1",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-validation-10-004-1",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-validation-07-004-1",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-validation-09-004-1",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-validation-08-004-1",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-validation-05-004-1",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-validation-00-004-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-validation-06-004-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-validation-03-004-1",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-validation-11-004-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-validation-01-004-1",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-validation-04-005-0",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-validation-02-005-0",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-validation-10-005-0",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-validation-07-005-0",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-validation-09-005-0",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-validation-08-005-0",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-validation-05-005-0",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-validation-00-005-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-validation-06-005-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-validation-03-005-0",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-validation-11-005-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-validation-01-005-0",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-validation-04-005-1",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-validation-02-005-1",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-validation-10-005-1",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-validation-07-005-1",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-validation-09-005-1",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-validation-08-005-1",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-validation-05-005-1",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-validation-00-005-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-validation-06-005-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-validation-03-005-1",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-validation-11-005-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-validation-01-005-1",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-validation-04-006-0",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-validation-02-006-0",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-validation-10-006-0",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-validation-07-006-0",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-validation-09-006-0",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-validation-08-006-0",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-validation-05-006-0",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-validation-00-006-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-validation-06-006-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-validation-03-006-0",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-validation-11-006-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-validation-01-006-0",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-validation-04-006-1",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-validation-02-006-1",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-validation-10-006-1",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-validation-07-006-1",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-validation-09-006-1",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-validation-08-006-1",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-validation-05-006-1",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-validation-00-006-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-validation-06-006-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-validation-03-006-1",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-validation-11-006-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-validation-01-006-1",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-validation-04-007-0",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-validation-02-007-0",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-validation-10-007-0",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-validation-07-007-0",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-validation-09-007-0",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-validation-08-007-0",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-validation-05-007-0",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-validation-00-007-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-validation-06-007-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-validation-03-007-0",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-validation-11-007-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-validation-01-007-0",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-validation-04-007-1",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-validation-02-007-1",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-validation-10-007-1",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-validation-07-007-1",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-validation-09-007-1",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-validation-08-007-1",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-validation-05-007-1",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-validation-00-007-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-validation-06-007-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-validation-03-007-1",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-validation-11-007-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-validation-01-007-1",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-validation-04-008-0",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-validation-02-008-0",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-validation-10-008-0",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-validation-07-008-0",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-validation-09-008-0",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-validation-08-008-0",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-validation-05-008-0",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-validation-00-008-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-validation-06-008-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-validation-03-008-0",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-validation-11-008-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-validation-01-008-0",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-validation-04-008-1",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-validation-02-008-1",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-validation-10-008-1",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-validation-07-008-1",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-validation-09-008-1",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-validation-08-008-1",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-validation-05-008-1",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-validation-00-008-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-validation-06-008-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-validation-03-008-1",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-validation-11-008-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-validation-01-008-1",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-validation-04-009-0",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-validation-02-009-0",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-validation-10-009-0",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-validation-07-009-0",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-validation-09-009-0",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-validation-08-009-0",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-validation-05-009-0",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-validation-00-009-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-validation-06-009-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-validation-03-009-0",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-validation-11-009-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-validation-01-009-0",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-validation-04-009-1",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-validation-02-009-1",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-validation-10-009-1",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-validation-07-009-1",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-validation-09-009-1",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-validation-08-009-1",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-validation-05-009-1",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-validation-00-009-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-validation-06-009-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-validation-03-009-1",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-validation-11-009-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-validation-01-009-1",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-validation-04-010-0",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-validation-02-010-0",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-validation-10-010-0",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-validation-07-010-0",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-validation-09-010-0",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-validation-08-010-0",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-validation-05-010-0",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-validation-00-010-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-validation-06-010-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-validation-03-010-0",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-validation-11-010-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-validation-01-010-0",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-validation-04-010-1",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-validation-02-010-1",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-validation-10-010-1",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-validation-07-010-1",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-validation-09-010-1",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-validation-08-010-1",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-validation-05-010-1",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-validation-00-010-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-validation-06-010-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-validation-03-010-1",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-validation-11-010-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-validation-01-010-1",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-validation-04-011-0",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-validation-02-011-0",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-validation-10-011-0",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-validation-07-011-0",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-validation-09-011-0",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-validation-08-011-0",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-validation-05-011-0",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-validation-00-011-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-validation-06-011-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-validation-03-011-0",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-validation-11-011-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-validation-01-011-0",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-validation-04-011-1",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-validation-02-011-1",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-validation-10-011-1",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-validation-07-011-1",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-validation-09-011-1",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-validation-08-011-1",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-validation-05-011-1",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-validation-00-011-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-validation-06-011-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-validation-03-011-1",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-validation-11-011-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-validation-01-011-1",
+      "mode": "audit",
+      "category": "zero_fallback"
+    }
+  ],
+  "test": [
+    {
+      "id": "CANCEL2-test-04-000-0",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-000-0",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-000-0",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-000-0",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-000-0",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-000-0",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-000-0",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-000-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-000-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-000-0",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-000-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-000-0",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-000-1",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-000-1",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-000-1",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-000-1",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-000-1",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-000-1",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-000-1",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-000-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-000-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-000-1",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-000-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-000-1",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-001-0",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-001-0",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-001-0",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-001-0",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-001-0",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-001-0",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-001-0",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-001-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-001-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-001-0",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-001-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-001-0",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-001-1",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-001-1",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-001-1",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-001-1",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-001-1",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-001-1",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-001-1",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-001-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-001-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-001-1",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-001-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-001-1",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-002-0",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-002-0",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-002-0",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-002-0",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-002-0",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-002-0",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-002-0",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-002-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-002-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-002-0",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-002-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-002-0",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-002-1",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-002-1",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-002-1",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-002-1",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-002-1",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-002-1",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-002-1",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-002-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-002-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-002-1",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-002-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-002-1",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-003-0",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-003-0",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-003-0",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-003-0",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-003-0",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-003-0",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-003-0",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-003-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-003-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-003-0",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-003-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-003-0",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-003-1",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-003-1",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-003-1",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-003-1",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-003-1",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-003-1",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-003-1",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-003-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-003-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-003-1",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-003-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-003-1",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-004-0",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-004-0",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-004-0",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-004-0",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-004-0",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-004-0",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-004-0",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-004-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-004-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-004-0",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-004-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-004-0",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-004-1",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-004-1",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-004-1",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-004-1",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-004-1",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-004-1",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-004-1",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-004-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-004-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-004-1",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-004-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-004-1",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-005-0",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-005-0",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-005-0",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-005-0",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-005-0",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-005-0",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-005-0",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-005-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-005-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-005-0",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-005-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-005-0",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-005-1",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-005-1",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-005-1",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-005-1",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-005-1",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-005-1",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-005-1",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-005-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-005-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-005-1",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-005-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-005-1",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-006-0",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-006-0",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-006-0",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-006-0",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-006-0",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-006-0",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-006-0",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-006-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-006-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-006-0",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-006-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-006-0",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-006-1",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-006-1",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-006-1",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-006-1",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-006-1",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-006-1",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-006-1",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-006-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-006-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-006-1",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-006-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-006-1",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-007-0",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-007-0",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-007-0",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-007-0",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-007-0",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-007-0",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-007-0",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-007-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-007-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-007-0",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-007-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-007-0",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-007-1",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-007-1",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-007-1",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-007-1",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-007-1",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-007-1",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-007-1",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-007-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-007-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-007-1",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-007-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-007-1",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-008-0",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-008-0",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-008-0",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-008-0",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-008-0",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-008-0",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-008-0",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-008-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-008-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-008-0",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-008-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-008-0",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-008-1",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-008-1",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-008-1",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-008-1",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-008-1",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-008-1",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-008-1",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-008-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-008-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-008-1",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-008-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-008-1",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-009-0",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-009-0",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-009-0",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-009-0",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-009-0",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-009-0",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-009-0",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-009-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-009-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-009-0",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-009-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-009-0",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-009-1",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-009-1",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-009-1",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-009-1",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-009-1",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-009-1",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-009-1",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-009-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-009-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-009-1",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-009-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-009-1",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-010-0",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-010-0",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-010-0",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-010-0",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-010-0",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-010-0",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-010-0",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-010-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-010-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-010-0",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-010-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-010-0",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-010-1",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-010-1",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-010-1",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-010-1",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-010-1",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-010-1",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-010-1",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-010-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-010-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-010-1",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-010-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-010-1",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-011-0",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-011-0",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-011-0",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-011-0",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-011-0",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-011-0",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-011-0",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-011-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-011-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-011-0",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-011-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-011-0",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-011-1",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-011-1",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-011-1",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-011-1",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-011-1",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-011-1",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-011-1",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-011-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-011-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-011-1",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-011-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-011-1",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-012-0",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-012-0",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-012-0",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-012-0",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-012-0",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-012-0",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-012-0",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-012-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-012-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-012-0",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-012-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-012-0",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-012-1",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-012-1",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-012-1",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-012-1",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-012-1",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-012-1",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-012-1",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-012-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-012-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-012-1",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-012-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-012-1",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-013-0",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-013-0",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-013-0",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-013-0",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-013-0",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-013-0",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-013-0",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-013-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-013-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-013-0",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-013-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-013-0",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-013-1",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-013-1",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-013-1",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-013-1",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-013-1",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-013-1",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-013-1",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-013-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-013-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-013-1",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-013-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-013-1",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-014-0",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-014-0",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-014-0",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-014-0",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-014-0",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-014-0",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-014-0",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-014-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-014-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-014-0",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-014-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-014-0",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-014-1",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-014-1",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-014-1",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-014-1",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-014-1",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-014-1",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-014-1",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-014-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-014-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-014-1",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-014-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-014-1",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-015-0",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-015-0",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-015-0",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-015-0",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-015-0",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-015-0",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-015-0",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-015-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-015-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-015-0",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-015-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-015-0",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-015-1",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-015-1",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-015-1",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-015-1",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-015-1",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-015-1",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-015-1",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-015-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-015-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-015-1",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-015-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-015-1",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-016-0",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-016-0",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-016-0",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-016-0",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-016-0",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-016-0",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-016-0",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-016-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-016-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-016-0",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-016-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-016-0",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-016-1",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-016-1",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-016-1",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-016-1",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-016-1",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-016-1",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-016-1",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-016-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-016-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-016-1",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-016-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-016-1",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-017-0",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-017-0",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-017-0",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-017-0",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-017-0",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-017-0",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-017-0",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-017-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-017-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-017-0",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-017-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-017-0",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-017-1",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-017-1",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-017-1",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-017-1",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-017-1",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-017-1",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-017-1",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-017-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-017-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-017-1",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-017-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-017-1",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-018-0",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-018-0",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-018-0",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-018-0",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-018-0",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-018-0",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-018-0",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-018-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-018-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-018-0",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-018-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-018-0",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-018-1",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-018-1",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-018-1",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-018-1",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-018-1",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-018-1",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-018-1",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-018-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-018-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-018-1",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-018-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-018-1",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-019-0",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-019-0",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-019-0",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-019-0",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-019-0",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-019-0",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-019-0",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-019-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-019-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-019-0",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-019-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-019-0",
+      "mode": "audit",
+      "category": "zero_fallback"
+    },
+    {
+      "id": "CANCEL2-test-04-019-1",
+      "mode": "audit",
+      "category": "absolute_rate"
+    },
+    {
+      "id": "CANCEL2-test-02-019-1",
+      "mode": "audit",
+      "category": "approx_lookup"
+    },
+    {
+      "id": "CANCEL2-test-10-019-1",
+      "mode": "audit",
+      "category": "conditional_total"
+    },
+    {
+      "id": "CANCEL2-test-07-019-1",
+      "mode": "audit",
+      "category": "constant_receipt"
+    },
+    {
+      "id": "CANCEL2-test-09-019-1",
+      "mode": "audit",
+      "category": "date_direction"
+    },
+    {
+      "id": "CANCEL2-test-08-019-1",
+      "mode": "audit",
+      "category": "frozen_snapshot"
+    },
+    {
+      "id": "CANCEL2-test-05-019-1",
+      "mode": "audit",
+      "category": "negative_amount"
+    },
+    {
+      "id": "CANCEL2-test-00-019-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "CANCEL2-test-06-019-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "CANCEL2-test-03-019-1",
+      "mode": "audit",
+      "category": "sum_exclusion"
+    },
+    {
+      "id": "CANCEL2-test-11-019-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "CANCEL2-test-01-019-1",
+      "mode": "audit",
+      "category": "zero_fallback"
+    }
+  ]
+}

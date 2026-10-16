@@ -1,0 +1,6 @@
+{
+  "phase": "training_and_evaluation_complete",
+  "steps": 690,
+  "best_step": 400,
+  "reload_verified": true
+}

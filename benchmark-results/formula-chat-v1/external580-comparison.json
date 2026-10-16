@@ -1,0 +1,77 @@
+{
+  "count": 580,
+  "policy": "Test only; existing development benchmark, not pristine blind data. Original context and claim preserved. No answer label in input.",
+  "input_mapping": "Source has no structured cell/rule/formula fields: fixed Archive!A1 and external_formula identifiers, empty formula; formulas remain verbatim in finding. Original document title omitted as non-business task instruction.",
+  "suites": {
+    "after": {
+      "strict": {
+        "audit": {
+          "completed": 580,
+          "passed": 434,
+          "json_valid": 580,
+          "schema_valid": 580,
+          "semantic_pass": 434,
+          "mean_seconds": 0.496
+        }
+      },
+      "audit_decision": {
+        "tp": 420,
+        "tn": 70,
+        "fp": 41,
+        "fn": 49,
+        "unscorable": 0
+      },
+      "audit_judgment_correct": 490,
+      "audit_count": 580,
+      "identity_mismatches": 69,
+      "reasoning_present": 0,
+      "presentation_only_content": {
+        "audit": {
+          "correct": 490,
+          "count": 580
+        }
+      }
+    },
+    "before": {
+      "strict": {
+        "audit": {
+          "completed": 580,
+          "passed": 66,
+          "json_valid": 565,
+          "schema_valid": 564,
+          "semantic_pass": 66,
+          "mean_seconds": 0.592
+        }
+      },
+      "audit_decision": {
+        "tp": 457,
+        "tn": 0,
+        "fp": 107,
+        "fn": 0,
+        "unscorable": 16
+      },
+      "audit_judgment_correct": 457,
+      "audit_count": 580,
+      "identity_mismatches": 484,
+      "reasoning_present": 0,
+      "presentation_only_content": {
+        "audit": {
+          "correct": 457,
+          "count": 580
+        }
+      }
+    }
+  },
+  "jev": {
+    "count": 580,
+    "correct": 495,
+    "accuracy": 0.853448275862069,
+    "macro_f1": 0.6764221345637607,
+    "confusion": {
+      "tp": 462,
+      "tn": 33,
+      "fp": 78,
+      "fn": 7
+    }
+  }
+}

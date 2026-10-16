@@ -1,0 +1,4 @@
+﻿id,mode,category,passed,json_valid,schema_valid,semantic_pass,seconds,errors
+CANCEL2-test-03-001-0,audit,sum_exclusion,True,True,True,True,2.07,
+CANCEL2-test-01-016-1,audit,zero_fallback,False,True,True,False,2.132,wrong_judgment_or_identity
+CANCEL2-test-11-017-1,audit,unit_conversion,False,True,True,False,2.194,wrong_judgment_or_identity

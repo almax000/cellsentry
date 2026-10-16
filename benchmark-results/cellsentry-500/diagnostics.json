@@ -1,0 +1,43 @@
+{
+  "audit_decision": {
+    "tp": 48,
+    "tn": 52,
+    "fp": 27,
+    "fn": 28,
+    "unscorable": 25
+  },
+  "audit_decision_correct": 100,
+  "audit_total": 180,
+  "audit_identity_mismatch": 127,
+  "request_errors": 0,
+  "output_truncated": 0,
+  "prompt_tokens_max": 255,
+  "completion_tokens_max": 176,
+  "summed_request_seconds": 145.593,
+  "median_seconds": 0.228,
+  "p95_seconds": 0.635,
+  "errors": {
+    "wrong_judgment_or_identity": 160,
+    "invalid_schema": 319,
+    "invalid_json": 23,
+    "missed_extra_or_wrong_pii": 99,
+    "wrong_document_missing_extra_or_wrong_field": 73
+  },
+  "presentation_normalized": {
+    "audit": {
+      "total": 180,
+      "content_correct": 100,
+      "fences_removed": 0
+    },
+    "pii": {
+      "total": 160,
+      "content_correct": 39,
+      "fences_removed": 0
+    },
+    "extraction": {
+      "total": 160,
+      "content_correct": 87,
+      "fences_removed": 0
+    }
+  }
+}

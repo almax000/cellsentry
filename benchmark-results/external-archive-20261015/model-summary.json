@@ -1,0 +1,201 @@
+{
+  "cases_sha256": "bf1b9bfd7f84a59e4bc4dc26e43e75db4dd37b5253fdaa7f6fa18bfdd8abdae5",
+  "case_count": 1217,
+  "results": {
+    "base": {
+      "all": {
+        "count": 1217,
+        "correct": 909,
+        "accuracy": 0.7469186524239935,
+        "macro_f1": 0.724240926131916,
+        "confusion": {
+          "tp": 629,
+          "tn": 280,
+          "fp": 203,
+          "fn": 105
+        }
+      },
+      "formula_related": {
+        "count": 580,
+        "correct": 474,
+        "accuracy": 0.8172413793103448,
+        "macro_f1": 0.6746125836226606,
+        "confusion": {
+          "tp": 429,
+          "tn": 45,
+          "fp": 66,
+          "fn": 40
+        }
+      },
+      "by_language": {
+        "Chinese_or_mixed": {
+          "count": 673,
+          "correct": 491,
+          "accuracy": 0.7295690936106983,
+          "macro_f1": 0.7099577555505039,
+          "confusion": {
+            "tp": 333,
+            "tn": 158,
+            "fp": 135,
+            "fn": 47
+          }
+        },
+        "English_or_mixed": {
+          "count": 544,
+          "correct": 418,
+          "accuracy": 0.7683823529411765,
+          "macro_f1": 0.7419859971392004,
+          "confusion": {
+            "tp": 296,
+            "tn": 122,
+            "fp": 68,
+            "fn": 58
+          }
+        }
+      },
+      "seconds": 43.20906960009597
+    },
+    "pilot": {
+      "all": {
+        "count": 1217,
+        "correct": 879,
+        "accuracy": 0.7222678718159409,
+        "macro_f1": 0.6605294257457119,
+        "confusion": {
+          "tp": 699,
+          "tn": 180,
+          "fp": 303,
+          "fn": 35
+        }
+      },
+      "formula_related": {
+        "count": 580,
+        "correct": 514,
+        "accuracy": 0.8862068965517241,
+        "macro_f1": 0.7632301640317672,
+        "confusion": {
+          "tp": 466,
+          "tn": 48,
+          "fp": 63,
+          "fn": 3
+        }
+      },
+      "by_language": {
+        "Chinese_or_mixed": {
+          "count": 673,
+          "correct": 461,
+          "accuracy": 0.6849925705794948,
+          "macro_f1": 0.6271896818428864,
+          "confusion": {
+            "tp": 363,
+            "tn": 98,
+            "fp": 195,
+            "fn": 17
+          }
+        },
+        "English_or_mixed": {
+          "count": 544,
+          "correct": 418,
+          "accuracy": 0.7683823529411765,
+          "macro_f1": 0.7038112522686025,
+          "confusion": {
+            "tp": 336,
+            "tn": 82,
+            "fp": 108,
+            "fn": 18
+          }
+        }
+      },
+      "seconds": 54.93053889996372
+    },
+    "full": {
+      "all": {
+        "count": 1217,
+        "correct": 837,
+        "accuracy": 0.6877567789646672,
+        "macro_f1": 0.6471171748618869,
+        "confusion": {
+          "tp": 625,
+          "tn": 212,
+          "fp": 271,
+          "fn": 109
+        }
+      },
+      "formula_related": {
+        "count": 580,
+        "correct": 503,
+        "accuracy": 0.8672413793103448,
+        "macro_f1": 0.7384495552002623,
+        "confusion": {
+          "tp": 455,
+          "tn": 48,
+          "fp": 63,
+          "fn": 14
+        }
+      },
+      "by_language": {
+        "Chinese_or_mixed": {
+          "count": 673,
+          "correct": 431,
+          "accuracy": 0.6404160475482912,
+          "macro_f1": 0.6003876729806654,
+          "confusion": {
+            "tp": 322,
+            "tn": 109,
+            "fp": 184,
+            "fn": 58
+          }
+        },
+        "English_or_mixed": {
+          "count": 544,
+          "correct": 406,
+          "accuracy": 0.7463235294117647,
+          "macro_f1": 0.7066766691672919,
+          "confusion": {
+            "tp": 303,
+            "tn": 103,
+            "fp": 87,
+            "fn": 51
+          }
+        }
+      },
+      "seconds": 56.19847940001637
+    }
+  },
+  "artifacts": {
+    "pilot": {
+      "adapter_model.safetensors": "c183fdb8af2e0cdd5b7ffca99803e6db79fafdabd2cf28232984ba7d079a2b63",
+      "decision_head.safetensors": "9dbf0915699fa6fdcc725fd09e3b819d37a0f7b1dacd4dcbd3ec30e239142203"
+    },
+    "full": {
+      "adapter_model.safetensors": "081c39fa5a23b4b1cd4fc6c63606d14d51d0d95c14ced23d013ca4400b96e87e",
+      "decision_head.safetensors": "0337a5a430fb0aa2af898119584cbe718d70727109500027eb959d32f653e493"
+    }
+  },
+  "policy": "Frozen checkpoints; test-only external audit labels. No training or selection on this archive.",
+  "inventory": {
+    "archive_sha256": "ea55a270bb71391799a8ed909ef77aebe646eece914e02638e2a1636739cffe4",
+    "verified_payload_files": 392,
+    "source_root": "D:\\git\\cellsentry\\.runtime\\archive-test-20261015\\source\\CellSentry-Test-Data-2026-10-15",
+    "raw_audit_test_rows": 1800,
+    "counts": {
+      "non_audit_test_rows": 2000,
+      "raw_labeled_decisions": 2093
+    },
+    "excluded_reasons": {
+      "unexpanded_placeholder": 144
+    },
+    "conflicting_unique_inputs": 0,
+    "unique_scored_decisions": 1217,
+    "labels": {
+      "False": 483,
+      "True": 734
+    },
+    "formula_related": 580,
+    "cases_sha256": "bf1b9bfd7f84a59e4bc4dc26e43e75db4dd37b5253fdaa7f6fa18bfdd8abdae5",
+    "spreadsheets": {
+      ".xlsx": 238,
+      ".xls": 78
+    }
+  }
+}

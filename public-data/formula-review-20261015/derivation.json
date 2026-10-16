@@ -1,0 +1,12 @@
+{
+  "count": 42,
+  "skipped": [
+    {
+      "id": "public-37bfd9325330f9c5-13-D12",
+      "reason": "non-numeric or formula precedents"
+    }
+  ],
+  "original_formula_status": "all original labels remain unknown",
+  "test_only": true,
+  "raw_workbooks_unmodified": true
+}

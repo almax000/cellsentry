@@ -1,0 +1,23 @@
+{
+  "model_id": "MiniCPM5-2B-Q4_K_M",
+  "model_sha256": "ec2d5801640099e97d8d7e8003ad4d81f336e757811f03a26173dddf386602fd",
+  "corpus_sha256": "97193606bcf9f38c3682f7f3ed5edb18ad3841270b060b4ef48ed4833de5a386",
+  "prompt_sha256": "a575a016141495cbae3961f89f353e004f12ce7a8521c37d4adbb9de2b7516da",
+  "temperature": 1.0,
+  "seed": 42,
+  "max_tokens": 4096,
+  "base_url": "http://127.0.0.1:18766",
+  "server_build": "b11429-d81235049",
+  "context": 8192,
+  "profile": "deliberate",
+  "chat_template_kwargs": {
+    "enable_thinking": true
+  },
+  "native_thinking_switch": true,
+  "reasoning_format": "deepseek",
+  "reasoning_budget": 3072,
+  "top_p": 0.95,
+  "min_p": 0.0,
+  "chat_template_sha256": "6e54652d84d698ebb3b7b2172204b6eeafd7f27533e006c8c1ebf8e743a7fd99",
+  "model_file": "D:\\git\\cellsentry\\models\\minicpm5-2b\\MiniCPM5-2B-Q4_K_M.gguf"
+}

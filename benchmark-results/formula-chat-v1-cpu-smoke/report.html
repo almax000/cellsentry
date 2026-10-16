@@ -1,0 +1,64 @@
+<!doctype html><meta charset="utf-8"><title>cellsentry-formula-v1-cpu 本地模型测试</title><style>body{font:16px system-ui;max-width:1100px;margin:30px auto;background:#f7f8fa}pre{white-space:pre-wrap;background:white;padding:14px}details{padding:8px;border-bottom:1px solid #ddd}summary{cursor:pointer}</style><h1>cellsentry-formula-v1-cpu 本地模型测试</h1><pre># cellsentry-formula-v1-cpu 本地模型 3 用例测试
+
+已执行 3/3；严格通过 3。
+
+这是合成数据上的模型直测；不代表 Excel 解析、规则引擎、UI 或生产数据表现。
+所有请求串行执行，temperature=0，seed=42，max_tokens=420，context=1024；不强制 JSON grammar，不用模拟结果，不用规则替代模型回答。
+公式提示词遵循应用输出协议；PII/提取补充显式字段协议，因此是受控能力测试，并非缺失的原版 Python 服务复刻。
+
+|任务|执行|严格通过|语义通过|JSON有效|Schema有效|平均秒数|
+|---|---:|---:|---:|---:|---:|---:|
+|audit|3|3 (100.0%)|3|3|3|1.962|
+
+严格通过要求：JSON 有效、字段协议正确、业务答案完全匹配。PII 按单元格和类型比较；提取按文档类型、字段名、原值和来源地址比较，额外/缺失字段均失败。
+本轮使用独立指定的合成测试集；任务定义及生成来源见对应数据 manifest。各分割共享生成逻辑，不代表独立真实业务准确率。
+PII 为合成/公开测试值；负例要求 SSN 范围、银行卡 Luhn、身份证校验有效。该定义可能比模型训练标签严格。
+</pre><details><summary>FCHAT-BIZ3-test-12-0008-1 audit/date_order PASS</summary><h4>输入</h4><pre>{
+  &quot;issues&quot;: [
+    {
+      &quot;ruleId&quot;: &quot;date_order&quot;,
+      &quot;cellAddress&quot;: &quot;X131&quot;,
+      &quot;sheetName&quot;: &quot;Review&quot;,
+      &quot;formula&quot;: &quot;=U131-T131&quot;,
+      &quot;confidence&quot;: 0.7,
+      &quot;message&quot;: &quot;X131 日期差公式为 =U131-T131。&quot;,
+      &quot;context&quot;: &quot;U131 是起始日期 2021-06-04，T131 是截止日期 2021-06-29。口径为截止日减起始日的正数自然日，不含起始日，不使用工作日折算。&quot;
+    }
+  ]
+}</pre><h4>预期</h4><pre>{
+  &quot;cellAddress&quot;: &quot;X131&quot;,
+  &quot;ruleId&quot;: &quot;date_order&quot;,
+  &quot;isValid&quot;: true
+}</pre><h4>实际原文</h4><pre>[{&quot;cellAddress&quot;: &quot;X131&quot;, &quot;ruleId&quot;: &quot;date_order&quot;, &quot;isValid&quot;: true, &quot;adjustedConfidence&quot;: 0.95, &quot;reasoning&quot;: &quot;记录或计算结果为 -25，业务要求为 25。&quot;}]</pre><h4>模型返回的思考文本（不评分）</h4><pre></pre><p></p></details><details><summary>FCHAT-BIZ3-test-04-0016-0 audit/external_link PASS</summary><h4>输入</h4><pre>{
+  &quot;issues&quot;: [
+    {
+      &quot;ruleId&quot;: &quot;external_link&quot;,
+      &quot;cellAddress&quot;: &quot;Z317&quot;,
+      &quot;sheetName&quot;: &quot;Review&quot;,
+      &quot;formula&quot;: &quot;=&#x27;[Reference936.xlsx]Data&#x27;!V317&quot;,
+      &quot;confidence&quot;: 0.7,
+      &quot;message&quot;: &quot;Z317 有外部引用，源文件当前离线，缓存值为 3867。&quot;,
+      &quot;context&quot;: &quot;外部源在签署时点的回执值为 3867，本地缓存与之相同，缓存未损坏。本次交付为冻结快照，只交付已签署时点数值，不执行刷新。&quot;
+    }
+  ]
+}</pre><h4>预期</h4><pre>{
+  &quot;cellAddress&quot;: &quot;Z317&quot;,
+  &quot;ruleId&quot;: &quot;external_link&quot;,
+  &quot;isValid&quot;: false
+}</pre><h4>实际原文</h4><pre>[{&quot;cellAddress&quot;: &quot;Z317&quot;, &quot;ruleId&quot;: &quot;external_link&quot;, &quot;isValid&quot;: false, &quot;adjustedConfidence&quot;: 0.95, &quot;reasoning&quot;: &quot;根据给定业务要求和例外条件，该告警属于误报。&quot;}]</pre><h4>模型返回的思考文本（不评分）</h4><pre></pre><p></p></details><details><summary>FCHAT-BIZ3-test-10-0002-0 audit/rate_scale PASS</summary><h4>输入</h4><pre>{
+  &quot;issues&quot;: [
+    {
+      &quot;ruleId&quot;: &quot;rate_scale&quot;,
+      &quot;cellAddress&quot;: &quot;Y197&quot;,
+      &quot;sheetName&quot;: &quot;Review&quot;,
+      &quot;formula&quot;: &quot;=U197*V197&quot;,
+      &quot;confidence&quot;: 0.7,
+      &quot;message&quot;: &quot;Y197 公式为 =U197*V197。&quot;,
+      &quot;context&quot;: &quot;U197 为基数 62556 元；V197 实际存储数值 0.17，本次税率为 17%。要求返回税额的元数值，不是百分比显示文本。&quot;
+    }
+  ]
+}</pre><h4>预期</h4><pre>{
+  &quot;cellAddress&quot;: &quot;Y197&quot;,
+  &quot;ruleId&quot;: &quot;rate_scale&quot;,
+  &quot;isValid&quot;: false
+}</pre><h4>实际原文</h4><pre>[{&quot;cellAddress&quot;: &quot;Y197&quot;, &quot;ruleId&quot;: &quot;rate_scale&quot;, &quot;isValid&quot;: false, &quot;adjustedConfidence&quot;: 0.95, &quot;reasoning&quot;: &quot;记录或计算结果为 10620.72，业务要求为 10620.72。&quot;}]</pre><h4>模型返回的思考文本（不评分）</h4><pre></pre><p></p></details>

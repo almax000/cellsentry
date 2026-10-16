@@ -1,0 +1,40 @@
+{
+  "base": "openbmb/MiniCPM5-2B",
+  "revision": "f97400052a43d642bbc6e9975e2397e3ae6a6b52",
+  "thinking": false,
+  "splits": {
+    "train": {
+      "count": 9120,
+      "modes": {
+        "audit": 5520,
+        "extraction": 1800,
+        "pii": 1800
+      },
+      "sha256": "aae675a8821d57b55e39ed9796daa2ca3bb668e16f956be37295288166d5ea37"
+    },
+    "validation": {
+      "count": 720,
+      "modes": {
+        "audit": 480,
+        "extraction": 120,
+        "pii": 120
+      },
+      "sha256": "fdd65e4663851d2ae5e2443ddb0d4ec2a1d547c53de58a8ad4ea1d4773d50497"
+    },
+    "test": {
+      "count": 1440,
+      "modes": {
+        "audit": 960,
+        "extraction": 240,
+        "pii": 240
+      },
+      "sha256": "01782e8a2ec7a4f5d63d10a1058ba8a3abc23c710033c9e881e29984457390f1"
+    }
+  },
+  "notes": [
+    "Assistant JSON targets; no Jev pseudo labels or weight reuse.",
+    "Original 500 cases and external archive excluded from training.",
+    "Validation/test reuse synthetic task logic; not independent real-world accuracy.",
+    "Audit explanations mostly generic; not evaluated as proof of reasoning quality."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "modes": {
+    "audit": {
+      "count": 480,
+      "mean_loss": 0.00022482014173874632
+    }
+  },
+  "macro_loss": 0.00022482014173874632,
+  "seconds": 71.7764949798584,
+  "teacher_forced_audit_accuracy": 1.0,
+  "confusion": {
+    "tn": 240,
+    "tp": 240
+  },
+  "note": "Conditional true/false decision given the correct JSON prefix; not end-to-end generation accuracy. Final generation measured separately with GGUF."
+}

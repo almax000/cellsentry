@@ -1,0 +1,586 @@
+{
+  "training": {
+    "best_step": 340,
+    "steps": 340,
+    "before_validation": {
+      "modes": {
+        "audit": {
+          "count": 288,
+          "mean_loss": 1.4831156213250425
+        }
+      },
+      "macro_loss": 1.4831156213250425,
+      "seconds": 40.730297327041626,
+      "teacher_forced_audit_accuracy": 0.9166666666666666,
+      "confusion": {
+        "tn": 120,
+        "fp": 24,
+        "tp": 144
+      },
+      "note": "Conditional true/false decision given the correct JSON prefix; not end-to-end generation accuracy. Final generation measured separately with GGUF."
+    },
+    "before_test": {
+      "modes": {
+        "audit": {
+          "count": 480,
+          "mean_loss": 1.4866259356339773
+        }
+      },
+      "macro_loss": 1.4866259356339773,
+      "seconds": 69.20720076560974,
+      "teacher_forced_audit_accuracy": 0.9166666666666666,
+      "confusion": {
+        "tn": 200,
+        "fp": 40,
+        "tp": 240
+      },
+      "note": "Conditional true/false decision given the correct JSON prefix; not end-to-end generation accuracy. Final generation measured separately with GGUF."
+    },
+    "before_coverage500": null,
+    "selection_metric": "validation boolean risk: FN cost 4.0; conditional diagnostic only",
+    "best_validation_score": [
+      -0.0,
+      1.0,
+      -0.0002215087430007164
+    ],
+    "after_test": {
+      "modes": {
+        "audit": {
+          "count": 480,
+          "mean_loss": 0.00022482014173874632
+        }
+      },
+      "macro_loss": 0.00022482014173874632,
+      "seconds": 71.7764949798584,
+      "teacher_forced_audit_accuracy": 1.0,
+      "confusion": {
+        "tn": 240,
+        "tp": 240
+      },
+      "note": "Conditional true/false decision given the correct JSON prefix; not end-to-end generation accuracy. Final generation measured separately with GGUF."
+    },
+    "coverage500": null,
+    "examples_seen": 2720,
+    "unique_examples": 2720,
+    "used_modes": {
+      "audit": 2720
+    },
+    "seconds": 1408.585164308548,
+    "peak_gib": 4.620050430297852,
+    "note": "Pilot; subset validation selection. No GGUF export or application replacement yet."
+  },
+  "dataset": {
+    "splits": {
+      "test": {
+        "count": 480,
+        "real_errors": 240,
+        "sha256": "b62e79e66a1f15c90c08bcab0594abbde3d466a9b51ed0c26ff0661d9495b386"
+      },
+      "validation": {
+        "count": 288,
+        "real_errors": 144,
+        "sha256": "4b39b9538a66efdcd4da6e44c3e977372610dd16b669c5d28ed243eddad0321a"
+      },
+      "train": {
+        "count": 2720,
+        "real_errors": 1353,
+        "sha256": "1639df6a85e3a678dc172afa7b298da72217cc85ed84ba85113d65dc75cc1c51"
+      }
+    },
+    "categories": [
+      "optional_blank",
+      "zero_fallback",
+      "approx_lookup",
+      "sum_exclusion",
+      "absolute_rate",
+      "negative_amount",
+      "rounding_tolerance",
+      "constant_receipt",
+      "frozen_snapshot",
+      "date_direction",
+      "conditional_total",
+      "unit_conversion"
+    ],
+    "scope": "Formula only; PII/extraction regression-only",
+    "pair_policy": "Same formula and alert, changed explicit business requirement. Split-disjoint pair groups and seeds.",
+    "replay": "800 samples exclusively from v1 training, no v1 heldout or external answers",
+    "warning": "Synthetic context templates shared across splits. Not an independent real-world evaluation."
+  },
+  "model": {
+    "base": {
+      "repository": "openbmb/MiniCPM5-2B",
+      "revision": "f97400052a43d642bbc6e9975e2397e3ae6a6b52",
+      "files": [
+        {
+          "name": "README-cn.md",
+          "size": 110251,
+          "sha256": "5b3ed834cd8d7b5630ef9bb14a52a96180f566a65b6fdc3df609651b3d777b2b"
+        },
+        {
+          "name": "README.md",
+          "size": 112204,
+          "sha256": "674de0c58b2f7f3bedec4b296c20afbebdf17be9654bd39de242a3597aa40e45"
+        },
+        {
+          "name": "chat_template.jinja",
+          "size": 5435,
+          "sha256": "bc1f78ef8a86b6bdf64a056cf89dd0ac506db4f198ab363d85168e2500ab44dd"
+        },
+        {
+          "name": "config.json",
+          "size": 704,
+          "sha256": "59613157e5357d62bcb121e04cb90f2170b43d789b142380c12c3d4277d95180"
+        },
+        {
+          "name": "generation_config.json",
+          "size": 213,
+          "sha256": "9ac4f32e5f32358697a9f438a3ea89ef80e6ba786c72c49e932f9f21c122fdb1"
+        },
+        {
+          "name": "model-00000-of-00001.safetensors",
+          "size": 5033557096,
+          "sha256": "14fb8e7f0a18d53d1f239773758bf581cee7e456a4523a54622c3a245b64402c"
+        },
+        {
+          "name": "model.safetensors.index.json",
+          "size": 31378,
+          "sha256": "6d839cd76e8395de548a0e6cc310386f66d1ecbb2c75d198a8dfd3d70892b756"
+        },
+        {
+          "name": "special_tokens_map.json",
+          "size": 551,
+          "sha256": "82d96d7a9e6ced037f12394b7ea6a5b02e6ca87e0d11edaa8d60d9be857ce7db"
+        },
+        {
+          "name": "tokenizer.json",
+          "size": 9894271,
+          "sha256": "3e065a558a034185fe299917b398685c1facd0169a9eea1e629eb30c171fed81"
+        },
+        {
+          "name": "tokenizer_config.json",
+          "size": 94391,
+          "sha256": "e9b1064649e771d7a8e15637c68b2d2749724877ba3648bd74a4ece31c26303b"
+        }
+      ]
+    },
+    "run": "D:\\git\\cellsentry\\benchmark-results\\formula-cancellation-v2",
+    "best_step": 340,
+    "adapter_sha256": "d303fa763daa90e16b0d1ef690a6197faa7aeb97fd007baea3546a217a3cba0e",
+    "thinking": false,
+    "quantization": "Q4_K_M",
+    "file": "cellsentry-minicpm5-2b-cancel2-q4_k_m.gguf",
+    "size": 1561314592,
+    "sha256": "61d9c8ab8007dbbde0eb004089d1411fb6ec7167031f9d6fcc5b521fe8ebe49a",
+    "note": "Candidate only; must pass local GGUF regression before becoming default."
+  },
+  "suites": {
+    "new480": {
+      "before": {
+        "boolean": {
+          "count": 480,
+          "cancelled": 218,
+          "correct_cancellations": 201,
+          "unsafe_cancellations": 17,
+          "cancellation_precision": 0.9220183486238532,
+          "cancellation_coverage": 0.45416666666666666,
+          "false_alerts_removed": 0.8375,
+          "real_error_escape_rate": 0.07083333333333333,
+          "retained_real_errors": 223,
+          "retained_false_alerts": 39,
+          "invalid_retained": 0,
+          "note": "Boolean-only diagnostic, ignoring identity mismatch. Zero cancellations have undefined precision, not100%."
+        },
+        "protocol_guarded": {
+          "count": 480,
+          "cancelled": 218,
+          "correct_cancellations": 201,
+          "unsafe_cancellations": 17,
+          "cancellation_precision": 0.9220183486238532,
+          "cancellation_coverage": 0.45416666666666666,
+          "false_alerts_removed": 0.8375,
+          "real_error_escape_rate": 0.07083333333333333,
+          "retained_real_errors": 223,
+          "retained_false_alerts": 39,
+          "invalid_retained": 0,
+          "note": "Protocol/identity failures retain alert. Zero cancellations have undefined precision, not100%."
+        },
+        "strict": {
+          "audit": {
+            "completed": 480,
+            "passed": 424,
+            "json_valid": 480,
+            "schema_valid": 480,
+            "semantic_pass": 424,
+            "mean_seconds": 0.521
+          }
+        }
+      },
+      "after": {
+        "boolean": {
+          "count": 480,
+          "cancelled": 202,
+          "correct_cancellations": 202,
+          "unsafe_cancellations": 0,
+          "cancellation_precision": 1.0,
+          "cancellation_coverage": 0.42083333333333334,
+          "false_alerts_removed": 0.8416666666666667,
+          "real_error_escape_rate": 0.0,
+          "retained_real_errors": 240,
+          "retained_false_alerts": 38,
+          "invalid_retained": 0,
+          "note": "Boolean-only diagnostic, ignoring identity mismatch. Zero cancellations have undefined precision, not100%."
+        },
+        "protocol_guarded": {
+          "count": 480,
+          "cancelled": 183,
+          "correct_cancellations": 183,
+          "unsafe_cancellations": 0,
+          "cancellation_precision": 1.0,
+          "cancellation_coverage": 0.38125,
+          "false_alerts_removed": 0.7625,
+          "real_error_escape_rate": 0.0,
+          "retained_real_errors": 240,
+          "retained_false_alerts": 57,
+          "invalid_retained": 43,
+          "note": "Protocol/identity failures retain alert. Zero cancellations have undefined precision, not100%."
+        },
+        "strict": {
+          "audit": {
+            "completed": 480,
+            "passed": 399,
+            "json_valid": 480,
+            "schema_valid": 480,
+            "semantic_pass": 399,
+            "mean_seconds": 0.553
+          }
+        }
+      }
+    },
+    "external580": {
+      "before": {
+        "boolean": {
+          "count": 580,
+          "cancelled": 119,
+          "correct_cancellations": 70,
+          "unsafe_cancellations": 49,
+          "cancellation_precision": 0.5882352941176471,
+          "cancellation_coverage": 0.20517241379310344,
+          "false_alerts_removed": 0.6306306306306306,
+          "real_error_escape_rate": 0.1044776119402985,
+          "retained_real_errors": 420,
+          "retained_false_alerts": 41,
+          "invalid_retained": 0,
+          "note": "Boolean-only diagnostic, ignoring identity mismatch. Zero cancellations have undefined precision, not100%."
+        },
+        "protocol_guarded": {
+          "count": 580,
+          "cancelled": 96,
+          "correct_cancellations": 57,
+          "unsafe_cancellations": 39,
+          "cancellation_precision": 0.59375,
+          "cancellation_coverage": 0.16551724137931034,
+          "false_alerts_removed": 0.5135135135135135,
+          "real_error_escape_rate": 0.08315565031982942,
+          "retained_real_errors": 430,
+          "retained_false_alerts": 54,
+          "invalid_retained": 69,
+          "note": "Protocol/identity failures retain alert. Zero cancellations have undefined precision, not100%."
+        },
+        "strict": {
+          "audit": {
+            "completed": 580,
+            "passed": 434,
+            "json_valid": 580,
+            "schema_valid": 580,
+            "semantic_pass": 434,
+            "mean_seconds": 0.496
+          }
+        }
+      },
+      "after": {
+        "boolean": {
+          "count": 580,
+          "cancelled": 86,
+          "correct_cancellations": 65,
+          "unsafe_cancellations": 21,
+          "cancellation_precision": 0.7558139534883721,
+          "cancellation_coverage": 0.1482758620689655,
+          "false_alerts_removed": 0.5855855855855856,
+          "real_error_escape_rate": 0.04477611940298507,
+          "retained_real_errors": 448,
+          "retained_false_alerts": 46,
+          "invalid_retained": 0,
+          "note": "Boolean-only diagnostic, ignoring identity mismatch. Zero cancellations have undefined precision, not100%."
+        },
+        "protocol_guarded": {
+          "count": 580,
+          "cancelled": 81,
+          "correct_cancellations": 60,
+          "unsafe_cancellations": 21,
+          "cancellation_precision": 0.7407407407407407,
+          "cancellation_coverage": 0.1396551724137931,
+          "false_alerts_removed": 0.5405405405405406,
+          "real_error_escape_rate": 0.04477611940298507,
+          "retained_real_errors": 448,
+          "retained_false_alerts": 51,
+          "invalid_retained": 39,
+          "note": "Protocol/identity failures retain alert. Zero cancellations have undefined precision, not100%."
+        },
+        "strict": {
+          "audit": {
+            "completed": 580,
+            "passed": 478,
+            "json_valid": 580,
+            "schema_valid": 580,
+            "semantic_pass": 478,
+            "mean_seconds": 0.521
+          }
+        }
+      }
+    },
+    "coverage500": {
+      "before": {
+        "boolean": {
+          "count": 180,
+          "cancelled": 100,
+          "correct_cancellations": 90,
+          "unsafe_cancellations": 10,
+          "cancellation_precision": 0.9,
+          "cancellation_coverage": 0.5555555555555556,
+          "false_alerts_removed": 1.0,
+          "real_error_escape_rate": 0.1111111111111111,
+          "retained_real_errors": 80,
+          "retained_false_alerts": 0,
+          "invalid_retained": 0,
+          "note": "Boolean-only diagnostic, ignoring identity mismatch. Zero cancellations have undefined precision, not100%."
+        },
+        "protocol_guarded": {
+          "count": 180,
+          "cancelled": 100,
+          "correct_cancellations": 90,
+          "unsafe_cancellations": 10,
+          "cancellation_precision": 0.9,
+          "cancellation_coverage": 0.5555555555555556,
+          "false_alerts_removed": 1.0,
+          "real_error_escape_rate": 0.1111111111111111,
+          "retained_real_errors": 80,
+          "retained_false_alerts": 0,
+          "invalid_retained": 0,
+          "note": "Protocol/identity failures retain alert. Zero cancellations have undefined precision, not100%."
+        },
+        "strict": {
+          "audit": {
+            "completed": 180,
+            "passed": 170,
+            "json_valid": 180,
+            "schema_valid": 180,
+            "semantic_pass": 170,
+            "mean_seconds": 0.486
+          },
+          "extraction": {
+            "completed": 160,
+            "passed": 21,
+            "json_valid": 21,
+            "schema_valid": 21,
+            "semantic_pass": 21,
+            "mean_seconds": 1.804
+          },
+          "pii": {
+            "completed": 160,
+            "passed": 38,
+            "json_valid": 59,
+            "schema_valid": 49,
+            "semantic_pass": 38,
+            "mean_seconds": 0.528
+          }
+        }
+      },
+      "after": {
+        "boolean": {
+          "count": 180,
+          "cancelled": 92,
+          "correct_cancellations": 83,
+          "unsafe_cancellations": 9,
+          "cancellation_precision": 0.9021739130434783,
+          "cancellation_coverage": 0.5111111111111111,
+          "false_alerts_removed": 0.9222222222222223,
+          "real_error_escape_rate": 0.1,
+          "retained_real_errors": 81,
+          "retained_false_alerts": 7,
+          "invalid_retained": 0,
+          "note": "Boolean-only diagnostic, ignoring identity mismatch. Zero cancellations have undefined precision, not100%."
+        },
+        "protocol_guarded": {
+          "count": 180,
+          "cancelled": 92,
+          "correct_cancellations": 83,
+          "unsafe_cancellations": 9,
+          "cancellation_precision": 0.9021739130434783,
+          "cancellation_coverage": 0.5111111111111111,
+          "false_alerts_removed": 0.9222222222222223,
+          "real_error_escape_rate": 0.1,
+          "retained_real_errors": 81,
+          "retained_false_alerts": 7,
+          "invalid_retained": 0,
+          "note": "Protocol/identity failures retain alert. Zero cancellations have undefined precision, not100%."
+        },
+        "strict": {
+          "audit": {
+            "completed": 180,
+            "passed": 164,
+            "json_valid": 180,
+            "schema_valid": 180,
+            "semantic_pass": 164,
+            "mean_seconds": 0.499
+          },
+          "extraction": {
+            "completed": 160,
+            "passed": 124,
+            "json_valid": 139,
+            "schema_valid": 129,
+            "semantic_pass": 134,
+            "mean_seconds": 1.132
+          },
+          "pii": {
+            "completed": 160,
+            "passed": 77,
+            "json_valid": 102,
+            "schema_valid": 92,
+            "semantic_pass": 77,
+            "mean_seconds": 0.48
+          }
+        }
+      }
+    }
+  },
+  "withdrawal_gate": {
+    "policy": {
+      "threshold": 0.6042632585623643,
+      "enabled": true,
+      "validation_cancellations": 118,
+      "validation_correct": 118,
+      "validation_precision": 1.0,
+      "validation_wilson95_lower": 0.9684716609775074,
+      "target_lower_bound": 0.95,
+      "min_cancellations": 30
+    },
+    "validation": {
+      "count": 288,
+      "cancelled": 118,
+      "correct_cancellations": 118,
+      "unsafe_cancellations": 0,
+      "cancellation_precision": 1.0,
+      "cancellation_coverage": 0.4097222222222222,
+      "cancellation_precision_wilson95_lower": 0.9684716609775074,
+      "note": "An optional defer/withdraw gate. Uses a validation-frozen threshold; does not change raw model judgment."
+    },
+    "tests": {
+      "new480": {
+        "count": 480,
+        "cancelled": 176,
+        "correct_cancellations": 176,
+        "unsafe_cancellations": 0,
+        "cancellation_precision": 1.0,
+        "cancellation_coverage": 0.36666666666666664,
+        "cancellation_precision_wilson95_lower": 0.9786397483323135,
+        "note": "An optional defer/withdraw gate. Uses a validation-frozen threshold; does not change raw model judgment."
+      },
+      "external580": {
+        "count": 580,
+        "cancelled": 75,
+        "correct_cancellations": 58,
+        "unsafe_cancellations": 17,
+        "cancellation_precision": 0.7733333333333333,
+        "cancellation_coverage": 0.12931034482758622,
+        "cancellation_precision_wilson95_lower": 0.666644645277309,
+        "note": "An optional defer/withdraw gate. Uses a validation-frozen threshold; does not change raw model judgment."
+      }
+    }
+  },
+  "limitations": [
+    "Generated paired examples share context templates across splits; synthetic results are not proof of business accuracy.",
+    "External archive is a reused development benchmark, excluded from training and threshold selection.",
+    "Gate uses strict JSON/identity, nonempty context, and native next-token false probability >=0.5; missing score defers. Does not use self-reported adjustedConfidence.",
+    "Only validation labels choose the threshold. Wilson 95% lower bound target95%, minimum30 withdrawals. No test tuning.",
+    "The lower bound is a finite validation estimate, not a safety guarantee or proof on other distributions.",
+    "Counterfactual samples share templates and are correlated; a binomial confidence bound can overstate effective evidence.",
+    "PII/extraction are regression-only. No application default replacement or mobile-device integration."
+  ],
+  "cpu_smoke": {
+    "total": 3,
+    "completed": 3,
+    "model": {
+      "model_id": "cellsentry-cancel2-cpu",
+      "model_sha256": "61d9c8ab8007dbbde0eb004089d1411fb6ec7167031f9d6fcc5b521fe8ebe49a",
+      "corpus_sha256": "49dbf8e1a35efaaba829156966237e05c5f49ac2d38ca8ac2724a51f642cd94f",
+      "prompt_sha256": "10973f91379ef6f995462ab59f30cc98012c06a1ba172ae552e18f88b30d6ab5",
+      "temperature": 0,
+      "seed": 42,
+      "max_tokens": 420,
+      "base_url": "http://127.0.0.1:18770",
+      "server_build": "b11429-d81235049",
+      "context": 1024,
+      "corpus_file": "D:\\git\\cellsentry\\.runtime\\cancel2-cpu.jsonl",
+      "chat_template_kwargs": {
+        "enable_thinking": false
+      },
+      "chat_template_sha256": "86d92dc38bc4ce4564b3432cbf64ba494d488c69e2360ceb2cd1c2f7a6e5962c",
+      "model_file": "D:\\git\\cellsentry\\models\\minicpm5-2b-cancellation-v2\\cellsentry-minicpm5-2b-cancel2-q4_k_m.gguf"
+    },
+    "modes": {
+      "audit": {
+        "completed": 3,
+        "passed": 1,
+        "json_valid": 3,
+        "schema_valid": 3,
+        "semantic_pass": 1,
+        "mean_seconds": 2.132
+      }
+    },
+    "categories": {
+      "sum_exclusion": {
+        "completed": 1,
+        "passed": 1,
+        "json_valid": 1,
+        "schema_valid": 1,
+        "semantic_pass": 1,
+        "mean_seconds": 2.07
+      },
+      "unit_conversion": {
+        "completed": 1,
+        "passed": 0,
+        "json_valid": 1,
+        "schema_valid": 1,
+        "semantic_pass": 0,
+        "mean_seconds": 2.194
+      },
+      "zero_fallback": {
+        "completed": 1,
+        "passed": 0,
+        "json_valid": 1,
+        "schema_valid": 1,
+        "semantic_pass": 0,
+        "mean_seconds": 2.132
+      }
+    },
+    "passed": 1
+  },
+  "cpu_parity": {
+    "requests": 3,
+    "valid_json": 3,
+    "strict_passed": 1,
+    "boolean_correct": 3,
+    "gpu_same_cases_strict_passed": 2,
+    "exact_cpu_gpu_answers_identical": 2,
+    "note": "CPU strict1/3 versus GPU2/3 on same cases; all three CPU booleans correct. Address formatting differs on one case. Runtime smoke only, not edge accuracy validation."
+  },
+  "acceptance": {
+    "target_achieved_on_external": false,
+    "training_completed": true,
+    "outcome": "Improved withdrawal precision and fewer real errors incorrectly withdrawn; external gate still below95% target.",
+    "unsafe_examples": 17,
+    "validation_threshold_unchanged": true,
+    "dataset_hashes_verified": true,
+    "deployment": "Research candidate, no default model replacement or automatic withdrawal integration."
+  }
+}

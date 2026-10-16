@@ -1,0 +1,15 @@
+{
+  "policy": {
+    "threshold": 0.6042632585623643,
+    "enabled": true,
+    "validation_cancellations": 118,
+    "validation_correct": 118,
+    "validation_precision": 1.0,
+    "validation_wilson95_lower": 0.9684716609775074,
+    "target_lower_bound": 0.95,
+    "min_cancellations": 30
+  },
+  "chosen_at": "2026-10-16T10:06:24.520311+08:00",
+  "validation_scores_sha256": "94d9820b91c5cfbfd2b6315de46976317dbd108094a9bc7163ab0e659e0e4f46",
+  "note": "Chosen exclusively from validation. No test responses or test scores inspected for threshold choice; algorithm and targets fixed before training."
+}

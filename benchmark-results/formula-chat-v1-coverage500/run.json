@@ -1,0 +1,17 @@
+{
+  "model_id": "cellsentry-minicpm5-2b-formula-v1",
+  "model_sha256": "148c9448f60fc299babc7416ec839340d32fd52b4ef1dcaa5c767251174eb0e7",
+  "corpus_sha256": "97193606bcf9f38c3682f7f3ed5edb18ad3841270b060b4ef48ed4833de5a386",
+  "prompt_sha256": "65480de679413239962e46b5c0d622ae4d029cf5186ff9856889e42deb5bc0af",
+  "temperature": 0,
+  "seed": 42,
+  "max_tokens": 420,
+  "base_url": "http://127.0.0.1:18770",
+  "server_build": "b11429-d81235049",
+  "context": 1024,
+  "chat_template_kwargs": {
+    "enable_thinking": false
+  },
+  "chat_template_sha256": "86d92dc38bc4ce4564b3432cbf64ba494d488c69e2360ceb2cd1c2f7a6e5962c",
+  "model_file": "D:\\git\\cellsentry\\models\\minicpm5-2b-formula-chat-v1\\cellsentry-minicpm5-2b-formula-v1-q4_k_m.gguf"
+}

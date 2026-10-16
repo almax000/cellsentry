@@ -1,0 +1,29 @@
+{
+  "strict": {
+    "audit": {
+      "completed": 1320,
+      "passed": 1274,
+      "json_valid": 1320,
+      "schema_valid": 1320,
+      "semantic_pass": 1274,
+      "mean_seconds": 0.521
+    }
+  },
+  "audit_decision": {
+    "tp": 645,
+    "tn": 629,
+    "fp": 31,
+    "fn": 15,
+    "unscorable": 0
+  },
+  "audit_judgment_correct": 1274,
+  "audit_count": 1320,
+  "identity_mismatches": 0,
+  "reasoning_present": 0,
+  "presentation_only_content": {
+    "audit": {
+      "correct": 1274,
+      "count": 1320
+    }
+  }
+}

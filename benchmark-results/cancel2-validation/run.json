@@ -1,0 +1,18 @@
+{
+  "model_id": "cellsentry-cancel2",
+  "model_sha256": "61d9c8ab8007dbbde0eb004089d1411fb6ec7167031f9d6fcc5b521fe8ebe49a",
+  "corpus_sha256": "53bd440bc13144145d65e2de148048629afcebc1e4cd08cd579a69737cbe4121",
+  "prompt_sha256": "c55e44626978ce65680e35771ba5ca744c77de18d9a02574196f48389f55165f",
+  "temperature": 0,
+  "seed": 42,
+  "max_tokens": 420,
+  "base_url": "http://127.0.0.1:18770",
+  "server_build": "b11429-d81235049",
+  "context": 1024,
+  "corpus_file": "D:\\git\\cellsentry\\.runtime\\cancel2-validation.jsonl",
+  "chat_template_kwargs": {
+    "enable_thinking": false
+  },
+  "chat_template_sha256": "86d92dc38bc4ce4564b3432cbf64ba494d488c69e2360ceb2cd1c2f7a6e5962c",
+  "model_file": "D:\\git\\cellsentry\\models\\minicpm5-2b-cancellation-v2\\cellsentry-minicpm5-2b-cancel2-q4_k_m.gguf"
+}

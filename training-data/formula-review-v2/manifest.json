@@ -1,0 +1,143 @@
+{
+  "version": 2,
+  "origin": "synthetic only; no real customer workbooks",
+  "split_policy": "paired groups, fresh column starts and presentation styles separated; shared semantic families except horizontal SUM challenge",
+  "training_replay_source_sha256": "29c2c898e9ed867974a39e61e48d31869d90d6a1832b3619825d857baf442687",
+  "splits": {
+    "train": {
+      "count": 1176,
+      "sha256": "8900e131d1eac5ed2da5a7f485c732ef558d2ec9b2e186c0cb4dd80bd7f87ad2",
+      "categories": {
+        "lookup_column": 332,
+        "date_order": 32,
+        "percent_scale": 32,
+        "sum_range": 332,
+        "count": 32,
+        "rounding": 32,
+        "iferror": 32,
+        "absolute_reference": 32,
+        "sign": 32,
+        "relative_reference": 32,
+        "broken_reference": 32,
+        "text_number": 32,
+        "division_zero": 32,
+        "if_boundary": 32,
+        "duplicate_total": 32,
+        "average_total": 32,
+        "lookup_exact": 32,
+        "self_reference": 32
+      },
+      "labels": {
+        "True": 588,
+        "False": 588
+      }
+    },
+    "validation": {
+      "count": 280,
+      "sha256": "9e93d35fccde8e6a04ddc5ca7b4ee58afb8ad3be090b8db7ecbdf280c0c3aae3",
+      "categories": {
+        "lookup_column": 60,
+        "sum_range": 60,
+        "if_boundary": 10,
+        "duplicate_total": 10,
+        "relative_reference": 10,
+        "count": 10,
+        "absolute_reference": 10,
+        "broken_reference": 10,
+        "percent_scale": 10,
+        "text_number": 10,
+        "rounding": 10,
+        "self_reference": 10,
+        "division_zero": 10,
+        "iferror": 10,
+        "average_total": 10,
+        "date_order": 10,
+        "sign": 10,
+        "lookup_exact": 10
+      },
+      "labels": {
+        "True": 140,
+        "False": 140
+      }
+    },
+    "test": {
+      "count": 560,
+      "sha256": "bcd957452ca52cde26f25a34347b7861a3c6041b57a40b63b4df53986052ead7",
+      "categories": {
+        "division_zero": 20,
+        "sum_range": 120,
+        "percent_scale": 20,
+        "date_order": 20,
+        "average_total": 20,
+        "duplicate_total": 20,
+        "lookup_exact": 20,
+        "if_boundary": 20,
+        "lookup_column": 120,
+        "self_reference": 20,
+        "text_number": 20,
+        "count": 20,
+        "absolute_reference": 20,
+        "rounding": 20,
+        "sign": 20,
+        "relative_reference": 20,
+        "broken_reference": 20,
+        "iferror": 20
+      },
+      "labels": {
+        "False": 280,
+        "True": 280
+      }
+    },
+    "challenge": {
+      "count": 100,
+      "sha256": "698626b50d1bcde6c6126ef2d8617bda5fb3ef428cc23c1308596a8bc677053c",
+      "categories": {
+        "sum_range": 50,
+        "lookup_column": 50
+      },
+      "labels": {
+        "True": 50,
+        "False": 50
+      }
+    },
+    "benchmark": {
+      "count": 180,
+      "sha256": "8752d5bf52a72a388c83f4f397926c637abb785c193dc7c2be6245bf04623699",
+      "categories": {
+        "count": 10,
+        "duplicate_total": 10,
+        "lookup_exact": 10,
+        "division_zero": 10,
+        "relative_reference": 10,
+        "sum_range": 10,
+        "text_number": 10,
+        "average_total": 10,
+        "date_order": 10,
+        "sign": 10,
+        "absolute_reference": 10,
+        "lookup_column": 10,
+        "self_reference": 10,
+        "if_boundary": 10,
+        "broken_reference": 10,
+        "percent_scale": 10,
+        "iferror": 10,
+        "rounding": 10
+      },
+      "labels": {
+        "True": 90,
+        "False": 90
+      }
+    },
+    "public_test": {
+      "count": 42,
+      "sha256": "83edf02564699d589a4d0e3c385fe37d4268c05890d0e28b22fa9e1951257f39",
+      "labels": {
+        "False": 21,
+        "True": 21
+      },
+      "workbooks": 3,
+      "training_overlap": false,
+      "label_scope": "explicit controlled arithmetic/lookup contract derived from source cells; not human business gold"
+    }
+  }
+}

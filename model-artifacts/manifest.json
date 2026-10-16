@@ -1,0 +1,127 @@
+{
+  "repository": "yourblacksky/cellsentry-formula-review",
+  "tag": "formula-jev-adapters-20261015",
+  "base_revision": "b17a85f115016ea74513f5cd9c7e4350e45a47a1",
+  "packages": [
+    {
+      "run": "formula-jev-pilot-v1",
+      "asset": "formula-jev-pilot-v1-best.zip",
+      "bytes": 46493804,
+      "sha256": "2e82cfd030de0cee041fcc2b8141e9a730df99aaa819e6541b146b33e9ff973d",
+      "url": "https://github.com/yourblacksky/cellsentry-formula-review/releases/download/formula-jev-adapters-20261015/formula-jev-pilot-v1-best.zip",
+      "checkpoint_step": 100,
+      "files": [
+        {
+          "name": "adapter_model.safetensors",
+          "bytes": 50307248,
+          "sha256": "c183fdb8af2e0cdd5b7ffca99803e6db79fafdabd2cf28232984ba7d079a2b63"
+        },
+        {
+          "name": "decision_head.safetensors",
+          "bytes": 8332,
+          "sha256": "9dbf0915699fa6fdcc725fd09e3b819d37a0f7b1dacd4dcbd3ec30e239142203"
+        },
+        {
+          "name": "adapter_config.json",
+          "bytes": 1218,
+          "sha256": "e0bd899694b9ad014ca63a66f3e072279cec274053973287c47e2de9daa5a054"
+        },
+        {
+          "name": "LICENSE",
+          "bytes": 11358,
+          "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+        },
+        {
+          "name": "NOTICE",
+          "bytes": 575,
+          "sha256": "8c771a9e57af89dc9e726eedd2bd50f165e12a012e3bc15221d2c31ac38c2c32"
+        },
+        {
+          "name": "README.md",
+          "bytes": 1275,
+          "sha256": "08e8fb1835e559908e9e02de4c408174d47f03b420252639af8365835430ae07"
+        }
+      ]
+    },
+    {
+      "run": "formula-jev-full-v1",
+      "asset": "formula-jev-full-v1-best.zip",
+      "bytes": 46471577,
+      "sha256": "9c441f9e0e13f82416b1ee0cf70e0a630687e35e22b9d1c0199c656a88be0956",
+      "url": "https://github.com/yourblacksky/cellsentry-formula-review/releases/download/formula-jev-adapters-20261015/formula-jev-full-v1-best.zip",
+      "checkpoint_step": 350,
+      "files": [
+        {
+          "name": "adapter_model.safetensors",
+          "bytes": 50307248,
+          "sha256": "081c39fa5a23b4b1cd4fc6c63606d14d51d0d95c14ced23d013ca4400b96e87e"
+        },
+        {
+          "name": "decision_head.safetensors",
+          "bytes": 8332,
+          "sha256": "0337a5a430fb0aa2af898119584cbe718d70727109500027eb959d32f653e493"
+        },
+        {
+          "name": "adapter_config.json",
+          "bytes": 1218,
+          "sha256": "bf089dd187d075a1d509b02c384df1d6743d83d7f4bb3165c30a8b6164f6b9f1"
+        },
+        {
+          "name": "LICENSE",
+          "bytes": 11358,
+          "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+        },
+        {
+          "name": "NOTICE",
+          "bytes": 575,
+          "sha256": "8c771a9e57af89dc9e726eedd2bd50f165e12a012e3bc15221d2c31ac38c2c32"
+        },
+        {
+          "name": "README.md",
+          "bytes": 1274,
+          "sha256": "421d0e852768ebcb25658627f490e6e424a42524d9d2b57b88f4d64592f15c85"
+        }
+      ]
+    },
+    {
+      "run": "formula-jev-focus-v2b",
+      "asset": "formula-jev-focus-v2b-best.zip",
+      "bytes": 46475951,
+      "sha256": "efd3665113eb968f640e1a77f7dc4bfe92e39c0c2288d44f20360424439fc2f6",
+      "url": "https://github.com/yourblacksky/cellsentry-formula-review/releases/download/formula-jev-adapters-20261015/formula-jev-focus-v2b-best.zip",
+      "checkpoint_step": 100,
+      "files": [
+        {
+          "name": "adapter_model.safetensors",
+          "bytes": 50307248,
+          "sha256": "4fe0397c121ade1e89878764637b86f8d63ec78f712d2ceda3bcd000fa87c379"
+        },
+        {
+          "name": "decision_head.safetensors",
+          "bytes": 8332,
+          "sha256": "5084d648d2dbf0dcba56410fc24ab05da05cd00c6f4e914fb92337f4a1d6a485"
+        },
+        {
+          "name": "adapter_config.json",
+          "bytes": 1218,
+          "sha256": "3e66f1ba8bfe3a210a2f41f0882382a67cca9a7e44d15d988b708afb1dc603e8"
+        },
+        {
+          "name": "LICENSE",
+          "bytes": 11358,
+          "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+        },
+        {
+          "name": "NOTICE",
+          "bytes": 575,
+          "sha256": "8c771a9e57af89dc9e726eedd2bd50f165e12a012e3bc15221d2c31ac38c2c32"
+        },
+        {
+          "name": "README.md",
+          "bytes": 1276,
+          "sha256": "5bda099ac99adb3e531941cb6ec161031084a2b5f8239bebd8d7ed0f30cbcb84"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,797 @@
+{
+  "base": "D:\\git\\cellsentry\\models\\cpm-jev",
+  "base_source": {
+    "repository": "link921/CPM-jev",
+    "revision": "b17a85f115016ea74513f5cd9c7e4350e45a47a1",
+    "files": [
+      {
+        "name": "LICENSE",
+        "size": 11358,
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      },
+      {
+        "name": "NOTICE",
+        "size": 459,
+        "sha256": "a7a41cb08ae6ffba0e74fb67460df9215959cef2f43182a4ac03fce9b5c3325d"
+      },
+      {
+        "name": "README.md",
+        "size": 10848,
+        "sha256": "89e5d67ad584183b89446321bcf209b2b795f705342c51517bd3ed5cc5a9eaad"
+      },
+      {
+        "name": "checksums.json",
+        "size": 3288,
+        "sha256": "e5615a8aac2ef426add1f83a85970a0d5bdd79083728b547425838b1d2529233"
+      },
+      {
+        "name": "config.json",
+        "size": 778,
+        "sha256": "877c2a5260a9433133c60aab933c59b2219f90241add4df5b039dab274238a6c"
+      },
+      {
+        "name": "decision_head.safetensors",
+        "size": 8332,
+        "sha256": "ab0c1216517b8389d2e02f1ede565d15a1719b46817a6aaf53ae9102b3a089a5"
+      },
+      {
+        "name": "inference.py",
+        "size": 3481,
+        "sha256": "3b8a47bd3c563881c3b322666238348ebb27a3cf12de75efe1df912bc13f30af"
+      },
+      {
+        "name": "model-00001-of-00005.safetensors",
+        "size": 1994478256,
+        "sha256": "c7d73af460dd39dc3d0fe2bef98881b1290b44c85ac2671c6ed39e4990bc0bde"
+      },
+      {
+        "name": "model-00002-of-00005.safetensors",
+        "size": 1956824992,
+        "sha256": "522379bcfa79e3fb572c690457511e851ebec8fea932459bd97dfadd27058ec4"
+      },
+      {
+        "name": "model-00003-of-00005.safetensors",
+        "size": 1990379488,
+        "sha256": "266feb53ba0ca9001afaf443ed1e66c7a7c5531cab7697edde3ee59c69a42e09"
+      },
+      {
+        "name": "model-00004-of-00005.safetensors",
+        "size": 1973602368,
+        "sha256": "9a99eeefc27b9e476a14ddd333c60a83588065dbffc2ca7d8037e45b8de58c05"
+      },
+      {
+        "name": "model-00005-of-00005.safetensors",
+        "size": 1082234448,
+        "sha256": "55e765753a3e1060a835d28986ae269470a2a1b7eff05a69972d2591638a328b"
+      },
+      {
+        "name": "model.py",
+        "size": 2311,
+        "sha256": "f3d91fafb698d842ca517c1e0f7cf311698101c5be18b33e133ddc6a3424a972"
+      },
+      {
+        "name": "model.safetensors.index.json",
+        "size": 29465,
+        "sha256": "1c5640d779b1fcc27c6dc4578aec7418b959a7beee8f01c15a4e878bd5911b40"
+      },
+      {
+        "name": "requirements.txt",
+        "size": 80,
+        "sha256": "5cb1a73a2fe90fabb4f7effa1a3aa5be2ba34430a87d471aa35ac923c1b9d7c4"
+      },
+      {
+        "name": "tokenizer.json",
+        "size": 9894522,
+        "sha256": "802c611522de84820f2e580878a96e953d534a16d153648fc0a21ca53e904e03"
+      },
+      {
+        "name": "tokenizer_config.json",
+        "size": 451,
+        "sha256": "19d05ca5469560f4128ab95cc88c888fe22d5e4af8f69e0a6b092d96a26b3820"
+      }
+    ]
+  },
+  "dataset": {
+    "seed": 42,
+    "labels": [
+      "real_error",
+      "false_positive"
+    ],
+    "language": "English pilot; original benchmark includes mixed Chinese context",
+    "split_policy": "counterfactual groups and input presentation templates held out; business categories shared",
+    "original_benchmark_sha256": "97193606bcf9f38c3682f7f3ed5edb18ad3841270b060b4ef48ed4833de5a386",
+    "splits": {
+      "train": {
+        "count": 1800,
+        "sha256": "29c2c898e9ed867974a39e61e48d31869d90d6a1832b3619825d857baf442687",
+        "labels": {
+          "False": 900,
+          "True": 900
+        },
+        "categories": {
+          "if_boundary": 100,
+          "lookup_column": 100,
+          "lookup_exact": 100,
+          "relative_reference": 100,
+          "iferror": 100,
+          "self_reference": 100,
+          "rounding": 100,
+          "percent_scale": 100,
+          "duplicate_total": 100,
+          "sign": 100,
+          "date_order": 100,
+          "sum_range": 100,
+          "average_total": 100,
+          "text_number": 100,
+          "division_zero": 100,
+          "absolute_reference": 100,
+          "broken_reference": 100,
+          "count": 100
+        },
+        "templates": [
+          "ledger",
+          "structured"
+        ]
+      },
+      "validation": {
+        "count": 180,
+        "sha256": "a84c7701458c94793c60ac8373d562da8e9d1ea4a46b13108bfd386ec5fafd8a",
+        "labels": {
+          "True": 90,
+          "False": 90
+        },
+        "categories": {
+          "duplicate_total": 10,
+          "lookup_exact": 10,
+          "sign": 10,
+          "date_order": 10,
+          "average_total": 10,
+          "percent_scale": 10,
+          "count": 10,
+          "lookup_column": 10,
+          "if_boundary": 10,
+          "broken_reference": 10,
+          "self_reference": 10,
+          "iferror": 10,
+          "sum_range": 10,
+          "division_zero": 10,
+          "text_number": 10,
+          "relative_reference": 10,
+          "rounding": 10,
+          "absolute_reference": 10
+        },
+        "templates": [
+          "table"
+        ]
+      },
+      "test": {
+        "count": 360,
+        "sha256": "afe037340d38d0d1cd14f3f1d7e9143f589a8faa9f8d0361a5d43df43e6499b2",
+        "labels": {
+          "True": 180,
+          "False": 180
+        },
+        "categories": {
+          "iferror": 20,
+          "if_boundary": 20,
+          "absolute_reference": 20,
+          "sign": 20,
+          "percent_scale": 20,
+          "self_reference": 20,
+          "average_total": 20,
+          "lookup_column": 20,
+          "relative_reference": 20,
+          "duplicate_total": 20,
+          "text_number": 20,
+          "division_zero": 20,
+          "date_order": 20,
+          "count": 20,
+          "sum_range": 20,
+          "rounding": 20,
+          "broken_reference": 20,
+          "lookup_exact": 20
+        },
+        "templates": [
+          "memo"
+        ]
+      },
+      "benchmark": {
+        "count": 180,
+        "sha256": "e23c3f69463bb0effb5e5095c4fc58ad61b57b09bf28e472e54b62488eb319ea",
+        "labels": {
+          "True": 90,
+          "False": 90
+        },
+        "categories": {
+          "division_zero": 10,
+          "self_reference": 10,
+          "broken_reference": 10,
+          "sum_range": 10,
+          "average_total": 10,
+          "percent_scale": 10,
+          "absolute_reference": 10,
+          "relative_reference": 10,
+          "lookup_exact": 10,
+          "lookup_column": 10,
+          "if_boundary": 10,
+          "text_number": 10,
+          "duplicate_total": 10,
+          "sign": 10,
+          "date_order": 10,
+          "rounding": 10,
+          "count": 10,
+          "iferror": 10
+        },
+        "templates": [
+          "structured"
+        ]
+      }
+    }
+  },
+  "method": "NF4 QLoRA rank8 alpha16 + trainable scalar decision head",
+  "steps": 100,
+  "best_step": 100,
+  "seed": 42,
+  "effective_batch": 4,
+  "used_training_examples": 400,
+  "unique_used_examples": 400,
+  "trainable_parameters": 12560385,
+  "max_candidate_tokens": 161,
+  "versions": {
+    "torch": "2.14.1+cu130",
+    "transformers": "5.19.0",
+    "peft": "0.21.2",
+    "bitsandbytes": "0.50.2",
+    "accelerate": "1.15.0",
+    "safetensors": "0.8.0"
+  },
+  "gpu": "NVIDIA GeForce RTX 5060 Ti",
+  "peak_gib": 2.4471988677978516,
+  "seconds": 381.632,
+  "before": {
+    "validation": {
+      "count": 180,
+      "accuracy": 0.5888888888888889,
+      "macro_f1": 0.5771428571428572,
+      "nll": 0.696925970806592,
+      "brier": 0.25146887313293076,
+      "paired_groups": 90,
+      "paired_accuracy": 0.17777777777777778,
+      "confusion": {
+        "tp": 68,
+        "tn": 38,
+        "fp": 52,
+        "fn": 22
+      },
+      "seconds": 24.3,
+      "categories": {
+        "absolute_reference": {
+          "count": 10,
+          "correct": 5
+        },
+        "average_total": {
+          "count": 10,
+          "correct": 9
+        },
+        "broken_reference": {
+          "count": 10,
+          "correct": 5
+        },
+        "count": {
+          "count": 10,
+          "correct": 5
+        },
+        "date_order": {
+          "count": 10,
+          "correct": 5
+        },
+        "division_zero": {
+          "count": 10,
+          "correct": 5
+        },
+        "duplicate_total": {
+          "count": 10,
+          "correct": 7
+        },
+        "if_boundary": {
+          "count": 10,
+          "correct": 5
+        },
+        "iferror": {
+          "count": 10,
+          "correct": 5
+        },
+        "lookup_column": {
+          "count": 10,
+          "correct": 9
+        },
+        "lookup_exact": {
+          "count": 10,
+          "correct": 9
+        },
+        "percent_scale": {
+          "count": 10,
+          "correct": 7
+        },
+        "relative_reference": {
+          "count": 10,
+          "correct": 5
+        },
+        "rounding": {
+          "count": 10,
+          "correct": 5
+        },
+        "self_reference": {
+          "count": 10,
+          "correct": 5
+        },
+        "sign": {
+          "count": 10,
+          "correct": 5
+        },
+        "sum_range": {
+          "count": 10,
+          "correct": 5
+        },
+        "text_number": {
+          "count": 10,
+          "correct": 5
+        }
+      }
+    },
+    "test": {
+      "count": 360,
+      "accuracy": 0.6222222222222222,
+      "macro_f1": 0.6179656044196136,
+      "nll": 0.6341322147543857,
+      "brier": 0.22083988451261505,
+      "paired_groups": 180,
+      "paired_accuracy": 0.2777777777777778,
+      "confusion": {
+        "tp": 93,
+        "tn": 131,
+        "fp": 49,
+        "fn": 87
+      },
+      "seconds": 18.391,
+      "categories": {
+        "absolute_reference": {
+          "count": 20,
+          "correct": 10
+        },
+        "average_total": {
+          "count": 20,
+          "correct": 15
+        },
+        "broken_reference": {
+          "count": 20,
+          "correct": 13
+        },
+        "count": {
+          "count": 20,
+          "correct": 8
+        },
+        "date_order": {
+          "count": 20,
+          "correct": 10
+        },
+        "division_zero": {
+          "count": 20,
+          "correct": 13
+        },
+        "duplicate_total": {
+          "count": 20,
+          "correct": 13
+        },
+        "if_boundary": {
+          "count": 20,
+          "correct": 10
+        },
+        "iferror": {
+          "count": 20,
+          "correct": 10
+        },
+        "lookup_column": {
+          "count": 20,
+          "correct": 17
+        },
+        "lookup_exact": {
+          "count": 20,
+          "correct": 10
+        },
+        "percent_scale": {
+          "count": 20,
+          "correct": 12
+        },
+        "relative_reference": {
+          "count": 20,
+          "correct": 10
+        },
+        "rounding": {
+          "count": 20,
+          "correct": 14
+        },
+        "self_reference": {
+          "count": 20,
+          "correct": 10
+        },
+        "sign": {
+          "count": 20,
+          "correct": 13
+        },
+        "sum_range": {
+          "count": 20,
+          "correct": 20
+        },
+        "text_number": {
+          "count": 20,
+          "correct": 16
+        }
+      }
+    },
+    "benchmark": {
+      "count": 180,
+      "accuracy": 0.6722222222222223,
+      "macro_f1": 0.6722121053118923,
+      "nll": 0.5423763393037522,
+      "brier": 0.18543797464291276,
+      "paired_groups": 0,
+      "paired_accuracy": null,
+      "confusion": {
+        "tp": 60,
+        "tn": 61,
+        "fp": 29,
+        "fn": 30
+      },
+      "seconds": 10.648,
+      "categories": {
+        "absolute_reference": {
+          "count": 10,
+          "correct": 9
+        },
+        "average_total": {
+          "count": 10,
+          "correct": 6
+        },
+        "broken_reference": {
+          "count": 10,
+          "correct": 9
+        },
+        "count": {
+          "count": 10,
+          "correct": 4
+        },
+        "date_order": {
+          "count": 10,
+          "correct": 5
+        },
+        "division_zero": {
+          "count": 10,
+          "correct": 9
+        },
+        "duplicate_total": {
+          "count": 10,
+          "correct": 5
+        },
+        "if_boundary": {
+          "count": 10,
+          "correct": 5
+        },
+        "iferror": {
+          "count": 10,
+          "correct": 9
+        },
+        "lookup_column": {
+          "count": 10,
+          "correct": 6
+        },
+        "lookup_exact": {
+          "count": 10,
+          "correct": 5
+        },
+        "percent_scale": {
+          "count": 10,
+          "correct": 6
+        },
+        "relative_reference": {
+          "count": 10,
+          "correct": 7
+        },
+        "rounding": {
+          "count": 10,
+          "correct": 9
+        },
+        "self_reference": {
+          "count": 10,
+          "correct": 9
+        },
+        "sign": {
+          "count": 10,
+          "correct": 5
+        },
+        "sum_range": {
+          "count": 10,
+          "correct": 4
+        },
+        "text_number": {
+          "count": 10,
+          "correct": 9
+        }
+      }
+    }
+  },
+  "after": {
+    "validation": {
+      "count": 180,
+      "accuracy": 0.8055555555555556,
+      "macro_f1": 0.8048266674927972,
+      "nll": 0.33141653572224256,
+      "brier": 0.11603576389838283,
+      "paired_groups": 90,
+      "paired_accuracy": 0.6111111111111112,
+      "confusion": {
+        "tp": 78,
+        "tn": 67,
+        "fp": 23,
+        "fn": 12
+      },
+      "seconds": 9.481,
+      "categories": {
+        "absolute_reference": {
+          "count": 10,
+          "correct": 10
+        },
+        "average_total": {
+          "count": 10,
+          "correct": 10
+        },
+        "broken_reference": {
+          "count": 10,
+          "correct": 10
+        },
+        "count": {
+          "count": 10,
+          "correct": 6
+        },
+        "date_order": {
+          "count": 10,
+          "correct": 6
+        },
+        "division_zero": {
+          "count": 10,
+          "correct": 10
+        },
+        "duplicate_total": {
+          "count": 10,
+          "correct": 5
+        },
+        "if_boundary": {
+          "count": 10,
+          "correct": 9
+        },
+        "iferror": {
+          "count": 10,
+          "correct": 7
+        },
+        "lookup_column": {
+          "count": 10,
+          "correct": 10
+        },
+        "lookup_exact": {
+          "count": 10,
+          "correct": 6
+        },
+        "percent_scale": {
+          "count": 10,
+          "correct": 7
+        },
+        "relative_reference": {
+          "count": 10,
+          "correct": 10
+        },
+        "rounding": {
+          "count": 10,
+          "correct": 10
+        },
+        "self_reference": {
+          "count": 10,
+          "correct": 7
+        },
+        "sign": {
+          "count": 10,
+          "correct": 5
+        },
+        "sum_range": {
+          "count": 10,
+          "correct": 10
+        },
+        "text_number": {
+          "count": 10,
+          "correct": 7
+        }
+      }
+    },
+    "test": {
+      "count": 360,
+      "accuracy": 0.8277777777777777,
+      "macro_f1": 0.8277565131497716,
+      "nll": 0.4004735787573699,
+      "brier": 0.12848336440471908,
+      "paired_groups": 180,
+      "paired_accuracy": 0.6555555555555556,
+      "confusion": {
+        "tp": 151,
+        "tn": 147,
+        "fp": 33,
+        "fn": 29
+      },
+      "seconds": 18.945,
+      "categories": {
+        "absolute_reference": {
+          "count": 20,
+          "correct": 20
+        },
+        "average_total": {
+          "count": 20,
+          "correct": 20
+        },
+        "broken_reference": {
+          "count": 20,
+          "correct": 20
+        },
+        "count": {
+          "count": 20,
+          "correct": 16
+        },
+        "date_order": {
+          "count": 20,
+          "correct": 13
+        },
+        "division_zero": {
+          "count": 20,
+          "correct": 20
+        },
+        "duplicate_total": {
+          "count": 20,
+          "correct": 15
+        },
+        "if_boundary": {
+          "count": 20,
+          "correct": 14
+        },
+        "iferror": {
+          "count": 20,
+          "correct": 17
+        },
+        "lookup_column": {
+          "count": 20,
+          "correct": 19
+        },
+        "lookup_exact": {
+          "count": 20,
+          "correct": 15
+        },
+        "percent_scale": {
+          "count": 20,
+          "correct": 18
+        },
+        "relative_reference": {
+          "count": 20,
+          "correct": 20
+        },
+        "rounding": {
+          "count": 20,
+          "correct": 20
+        },
+        "self_reference": {
+          "count": 20,
+          "correct": 11
+        },
+        "sign": {
+          "count": 20,
+          "correct": 10
+        },
+        "sum_range": {
+          "count": 20,
+          "correct": 20
+        },
+        "text_number": {
+          "count": 20,
+          "correct": 10
+        }
+      }
+    },
+    "benchmark": {
+      "count": 180,
+      "accuracy": 0.8388888888888889,
+      "macro_f1": 0.8387644787644788,
+      "nll": 0.3095069418325307,
+      "brier": 0.10220586045107533,
+      "paired_groups": 0,
+      "paired_accuracy": null,
+      "confusion": {
+        "tp": 73,
+        "tn": 78,
+        "fp": 12,
+        "fn": 17
+      },
+      "seconds": 10.716,
+      "categories": {
+        "absolute_reference": {
+          "count": 10,
+          "correct": 10
+        },
+        "average_total": {
+          "count": 10,
+          "correct": 10
+        },
+        "broken_reference": {
+          "count": 10,
+          "correct": 10
+        },
+        "count": {
+          "count": 10,
+          "correct": 7
+        },
+        "date_order": {
+          "count": 10,
+          "correct": 5
+        },
+        "division_zero": {
+          "count": 10,
+          "correct": 10
+        },
+        "duplicate_total": {
+          "count": 10,
+          "correct": 8
+        },
+        "if_boundary": {
+          "count": 10,
+          "correct": 10
+        },
+        "iferror": {
+          "count": 10,
+          "correct": 10
+        },
+        "lookup_column": {
+          "count": 10,
+          "correct": 5
+        },
+        "lookup_exact": {
+          "count": 10,
+          "correct": 5
+        },
+        "percent_scale": {
+          "count": 10,
+          "correct": 6
+        },
+        "relative_reference": {
+          "count": 10,
+          "correct": 5
+        },
+        "rounding": {
+          "count": 10,
+          "correct": 10
+        },
+        "self_reference": {
+          "count": 10,
+          "correct": 10
+        },
+        "sign": {
+          "count": 10,
+          "correct": 10
+        },
+        "sum_range": {
+          "count": 10,
+          "correct": 10
+        },
+        "text_number": {
+          "count": 10,
+          "correct": 10
+        }
+      }
+    }
+  },
+  "checkpoint": "D:\\git\\cellsentry\\benchmark-results\\formula-jev-pilot-v1\\best",
+  "probabilities": "raw softmax, not calibrated for the formula task"
+}

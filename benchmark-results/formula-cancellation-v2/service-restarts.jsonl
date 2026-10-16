@@ -1,0 +1,7 @@
+{"suite": "cancel2-validation", "reason": "planned bounded runtime reset", "completed_requests": 400}
+{"suite": "cancel2-new480", "reason": "planned bounded runtime reset", "completed_requests": 400}
+{"suite": "cancel2-new480", "reason": "planned bounded runtime reset", "completed_requests": 800}
+{"suite": "cancel2-external580", "reason": "planned bounded runtime reset", "completed_requests": 400}
+{"suite": "cancel2-external580", "reason": "planned bounded runtime reset", "completed_requests": 800}
+{"suite": "cancel2-coverage500", "reason": "planned bounded runtime reset", "completed_requests": 400}
+{"suite": "cancel2-v1-new480", "reason": "planned bounded runtime reset", "completed_requests": 400}

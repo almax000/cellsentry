@@ -1,0 +1,223 @@
+{
+  "version": "business-v3",
+  "seed_policy": "fixed independent split seeds; paired counterfactuals",
+  "newly_generated_train": 4800,
+  "replay_train": 720,
+  "replay_source_sha256": "29c2c898e9ed867974a39e61e48d31869d90d6a1832b3619825d857baf442687",
+  "benchmark_source_sha256": "e23c3f69463bb0effb5e5095c4fc58ad61b57b09bf28e472e54b62488eb319ea",
+  "external_archive_used": false,
+  "external_test_policy": "External archive informed topic selection only; no archive files or answers are read by this generator. It is now a development benchmark, not a pristine blind test.",
+  "split_policy": "disjoint paired groups, input hashes and category/fact hashes for new data; presentation families separated; shared scenario logic is NOT semantic independence",
+  "probabilities": "no calibrated confidence labels or teacher model labels",
+  "splits": {
+    "train": {
+      "count": 5520,
+      "labels": {
+        "False": 2760,
+        "True": 2760
+      },
+      "categories": {
+        "rate_scale": 240,
+        "imported_literal": 240,
+        "date_order": 280,
+        "optional_blank": 240,
+        "archived_snapshot": 240,
+        "duplicate_key": 240,
+        "external_link": 240,
+        "lookup_match": 240,
+        "rounding_tolerance": 240,
+        "division_zero": 40,
+        "contract_literal": 240,
+        "unit_conversion": 240,
+        "seasonal_spike": 240,
+        "percent_scale": 40,
+        "text_number": 40,
+        "lookup_column": 280,
+        "aggregation_type": 240,
+        "sum_scope": 240,
+        "iterative_cycle": 240,
+        "iferror": 40,
+        "stored_sign": 240,
+        "average_total": 40,
+        "text_identifier": 240,
+        "empty_denominator": 240,
+        "if_boundary": 40,
+        "relative_reference": 40,
+        "sum_range": 40,
+        "rounding": 40,
+        "lookup_key_type": 240,
+        "broken_reference": 40,
+        "sign": 40,
+        "count": 40,
+        "lookup_exact": 40,
+        "absolute_reference": 40,
+        "self_reference": 40,
+        "duplicate_total": 40
+      },
+      "languages": {
+        "zh": 3840,
+        "en": 1440,
+        "mixed": 240
+      },
+      "templates": [
+        "archive_record",
+        "ledger",
+        "structured"
+      ],
+      "sha256": "6df1b02437de2901ba7b30ca6d846bbee6e763c99439c669116d358603ce02c0",
+      "chat_sha256": "6f99e6572611d8e12b491bc136ae8a8f3d5fbaa51c36113c5fc9847c774cff92"
+    },
+    "validation": {
+      "count": 480,
+      "labels": {
+        "True": 240,
+        "False": 240
+      },
+      "categories": {
+        "stored_sign": 24,
+        "external_link": 24,
+        "duplicate_key": 24,
+        "seasonal_spike": 24,
+        "iterative_cycle": 24,
+        "date_order": 24,
+        "imported_literal": 24,
+        "archived_snapshot": 24,
+        "text_identifier": 24,
+        "optional_blank": 24,
+        "rate_scale": 24,
+        "unit_conversion": 24,
+        "contract_literal": 24,
+        "sum_scope": 24,
+        "empty_denominator": 24,
+        "lookup_column": 24,
+        "lookup_match": 24,
+        "aggregation_type": 24,
+        "rounding_tolerance": 24,
+        "lookup_key_type": 24
+      },
+      "languages": {
+        "zh": 384,
+        "en": 72,
+        "mixed": 24
+      },
+      "templates": [
+        "table"
+      ],
+      "sha256": "527ca5e679d1ee588bb4116d4c8b08402e5cf9e78766e7579850fde249182070",
+      "chat_sha256": "0000f2b300fe2d7a7e74c292ed6a941adf925fb0dab3be5aefb9b32d80b19da6"
+    },
+    "test": {
+      "count": 960,
+      "labels": {
+        "False": 480,
+        "True": 480
+      },
+      "categories": {
+        "duplicate_key": 48,
+        "imported_literal": 48,
+        "rate_scale": 48,
+        "sum_scope": 48,
+        "empty_denominator": 48,
+        "lookup_column": 48,
+        "stored_sign": 48,
+        "rounding_tolerance": 48,
+        "lookup_key_type": 48,
+        "optional_blank": 48,
+        "iterative_cycle": 48,
+        "lookup_match": 48,
+        "seasonal_spike": 48,
+        "aggregation_type": 48,
+        "date_order": 48,
+        "unit_conversion": 48,
+        "external_link": 48,
+        "contract_literal": 48,
+        "archived_snapshot": 48,
+        "text_identifier": 48
+      },
+      "languages": {
+        "zh": 768,
+        "en": 144,
+        "mixed": 48
+      },
+      "templates": [
+        "memo"
+      ],
+      "sha256": "b2ad1f5eb0f3367b3a82895012db5b0108c54505f4e468a46d72a085912afb5b",
+      "chat_sha256": "ed3d3fde43b46f671ef35afb50010b16b9a403df73161625b5370b77a41571ff"
+    },
+    "challenge": {
+      "count": 240,
+      "labels": {
+        "False": 120,
+        "True": 120
+      },
+      "categories": {
+        "unit_conversion": 12,
+        "rate_scale": 12,
+        "date_order": 12,
+        "lookup_match": 12,
+        "text_identifier": 12,
+        "sum_scope": 12,
+        "empty_denominator": 12,
+        "imported_literal": 12,
+        "optional_blank": 12,
+        "archived_snapshot": 12,
+        "aggregation_type": 12,
+        "lookup_key_type": 12,
+        "lookup_column": 12,
+        "stored_sign": 12,
+        "rounding_tolerance": 12,
+        "duplicate_key": 12,
+        "iterative_cycle": 12,
+        "contract_literal": 12,
+        "external_link": 12,
+        "seasonal_spike": 12
+      },
+      "languages": {
+        "zh": 192,
+        "en": 36,
+        "mixed": 12
+      },
+      "templates": [
+        "noisy_export"
+      ],
+      "sha256": "1d75e988166fda7822e092a5efc5cbf1c3cc47d54342bc7d63f26796cc483f13",
+      "chat_sha256": "34062405a037e2ef369528e90f105287d3c10298dc51af6da8ab672c2b06cd4a"
+    },
+    "benchmark": {
+      "count": 180,
+      "labels": {
+        "True": 90,
+        "False": 90
+      },
+      "categories": {
+        "division_zero": 10,
+        "self_reference": 10,
+        "broken_reference": 10,
+        "sum_range": 10,
+        "average_total": 10,
+        "percent_scale": 10,
+        "absolute_reference": 10,
+        "relative_reference": 10,
+        "lookup_exact": 10,
+        "lookup_column": 10,
+        "if_boundary": 10,
+        "text_number": 10,
+        "duplicate_total": 10,
+        "sign": 10,
+        "date_order": 10,
+        "rounding": 10,
+        "count": 10,
+        "iferror": 10
+      },
+      "languages": {
+        "source_mixed": 180
+      },
+      "templates": [
+        "structured"
+      ],
+      "sha256": "59e5607f799231ff98f430a4fd18bb5f9080f0ca176535ccf856bb56daa811ca",
+      "chat_sha256": "5946bf099a8b6ff78b268bec3fa77796db6c2a034c704180001690297dd56c27"
+    }
+  }
+}

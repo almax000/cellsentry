@@ -1,0 +1,706 @@
+{
+  "total": 500,
+  "completed": 500,
+  "model": {
+    "model_id": "cellsentry-minicpm5-2b-v1",
+    "model_sha256": "e9f1a3de7fcd53cbb9d50d5ffde4e308424e5f098a7d3f621f7319743ae0f900",
+    "corpus_sha256": "97193606bcf9f38c3682f7f3ed5edb18ad3841270b060b4ef48ed4833de5a386",
+    "prompt_sha256": "65480de679413239962e46b5c0d622ae4d029cf5186ff9856889e42deb5bc0af",
+    "temperature": 0,
+    "seed": 42,
+    "max_tokens": 420,
+    "base_url": "http://127.0.0.1:18767",
+    "server_build": "b11429-d81235049",
+    "context": 1024,
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "chat_template_sha256": "86d92dc38bc4ce4564b3432cbf64ba494d488c69e2360ceb2cd1c2f7a6e5962c",
+    "model_file": "D:\\git\\cellsentry\\models\\minicpm5-2b-cellsentry-v1\\cellsentry-minicpm5-2b-v1-q4_k_m.gguf"
+  },
+  "modes": {
+    "audit": {
+      "completed": 180,
+      "passed": 103,
+      "json_valid": 180,
+      "schema_valid": 180,
+      "semantic_pass": 103,
+      "mean_seconds": 0.336
+    },
+    "extraction": {
+      "completed": 160,
+      "passed": 155,
+      "json_valid": 160,
+      "schema_valid": 160,
+      "semantic_pass": 155,
+      "mean_seconds": 0.785
+    },
+    "pii": {
+      "completed": 160,
+      "passed": 130,
+      "json_valid": 160,
+      "schema_valid": 160,
+      "semantic_pass": 130,
+      "mean_seconds": 0.164
+    }
+  },
+  "categories": {
+    "absolute_reference": {
+      "completed": 10,
+      "passed": 5,
+      "json_valid": 10,
+      "schema_valid": 10,
+      "semantic_pass": 5,
+      "mean_seconds": 0.336
+    },
+    "average_total": {
+      "completed": 10,
+      "passed": 5,
+      "json_valid": 10,
+      "schema_valid": 10,
+      "semantic_pass": 5,
+      "mean_seconds": 0.333
+    },
+    "broken_reference": {
+      "completed": 10,
+      "passed": 9,
+      "json_valid": 10,
+      "schema_valid": 10,
+      "semantic_pass": 9,
+      "mean_seconds": 0.323
+    },
+    "count": {
+      "completed": 10,
+      "passed": 5,
+      "json_valid": 10,
+      "schema_valid": 10,
+      "semantic_pass": 5,
+      "mean_seconds": 0.323
+    },
+    "credit_card": {
+      "completed": 5,
+      "passed": 4,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 4,
+      "mean_seconds": 0.236
+    },
+    "credit_card_spaced": {
+      "completed": 5,
+      "passed": 3,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 3,
+      "mean_seconds": 0.243
+    },
+    "currency": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.053
+    },
+    "date": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.038
+    },
+    "date_order": {
+      "completed": 10,
+      "passed": 5,
+      "json_valid": 10,
+      "schema_valid": 10,
+      "semantic_pass": 5,
+      "mean_seconds": 0.372
+    },
+    "decimal": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.04
+    },
+    "division_zero": {
+      "completed": 10,
+      "passed": 7,
+      "json_valid": 10,
+      "schema_valid": 10,
+      "semantic_pass": 7,
+      "mean_seconds": 0.326
+    },
+    "duplicate_total": {
+      "completed": 10,
+      "passed": 9,
+      "json_valid": 10,
+      "schema_valid": 10,
+      "semantic_pass": 9,
+      "mean_seconds": 0.343
+    },
+    "email": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.241
+    },
+    "email_embedded": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.233
+    },
+    "email_no_at": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.039
+    },
+    "email_no_domain": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.047
+    },
+    "empty": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.039
+    },
+    "expense_report/chinese": {
+      "completed": 5,
+      "passed": 0,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 0,
+      "mean_seconds": 0.927
+    },
+    "expense_report/horizontal": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.902
+    },
+    "expense_report/missing_total": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.69
+    },
+    "expense_report/noise": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.893
+    },
+    "expense_report/reordered": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.89
+    },
+    "expense_report/vertical": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.913
+    },
+    "iban": {
+      "completed": 5,
+      "passed": 2,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 2,
+      "mean_seconds": 0.237
+    },
+    "if_boundary": {
+      "completed": 10,
+      "passed": 5,
+      "json_valid": 10,
+      "schema_valid": 10,
+      "semantic_pass": 5,
+      "mean_seconds": 0.369
+    },
+    "iferror": {
+      "completed": 10,
+      "passed": 5,
+      "json_valid": 10,
+      "schema_valid": 10,
+      "semantic_pass": 5,
+      "mean_seconds": 0.331
+    },
+    "injection": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.038
+    },
+    "integer": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.042
+    },
+    "invalid_card": {
+      "completed": 5,
+      "passed": 0,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 0,
+      "mean_seconds": 0.242
+    },
+    "invalid_cn_id": {
+      "completed": 5,
+      "passed": 0,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 0,
+      "mean_seconds": 0.252
+    },
+    "invalid_ssn": {
+      "completed": 5,
+      "passed": 0,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 0,
+      "mean_seconds": 0.278
+    },
+    "invoice/chinese": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.889
+    },
+    "invoice/horizontal": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.903
+    },
+    "invoice/missing_total": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.704
+    },
+    "invoice/noise": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.887
+    },
+    "invoice/reordered": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.914
+    },
+    "invoice/vertical": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.924
+    },
+    "lookup_column": {
+      "completed": 10,
+      "passed": 5,
+      "json_valid": 10,
+      "schema_valid": 10,
+      "semantic_pass": 5,
+      "mean_seconds": 0.331
+    },
+    "lookup_exact": {
+      "completed": 10,
+      "passed": 5,
+      "json_valid": 10,
+      "schema_valid": 10,
+      "semantic_pass": 5,
+      "mean_seconds": 0.329
+    },
+    "mixed_pii": {
+      "completed": 5,
+      "passed": 4,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 4,
+      "mean_seconds": 0.384
+    },
+    "multi_email": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.24
+    },
+    "national_id": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.236
+    },
+    "national_id_labeled": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.246
+    },
+    "order_id": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.036
+    },
+    "ordinary_text": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.042
+    },
+    "passport": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.238
+    },
+    "payroll/chinese": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.726
+    },
+    "payroll/horizontal": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.684
+    },
+    "payroll/missing_total": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.515
+    },
+    "payroll/noise": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.726
+    },
+    "payroll/reordered": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.71
+    },
+    "payroll/vertical": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.687
+    },
+    "percent_scale": {
+      "completed": 10,
+      "passed": 5,
+      "json_valid": 10,
+      "schema_valid": 10,
+      "semantic_pass": 5,
+      "mean_seconds": 0.326
+    },
+    "phone_cn": {
+      "completed": 5,
+      "passed": 1,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 1,
+      "mean_seconds": 0.234
+    },
+    "phone_cn_labeled": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.234
+    },
+    "phone_in_sentence": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.234
+    },
+    "phone_us": {
+      "completed": 5,
+      "passed": 3,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 3,
+      "mean_seconds": 0.228
+    },
+    "purchase_order/chinese": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.893
+    },
+    "purchase_order/horizontal": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.903
+    },
+    "purchase_order/missing_total": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.717
+    },
+    "purchase_order/noise": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.901
+    },
+    "purchase_order/reordered": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.903
+    },
+    "purchase_order/vertical": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.885
+    },
+    "receipt/chinese": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.906
+    },
+    "receipt/horizontal": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.922
+    },
+    "receipt/missing_total": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.696
+    },
+    "receipt/noise": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.896
+    },
+    "receipt/reordered": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.927
+    },
+    "receipt/vertical": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.876
+    },
+    "relative_reference": {
+      "completed": 10,
+      "passed": 5,
+      "json_valid": 10,
+      "schema_valid": 10,
+      "semantic_pass": 5,
+      "mean_seconds": 0.342
+    },
+    "rounding": {
+      "completed": 10,
+      "passed": 5,
+      "json_valid": 10,
+      "schema_valid": 10,
+      "semantic_pass": 5,
+      "mean_seconds": 0.342
+    },
+    "self_reference": {
+      "completed": 10,
+      "passed": 5,
+      "json_valid": 10,
+      "schema_valid": 10,
+      "semantic_pass": 5,
+      "mean_seconds": 0.313
+    },
+    "short_phone": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.042
+    },
+    "sign": {
+      "completed": 10,
+      "passed": 5,
+      "json_valid": 10,
+      "schema_valid": 10,
+      "semantic_pass": 5,
+      "mean_seconds": 0.322
+    },
+    "sku": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.041
+    },
+    "ssn": {
+      "completed": 5,
+      "passed": 3,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 3,
+      "mean_seconds": 0.2
+    },
+    "ssn_labeled": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.279
+    },
+    "sum_range": {
+      "completed": 10,
+      "passed": 5,
+      "json_valid": 10,
+      "schema_valid": 10,
+      "semantic_pass": 5,
+      "mean_seconds": 0.32
+    },
+    "text_number": {
+      "completed": 10,
+      "passed": 8,
+      "json_valid": 10,
+      "schema_valid": 10,
+      "semantic_pass": 8,
+      "mean_seconds": 0.371
+    },
+    "unknown/injection": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.095
+    },
+    "unknown/ordinary_notes": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.103
+    },
+    "version": {
+      "completed": 5,
+      "passed": 5,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 5,
+      "mean_seconds": 0.038
+    }
+  },
+  "passed": 388
+}

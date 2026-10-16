@@ -12,7 +12,7 @@ import { existsSync } from 'fs'
 import { is } from '@electron-toolkit/utils'
 import type { LlmRequest, LlmResponse, LlmStatus } from './types'
 
-const REQUEST_TIMEOUT_MS = 60_000
+const REQUEST_TIMEOUT_MS = 180_000
 const SHUTDOWN_GRACE_MS = 5_000
 
 interface PendingRequest {
@@ -34,10 +34,9 @@ class LlmBridge {
   }
 
   async start(): Promise<boolean> {
-    if (this.process) return this._status.available
-
     // Prevent concurrent start attempts
     if (this.starting) return this.starting
+    if (this.process) return this._status.available
     this.starting = this.doStart()
     try {
       return await this.starting
@@ -96,7 +95,7 @@ class LlmBridge {
         // If we haven't resolved yet, the server is too slow — treat as unavailable
         this._status = { available: false, backend: 'none', modelLoaded: false }
         resolve(false)
-      }, 10_000)
+      }, REQUEST_TIMEOUT_MS)
 
       this.sendRaw({ method: 'status' })
         .then((resp) => {
@@ -243,6 +242,11 @@ function getProjectRoot(): string {
 
 function getModelDir(): string {
   const { app } = require('electron') as typeof import('electron')
+  if (process.env.CELLSENTRY_MODEL_DIR) return process.env.CELLSENTRY_MODEL_DIR
+  const bundledModels = join(process.resourcesPath, 'models')
+  if (!is.dev && existsSync(bundledModels)) return bundledModels
+  const localModels = join(getProjectRoot(), 'models')
+  if (is.dev && existsSync(localModels)) return localModels
   return join(app.getPath('userData'), 'models')
 }
 
@@ -255,7 +259,7 @@ function getServerScriptPath(): string {
 
 async function findPython(): Promise<string | null> {
   const candidates = process.platform === 'win32'
-    ? ['python3', 'python']
+    ? ['python', 'python3']
     : ['python3', 'python']
 
   for (const cmd of candidates) {

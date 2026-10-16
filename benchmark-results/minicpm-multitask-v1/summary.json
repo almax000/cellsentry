@@ -1,0 +1,75 @@
+{
+  "best_step": 300,
+  "steps": 300,
+  "before_validation": {
+    "modes": {
+      "audit": {
+        "count": 40,
+        "mean_loss": 1.856880521774292
+      },
+      "pii": {
+        "count": 40,
+        "mean_loss": 2.7091488242149353
+      },
+      "extraction": {
+        "count": 40,
+        "mean_loss": 0.4472167782485485
+      }
+    },
+    "macro_loss": 1.671082041412592,
+    "seconds": 18.314579963684082,
+    "note": "Teacher-forced assistant loss, not generation accuracy. Final capability measured separately with GGUF."
+  },
+  "before_test": {
+    "modes": {
+      "audit": {
+        "count": 80,
+        "mean_loss": 1.8512511566281318
+      },
+      "pii": {
+        "count": 80,
+        "mean_loss": 2.700383186340332
+      },
+      "extraction": {
+        "count": 80,
+        "mean_loss": 0.48541638944298027
+      }
+    },
+    "macro_loss": 1.6790169108038147,
+    "seconds": 40.49446988105774,
+    "note": "Teacher-forced assistant loss, not generation accuracy. Final capability measured separately with GGUF."
+  },
+  "before_coverage500": null,
+  "selection_metric": "negative macro loss",
+  "best_validation_score": -0.028331032894781557,
+  "after_test": {
+    "modes": {
+      "audit": {
+        "count": 80,
+        "mean_loss": 0.030447779658425135
+      },
+      "pii": {
+        "count": 80,
+        "mean_loss": 0.13157898209909719
+      },
+      "extraction": {
+        "count": 80,
+        "mean_loss": 0.07701694469942595
+      }
+    },
+    "macro_loss": 0.07968123548564943,
+    "seconds": 52.62083673477173,
+    "note": "Teacher-forced assistant loss, not generation accuracy. Final capability measured separately with GGUF."
+  },
+  "coverage500": null,
+  "examples_seen": 2400,
+  "unique_examples": 2400,
+  "used_modes": {
+    "audit": 1470,
+    "extraction": 460,
+    "pii": 470
+  },
+  "seconds": 1569.099484205246,
+  "peak_gib": 5.431727409362793,
+  "note": "Pilot; subset validation selection. No GGUF export or application replacement yet."
+}

@@ -1,0 +1,9 @@
+{
+  "requests": 3,
+  "valid_json": 3,
+  "strict_passed": 1,
+  "boolean_correct": 3,
+  "gpu_same_cases_strict_passed": 2,
+  "exact_cpu_gpu_answers_identical": 2,
+  "note": "CPU strict1/3 versus GPU2/3 on same cases; all three CPU booleans correct. Address formatting differs on one case. Runtime smoke only, not edge accuracy validation."
+}

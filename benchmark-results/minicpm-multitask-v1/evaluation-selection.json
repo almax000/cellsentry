@@ -1,0 +1,1806 @@
+{
+  "validation": [
+    {
+      "id": "MCP-BIZ3-validation-09-0000-0",
+      "mode": "audit",
+      "category": "aggregation_type"
+    },
+    {
+      "id": "MCP-BIZ3-validation-02-0000-0",
+      "mode": "audit",
+      "category": "archived_snapshot"
+    },
+    {
+      "id": "MCP-BIZ3-validation-01-0000-0",
+      "mode": "audit",
+      "category": "contract_literal"
+    },
+    {
+      "id": "MCP-BIZ3-validation-12-0000-0",
+      "mode": "audit",
+      "category": "date_order"
+    },
+    {
+      "id": "MCP-BIZ3-validation-14-0000-0",
+      "mode": "audit",
+      "category": "duplicate_key"
+    },
+    {
+      "id": "MCP-BIZ3-validation-18-0000-0",
+      "mode": "audit",
+      "category": "empty_denominator"
+    },
+    {
+      "id": "MCP-BIZ3-validation-04-0000-0",
+      "mode": "audit",
+      "category": "external_link"
+    },
+    {
+      "id": "MCP-BIZ3-validation-00-0000-0",
+      "mode": "audit",
+      "category": "imported_literal"
+    },
+    {
+      "id": "MCP-BIZ3-validation-03-0000-0",
+      "mode": "audit",
+      "category": "iterative_cycle"
+    },
+    {
+      "id": "MCP-BIZ3-validation-06-0000-0",
+      "mode": "audit",
+      "category": "lookup_column"
+    },
+    {
+      "id": "MCP-BIZ3-validation-07-0000-0",
+      "mode": "audit",
+      "category": "lookup_key_type"
+    },
+    {
+      "id": "MCP-BIZ3-validation-05-0000-0",
+      "mode": "audit",
+      "category": "lookup_match"
+    },
+    {
+      "id": "MCP-BIZ3-validation-13-0000-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "MCP-BIZ3-validation-10-0000-0",
+      "mode": "audit",
+      "category": "rate_scale"
+    },
+    {
+      "id": "MCP-BIZ3-validation-16-0000-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "MCP-BIZ3-validation-15-0000-0",
+      "mode": "audit",
+      "category": "seasonal_spike"
+    },
+    {
+      "id": "MCP-BIZ3-validation-11-0000-0",
+      "mode": "audit",
+      "category": "stored_sign"
+    },
+    {
+      "id": "MCP-BIZ3-validation-08-0000-0",
+      "mode": "audit",
+      "category": "sum_scope"
+    },
+    {
+      "id": "MCP-BIZ3-validation-17-0000-0",
+      "mode": "audit",
+      "category": "text_identifier"
+    },
+    {
+      "id": "MCP-BIZ3-validation-19-0000-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "MCP-BIZ3-validation-09-0000-1",
+      "mode": "audit",
+      "category": "aggregation_type"
+    },
+    {
+      "id": "MCP-BIZ3-validation-02-0000-1",
+      "mode": "audit",
+      "category": "archived_snapshot"
+    },
+    {
+      "id": "MCP-BIZ3-validation-01-0000-1",
+      "mode": "audit",
+      "category": "contract_literal"
+    },
+    {
+      "id": "MCP-BIZ3-validation-12-0000-1",
+      "mode": "audit",
+      "category": "date_order"
+    },
+    {
+      "id": "MCP-BIZ3-validation-14-0000-1",
+      "mode": "audit",
+      "category": "duplicate_key"
+    },
+    {
+      "id": "MCP-BIZ3-validation-18-0000-1",
+      "mode": "audit",
+      "category": "empty_denominator"
+    },
+    {
+      "id": "MCP-BIZ3-validation-04-0000-1",
+      "mode": "audit",
+      "category": "external_link"
+    },
+    {
+      "id": "MCP-BIZ3-validation-00-0000-1",
+      "mode": "audit",
+      "category": "imported_literal"
+    },
+    {
+      "id": "MCP-BIZ3-validation-03-0000-1",
+      "mode": "audit",
+      "category": "iterative_cycle"
+    },
+    {
+      "id": "MCP-BIZ3-validation-06-0000-1",
+      "mode": "audit",
+      "category": "lookup_column"
+    },
+    {
+      "id": "MCP-BIZ3-validation-07-0000-1",
+      "mode": "audit",
+      "category": "lookup_key_type"
+    },
+    {
+      "id": "MCP-BIZ3-validation-05-0000-1",
+      "mode": "audit",
+      "category": "lookup_match"
+    },
+    {
+      "id": "MCP-BIZ3-validation-13-0000-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "MCP-BIZ3-validation-10-0000-1",
+      "mode": "audit",
+      "category": "rate_scale"
+    },
+    {
+      "id": "MCP-BIZ3-validation-16-0000-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "MCP-BIZ3-validation-15-0000-1",
+      "mode": "audit",
+      "category": "seasonal_spike"
+    },
+    {
+      "id": "MCP-BIZ3-validation-11-0000-1",
+      "mode": "audit",
+      "category": "stored_sign"
+    },
+    {
+      "id": "MCP-BIZ3-validation-08-0000-1",
+      "mode": "audit",
+      "category": "sum_scope"
+    },
+    {
+      "id": "MCP-BIZ3-validation-17-0000-1",
+      "mode": "audit",
+      "category": "text_identifier"
+    },
+    {
+      "id": "MCP-BIZ3-validation-19-0000-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "MCP-validation-pii-00003",
+      "mode": "pii",
+      "category": "credit_card"
+    },
+    {
+      "id": "MCP-validation-pii-00000",
+      "mode": "pii",
+      "category": "email"
+    },
+    {
+      "id": "MCP-validation-pii-00004",
+      "mode": "pii",
+      "category": "national_id"
+    },
+    {
+      "id": "MCP-validation-pii-00010",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-validation-pii-00011",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-validation-pii-00006",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-validation-pii-00007",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-validation-pii-00008",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-validation-pii-00009",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-validation-pii-00005",
+      "mode": "pii",
+      "category": "passport"
+    },
+    {
+      "id": "MCP-validation-pii-00001",
+      "mode": "pii",
+      "category": "phone"
+    },
+    {
+      "id": "MCP-validation-pii-00002",
+      "mode": "pii",
+      "category": "ssn"
+    },
+    {
+      "id": "MCP-validation-pii-00015",
+      "mode": "pii",
+      "category": "credit_card"
+    },
+    {
+      "id": "MCP-validation-pii-00012",
+      "mode": "pii",
+      "category": "email"
+    },
+    {
+      "id": "MCP-validation-pii-00016",
+      "mode": "pii",
+      "category": "national_id"
+    },
+    {
+      "id": "MCP-validation-pii-00022",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-validation-pii-00023",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-validation-pii-00018",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-validation-pii-00019",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-validation-pii-00020",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-validation-pii-00021",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-validation-pii-00017",
+      "mode": "pii",
+      "category": "passport"
+    },
+    {
+      "id": "MCP-validation-pii-00013",
+      "mode": "pii",
+      "category": "phone"
+    },
+    {
+      "id": "MCP-validation-pii-00014",
+      "mode": "pii",
+      "category": "ssn"
+    },
+    {
+      "id": "MCP-validation-pii-00027",
+      "mode": "pii",
+      "category": "credit_card"
+    },
+    {
+      "id": "MCP-validation-pii-00024",
+      "mode": "pii",
+      "category": "email"
+    },
+    {
+      "id": "MCP-validation-pii-00028",
+      "mode": "pii",
+      "category": "national_id"
+    },
+    {
+      "id": "MCP-validation-pii-00034",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-validation-pii-00035",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-validation-pii-00030",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-validation-pii-00031",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-validation-pii-00032",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-validation-pii-00033",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-validation-pii-00029",
+      "mode": "pii",
+      "category": "passport"
+    },
+    {
+      "id": "MCP-validation-pii-00025",
+      "mode": "pii",
+      "category": "phone"
+    },
+    {
+      "id": "MCP-validation-pii-00026",
+      "mode": "pii",
+      "category": "ssn"
+    },
+    {
+      "id": "MCP-validation-pii-00039",
+      "mode": "pii",
+      "category": "credit_card"
+    },
+    {
+      "id": "MCP-validation-pii-00036",
+      "mode": "pii",
+      "category": "email"
+    },
+    {
+      "id": "MCP-validation-pii-00040",
+      "mode": "pii",
+      "category": "national_id"
+    },
+    {
+      "id": "MCP-validation-pii-00046",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-validation-extract-00003",
+      "mode": "extraction",
+      "category": "expense_report"
+    },
+    {
+      "id": "MCP-validation-extract-00000",
+      "mode": "extraction",
+      "category": "invoice"
+    },
+    {
+      "id": "MCP-validation-extract-00004",
+      "mode": "extraction",
+      "category": "payroll"
+    },
+    {
+      "id": "MCP-validation-extract-00002",
+      "mode": "extraction",
+      "category": "purchase_order"
+    },
+    {
+      "id": "MCP-validation-extract-00001",
+      "mode": "extraction",
+      "category": "receipt"
+    },
+    {
+      "id": "MCP-validation-extract-00005",
+      "mode": "extraction",
+      "category": "unknown"
+    },
+    {
+      "id": "MCP-validation-extract-00009",
+      "mode": "extraction",
+      "category": "expense_report"
+    },
+    {
+      "id": "MCP-validation-extract-00006",
+      "mode": "extraction",
+      "category": "invoice"
+    },
+    {
+      "id": "MCP-validation-extract-00010",
+      "mode": "extraction",
+      "category": "payroll"
+    },
+    {
+      "id": "MCP-validation-extract-00008",
+      "mode": "extraction",
+      "category": "purchase_order"
+    },
+    {
+      "id": "MCP-validation-extract-00007",
+      "mode": "extraction",
+      "category": "receipt"
+    },
+    {
+      "id": "MCP-validation-extract-00011",
+      "mode": "extraction",
+      "category": "unknown"
+    },
+    {
+      "id": "MCP-validation-extract-00015",
+      "mode": "extraction",
+      "category": "expense_report"
+    },
+    {
+      "id": "MCP-validation-extract-00012",
+      "mode": "extraction",
+      "category": "invoice"
+    },
+    {
+      "id": "MCP-validation-extract-00016",
+      "mode": "extraction",
+      "category": "payroll"
+    },
+    {
+      "id": "MCP-validation-extract-00014",
+      "mode": "extraction",
+      "category": "purchase_order"
+    },
+    {
+      "id": "MCP-validation-extract-00013",
+      "mode": "extraction",
+      "category": "receipt"
+    },
+    {
+      "id": "MCP-validation-extract-00017",
+      "mode": "extraction",
+      "category": "unknown"
+    },
+    {
+      "id": "MCP-validation-extract-00021",
+      "mode": "extraction",
+      "category": "expense_report"
+    },
+    {
+      "id": "MCP-validation-extract-00018",
+      "mode": "extraction",
+      "category": "invoice"
+    },
+    {
+      "id": "MCP-validation-extract-00022",
+      "mode": "extraction",
+      "category": "payroll"
+    },
+    {
+      "id": "MCP-validation-extract-00020",
+      "mode": "extraction",
+      "category": "purchase_order"
+    },
+    {
+      "id": "MCP-validation-extract-00019",
+      "mode": "extraction",
+      "category": "receipt"
+    },
+    {
+      "id": "MCP-validation-extract-00023",
+      "mode": "extraction",
+      "category": "unknown"
+    },
+    {
+      "id": "MCP-validation-extract-00027",
+      "mode": "extraction",
+      "category": "expense_report"
+    },
+    {
+      "id": "MCP-validation-extract-00024",
+      "mode": "extraction",
+      "category": "invoice"
+    },
+    {
+      "id": "MCP-validation-extract-00028",
+      "mode": "extraction",
+      "category": "payroll"
+    },
+    {
+      "id": "MCP-validation-extract-00026",
+      "mode": "extraction",
+      "category": "purchase_order"
+    },
+    {
+      "id": "MCP-validation-extract-00025",
+      "mode": "extraction",
+      "category": "receipt"
+    },
+    {
+      "id": "MCP-validation-extract-00029",
+      "mode": "extraction",
+      "category": "unknown"
+    },
+    {
+      "id": "MCP-validation-extract-00033",
+      "mode": "extraction",
+      "category": "expense_report"
+    },
+    {
+      "id": "MCP-validation-extract-00030",
+      "mode": "extraction",
+      "category": "invoice"
+    },
+    {
+      "id": "MCP-validation-extract-00034",
+      "mode": "extraction",
+      "category": "payroll"
+    },
+    {
+      "id": "MCP-validation-extract-00032",
+      "mode": "extraction",
+      "category": "purchase_order"
+    },
+    {
+      "id": "MCP-validation-extract-00031",
+      "mode": "extraction",
+      "category": "receipt"
+    },
+    {
+      "id": "MCP-validation-extract-00035",
+      "mode": "extraction",
+      "category": "unknown"
+    },
+    {
+      "id": "MCP-validation-extract-00039",
+      "mode": "extraction",
+      "category": "expense_report"
+    },
+    {
+      "id": "MCP-validation-extract-00036",
+      "mode": "extraction",
+      "category": "invoice"
+    },
+    {
+      "id": "MCP-validation-extract-00040",
+      "mode": "extraction",
+      "category": "payroll"
+    },
+    {
+      "id": "MCP-validation-extract-00038",
+      "mode": "extraction",
+      "category": "purchase_order"
+    }
+  ],
+  "test": [
+    {
+      "id": "MCP-BIZ3-test-09-0000-0",
+      "mode": "audit",
+      "category": "aggregation_type"
+    },
+    {
+      "id": "MCP-BIZ3-test-02-0000-0",
+      "mode": "audit",
+      "category": "archived_snapshot"
+    },
+    {
+      "id": "MCP-BIZ3-test-01-0000-0",
+      "mode": "audit",
+      "category": "contract_literal"
+    },
+    {
+      "id": "MCP-BIZ3-test-12-0000-0",
+      "mode": "audit",
+      "category": "date_order"
+    },
+    {
+      "id": "MCP-BIZ3-test-14-0000-0",
+      "mode": "audit",
+      "category": "duplicate_key"
+    },
+    {
+      "id": "MCP-BIZ3-test-18-0000-0",
+      "mode": "audit",
+      "category": "empty_denominator"
+    },
+    {
+      "id": "MCP-BIZ3-test-04-0000-0",
+      "mode": "audit",
+      "category": "external_link"
+    },
+    {
+      "id": "MCP-BIZ3-test-00-0000-0",
+      "mode": "audit",
+      "category": "imported_literal"
+    },
+    {
+      "id": "MCP-BIZ3-test-03-0000-0",
+      "mode": "audit",
+      "category": "iterative_cycle"
+    },
+    {
+      "id": "MCP-BIZ3-test-06-0000-0",
+      "mode": "audit",
+      "category": "lookup_column"
+    },
+    {
+      "id": "MCP-BIZ3-test-07-0000-0",
+      "mode": "audit",
+      "category": "lookup_key_type"
+    },
+    {
+      "id": "MCP-BIZ3-test-05-0000-0",
+      "mode": "audit",
+      "category": "lookup_match"
+    },
+    {
+      "id": "MCP-BIZ3-test-13-0000-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "MCP-BIZ3-test-10-0000-0",
+      "mode": "audit",
+      "category": "rate_scale"
+    },
+    {
+      "id": "MCP-BIZ3-test-16-0000-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "MCP-BIZ3-test-15-0000-0",
+      "mode": "audit",
+      "category": "seasonal_spike"
+    },
+    {
+      "id": "MCP-BIZ3-test-11-0000-0",
+      "mode": "audit",
+      "category": "stored_sign"
+    },
+    {
+      "id": "MCP-BIZ3-test-08-0000-0",
+      "mode": "audit",
+      "category": "sum_scope"
+    },
+    {
+      "id": "MCP-BIZ3-test-17-0000-0",
+      "mode": "audit",
+      "category": "text_identifier"
+    },
+    {
+      "id": "MCP-BIZ3-test-19-0000-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "MCP-BIZ3-test-09-0000-1",
+      "mode": "audit",
+      "category": "aggregation_type"
+    },
+    {
+      "id": "MCP-BIZ3-test-02-0000-1",
+      "mode": "audit",
+      "category": "archived_snapshot"
+    },
+    {
+      "id": "MCP-BIZ3-test-01-0000-1",
+      "mode": "audit",
+      "category": "contract_literal"
+    },
+    {
+      "id": "MCP-BIZ3-test-12-0000-1",
+      "mode": "audit",
+      "category": "date_order"
+    },
+    {
+      "id": "MCP-BIZ3-test-14-0000-1",
+      "mode": "audit",
+      "category": "duplicate_key"
+    },
+    {
+      "id": "MCP-BIZ3-test-18-0000-1",
+      "mode": "audit",
+      "category": "empty_denominator"
+    },
+    {
+      "id": "MCP-BIZ3-test-04-0000-1",
+      "mode": "audit",
+      "category": "external_link"
+    },
+    {
+      "id": "MCP-BIZ3-test-00-0000-1",
+      "mode": "audit",
+      "category": "imported_literal"
+    },
+    {
+      "id": "MCP-BIZ3-test-03-0000-1",
+      "mode": "audit",
+      "category": "iterative_cycle"
+    },
+    {
+      "id": "MCP-BIZ3-test-06-0000-1",
+      "mode": "audit",
+      "category": "lookup_column"
+    },
+    {
+      "id": "MCP-BIZ3-test-07-0000-1",
+      "mode": "audit",
+      "category": "lookup_key_type"
+    },
+    {
+      "id": "MCP-BIZ3-test-05-0000-1",
+      "mode": "audit",
+      "category": "lookup_match"
+    },
+    {
+      "id": "MCP-BIZ3-test-13-0000-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "MCP-BIZ3-test-10-0000-1",
+      "mode": "audit",
+      "category": "rate_scale"
+    },
+    {
+      "id": "MCP-BIZ3-test-16-0000-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "MCP-BIZ3-test-15-0000-1",
+      "mode": "audit",
+      "category": "seasonal_spike"
+    },
+    {
+      "id": "MCP-BIZ3-test-11-0000-1",
+      "mode": "audit",
+      "category": "stored_sign"
+    },
+    {
+      "id": "MCP-BIZ3-test-08-0000-1",
+      "mode": "audit",
+      "category": "sum_scope"
+    },
+    {
+      "id": "MCP-BIZ3-test-17-0000-1",
+      "mode": "audit",
+      "category": "text_identifier"
+    },
+    {
+      "id": "MCP-BIZ3-test-19-0000-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "MCP-BIZ3-test-09-0001-0",
+      "mode": "audit",
+      "category": "aggregation_type"
+    },
+    {
+      "id": "MCP-BIZ3-test-02-0001-0",
+      "mode": "audit",
+      "category": "archived_snapshot"
+    },
+    {
+      "id": "MCP-BIZ3-test-01-0001-0",
+      "mode": "audit",
+      "category": "contract_literal"
+    },
+    {
+      "id": "MCP-BIZ3-test-12-0001-0",
+      "mode": "audit",
+      "category": "date_order"
+    },
+    {
+      "id": "MCP-BIZ3-test-14-0001-0",
+      "mode": "audit",
+      "category": "duplicate_key"
+    },
+    {
+      "id": "MCP-BIZ3-test-18-0001-0",
+      "mode": "audit",
+      "category": "empty_denominator"
+    },
+    {
+      "id": "MCP-BIZ3-test-04-0001-0",
+      "mode": "audit",
+      "category": "external_link"
+    },
+    {
+      "id": "MCP-BIZ3-test-00-0001-0",
+      "mode": "audit",
+      "category": "imported_literal"
+    },
+    {
+      "id": "MCP-BIZ3-test-03-0001-0",
+      "mode": "audit",
+      "category": "iterative_cycle"
+    },
+    {
+      "id": "MCP-BIZ3-test-06-0001-0",
+      "mode": "audit",
+      "category": "lookup_column"
+    },
+    {
+      "id": "MCP-BIZ3-test-07-0001-0",
+      "mode": "audit",
+      "category": "lookup_key_type"
+    },
+    {
+      "id": "MCP-BIZ3-test-05-0001-0",
+      "mode": "audit",
+      "category": "lookup_match"
+    },
+    {
+      "id": "MCP-BIZ3-test-13-0001-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "MCP-BIZ3-test-10-0001-0",
+      "mode": "audit",
+      "category": "rate_scale"
+    },
+    {
+      "id": "MCP-BIZ3-test-16-0001-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "MCP-BIZ3-test-15-0001-0",
+      "mode": "audit",
+      "category": "seasonal_spike"
+    },
+    {
+      "id": "MCP-BIZ3-test-11-0001-0",
+      "mode": "audit",
+      "category": "stored_sign"
+    },
+    {
+      "id": "MCP-BIZ3-test-08-0001-0",
+      "mode": "audit",
+      "category": "sum_scope"
+    },
+    {
+      "id": "MCP-BIZ3-test-17-0001-0",
+      "mode": "audit",
+      "category": "text_identifier"
+    },
+    {
+      "id": "MCP-BIZ3-test-19-0001-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "MCP-BIZ3-test-09-0001-1",
+      "mode": "audit",
+      "category": "aggregation_type"
+    },
+    {
+      "id": "MCP-BIZ3-test-02-0001-1",
+      "mode": "audit",
+      "category": "archived_snapshot"
+    },
+    {
+      "id": "MCP-BIZ3-test-01-0001-1",
+      "mode": "audit",
+      "category": "contract_literal"
+    },
+    {
+      "id": "MCP-BIZ3-test-12-0001-1",
+      "mode": "audit",
+      "category": "date_order"
+    },
+    {
+      "id": "MCP-BIZ3-test-14-0001-1",
+      "mode": "audit",
+      "category": "duplicate_key"
+    },
+    {
+      "id": "MCP-BIZ3-test-18-0001-1",
+      "mode": "audit",
+      "category": "empty_denominator"
+    },
+    {
+      "id": "MCP-BIZ3-test-04-0001-1",
+      "mode": "audit",
+      "category": "external_link"
+    },
+    {
+      "id": "MCP-BIZ3-test-00-0001-1",
+      "mode": "audit",
+      "category": "imported_literal"
+    },
+    {
+      "id": "MCP-BIZ3-test-03-0001-1",
+      "mode": "audit",
+      "category": "iterative_cycle"
+    },
+    {
+      "id": "MCP-BIZ3-test-06-0001-1",
+      "mode": "audit",
+      "category": "lookup_column"
+    },
+    {
+      "id": "MCP-BIZ3-test-07-0001-1",
+      "mode": "audit",
+      "category": "lookup_key_type"
+    },
+    {
+      "id": "MCP-BIZ3-test-05-0001-1",
+      "mode": "audit",
+      "category": "lookup_match"
+    },
+    {
+      "id": "MCP-BIZ3-test-13-0001-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "MCP-BIZ3-test-10-0001-1",
+      "mode": "audit",
+      "category": "rate_scale"
+    },
+    {
+      "id": "MCP-BIZ3-test-16-0001-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "MCP-BIZ3-test-15-0001-1",
+      "mode": "audit",
+      "category": "seasonal_spike"
+    },
+    {
+      "id": "MCP-BIZ3-test-11-0001-1",
+      "mode": "audit",
+      "category": "stored_sign"
+    },
+    {
+      "id": "MCP-BIZ3-test-08-0001-1",
+      "mode": "audit",
+      "category": "sum_scope"
+    },
+    {
+      "id": "MCP-BIZ3-test-17-0001-1",
+      "mode": "audit",
+      "category": "text_identifier"
+    },
+    {
+      "id": "MCP-BIZ3-test-19-0001-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "MCP-test-pii-00003",
+      "mode": "pii",
+      "category": "credit_card"
+    },
+    {
+      "id": "MCP-test-pii-00000",
+      "mode": "pii",
+      "category": "email"
+    },
+    {
+      "id": "MCP-test-pii-00004",
+      "mode": "pii",
+      "category": "national_id"
+    },
+    {
+      "id": "MCP-test-pii-00010",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00011",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00006",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00007",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00008",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00009",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00005",
+      "mode": "pii",
+      "category": "passport"
+    },
+    {
+      "id": "MCP-test-pii-00001",
+      "mode": "pii",
+      "category": "phone"
+    },
+    {
+      "id": "MCP-test-pii-00002",
+      "mode": "pii",
+      "category": "ssn"
+    },
+    {
+      "id": "MCP-test-pii-00015",
+      "mode": "pii",
+      "category": "credit_card"
+    },
+    {
+      "id": "MCP-test-pii-00012",
+      "mode": "pii",
+      "category": "email"
+    },
+    {
+      "id": "MCP-test-pii-00016",
+      "mode": "pii",
+      "category": "national_id"
+    },
+    {
+      "id": "MCP-test-pii-00022",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00023",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00018",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00019",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00020",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00021",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00017",
+      "mode": "pii",
+      "category": "passport"
+    },
+    {
+      "id": "MCP-test-pii-00013",
+      "mode": "pii",
+      "category": "phone"
+    },
+    {
+      "id": "MCP-test-pii-00014",
+      "mode": "pii",
+      "category": "ssn"
+    },
+    {
+      "id": "MCP-test-pii-00027",
+      "mode": "pii",
+      "category": "credit_card"
+    },
+    {
+      "id": "MCP-test-pii-00024",
+      "mode": "pii",
+      "category": "email"
+    },
+    {
+      "id": "MCP-test-pii-00028",
+      "mode": "pii",
+      "category": "national_id"
+    },
+    {
+      "id": "MCP-test-pii-00034",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00035",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00030",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00031",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00032",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00033",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00029",
+      "mode": "pii",
+      "category": "passport"
+    },
+    {
+      "id": "MCP-test-pii-00025",
+      "mode": "pii",
+      "category": "phone"
+    },
+    {
+      "id": "MCP-test-pii-00026",
+      "mode": "pii",
+      "category": "ssn"
+    },
+    {
+      "id": "MCP-test-pii-00039",
+      "mode": "pii",
+      "category": "credit_card"
+    },
+    {
+      "id": "MCP-test-pii-00036",
+      "mode": "pii",
+      "category": "email"
+    },
+    {
+      "id": "MCP-test-pii-00040",
+      "mode": "pii",
+      "category": "national_id"
+    },
+    {
+      "id": "MCP-test-pii-00046",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00047",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00042",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00043",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00044",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00045",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00041",
+      "mode": "pii",
+      "category": "passport"
+    },
+    {
+      "id": "MCP-test-pii-00037",
+      "mode": "pii",
+      "category": "phone"
+    },
+    {
+      "id": "MCP-test-pii-00038",
+      "mode": "pii",
+      "category": "ssn"
+    },
+    {
+      "id": "MCP-test-pii-00051",
+      "mode": "pii",
+      "category": "credit_card"
+    },
+    {
+      "id": "MCP-test-pii-00048",
+      "mode": "pii",
+      "category": "email"
+    },
+    {
+      "id": "MCP-test-pii-00052",
+      "mode": "pii",
+      "category": "national_id"
+    },
+    {
+      "id": "MCP-test-pii-00058",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00059",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00054",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00055",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00056",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00057",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00053",
+      "mode": "pii",
+      "category": "passport"
+    },
+    {
+      "id": "MCP-test-pii-00049",
+      "mode": "pii",
+      "category": "phone"
+    },
+    {
+      "id": "MCP-test-pii-00050",
+      "mode": "pii",
+      "category": "ssn"
+    },
+    {
+      "id": "MCP-test-pii-00063",
+      "mode": "pii",
+      "category": "credit_card"
+    },
+    {
+      "id": "MCP-test-pii-00060",
+      "mode": "pii",
+      "category": "email"
+    },
+    {
+      "id": "MCP-test-pii-00064",
+      "mode": "pii",
+      "category": "national_id"
+    },
+    {
+      "id": "MCP-test-pii-00070",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00071",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00066",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00067",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00068",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00069",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00065",
+      "mode": "pii",
+      "category": "passport"
+    },
+    {
+      "id": "MCP-test-pii-00061",
+      "mode": "pii",
+      "category": "phone"
+    },
+    {
+      "id": "MCP-test-pii-00062",
+      "mode": "pii",
+      "category": "ssn"
+    },
+    {
+      "id": "MCP-test-pii-00075",
+      "mode": "pii",
+      "category": "credit_card"
+    },
+    {
+      "id": "MCP-test-pii-00072",
+      "mode": "pii",
+      "category": "email"
+    },
+    {
+      "id": "MCP-test-pii-00076",
+      "mode": "pii",
+      "category": "national_id"
+    },
+    {
+      "id": "MCP-test-pii-00082",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00083",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00078",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00079",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-pii-00080",
+      "mode": "pii",
+      "category": "negative"
+    },
+    {
+      "id": "MCP-test-extract-00003",
+      "mode": "extraction",
+      "category": "expense_report"
+    },
+    {
+      "id": "MCP-test-extract-00000",
+      "mode": "extraction",
+      "category": "invoice"
+    },
+    {
+      "id": "MCP-test-extract-00004",
+      "mode": "extraction",
+      "category": "payroll"
+    },
+    {
+      "id": "MCP-test-extract-00002",
+      "mode": "extraction",
+      "category": "purchase_order"
+    },
+    {
+      "id": "MCP-test-extract-00001",
+      "mode": "extraction",
+      "category": "receipt"
+    },
+    {
+      "id": "MCP-test-extract-00005",
+      "mode": "extraction",
+      "category": "unknown"
+    },
+    {
+      "id": "MCP-test-extract-00009",
+      "mode": "extraction",
+      "category": "expense_report"
+    },
+    {
+      "id": "MCP-test-extract-00006",
+      "mode": "extraction",
+      "category": "invoice"
+    },
+    {
+      "id": "MCP-test-extract-00010",
+      "mode": "extraction",
+      "category": "payroll"
+    },
+    {
+      "id": "MCP-test-extract-00008",
+      "mode": "extraction",
+      "category": "purchase_order"
+    },
+    {
+      "id": "MCP-test-extract-00007",
+      "mode": "extraction",
+      "category": "receipt"
+    },
+    {
+      "id": "MCP-test-extract-00011",
+      "mode": "extraction",
+      "category": "unknown"
+    },
+    {
+      "id": "MCP-test-extract-00015",
+      "mode": "extraction",
+      "category": "expense_report"
+    },
+    {
+      "id": "MCP-test-extract-00012",
+      "mode": "extraction",
+      "category": "invoice"
+    },
+    {
+      "id": "MCP-test-extract-00016",
+      "mode": "extraction",
+      "category": "payroll"
+    },
+    {
+      "id": "MCP-test-extract-00014",
+      "mode": "extraction",
+      "category": "purchase_order"
+    },
+    {
+      "id": "MCP-test-extract-00013",
+      "mode": "extraction",
+      "category": "receipt"
+    },
+    {
+      "id": "MCP-test-extract-00017",
+      "mode": "extraction",
+      "category": "unknown"
+    },
+    {
+      "id": "MCP-test-extract-00021",
+      "mode": "extraction",
+      "category": "expense_report"
+    },
+    {
+      "id": "MCP-test-extract-00018",
+      "mode": "extraction",
+      "category": "invoice"
+    },
+    {
+      "id": "MCP-test-extract-00022",
+      "mode": "extraction",
+      "category": "payroll"
+    },
+    {
+      "id": "MCP-test-extract-00020",
+      "mode": "extraction",
+      "category": "purchase_order"
+    },
+    {
+      "id": "MCP-test-extract-00019",
+      "mode": "extraction",
+      "category": "receipt"
+    },
+    {
+      "id": "MCP-test-extract-00023",
+      "mode": "extraction",
+      "category": "unknown"
+    },
+    {
+      "id": "MCP-test-extract-00027",
+      "mode": "extraction",
+      "category": "expense_report"
+    },
+    {
+      "id": "MCP-test-extract-00024",
+      "mode": "extraction",
+      "category": "invoice"
+    },
+    {
+      "id": "MCP-test-extract-00028",
+      "mode": "extraction",
+      "category": "payroll"
+    },
+    {
+      "id": "MCP-test-extract-00026",
+      "mode": "extraction",
+      "category": "purchase_order"
+    },
+    {
+      "id": "MCP-test-extract-00025",
+      "mode": "extraction",
+      "category": "receipt"
+    },
+    {
+      "id": "MCP-test-extract-00029",
+      "mode": "extraction",
+      "category": "unknown"
+    },
+    {
+      "id": "MCP-test-extract-00033",
+      "mode": "extraction",
+      "category": "expense_report"
+    },
+    {
+      "id": "MCP-test-extract-00030",
+      "mode": "extraction",
+      "category": "invoice"
+    },
+    {
+      "id": "MCP-test-extract-00034",
+      "mode": "extraction",
+      "category": "payroll"
+    },
+    {
+      "id": "MCP-test-extract-00032",
+      "mode": "extraction",
+      "category": "purchase_order"
+    },
+    {
+      "id": "MCP-test-extract-00031",
+      "mode": "extraction",
+      "category": "receipt"
+    },
+    {
+      "id": "MCP-test-extract-00035",
+      "mode": "extraction",
+      "category": "unknown"
+    },
+    {
+      "id": "MCP-test-extract-00039",
+      "mode": "extraction",
+      "category": "expense_report"
+    },
+    {
+      "id": "MCP-test-extract-00036",
+      "mode": "extraction",
+      "category": "invoice"
+    },
+    {
+      "id": "MCP-test-extract-00040",
+      "mode": "extraction",
+      "category": "payroll"
+    },
+    {
+      "id": "MCP-test-extract-00038",
+      "mode": "extraction",
+      "category": "purchase_order"
+    },
+    {
+      "id": "MCP-test-extract-00037",
+      "mode": "extraction",
+      "category": "receipt"
+    },
+    {
+      "id": "MCP-test-extract-00041",
+      "mode": "extraction",
+      "category": "unknown"
+    },
+    {
+      "id": "MCP-test-extract-00045",
+      "mode": "extraction",
+      "category": "expense_report"
+    },
+    {
+      "id": "MCP-test-extract-00042",
+      "mode": "extraction",
+      "category": "invoice"
+    },
+    {
+      "id": "MCP-test-extract-00046",
+      "mode": "extraction",
+      "category": "payroll"
+    },
+    {
+      "id": "MCP-test-extract-00044",
+      "mode": "extraction",
+      "category": "purchase_order"
+    },
+    {
+      "id": "MCP-test-extract-00043",
+      "mode": "extraction",
+      "category": "receipt"
+    },
+    {
+      "id": "MCP-test-extract-00047",
+      "mode": "extraction",
+      "category": "unknown"
+    },
+    {
+      "id": "MCP-test-extract-00051",
+      "mode": "extraction",
+      "category": "expense_report"
+    },
+    {
+      "id": "MCP-test-extract-00048",
+      "mode": "extraction",
+      "category": "invoice"
+    },
+    {
+      "id": "MCP-test-extract-00052",
+      "mode": "extraction",
+      "category": "payroll"
+    },
+    {
+      "id": "MCP-test-extract-00050",
+      "mode": "extraction",
+      "category": "purchase_order"
+    },
+    {
+      "id": "MCP-test-extract-00049",
+      "mode": "extraction",
+      "category": "receipt"
+    },
+    {
+      "id": "MCP-test-extract-00053",
+      "mode": "extraction",
+      "category": "unknown"
+    },
+    {
+      "id": "MCP-test-extract-00057",
+      "mode": "extraction",
+      "category": "expense_report"
+    },
+    {
+      "id": "MCP-test-extract-00054",
+      "mode": "extraction",
+      "category": "invoice"
+    },
+    {
+      "id": "MCP-test-extract-00058",
+      "mode": "extraction",
+      "category": "payroll"
+    },
+    {
+      "id": "MCP-test-extract-00056",
+      "mode": "extraction",
+      "category": "purchase_order"
+    },
+    {
+      "id": "MCP-test-extract-00055",
+      "mode": "extraction",
+      "category": "receipt"
+    },
+    {
+      "id": "MCP-test-extract-00059",
+      "mode": "extraction",
+      "category": "unknown"
+    },
+    {
+      "id": "MCP-test-extract-00063",
+      "mode": "extraction",
+      "category": "expense_report"
+    },
+    {
+      "id": "MCP-test-extract-00060",
+      "mode": "extraction",
+      "category": "invoice"
+    },
+    {
+      "id": "MCP-test-extract-00064",
+      "mode": "extraction",
+      "category": "payroll"
+    },
+    {
+      "id": "MCP-test-extract-00062",
+      "mode": "extraction",
+      "category": "purchase_order"
+    },
+    {
+      "id": "MCP-test-extract-00061",
+      "mode": "extraction",
+      "category": "receipt"
+    },
+    {
+      "id": "MCP-test-extract-00065",
+      "mode": "extraction",
+      "category": "unknown"
+    },
+    {
+      "id": "MCP-test-extract-00069",
+      "mode": "extraction",
+      "category": "expense_report"
+    },
+    {
+      "id": "MCP-test-extract-00066",
+      "mode": "extraction",
+      "category": "invoice"
+    },
+    {
+      "id": "MCP-test-extract-00070",
+      "mode": "extraction",
+      "category": "payroll"
+    },
+    {
+      "id": "MCP-test-extract-00068",
+      "mode": "extraction",
+      "category": "purchase_order"
+    },
+    {
+      "id": "MCP-test-extract-00067",
+      "mode": "extraction",
+      "category": "receipt"
+    },
+    {
+      "id": "MCP-test-extract-00071",
+      "mode": "extraction",
+      "category": "unknown"
+    },
+    {
+      "id": "MCP-test-extract-00075",
+      "mode": "extraction",
+      "category": "expense_report"
+    },
+    {
+      "id": "MCP-test-extract-00072",
+      "mode": "extraction",
+      "category": "invoice"
+    },
+    {
+      "id": "MCP-test-extract-00076",
+      "mode": "extraction",
+      "category": "payroll"
+    },
+    {
+      "id": "MCP-test-extract-00074",
+      "mode": "extraction",
+      "category": "purchase_order"
+    },
+    {
+      "id": "MCP-test-extract-00073",
+      "mode": "extraction",
+      "category": "receipt"
+    },
+    {
+      "id": "MCP-test-extract-00077",
+      "mode": "extraction",
+      "category": "unknown"
+    },
+    {
+      "id": "MCP-test-extract-00081",
+      "mode": "extraction",
+      "category": "expense_report"
+    },
+    {
+      "id": "MCP-test-extract-00078",
+      "mode": "extraction",
+      "category": "invoice"
+    }
+  ]
+}

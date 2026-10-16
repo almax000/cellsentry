@@ -1,0 +1,70 @@
+{
+  "best_step": 340,
+  "steps": 340,
+  "before_validation": {
+    "modes": {
+      "audit": {
+        "count": 288,
+        "mean_loss": 1.4831156213250425
+      }
+    },
+    "macro_loss": 1.4831156213250425,
+    "seconds": 40.730297327041626,
+    "teacher_forced_audit_accuracy": 0.9166666666666666,
+    "confusion": {
+      "tn": 120,
+      "fp": 24,
+      "tp": 144
+    },
+    "note": "Conditional true/false decision given the correct JSON prefix; not end-to-end generation accuracy. Final generation measured separately with GGUF."
+  },
+  "before_test": {
+    "modes": {
+      "audit": {
+        "count": 480,
+        "mean_loss": 1.4866259356339773
+      }
+    },
+    "macro_loss": 1.4866259356339773,
+    "seconds": 69.20720076560974,
+    "teacher_forced_audit_accuracy": 0.9166666666666666,
+    "confusion": {
+      "tn": 200,
+      "fp": 40,
+      "tp": 240
+    },
+    "note": "Conditional true/false decision given the correct JSON prefix; not end-to-end generation accuracy. Final generation measured separately with GGUF."
+  },
+  "before_coverage500": null,
+  "selection_metric": "validation boolean risk: FN cost 4.0; conditional diagnostic only",
+  "best_validation_score": [
+    -0.0,
+    1.0,
+    -0.0002215087430007164
+  ],
+  "after_test": {
+    "modes": {
+      "audit": {
+        "count": 480,
+        "mean_loss": 0.00022482014173874632
+      }
+    },
+    "macro_loss": 0.00022482014173874632,
+    "seconds": 71.7764949798584,
+    "teacher_forced_audit_accuracy": 1.0,
+    "confusion": {
+      "tn": 240,
+      "tp": 240
+    },
+    "note": "Conditional true/false decision given the correct JSON prefix; not end-to-end generation accuracy. Final generation measured separately with GGUF."
+  },
+  "coverage500": null,
+  "examples_seen": 2720,
+  "unique_examples": 2720,
+  "used_modes": {
+    "audit": 2720
+  },
+  "seconds": 1408.585164308548,
+  "peak_gib": 4.620050430297852,
+  "note": "Pilot; subset validation selection. No GGUF export or application replacement yet."
+}

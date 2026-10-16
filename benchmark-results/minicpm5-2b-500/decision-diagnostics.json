@@ -1,0 +1,53 @@
+{
+  "strict": {
+    "audit": {
+      "completed": 180,
+      "passed": 0,
+      "json_valid": 172,
+      "schema_valid": 172,
+      "semantic_pass": 0,
+      "mean_seconds": 0.409
+    },
+    "extraction": {
+      "completed": 160,
+      "passed": 129,
+      "json_valid": 143,
+      "schema_valid": 139,
+      "semantic_pass": 133,
+      "mean_seconds": 0.64
+    },
+    "pii": {
+      "completed": 160,
+      "passed": 64,
+      "json_valid": 65,
+      "schema_valid": 64,
+      "semantic_pass": 64,
+      "mean_seconds": 0.273
+    }
+  },
+  "audit_decision": {
+    "tp": 84,
+    "tn": 0,
+    "fp": 85,
+    "fn": 3,
+    "unscorable": 8
+  },
+  "audit_judgment_correct": 84,
+  "audit_count": 180,
+  "identity_mismatches": 172,
+  "reasoning_present": 0,
+  "presentation_only_content": {
+    "audit": {
+      "correct": 84,
+      "count": 180
+    },
+    "pii": {
+      "correct": 114,
+      "count": 160
+    },
+    "extraction": {
+      "correct": 135,
+      "count": 160
+    }
+  }
+}

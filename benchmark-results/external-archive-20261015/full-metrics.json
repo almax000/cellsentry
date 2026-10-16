@@ -1,0 +1,53 @@
+{
+  "all": {
+    "count": 1217,
+    "correct": 837,
+    "accuracy": 0.6877567789646672,
+    "macro_f1": 0.6471171748618869,
+    "confusion": {
+      "tp": 625,
+      "tn": 212,
+      "fp": 271,
+      "fn": 109
+    }
+  },
+  "formula_related": {
+    "count": 580,
+    "correct": 503,
+    "accuracy": 0.8672413793103448,
+    "macro_f1": 0.7384495552002623,
+    "confusion": {
+      "tp": 455,
+      "tn": 48,
+      "fp": 63,
+      "fn": 14
+    }
+  },
+  "by_language": {
+    "Chinese_or_mixed": {
+      "count": 673,
+      "correct": 431,
+      "accuracy": 0.6404160475482912,
+      "macro_f1": 0.6003876729806654,
+      "confusion": {
+        "tp": 322,
+        "tn": 109,
+        "fp": 184,
+        "fn": 58
+      }
+    },
+    "English_or_mixed": {
+      "count": 544,
+      "correct": 406,
+      "accuracy": 0.7463235294117647,
+      "macro_f1": 0.7066766691672919,
+      "confusion": {
+        "tp": 303,
+        "tn": 103,
+        "fp": 87,
+        "fn": 51
+      }
+    }
+  },
+  "seconds": 56.19847940001637
+}

@@ -1,0 +1,82 @@
+{
+  "新增中文专项": {
+    "before": {
+      "count": 200,
+      "correct": 142,
+      "accuracy": 0.71,
+      "fp": 18,
+      "fn": 40
+    },
+    "after": {
+      "count": 200,
+      "correct": 151,
+      "accuracy": 0.755,
+      "fp": 18,
+      "fn": 31
+    }
+  },
+  "旧合成回归": {
+    "before": {
+      "count": 360,
+      "correct": 357,
+      "accuracy": 0.9916666666666667,
+      "fp": 2,
+      "fn": 1
+    },
+    "after": {
+      "count": 360,
+      "correct": 356,
+      "accuracy": 0.9888888888888889,
+      "fp": 2,
+      "fn": 2
+    }
+  },
+  "原公式回归": {
+    "before": {
+      "count": 180,
+      "correct": 166,
+      "accuracy": 0.9222222222222223,
+      "fp": 4,
+      "fn": 10
+    },
+    "after": {
+      "count": 180,
+      "correct": 166,
+      "accuracy": 0.9222222222222223,
+      "fp": 7,
+      "fn": 7
+    }
+  },
+  "新列及横向求和挑战": {
+    "before": {
+      "count": 100,
+      "correct": 72,
+      "accuracy": 0.72,
+      "fp": 11,
+      "fn": 17
+    },
+    "after": {
+      "count": 100,
+      "correct": 69,
+      "accuracy": 0.69,
+      "fp": 13,
+      "fn": 18
+    }
+  },
+  "公开工作簿受控派生": {
+    "before": {
+      "count": 42,
+      "correct": 20,
+      "accuracy": 0.47619047619047616,
+      "fp": 18,
+      "fn": 4
+    },
+    "after": {
+      "count": 42,
+      "correct": 22,
+      "accuracy": 0.5238095238095238,
+      "fp": 20,
+      "fn": 0
+    }
+  }
+}

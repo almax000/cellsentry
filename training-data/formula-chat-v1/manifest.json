@@ -1,0 +1,39 @@
+{
+  "base": "openbmb/MiniCPM5-2B",
+  "revision": "f97400052a43d642bbc6e9975e2397e3ae6a6b52",
+  "scope": "formula audit only; PII and extraction are regression-only",
+  "thinking": false,
+  "splits": {
+    "test": {
+      "count": 1320,
+      "families": {
+        "business": 960,
+        "legacy": 360
+      },
+      "errors": 660,
+      "sha256": "175cc595f1a607dd162732745f446635b68f5f0c2dc637ac27b8c13fba6a0e06"
+    },
+    "validation": {
+      "count": 660,
+      "families": {
+        "business": 480,
+        "legacy": 180
+      },
+      "errors": 330,
+      "sha256": "6f662821f45ec91a4939f995205cd32e93fecd753441975bda530773f9a92836"
+    },
+    "train": {
+      "count": 6597,
+      "families": {
+        "legacy": 1797,
+        "business": 4800
+      },
+      "errors": 3298,
+      "sha256": "62d00e8c58991fd24f513a2ae0d448de1cbeaa47f66bae0cd4beff0e19c7352b"
+    }
+  },
+  "normalized_duplicates_removed": {
+    "train": 723
+  },
+  "note": "Fresh run from official chat base, no multitask adapter initialization. Original 500 and external archive excluded from training."
+}

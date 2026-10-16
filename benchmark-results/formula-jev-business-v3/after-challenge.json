@@ -1,0 +1,98 @@
+{
+  "count": 240,
+  "accuracy": 0.6916666666666667,
+  "macro_f1": 0.6914738378153013,
+  "nll": 1.2385394546899378,
+  "brier": 0.25749586851655504,
+  "paired_groups": 120,
+  "paired_accuracy": 0.4166666666666667,
+  "confusion": {
+    "tp": 80,
+    "tn": 86,
+    "fp": 34,
+    "fn": 40
+  },
+  "seconds": 23.91,
+  "categories": {
+    "aggregation_type": {
+      "count": 12,
+      "correct": 6
+    },
+    "archived_snapshot": {
+      "count": 12,
+      "correct": 7
+    },
+    "contract_literal": {
+      "count": 12,
+      "correct": 6
+    },
+    "date_order": {
+      "count": 12,
+      "correct": 12
+    },
+    "duplicate_key": {
+      "count": 12,
+      "correct": 8
+    },
+    "empty_denominator": {
+      "count": 12,
+      "correct": 9
+    },
+    "external_link": {
+      "count": 12,
+      "correct": 7
+    },
+    "imported_literal": {
+      "count": 12,
+      "correct": 6
+    },
+    "iterative_cycle": {
+      "count": 12,
+      "correct": 9
+    },
+    "lookup_column": {
+      "count": 12,
+      "correct": 11
+    },
+    "lookup_key_type": {
+      "count": 12,
+      "correct": 7
+    },
+    "lookup_match": {
+      "count": 12,
+      "correct": 10
+    },
+    "optional_blank": {
+      "count": 12,
+      "correct": 7
+    },
+    "rate_scale": {
+      "count": 12,
+      "correct": 5
+    },
+    "rounding_tolerance": {
+      "count": 12,
+      "correct": 12
+    },
+    "seasonal_spike": {
+      "count": 12,
+      "correct": 6
+    },
+    "stored_sign": {
+      "count": 12,
+      "correct": 11
+    },
+    "sum_scope": {
+      "count": 12,
+      "correct": 9
+    },
+    "text_identifier": {
+      "count": 12,
+      "correct": 10
+    },
+    "unit_conversion": {
+      "count": 12,
+      "correct": 8
+    }
+  }
+}

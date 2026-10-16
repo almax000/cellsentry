@@ -1,0 +1,1 @@
+{"time": "2026-10-16T10:16:51.772818+08:00", "event": "Resume evaluator after aggregation fix", "reason": "Only audit rows contribute to withdrawal metrics in mixed500 corpus; new code also verifies frozen calibration and model hashes.", "preserve_answers": true, "train_restarted": false}

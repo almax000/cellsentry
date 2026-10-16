@@ -1,0 +1,1309 @@
+{
+  "scope": "formula training only; PII/extraction regression only",
+  "dataset": {
+    "base": "openbmb/MiniCPM5-2B",
+    "revision": "f97400052a43d642bbc6e9975e2397e3ae6a6b52",
+    "scope": "formula audit only; PII and extraction are regression-only",
+    "thinking": false,
+    "splits": {
+      "test": {
+        "count": 1320,
+        "families": {
+          "business": 960,
+          "legacy": 360
+        },
+        "errors": 660,
+        "sha256": "175cc595f1a607dd162732745f446635b68f5f0c2dc637ac27b8c13fba6a0e06"
+      },
+      "validation": {
+        "count": 660,
+        "families": {
+          "business": 480,
+          "legacy": 180
+        },
+        "errors": 330,
+        "sha256": "6f662821f45ec91a4939f995205cd32e93fecd753441975bda530773f9a92836"
+      },
+      "train": {
+        "count": 6597,
+        "families": {
+          "legacy": 1797,
+          "business": 4800
+        },
+        "errors": 3298,
+        "sha256": "62d00e8c58991fd24f513a2ae0d448de1cbeaa47f66bae0cd4beff0e19c7352b"
+      }
+    },
+    "normalized_duplicates_removed": {
+      "train": 723
+    },
+    "note": "Fresh run from official chat base, no multitask adapter initialization. Original 500 and external archive excluded from training."
+  },
+  "dataset_byte_verification": {
+    "test": {
+      "raw_sha256": "f6ff8786bd01c72a219ab7a8775ca44d544186fba4f2e3e378c5ce415f9afbcd",
+      "utf8_lf_sha256": "175cc595f1a607dd162732745f446635b68f5f0c2dc637ac27b8c13fba6a0e06",
+      "crlf_lines": 1320,
+      "note": "Only CRLF to LF normalization permitted; JSON bytes otherwise unchanged."
+    },
+    "validation": {
+      "raw_sha256": "660632284e71aef060428e03cf6d4d453fb47640b5754351ecd3a8747c1b0297",
+      "utf8_lf_sha256": "6f662821f45ec91a4939f995205cd32e93fecd753441975bda530773f9a92836",
+      "crlf_lines": 660,
+      "note": "Only CRLF to LF normalization permitted; JSON bytes otherwise unchanged."
+    },
+    "train": {
+      "raw_sha256": "ba0c878cef718e04da0c6a51fc1ed8100893d79ad77cbc1dedd6799bad997dd7",
+      "utf8_lf_sha256": "62d00e8c58991fd24f513a2ae0d448de1cbeaa47f66bae0cd4beff0e19c7352b",
+      "crlf_lines": 6597,
+      "note": "Only CRLF to LF normalization permitted; JSON bytes otherwise unchanged."
+    }
+  },
+  "training": {
+    "best_step": 825,
+    "steps": 825,
+    "before_validation": {
+      "modes": {
+        "audit": {
+          "count": 160,
+          "mean_loss": 1.7091078706085683
+        }
+      },
+      "macro_loss": 1.7091078706085683,
+      "seconds": 28.227017879486084,
+      "teacher_forced_audit_accuracy": 0.3625,
+      "confusion": {
+        "fp": 77,
+        "tn": 11,
+        "tp": 47,
+        "fn": 25
+      },
+      "note": "Conditional true/false decision given the correct JSON prefix; not end-to-end generation accuracy. Final generation measured separately with GGUF."
+    },
+    "before_test": {
+      "modes": {
+        "audit": {
+          "count": 200,
+          "mean_loss": 1.708059812784195
+        }
+      },
+      "macro_loss": 1.708059812784195,
+      "seconds": 29.401954889297485,
+      "teacher_forced_audit_accuracy": 0.38,
+      "confusion": {
+        "fp": 96,
+        "tn": 12,
+        "tp": 64,
+        "fn": 28
+      },
+      "note": "Conditional true/false decision given the correct JSON prefix; not end-to-end generation accuracy. Final generation measured separately with GGUF."
+    },
+    "before_coverage500": null,
+    "selection_metric": "teacher-forced boolean accuracy, then negative weighted loss",
+    "best_validation_score": [
+      0.98125,
+      -0.017399015385524307
+    ],
+    "after_test": {
+      "modes": {
+        "audit": {
+          "count": 200,
+          "mean_loss": 0.008688452355881964
+        }
+      },
+      "macro_loss": 0.008688452355881964,
+      "seconds": 33.923205614089966,
+      "teacher_forced_audit_accuracy": 0.995,
+      "confusion": {
+        "tn": 107,
+        "tp": 92,
+        "fp": 1
+      },
+      "note": "Conditional true/false decision given the correct JSON prefix; not end-to-end generation accuracy. Final generation measured separately with GGUF."
+    },
+    "coverage500": null,
+    "examples_seen": 6600,
+    "unique_examples": 6597,
+    "used_modes": {
+      "audit": 6597
+    },
+    "seconds": 2788.6921253204346,
+    "peak_gib": 4.804836273193359,
+    "note": "Pilot; subset validation selection. No GGUF export or application replacement yet."
+  },
+  "model": {
+    "base": {
+      "repository": "openbmb/MiniCPM5-2B",
+      "revision": "f97400052a43d642bbc6e9975e2397e3ae6a6b52",
+      "files": [
+        {
+          "name": "README-cn.md",
+          "size": 110251,
+          "sha256": "5b3ed834cd8d7b5630ef9bb14a52a96180f566a65b6fdc3df609651b3d777b2b"
+        },
+        {
+          "name": "README.md",
+          "size": 112204,
+          "sha256": "674de0c58b2f7f3bedec4b296c20afbebdf17be9654bd39de242a3597aa40e45"
+        },
+        {
+          "name": "chat_template.jinja",
+          "size": 5435,
+          "sha256": "bc1f78ef8a86b6bdf64a056cf89dd0ac506db4f198ab363d85168e2500ab44dd"
+        },
+        {
+          "name": "config.json",
+          "size": 704,
+          "sha256": "59613157e5357d62bcb121e04cb90f2170b43d789b142380c12c3d4277d95180"
+        },
+        {
+          "name": "generation_config.json",
+          "size": 213,
+          "sha256": "9ac4f32e5f32358697a9f438a3ea89ef80e6ba786c72c49e932f9f21c122fdb1"
+        },
+        {
+          "name": "model-00000-of-00001.safetensors",
+          "size": 5033557096,
+          "sha256": "14fb8e7f0a18d53d1f239773758bf581cee7e456a4523a54622c3a245b64402c"
+        },
+        {
+          "name": "model.safetensors.index.json",
+          "size": 31378,
+          "sha256": "6d839cd76e8395de548a0e6cc310386f66d1ecbb2c75d198a8dfd3d70892b756"
+        },
+        {
+          "name": "special_tokens_map.json",
+          "size": 551,
+          "sha256": "82d96d7a9e6ced037f12394b7ea6a5b02e6ca87e0d11edaa8d60d9be857ce7db"
+        },
+        {
+          "name": "tokenizer.json",
+          "size": 9894271,
+          "sha256": "3e065a558a034185fe299917b398685c1facd0169a9eea1e629eb30c171fed81"
+        },
+        {
+          "name": "tokenizer_config.json",
+          "size": 94391,
+          "sha256": "e9b1064649e771d7a8e15637c68b2d2749724877ba3648bd74a4ece31c26303b"
+        }
+      ]
+    },
+    "run": "D:\\git\\cellsentry\\benchmark-results\\formula-chat-v1",
+    "best_step": 825,
+    "adapter_sha256": "01f1ddaf3467bcfdf18b5364535ecf24c914696b789ac77d4db887339fb34c58",
+    "thinking": false,
+    "quantization": "Q4_K_M",
+    "file": "cellsentry-minicpm5-2b-formula-v1-q4_k_m.gguf",
+    "size": 1561314592,
+    "sha256": "148c9448f60fc299babc7416ec839340d32fd52b4ef1dcaa5c767251174eb0e7",
+    "note": "Candidate only; must pass local GGUF regression before becoming default."
+  },
+  "suites": {
+    "coverage500": {
+      "before": {
+        "strict": {
+          "audit": {
+            "completed": 180,
+            "passed": 0,
+            "json_valid": 172,
+            "schema_valid": 172,
+            "semantic_pass": 0,
+            "mean_seconds": 0.409
+          },
+          "extraction": {
+            "completed": 160,
+            "passed": 129,
+            "json_valid": 143,
+            "schema_valid": 139,
+            "semantic_pass": 133,
+            "mean_seconds": 0.64
+          },
+          "pii": {
+            "completed": 160,
+            "passed": 64,
+            "json_valid": 65,
+            "schema_valid": 64,
+            "semantic_pass": 64,
+            "mean_seconds": 0.273
+          }
+        },
+        "audit_decision": {
+          "tp": 84,
+          "tn": 0,
+          "fp": 85,
+          "fn": 3,
+          "unscorable": 8
+        },
+        "audit_judgment_correct": 84,
+        "audit_count": 180,
+        "identity_mismatches": 172,
+        "reasoning_present": 0,
+        "presentation_only_content": {
+          "audit": {
+            "correct": 84,
+            "count": 180
+          },
+          "pii": {
+            "correct": 114,
+            "count": 160
+          },
+          "extraction": {
+            "correct": 135,
+            "count": 160
+          }
+        }
+      },
+      "after": {
+        "strict": {
+          "audit": {
+            "completed": 180,
+            "passed": 170,
+            "json_valid": 180,
+            "schema_valid": 180,
+            "semantic_pass": 170,
+            "mean_seconds": 0.486
+          },
+          "extraction": {
+            "completed": 160,
+            "passed": 21,
+            "json_valid": 21,
+            "schema_valid": 21,
+            "semantic_pass": 21,
+            "mean_seconds": 1.804
+          },
+          "pii": {
+            "completed": 160,
+            "passed": 38,
+            "json_valid": 59,
+            "schema_valid": 49,
+            "semantic_pass": 38,
+            "mean_seconds": 0.528
+          }
+        },
+        "audit_decision": {
+          "tp": 80,
+          "tn": 90,
+          "fp": 0,
+          "fn": 10,
+          "unscorable": 0
+        },
+        "audit_judgment_correct": 170,
+        "audit_count": 180,
+        "identity_mismatches": 0,
+        "reasoning_present": 0,
+        "presentation_only_content": {
+          "audit": {
+            "correct": 170,
+            "count": 180
+          },
+          "pii": {
+            "correct": 81,
+            "count": 160
+          },
+          "extraction": {
+            "correct": 122,
+            "count": 160
+          }
+        }
+      }
+    },
+    "formula1320": {
+      "before": {
+        "strict": {
+          "audit": {
+            "completed": 1320,
+            "passed": 70,
+            "json_valid": 1316,
+            "schema_valid": 1316,
+            "semantic_pass": 70,
+            "mean_seconds": 0.647
+          }
+        },
+        "audit_decision": {
+          "tp": 635,
+          "tn": 0,
+          "fp": 660,
+          "fn": 21,
+          "unscorable": 4
+        },
+        "audit_judgment_correct": 635,
+        "audit_count": 1320,
+        "identity_mismatches": 1176,
+        "reasoning_present": 0,
+        "presentation_only_content": {
+          "audit": {
+            "correct": 635,
+            "count": 1320
+          }
+        },
+        "groups": {
+          "family": {
+            "business": {
+              "count": 960,
+              "correct": 465,
+              "fp": 480,
+              "fn": 12,
+              "unscorable": 3
+            },
+            "legacy": {
+              "count": 360,
+              "correct": 170,
+              "fp": 180,
+              "fn": 9,
+              "unscorable": 1
+            }
+          },
+          "category": {
+            "external_link": {
+              "count": 48,
+              "correct": 24,
+              "fp": 24,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "average_total": {
+              "count": 20,
+              "correct": 10,
+              "fp": 10,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "lookup_match": {
+              "count": 48,
+              "correct": 24,
+              "fp": 24,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "text_identifier": {
+              "count": 48,
+              "correct": 24,
+              "fp": 24,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "date_order": {
+              "count": 68,
+              "correct": 34,
+              "fp": 34,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "rate_scale": {
+              "count": 48,
+              "correct": 24,
+              "fp": 24,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "sum_scope": {
+              "count": 48,
+              "correct": 24,
+              "fp": 24,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "lookup_key_type": {
+              "count": 48,
+              "correct": 24,
+              "fp": 24,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "iterative_cycle": {
+              "count": 48,
+              "correct": 24,
+              "fp": 24,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "relative_reference": {
+              "count": 20,
+              "correct": 10,
+              "fp": 10,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "iferror": {
+              "count": 20,
+              "correct": 10,
+              "fp": 10,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "rounding_tolerance": {
+              "count": 48,
+              "correct": 24,
+              "fp": 24,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "percent_scale": {
+              "count": 20,
+              "correct": 10,
+              "fp": 10,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "rounding": {
+              "count": 20,
+              "correct": 10,
+              "fp": 10,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "imported_literal": {
+              "count": 48,
+              "correct": 24,
+              "fp": 24,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "absolute_reference": {
+              "count": 20,
+              "correct": 10,
+              "fp": 10,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "stored_sign": {
+              "count": 48,
+              "correct": 23,
+              "fp": 24,
+              "fn": 1,
+              "unscorable": 0
+            },
+            "archived_snapshot": {
+              "count": 48,
+              "correct": 23,
+              "fp": 24,
+              "fn": 0,
+              "unscorable": 1
+            },
+            "optional_blank": {
+              "count": 48,
+              "correct": 24,
+              "fp": 24,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "lookup_exact": {
+              "count": 20,
+              "correct": 10,
+              "fp": 10,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "lookup_column": {
+              "count": 68,
+              "correct": 34,
+              "fp": 34,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "aggregation_type": {
+              "count": 48,
+              "correct": 24,
+              "fp": 24,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "unit_conversion": {
+              "count": 48,
+              "correct": 24,
+              "fp": 24,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "empty_denominator": {
+              "count": 48,
+              "correct": 12,
+              "fp": 24,
+              "fn": 11,
+              "unscorable": 1
+            },
+            "seasonal_spike": {
+              "count": 48,
+              "correct": 24,
+              "fp": 24,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "self_reference": {
+              "count": 20,
+              "correct": 10,
+              "fp": 10,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "duplicate_key": {
+              "count": 48,
+              "correct": 23,
+              "fp": 24,
+              "fn": 0,
+              "unscorable": 1
+            },
+            "contract_literal": {
+              "count": 48,
+              "correct": 24,
+              "fp": 24,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "sign": {
+              "count": 20,
+              "correct": 10,
+              "fp": 10,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "duplicate_total": {
+              "count": 20,
+              "correct": 10,
+              "fp": 10,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "broken_reference": {
+              "count": 20,
+              "correct": 10,
+              "fp": 10,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "division_zero": {
+              "count": 20,
+              "correct": 10,
+              "fp": 10,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "text_number": {
+              "count": 20,
+              "correct": 0,
+              "fp": 10,
+              "fn": 9,
+              "unscorable": 1
+            },
+            "if_boundary": {
+              "count": 20,
+              "correct": 10,
+              "fp": 10,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "sum_range": {
+              "count": 20,
+              "correct": 10,
+              "fp": 10,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "count": {
+              "count": 20,
+              "correct": 10,
+              "fp": 10,
+              "fn": 0,
+              "unscorable": 0
+            }
+          }
+        }
+      },
+      "after": {
+        "strict": {
+          "audit": {
+            "completed": 1320,
+            "passed": 1274,
+            "json_valid": 1320,
+            "schema_valid": 1320,
+            "semantic_pass": 1274,
+            "mean_seconds": 0.521
+          }
+        },
+        "audit_decision": {
+          "tp": 645,
+          "tn": 629,
+          "fp": 31,
+          "fn": 15,
+          "unscorable": 0
+        },
+        "audit_judgment_correct": 1274,
+        "audit_count": 1320,
+        "identity_mismatches": 0,
+        "reasoning_present": 0,
+        "presentation_only_content": {
+          "audit": {
+            "correct": 1274,
+            "count": 1320
+          }
+        },
+        "groups": {
+          "family": {
+            "business": {
+              "count": 960,
+              "correct": 917,
+              "fp": 28,
+              "fn": 15,
+              "unscorable": 0
+            },
+            "legacy": {
+              "count": 360,
+              "correct": 357,
+              "fp": 3,
+              "fn": 0,
+              "unscorable": 0
+            }
+          },
+          "category": {
+            "external_link": {
+              "count": 48,
+              "correct": 48,
+              "fp": 0,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "average_total": {
+              "count": 20,
+              "correct": 20,
+              "fp": 0,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "lookup_match": {
+              "count": 48,
+              "correct": 48,
+              "fp": 0,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "text_identifier": {
+              "count": 48,
+              "correct": 48,
+              "fp": 0,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "date_order": {
+              "count": 68,
+              "correct": 68,
+              "fp": 0,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "rate_scale": {
+              "count": 48,
+              "correct": 48,
+              "fp": 0,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "sum_scope": {
+              "count": 48,
+              "correct": 48,
+              "fp": 0,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "lookup_key_type": {
+              "count": 48,
+              "correct": 48,
+              "fp": 0,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "iterative_cycle": {
+              "count": 48,
+              "correct": 27,
+              "fp": 10,
+              "fn": 11,
+              "unscorable": 0
+            },
+            "relative_reference": {
+              "count": 20,
+              "correct": 20,
+              "fp": 0,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "iferror": {
+              "count": 20,
+              "correct": 17,
+              "fp": 3,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "rounding_tolerance": {
+              "count": 48,
+              "correct": 48,
+              "fp": 0,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "percent_scale": {
+              "count": 20,
+              "correct": 20,
+              "fp": 0,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "rounding": {
+              "count": 20,
+              "correct": 20,
+              "fp": 0,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "imported_literal": {
+              "count": 48,
+              "correct": 48,
+              "fp": 0,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "absolute_reference": {
+              "count": 20,
+              "correct": 20,
+              "fp": 0,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "stored_sign": {
+              "count": 48,
+              "correct": 45,
+              "fp": 0,
+              "fn": 3,
+              "unscorable": 0
+            },
+            "archived_snapshot": {
+              "count": 48,
+              "correct": 46,
+              "fp": 2,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "optional_blank": {
+              "count": 48,
+              "correct": 46,
+              "fp": 2,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "lookup_exact": {
+              "count": 20,
+              "correct": 20,
+              "fp": 0,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "lookup_column": {
+              "count": 68,
+              "correct": 68,
+              "fp": 0,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "aggregation_type": {
+              "count": 48,
+              "correct": 48,
+              "fp": 0,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "unit_conversion": {
+              "count": 48,
+              "correct": 48,
+              "fp": 0,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "empty_denominator": {
+              "count": 48,
+              "correct": 48,
+              "fp": 0,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "seasonal_spike": {
+              "count": 48,
+              "correct": 45,
+              "fp": 2,
+              "fn": 1,
+              "unscorable": 0
+            },
+            "self_reference": {
+              "count": 20,
+              "correct": 20,
+              "fp": 0,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "duplicate_key": {
+              "count": 48,
+              "correct": 48,
+              "fp": 0,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "contract_literal": {
+              "count": 48,
+              "correct": 36,
+              "fp": 12,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "sign": {
+              "count": 20,
+              "correct": 20,
+              "fp": 0,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "duplicate_total": {
+              "count": 20,
+              "correct": 20,
+              "fp": 0,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "broken_reference": {
+              "count": 20,
+              "correct": 20,
+              "fp": 0,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "division_zero": {
+              "count": 20,
+              "correct": 20,
+              "fp": 0,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "text_number": {
+              "count": 20,
+              "correct": 20,
+              "fp": 0,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "if_boundary": {
+              "count": 20,
+              "correct": 20,
+              "fp": 0,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "sum_range": {
+              "count": 20,
+              "correct": 20,
+              "fp": 0,
+              "fn": 0,
+              "unscorable": 0
+            },
+            "count": {
+              "count": 20,
+              "correct": 20,
+              "fp": 0,
+              "fn": 0,
+              "unscorable": 0
+            }
+          }
+        }
+      }
+    }
+  },
+  "jev_reference": {
+    "coverage180": {
+      "count": 180,
+      "accuracy": 0.9333333333333333,
+      "macro_f1": 0.9332591768631813,
+      "nll": 0.1884687692012975,
+      "brier": 0.0447879201664612,
+      "paired_groups": 0,
+      "paired_accuracy": null,
+      "confusion": {
+        "tp": 81,
+        "tn": 87,
+        "fp": 3,
+        "fn": 9
+      },
+      "seconds": 12.164,
+      "categories": {
+        "absolute_reference": {
+          "count": 10,
+          "correct": 10
+        },
+        "average_total": {
+          "count": 10,
+          "correct": 10
+        },
+        "broken_reference": {
+          "count": 10,
+          "correct": 9
+        },
+        "count": {
+          "count": 10,
+          "correct": 10
+        },
+        "date_order": {
+          "count": 10,
+          "correct": 10
+        },
+        "division_zero": {
+          "count": 10,
+          "correct": 10
+        },
+        "duplicate_total": {
+          "count": 10,
+          "correct": 10
+        },
+        "if_boundary": {
+          "count": 10,
+          "correct": 10
+        },
+        "iferror": {
+          "count": 10,
+          "correct": 10
+        },
+        "lookup_column": {
+          "count": 10,
+          "correct": 6
+        },
+        "lookup_exact": {
+          "count": 10,
+          "correct": 10
+        },
+        "percent_scale": {
+          "count": 10,
+          "correct": 9
+        },
+        "relative_reference": {
+          "count": 10,
+          "correct": 9
+        },
+        "rounding": {
+          "count": 10,
+          "correct": 10
+        },
+        "self_reference": {
+          "count": 10,
+          "correct": 10
+        },
+        "sign": {
+          "count": 10,
+          "correct": 9
+        },
+        "sum_range": {
+          "count": 10,
+          "correct": 6
+        },
+        "text_number": {
+          "count": 10,
+          "correct": 10
+        }
+      }
+    },
+    "legacy360": {
+      "count": 360,
+      "accuracy": 0.9722222222222222,
+      "macro_f1": 0.9722187924435115,
+      "nll": 0.10576661615929153,
+      "brier": 0.0249960077081104,
+      "paired_groups": 180,
+      "paired_accuracy": 0.9444444444444444,
+      "confusion": {
+        "tp": 177,
+        "tn": 173,
+        "fp": 7,
+        "fn": 3
+      },
+      "seconds": 21.907,
+      "categories": {
+        "absolute_reference": {
+          "count": 20,
+          "correct": 20
+        },
+        "average_total": {
+          "count": 20,
+          "correct": 20
+        },
+        "broken_reference": {
+          "count": 20,
+          "correct": 20
+        },
+        "count": {
+          "count": 20,
+          "correct": 20
+        },
+        "date_order": {
+          "count": 20,
+          "correct": 20
+        },
+        "division_zero": {
+          "count": 20,
+          "correct": 20
+        },
+        "duplicate_total": {
+          "count": 20,
+          "correct": 20
+        },
+        "if_boundary": {
+          "count": 20,
+          "correct": 20
+        },
+        "iferror": {
+          "count": 20,
+          "correct": 20
+        },
+        "lookup_column": {
+          "count": 20,
+          "correct": 17
+        },
+        "lookup_exact": {
+          "count": 20,
+          "correct": 20
+        },
+        "percent_scale": {
+          "count": 20,
+          "correct": 17
+        },
+        "relative_reference": {
+          "count": 20,
+          "correct": 19
+        },
+        "rounding": {
+          "count": 20,
+          "correct": 20
+        },
+        "self_reference": {
+          "count": 20,
+          "correct": 20
+        },
+        "sign": {
+          "count": 20,
+          "correct": 19
+        },
+        "sum_range": {
+          "count": 20,
+          "correct": 20
+        },
+        "text_number": {
+          "count": 20,
+          "correct": 18
+        }
+      }
+    },
+    "business960": {
+      "count": 960,
+      "accuracy": 0.80625,
+      "macro_f1": 0.8061481941470998,
+      "nll": 0.739628357138942,
+      "brier": 0.15862988842925038,
+      "paired_groups": 480,
+      "paired_accuracy": 0.6291666666666667,
+      "confusion": {
+        "tp": 398,
+        "tn": 376,
+        "fp": 104,
+        "fn": 82
+      },
+      "seconds": 76.777,
+      "categories": {
+        "aggregation_type": {
+          "count": 48,
+          "correct": 37
+        },
+        "archived_snapshot": {
+          "count": 48,
+          "correct": 25
+        },
+        "contract_literal": {
+          "count": 48,
+          "correct": 35
+        },
+        "date_order": {
+          "count": 48,
+          "correct": 48
+        },
+        "duplicate_key": {
+          "count": 48,
+          "correct": 35
+        },
+        "empty_denominator": {
+          "count": 48,
+          "correct": 42
+        },
+        "external_link": {
+          "count": 48,
+          "correct": 48
+        },
+        "imported_literal": {
+          "count": 48,
+          "correct": 48
+        },
+        "iterative_cycle": {
+          "count": 48,
+          "correct": 36
+        },
+        "lookup_column": {
+          "count": 48,
+          "correct": 47
+        },
+        "lookup_key_type": {
+          "count": 48,
+          "correct": 26
+        },
+        "lookup_match": {
+          "count": 48,
+          "correct": 41
+        },
+        "optional_blank": {
+          "count": 48,
+          "correct": 28
+        },
+        "rate_scale": {
+          "count": 48,
+          "correct": 27
+        },
+        "rounding_tolerance": {
+          "count": 48,
+          "correct": 48
+        },
+        "seasonal_spike": {
+          "count": 48,
+          "correct": 25
+        },
+        "stored_sign": {
+          "count": 48,
+          "correct": 36
+        },
+        "sum_scope": {
+          "count": 48,
+          "correct": 46
+        },
+        "text_identifier": {
+          "count": 48,
+          "correct": 48
+        },
+        "unit_conversion": {
+          "count": 48,
+          "correct": 48
+        }
+      }
+    }
+  },
+  "cpu_smoke": {
+    "strict": {
+      "audit": {
+        "completed": 3,
+        "passed": 3,
+        "json_valid": 3,
+        "schema_valid": 3,
+        "semantic_pass": 3,
+        "mean_seconds": 1.962
+      }
+    },
+    "audit_decision": {
+      "tp": 1,
+      "tn": 2,
+      "fp": 0,
+      "fn": 0,
+      "unscorable": 0
+    },
+    "audit_judgment_correct": 3,
+    "audit_count": 3,
+    "identity_mismatches": 0,
+    "reasoning_present": 0,
+    "presentation_only_content": {
+      "audit": {
+        "correct": 3,
+        "count": 3
+      }
+    }
+  },
+  "limitations": [
+    "Q4_K_M native generation, no thinking, temperature 0, context 1024, max_tokens 420.",
+    "Training validation uses conditional true/false given a gold JSON prefix, not generated-answer accuracy.",
+    "Synthetic splits share generation logic; the original 500 cases are reused regression tests.",
+    "Explanations and confidence are not independently validated or calibrated.",
+    "CPU smoke checks three local CPU requests; no mobile or Electron default deployment has been completed.",
+    "CUDA graphs disabled; runtime restarted every 400 requests and on bounded service faults. Latencies are descriptive."
+  ],
+  "external580": {
+    "count": 580,
+    "policy": "Test only; existing development benchmark, not pristine blind data. Original context and claim preserved. No answer label in input.",
+    "input_mapping": "Source has no structured cell/rule/formula fields: fixed Archive!A1 and external_formula identifiers, empty formula; formulas remain verbatim in finding. Original document title omitted as non-business task instruction.",
+    "suites": {
+      "after": {
+        "strict": {
+          "audit": {
+            "completed": 580,
+            "passed": 434,
+            "json_valid": 580,
+            "schema_valid": 580,
+            "semantic_pass": 434,
+            "mean_seconds": 0.496
+          }
+        },
+        "audit_decision": {
+          "tp": 420,
+          "tn": 70,
+          "fp": 41,
+          "fn": 49,
+          "unscorable": 0
+        },
+        "audit_judgment_correct": 490,
+        "audit_count": 580,
+        "identity_mismatches": 69,
+        "reasoning_present": 0,
+        "presentation_only_content": {
+          "audit": {
+            "correct": 490,
+            "count": 580
+          }
+        }
+      },
+      "before": {
+        "strict": {
+          "audit": {
+            "completed": 580,
+            "passed": 66,
+            "json_valid": 565,
+            "schema_valid": 564,
+            "semantic_pass": 66,
+            "mean_seconds": 0.592
+          }
+        },
+        "audit_decision": {
+          "tp": 457,
+          "tn": 0,
+          "fp": 107,
+          "fn": 0,
+          "unscorable": 16
+        },
+        "audit_judgment_correct": 457,
+        "audit_count": 580,
+        "identity_mismatches": 484,
+        "reasoning_present": 0,
+        "presentation_only_content": {
+          "audit": {
+            "correct": 457,
+            "count": 580
+          }
+        }
+      }
+    },
+    "jev": {
+      "count": 580,
+      "correct": 495,
+      "accuracy": 0.853448275862069,
+      "macro_f1": 0.6764221345637607,
+      "confusion": {
+        "tp": 462,
+        "tn": 33,
+        "fp": 78,
+        "fn": 7
+      }
+    }
+  }
+}

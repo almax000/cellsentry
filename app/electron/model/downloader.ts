@@ -30,15 +30,13 @@ export interface ModelInfo {
 }
 
 export const DEFAULT_MODEL: ModelInfo = {
-  name: 'CellSentry 1.5B v3 Q4KM',
-  filename: 'cellsentry-1.5b-v3-q4km.gguf',
-  version: 'v3.0',
-  size: 986_047_968,
-  sha256: '4ae17b3886e4a5089671bf16aa133eaa6d8917a118bde6c75a54c1c3610f7cd3',
-  downloadUrl: 'https://huggingface.co/almax000/cellsentry-model/resolve/main/cellsentry-1.5b-v3-q4km.gguf',
-  mirrorUrl: 'https://hf-mirror.com/almax000/cellsentry-model/resolve/main/cellsentry-1.5b-v3-q4km.gguf',
-  cnPrimaryUrl: 'https://modelscope.cn/models/almax000/cellsentry-model/resolve/master/cellsentry-1.5b-v3-q4km.gguf',
-  description: 'CellSentry multi-task model (audit + PII + extraction, Q4_K_M)'
+  name: 'CellSentry MiniCPM5-2B Cancellation v2',
+  filename: 'cellsentry-minicpm5-2b-cancel2-q4_k_m.gguf',
+  version: 'formula-cancellation-v2-20261016',
+  size: 1_561_314_592,
+  sha256: '61d9c8ab8007dbbde0eb004089d1411fb6ec7167031f9d6fcc5b521fe8ebe49a',
+  downloadUrl: 'https://github.com/yourblacksky/cellsentry-formula-review/releases/download/formula-cancellation-v2-20261016/cellsentry-minicpm5-2b-cancel2-q4_k_m.gguf',
+  description: 'MiniCPM5-2B formula review v2 (Q4_K_M, thinking disabled)'
 }
 
 export type ProgressCallback = (downloaded: number, total: number, message: string) => void

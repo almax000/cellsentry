@@ -1,0 +1,791 @@
+[
+  {
+    "category": "aggregation_type",
+    "is_error": false,
+    "issue": {
+      "ruleId": "aggregation_type",
+      "cellAddress": "Y163",
+      "sheetName": "Review",
+      "formula": "=COUNT(U163:U166)",
+      "confidence": 0.7,
+      "message": "Y163 用 COUNT 聚合。",
+      "context": "四条有效记录的金额为 16946、16947、16948、16949，均为数值，无空值。本项展示单据条数，每张单据计一次。"
+    },
+    "label_basis": {
+      "kind": "aggregation",
+      "actual_function": "COUNT",
+      "required_function": "COUNT"
+    }
+  },
+  {
+    "category": "aggregation_type",
+    "is_error": true,
+    "issue": {
+      "ruleId": "aggregation_type",
+      "cellAddress": "Y163",
+      "sheetName": "Review",
+      "formula": "=SUM(U163:U166)",
+      "confidence": 0.7,
+      "message": "Y163 用 SUM 聚合。",
+      "context": "四条有效记录的金额为 16946、16947、16948、16949，均为数值，无空值。本项展示单据条数，每张单据计一次。"
+    },
+    "label_basis": {
+      "kind": "aggregation",
+      "actual_function": "SUM",
+      "required_function": "COUNT"
+    }
+  },
+  {
+    "category": "archived_snapshot",
+    "is_error": false,
+    "issue": {
+      "ruleId": "archived_snapshot",
+      "cellAddress": "Z35",
+      "sheetName": "Review",
+      "formula": "",
+      "confidence": 0.7,
+      "message": "Z35 为 1424，当前源数据合计为 1441。",
+      "context": "已签署的 2020 年结账回执为 1424。源系统后来补录跨期单据，当前总额为 1441。本交付物要求保留签署时点 2020 年的快照数值。"
+    },
+    "label_basis": {
+      "kind": "value",
+      "actual": 1424,
+      "required": 1424
+    }
+  },
+  {
+    "category": "archived_snapshot",
+    "is_error": true,
+    "issue": {
+      "ruleId": "archived_snapshot",
+      "cellAddress": "Z35",
+      "sheetName": "Review",
+      "formula": "",
+      "confidence": 0.7,
+      "message": "Z35 为 1441，当前源数据合计为 1441。",
+      "context": "已签署的 2020 年结账回执为 1424。源系统后来补录跨期单据，当前总额为 1441。本交付物要求保留签署时点 2020 年的快照数值。"
+    },
+    "label_basis": {
+      "kind": "value",
+      "actual": 1441,
+      "required": 1424
+    }
+  },
+  {
+    "category": "contract_literal",
+    "is_error": false,
+    "issue": {
+      "ruleId": "contract_literal",
+      "cellAddress": "AB138",
+      "sheetName": "Review",
+      "formula": "",
+      "confidence": 0.7,
+      "message": "AB138 的租赁费用是固定数字 2468。",
+      "context": "合同每月固定租金 2468 元，本项应计 1 个月，无折扣、税费或其他调整。合约金额允许直接录入。"
+    },
+    "label_basis": {
+      "kind": "value",
+      "actual": 2468,
+      "required": 2468
+    }
+  },
+  {
+    "category": "contract_literal",
+    "is_error": true,
+    "issue": {
+      "ruleId": "contract_literal",
+      "cellAddress": "AB138",
+      "sheetName": "Review",
+      "formula": "",
+      "confidence": 0.7,
+      "message": "AB138 的租赁费用是固定数字 2514。",
+      "context": "合同每月固定租金 2468 元，本项应计 1 个月，无折扣、税费或其他调整。合约金额允许直接录入。"
+    },
+    "label_basis": {
+      "kind": "value",
+      "actual": 2514,
+      "required": 2468
+    }
+  },
+  {
+    "category": "date_order",
+    "is_error": false,
+    "issue": {
+      "ruleId": "date_order",
+      "cellAddress": "AP327",
+      "sheetName": "Review",
+      "formula": "=AM327-AL327",
+      "confidence": 0.7,
+      "message": "AP327 日期差公式为 =AM327-AL327。",
+      "context": "AL327 是起始日期 2028-11-13，AM327 是截止日期 2029-01-10。口径为截止日减起始日的正数自然日，不含起始日，不使用工作日折算。"
+    },
+    "label_basis": {
+      "kind": "value",
+      "actual": 58,
+      "required": 58
+    }
+  },
+  {
+    "category": "date_order",
+    "is_error": true,
+    "issue": {
+      "ruleId": "date_order",
+      "cellAddress": "AP327",
+      "sheetName": "Review",
+      "formula": "=AL327-AM327",
+      "confidence": 0.7,
+      "message": "AP327 日期差公式为 =AL327-AM327。",
+      "context": "AL327 是起始日期 2028-11-13，AM327 是截止日期 2029-01-10。口径为截止日减起始日的正数自然日，不含起始日，不使用工作日折算。"
+    },
+    "label_basis": {
+      "kind": "value",
+      "actual": -58,
+      "required": 58
+    }
+  },
+  {
+    "category": "duplicate_key",
+    "is_error": false,
+    "issue": {
+      "ruleId": "duplicate_key",
+      "cellAddress": "AA236",
+      "sheetName": "Review",
+      "formula": "",
+      "confidence": 0.7,
+      "message": "两条记录的订单号均为 ORD-72404，行号分别为 1 和 2。",
+      "context": "两行金额分别为 48222、45。当前表业务粒度为订单商品明细，唯一键为订单号加行号；订单可以含多件商品。"
+    },
+    "label_basis": {
+      "kind": "duplicate",
+      "records": [
+        {
+          "order": "ORD-72404",
+          "line": 1,
+          "amount": 48222
+        },
+        {
+          "order": "ORD-72404",
+          "line": 2,
+          "amount": 45
+        }
+      ],
+      "key_fields": [
+        "order",
+        "line"
+      ]
+    }
+  },
+  {
+    "category": "duplicate_key",
+    "is_error": true,
+    "issue": {
+      "ruleId": "duplicate_key",
+      "cellAddress": "AA236",
+      "sheetName": "Review",
+      "formula": "",
+      "confidence": 0.7,
+      "message": "两条记录的订单号均为 ORD-72404，行号分别为 1 和 1。",
+      "context": "两行金额分别为 48222、45。当前表业务粒度为订单商品明细，唯一键为订单号加行号；订单可以含多件商品。"
+    },
+    "label_basis": {
+      "kind": "duplicate",
+      "records": [
+        {
+          "order": "ORD-72404",
+          "line": 1,
+          "amount": 48222
+        },
+        {
+          "order": "ORD-72404",
+          "line": 1,
+          "amount": 45
+        }
+      ],
+      "key_fields": [
+        "order",
+        "line"
+      ]
+    }
+  },
+  {
+    "category": "empty_denominator",
+    "is_error": false,
+    "issue": {
+      "ruleId": "empty_denominator",
+      "cellAddress": "P226",
+      "sheetName": "Review",
+      "formula": "=L226/M226",
+      "confidence": 0.7,
+      "message": "P226 公式为 =L226/M226，L226=13659，M226=0。",
+      "context": "该比例在分母为零时的输出规范是：保留原始除零错误用于审计，不得吞掉。本题所有异常只来自分母为零。"
+    },
+    "label_basis": {
+      "kind": "fallback",
+      "actual_fallback": "error",
+      "required_fallback": "error"
+    }
+  },
+  {
+    "category": "empty_denominator",
+    "is_error": true,
+    "issue": {
+      "ruleId": "empty_denominator",
+      "cellAddress": "P226",
+      "sheetName": "Review",
+      "formula": "=L226/M226",
+      "confidence": 0.7,
+      "message": "P226 公式为 =L226/M226，L226=13659，M226=0。",
+      "context": "该比例在分母为零时的输出规范是：返回数值零。本题所有异常只来自分母为零。"
+    },
+    "label_basis": {
+      "kind": "fallback",
+      "actual_fallback": "error",
+      "required_fallback": "zero"
+    }
+  },
+  {
+    "category": "external_link",
+    "is_error": false,
+    "issue": {
+      "ruleId": "external_link",
+      "cellAddress": "V269",
+      "sheetName": "Review",
+      "formula": "='[Reference809.xlsx]Data'!R269",
+      "confidence": 0.7,
+      "message": "V269 有外部引用，源文件当前离线，缓存值为 80768。",
+      "context": "外部源在签署时点的回执值为 80768，本地缓存与之相同，缓存未损坏。本次交付为冻结快照，只交付已签署时点数值，不执行刷新。"
+    },
+    "label_basis": {
+      "kind": "freshness",
+      "live_required": false,
+      "source_available": false
+    }
+  },
+  {
+    "category": "external_link",
+    "is_error": true,
+    "issue": {
+      "ruleId": "external_link",
+      "cellAddress": "V269",
+      "sheetName": "Review",
+      "formula": "='[Reference809.xlsx]Data'!R269",
+      "confidence": 0.7,
+      "message": "V269 有外部引用，源文件当前离线，缓存值为 80768。",
+      "context": "外部源在签署时点的回执值为 80768，本地缓存与之相同，缓存未损坏。本次交付要求联网刷新到当前时点，当前源无法连接。"
+    },
+    "label_basis": {
+      "kind": "freshness",
+      "live_required": true,
+      "source_available": false
+    }
+  },
+  {
+    "category": "imported_literal",
+    "is_error": false,
+    "issue": {
+      "ruleId": "imported_literal",
+      "cellAddress": "AM67",
+      "sheetName": "Review",
+      "formula": "",
+      "confidence": 0.7,
+      "message": "AM67 保存固定数值 14853，未使用汇总公式。",
+      "context": "本表按接口单据导入金额，允许保存数值。独立导入回执确认本期本单元格金额为 14853；提交后未发生新增或冲销。"
+    },
+    "label_basis": {
+      "kind": "value",
+      "actual": 14853,
+      "required": 14853
+    }
+  },
+  {
+    "category": "imported_literal",
+    "is_error": true,
+    "issue": {
+      "ruleId": "imported_literal",
+      "cellAddress": "AM67",
+      "sheetName": "Review",
+      "formula": "",
+      "confidence": 0.7,
+      "message": "AM67 保存固定数值 14907，未使用汇总公式。",
+      "context": "本表按接口单据导入金额，允许保存数值。独立导入回执确认本期本单元格金额为 14853；提交后未发生新增或冲销。"
+    },
+    "label_basis": {
+      "kind": "value",
+      "actual": 14907,
+      "required": 14853
+    }
+  },
+  {
+    "category": "iterative_cycle",
+    "is_error": false,
+    "issue": {
+      "ruleId": "iterative_cycle",
+      "cellAddress": "X191",
+      "sheetName": "Review",
+      "formula": "=0.5*X191+35563",
+      "confidence": 0.7,
+      "message": "X191 公式引用自身：=0.5*X191+35563。",
+      "context": "该单元格用于求收缩映射固定点，而非汇总。迭代计算设置为 启用，允许 10000 次、误差 0.000001。系数为 0.5，常数为 35563。交付必须得到收敛值。"
+    },
+    "label_basis": {
+      "kind": "iteration",
+      "enabled": true,
+      "coefficient": 0.5,
+      "fixed_point_required": true
+    }
+  },
+  {
+    "category": "iterative_cycle",
+    "is_error": true,
+    "issue": {
+      "ruleId": "iterative_cycle",
+      "cellAddress": "X191",
+      "sheetName": "Review",
+      "formula": "=1.02*X191+35563",
+      "confidence": 0.7,
+      "message": "X191 公式引用自身：=1.02*X191+35563。",
+      "context": "该单元格用于求收缩映射固定点，而非汇总。迭代计算设置为 启用，允许 10000 次、误差 0.000001。系数为 1.02，常数为 35563。交付必须得到收敛值。"
+    },
+    "label_basis": {
+      "kind": "iteration",
+      "enabled": true,
+      "coefficient": 1.02,
+      "fixed_point_required": true
+    }
+  },
+  {
+    "category": "lookup_column",
+    "is_error": false,
+    "issue": {
+      "ruleId": "lookup_column",
+      "cellAddress": "AC204",
+      "sheetName": "Review",
+      "formula": "=VLOOKUP(XFD204,Y2:AD12,6,FALSE)",
+      "confidence": 0.7,
+      "message": "AC204 公式为 =VLOOKUP(XFD204,Y2:AD12,6,FALSE)。",
+      "context": "编码 XFD204 在首列唯一存在。查找区域有 6 列，从左至右为 物料编号、库存数量、包装数量、订购数量、入库数量、出库数量。本编码对应各列值为 ['SKU-54948', 54949, 54950, 54951, 54952, 54953]。必须返回第 6 列“出库数量”，各列值互不相同。"
+    },
+    "label_basis": {
+      "kind": "lookup_column",
+      "width": 6,
+      "actual_index": 6,
+      "required_index": 6
+    }
+  },
+  {
+    "category": "lookup_column",
+    "is_error": true,
+    "issue": {
+      "ruleId": "lookup_column",
+      "cellAddress": "AC204",
+      "sheetName": "Review",
+      "formula": "=VLOOKUP(XFD204,Y2:AD12,1,FALSE)",
+      "confidence": 0.7,
+      "message": "AC204 公式为 =VLOOKUP(XFD204,Y2:AD12,1,FALSE)。",
+      "context": "编码 XFD204 在首列唯一存在。查找区域有 6 列，从左至右为 物料编号、库存数量、包装数量、订购数量、入库数量、出库数量。本编码对应各列值为 ['SKU-54948', 54949, 54950, 54951, 54952, 54953]。必须返回第 6 列“出库数量”，各列值互不相同。"
+    },
+    "label_basis": {
+      "kind": "lookup_column",
+      "width": 6,
+      "actual_index": 1,
+      "required_index": 6
+    }
+  },
+  {
+    "category": "lookup_key_type",
+    "is_error": false,
+    "issue": {
+      "ruleId": "lookup_key_type",
+      "cellAddress": "O192",
+      "sheetName": "Review",
+      "formula": "=VLOOKUP(K192,$U$2:$V$9,2,FALSE)",
+      "confidence": 0.7,
+      "message": "O192 精确查找 K192，输入值为 \"0006550\"。",
+      "context": "编码列按文本存储，目标编码为文本“0006550”，前导零是标识的一部分。仅存在该文本键，不存在数值类型的等价键；未设置类型转换。"
+    },
+    "label_basis": {
+      "kind": "typed_key",
+      "query": "0006550",
+      "table_key": "0006550"
+    }
+  },
+  {
+    "category": "lookup_key_type",
+    "is_error": true,
+    "issue": {
+      "ruleId": "lookup_key_type",
+      "cellAddress": "O192",
+      "sheetName": "Review",
+      "formula": "=VLOOKUP(K192,$U$2:$V$9,2,FALSE)",
+      "confidence": 0.7,
+      "message": "O192 精确查找 K192，输入值为 6550。",
+      "context": "编码列按文本存储，目标编码为文本“0006550”，前导零是标识的一部分。仅存在该文本键，不存在数值类型的等价键；未设置类型转换。"
+    },
+    "label_basis": {
+      "kind": "typed_key",
+      "query": 6550,
+      "table_key": "0006550"
+    }
+  },
+  {
+    "category": "lookup_match",
+    "is_error": false,
+    "issue": {
+      "ruleId": "lookup_match",
+      "cellAddress": "I78",
+      "sheetName": "Review",
+      "formula": "=VLOOKUP(E78,$U$2:$V$4,2,TRUE)",
+      "confidence": 0.7,
+      "message": "I78 使用 =VLOOKUP(E78,$U$2:$V$4,2,TRUE)，E78=16380。",
+      "context": "U2:U4 依次为 [16310, 16357, 16404]，V2:V4 为不同返回值。这些是分档下界，应返回不大于输入的最大下界对应值。"
+    },
+    "label_basis": {
+      "kind": "lookup_mode",
+      "actual_approximate": true,
+      "required_approximate": true
+    }
+  },
+  {
+    "category": "lookup_match",
+    "is_error": true,
+    "issue": {
+      "ruleId": "lookup_match",
+      "cellAddress": "I78",
+      "sheetName": "Review",
+      "formula": "=VLOOKUP(E78,$U$2:$V$4,2,TRUE)",
+      "confidence": 0.7,
+      "message": "I78 使用 =VLOOKUP(E78,$U$2:$V$4,2,TRUE)，E78=16380。",
+      "context": "U2:U4 依次为 [16310, 16357, 16404]，V2:V4 为不同返回值。这些是精确物料编号，不存在的编号必须显示未找到，不允许返回相近编号。"
+    },
+    "label_basis": {
+      "kind": "lookup_mode",
+      "actual_approximate": true,
+      "required_approximate": false
+    }
+  },
+  {
+    "category": "optional_blank",
+    "is_error": false,
+    "issue": {
+      "ruleId": "optional_blank",
+      "cellAddress": "M208",
+      "sheetName": "Review",
+      "formula": "",
+      "confidence": 0.7,
+      "message": "M208 的“项目编码”为空。",
+      "context": "字段规范：该记录属于 境内 业务，金额 84037 元。“项目编码”仅在跨境且金额超过 84002 元时必填；境内不采集。相邻备注列始终选填，其他必填项已提供。"
+    },
+    "label_basis": {
+      "kind": "blank",
+      "blank": true,
+      "required": false
+    }
+  },
+  {
+    "category": "optional_blank",
+    "is_error": true,
+    "issue": {
+      "ruleId": "optional_blank",
+      "cellAddress": "M208",
+      "sheetName": "Review",
+      "formula": "",
+      "confidence": 0.7,
+      "message": "M208 的“项目编码”为空。",
+      "context": "字段规范：该记录属于 跨境 业务，金额 84037 元。“项目编码”仅在跨境且金额超过 84002 元时必填；境内不采集。相邻备注列始终选填，其他必填项已提供。"
+    },
+    "label_basis": {
+      "kind": "blank",
+      "blank": true,
+      "required": true
+    }
+  },
+  {
+    "category": "rate_scale",
+    "is_error": false,
+    "issue": {
+      "ruleId": "rate_scale",
+      "cellAddress": "AH84",
+      "sheetName": "Review",
+      "formula": "=AD84*AE84/100",
+      "confidence": 0.7,
+      "message": "AH84 公式为 =AD84*AE84/100。",
+      "context": "AD84 为基数 77331 元；AE84 实际存储数值 9，本次税率为 9%。要求返回税额的元数值，不是百分比显示文本。"
+    },
+    "label_basis": {
+      "kind": "value",
+      "actual": 6959.79,
+      "required": 6959.79
+    }
+  },
+  {
+    "category": "rate_scale",
+    "is_error": true,
+    "issue": {
+      "ruleId": "rate_scale",
+      "cellAddress": "AH84",
+      "sheetName": "Review",
+      "formula": "=AD84*AE84",
+      "confidence": 0.7,
+      "message": "AH84 公式为 =AD84*AE84。",
+      "context": "AD84 为基数 77331 元；AE84 实际存储数值 9，本次税率为 9%。要求返回税额的元数值，不是百分比显示文本。"
+    },
+    "label_basis": {
+      "kind": "value",
+      "actual": 695979.0,
+      "required": 6959.79
+    }
+  },
+  {
+    "category": "rounding_tolerance",
+    "is_error": false,
+    "issue": {
+      "ruleId": "rounding_tolerance",
+      "cellAddress": "AQ304",
+      "sheetName": "Review",
+      "formula": "",
+      "confidence": 0.7,
+      "message": "AQ304 与控制总额相差 5 分。",
+      "context": "控制总额为 222000 分，当前值为 222005 分。本结算渠道按合同允许的绝对舍入差为最多 6 分，边界包含在内；无其他差异来源。"
+    },
+    "label_basis": {
+      "kind": "tolerance",
+      "actual_cents": 222005,
+      "control_cents": 222000,
+      "tolerance_cents": 6
+    }
+  },
+  {
+    "category": "rounding_tolerance",
+    "is_error": true,
+    "issue": {
+      "ruleId": "rounding_tolerance",
+      "cellAddress": "AQ304",
+      "sheetName": "Review",
+      "formula": "",
+      "confidence": 0.7,
+      "message": "AQ304 与控制总额相差 5 分。",
+      "context": "控制总额为 222000 分，当前值为 222005 分。本结算渠道按合同允许的绝对舍入差为最多 4 分，边界包含在内；无其他差异来源。"
+    },
+    "label_basis": {
+      "kind": "tolerance",
+      "actual_cents": 222005,
+      "control_cents": 222000,
+      "tolerance_cents": 4
+    }
+  },
+  {
+    "category": "seasonal_spike",
+    "is_error": false,
+    "issue": {
+      "ruleId": "seasonal_spike",
+      "cellAddress": "F251",
+      "sheetName": "Review",
+      "formula": "",
+      "confidence": 0.7,
+      "message": "F251 销售额 7884，超过上月均值的 5 倍。",
+      "context": "本期是促销旺季，但销售额仍须与已过账回执核对。独立完整回执为 [2892, 1080, 3912]，无其他单据、退货或待结算项。比率告警本身不决定金额是否成立。"
+    },
+    "label_basis": {
+      "kind": "value",
+      "actual": 7884,
+      "required": 7884
+    }
+  },
+  {
+    "category": "seasonal_spike",
+    "is_error": true,
+    "issue": {
+      "ruleId": "seasonal_spike",
+      "cellAddress": "F251",
+      "sheetName": "Review",
+      "formula": "",
+      "confidence": 0.7,
+      "message": "F251 销售额 31169，超过上月均值的 5 倍。",
+      "context": "本期是促销旺季，但销售额仍须与已过账回执核对。独立完整回执为 [2892, 1080, 3912]，无其他单据、退货或待结算项。比率告警本身不决定金额是否成立。"
+    },
+    "label_basis": {
+      "kind": "value",
+      "actual": 31169,
+      "required": 7884
+    }
+  },
+  {
+    "category": "stored_sign",
+    "is_error": false,
+    "issue": {
+      "ruleId": "stored_sign",
+      "cellAddress": "G18",
+      "sheetName": "Review",
+      "formula": "=C18+D18",
+      "confidence": 0.7,
+      "message": "G18 净额公式为 =C18+D18。",
+      "context": "C18 是收入 49055；D18 是以账簿符号存储的支出 -405。净额应为收入减去支出的绝对金额，不另行退款或冲销。"
+    },
+    "label_basis": {
+      "kind": "value",
+      "actual": 48650,
+      "required": 48650
+    }
+  },
+  {
+    "category": "stored_sign",
+    "is_error": true,
+    "issue": {
+      "ruleId": "stored_sign",
+      "cellAddress": "G18",
+      "sheetName": "Review",
+      "formula": "=C18-D18",
+      "confidence": 0.7,
+      "message": "G18 净额公式为 =C18-D18。",
+      "context": "C18 是收入 49055；D18 是以账簿符号存储的支出 -405。净额应为收入减去支出的绝对金额，不另行退款或冲销。"
+    },
+    "label_basis": {
+      "kind": "value",
+      "actual": 49460,
+      "required": 48650
+    }
+  },
+  {
+    "category": "sum_scope",
+    "is_error": false,
+    "issue": {
+      "ruleId": "sum_scope",
+      "cellAddress": "Q82",
+      "sheetName": "Review",
+      "formula": "=SUM(M82,M83,M84,M85)",
+      "confidence": 0.7,
+      "message": "Q82 汇总公式为 =SUM(M82,M83,M84,M85)。",
+      "context": "应计入本期的单元格为 M82、M83、M84、M85；M86 为下期结转，未计入本期。源值为 {\"M82\": 728, \"M83\": 1470, \"M84\": 987, \"M85\": 1097, \"M86\": 2002}，本期无抵消或重复单据。"
+    },
+    "label_basis": {
+      "kind": "sum",
+      "actual_rows": [
+        "M82",
+        "M83",
+        "M84",
+        "M85"
+      ],
+      "required_rows": [
+        "M82",
+        "M83",
+        "M84",
+        "M85"
+      ],
+      "values": {
+        "M82": 728,
+        "M83": 1470,
+        "M84": 987,
+        "M85": 1097,
+        "M86": 2002
+      }
+    }
+  },
+  {
+    "category": "sum_scope",
+    "is_error": true,
+    "issue": {
+      "ruleId": "sum_scope",
+      "cellAddress": "Q82",
+      "sheetName": "Review",
+      "formula": "=SUM(M82,M83,M84,M85,M86)",
+      "confidence": 0.7,
+      "message": "Q82 汇总公式为 =SUM(M82,M83,M84,M85,M86)。",
+      "context": "应计入本期的单元格为 M82、M83、M84、M85；M86 为下期结转，未计入本期。源值为 {\"M82\": 728, \"M83\": 1470, \"M84\": 987, \"M85\": 1097, \"M86\": 2002}，本期无抵消或重复单据。"
+    },
+    "label_basis": {
+      "kind": "sum",
+      "actual_rows": [
+        "M82",
+        "M83",
+        "M84",
+        "M85",
+        "M86"
+      ],
+      "required_rows": [
+        "M82",
+        "M83",
+        "M84",
+        "M85"
+      ],
+      "values": {
+        "M82": 728,
+        "M83": 1470,
+        "M84": 987,
+        "M85": 1097,
+        "M86": 2002
+      }
+    }
+  },
+  {
+    "category": "text_identifier",
+    "is_error": false,
+    "issue": {
+      "ruleId": "text_identifier",
+      "cellAddress": "Q80",
+      "sheetName": "Review",
+      "formula": "",
+      "confidence": 0.7,
+      "message": "Q80 的数值外观内容“000424445”按文本存储。",
+      "context": "该列是客户标识，固定九位、前导零有意义，不参与数值运算；接口要求文本类型。"
+    },
+    "label_basis": {
+      "kind": "storage",
+      "value": "000424445",
+      "requires_numeric_storage": false
+    }
+  },
+  {
+    "category": "text_identifier",
+    "is_error": true,
+    "issue": {
+      "ruleId": "text_identifier",
+      "cellAddress": "Q80",
+      "sheetName": "Review",
+      "formula": "",
+      "confidence": 0.7,
+      "message": "Q80 的数值外观内容“000424445”按文本存储。",
+      "context": "该列是件数，必须为可直接参与 SUM 的数值类型，当前没有转换公式；表内汇总忽略文本项。"
+    },
+    "label_basis": {
+      "kind": "storage",
+      "value": "000424445",
+      "requires_numeric_storage": true
+    }
+  },
+  {
+    "category": "unit_conversion",
+    "is_error": false,
+    "issue": {
+      "ruleId": "unit_conversion",
+      "cellAddress": "AD345",
+      "sheetName": "Review",
+      "formula": "=Z345*1000",
+      "confidence": 0.7,
+      "message": "AD345 金额换算公式为 =Z345*1000。",
+      "context": "Z345 数值为 62563，来源表头单位为 千元。目标接口一律接收元，无汇率、税额或其他缩放。"
+    },
+    "label_basis": {
+      "kind": "value",
+      "actual": 62563000,
+      "required": 62563000
+    }
+  },
+  {
+    "category": "unit_conversion",
+    "is_error": true,
+    "issue": {
+      "ruleId": "unit_conversion",
+      "cellAddress": "AD345",
+      "sheetName": "Review",
+      "formula": "=Z345*1",
+      "confidence": 0.7,
+      "message": "AD345 金额换算公式为 =Z345*1。",
+      "context": "Z345 数值为 62563，来源表头单位为 千元。目标接口一律接收元，无汇率、税额或其他缩放。"
+    },
+    "label_basis": {
+      "kind": "value",
+      "actual": 62563,
+      "required": 62563000
+    }
+  }
+]

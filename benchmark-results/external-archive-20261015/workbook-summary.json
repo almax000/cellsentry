@@ -1,0 +1,2463 @@
+{
+  "totalFiles": 316,
+  "readable": 222,
+  "unsupported": 78,
+  "failed": 16,
+  "groups": {
+    "01_synthetic_spreadsheets/corpus": {
+      "files": 137,
+      "readable": 137,
+      "unsupported": 0,
+      "failed": 0,
+      "alerts": 470
+    },
+    "02_regression_cases/community_cases": {
+      "files": 3,
+      "readable": 3,
+      "unsupported": 0,
+      "failed": 0,
+      "alerts": 9
+    },
+    "02_regression_cases/electron_fixtures": {
+      "files": 3,
+      "readable": 3,
+      "unsupported": 0,
+      "failed": 0,
+      "alerts": 4
+    },
+    "03_historical_real_world/cn": {
+      "files": 78,
+      "readable": 0,
+      "unsupported": 78,
+      "failed": 0,
+      "alerts": 0
+    },
+    "03_historical_real_world/cn_xlsx": {
+      "files": 78,
+      "readable": 65,
+      "unsupported": 0,
+      "failed": 13,
+      "alerts": 34262
+    },
+    "03_historical_real_world/en": {
+      "files": 14,
+      "readable": 11,
+      "unsupported": 0,
+      "failed": 3,
+      "alerts": 3361
+    },
+    "04_public_financial_samples/sec_edgar": {
+      "files": 3,
+      "readable": 3,
+      "unsupported": 0,
+      "failed": 0,
+      "alerts": 31
+    }
+  },
+  "corpus": {
+    "files": 137,
+    "expectedRules": 124,
+    "hitRules": 113,
+    "ruleCoverage": 0.9112903225806451,
+    "expectedCells": 244,
+    "hitCells": 224,
+    "cellCoverage": 0.9180327868852459,
+    "cleanFiles": 20,
+    "cleanWithoutAlerts": 20,
+    "details": [
+      {
+        "file": "en/hardcoded_summary_1.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "detected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "expected_cells": [
+          "B7"
+        ],
+        "detected_cells": [
+          "B7"
+        ]
+      },
+      {
+        "file": "en/hardcoded_summary_2.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "detected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "expected_cells": [
+          "B7"
+        ],
+        "detected_cells": [
+          "B7"
+        ]
+      },
+      {
+        "file": "en/hardcoded_summary_3.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "detected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "expected_cells": [
+          "B7"
+        ],
+        "detected_cells": [
+          "B7"
+        ]
+      },
+      {
+        "file": "en/hardcoded_formula_col.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "detected_rules": [
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "expected_cells": [
+          "C6"
+        ],
+        "detected_cells": [
+          "C6"
+        ]
+      },
+      {
+        "file": "en/two_digit_year.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "TWO_DIGIT_YEAR"
+        ],
+        "detected_rules": [
+          "DATE_AMBIGUITY",
+          "TWO_DIGIT_YEAR"
+        ],
+        "expected_cells": [
+          "A2",
+          "A3",
+          "A4",
+          "A5"
+        ],
+        "detected_cells": [
+          "A2",
+          "A3",
+          "A4",
+          "A5"
+        ]
+      },
+      {
+        "file": "en/date_ambiguity.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "DATE_AMBIGUITY"
+        ],
+        "detected_rules": [
+          "DATE_AMBIGUITY"
+        ],
+        "expected_cells": [
+          "A2",
+          "A3",
+          "A4",
+          "A5",
+          "A6"
+        ],
+        "detected_cells": [
+          "A2",
+          "A3",
+          "A4",
+          "A5"
+        ]
+      },
+      {
+        "file": "en/circular_ref.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "CIRCULAR_REFERENCE"
+        ],
+        "detected_rules": [
+          "CIRCULAR_REFERENCE",
+          "EMPTY_CELL_REFERENCES"
+        ],
+        "expected_cells": [
+          "B6"
+        ],
+        "detected_cells": [
+          "B6"
+        ]
+      },
+      {
+        "file": "en/function_spelling.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "FUNCTION_SPELLING"
+        ],
+        "detected_rules": [
+          "FUNCTION_SPELLING",
+          "INCONSISTENT_FORMULA"
+        ],
+        "expected_cells": [
+          "C2",
+          "C3",
+          "C4"
+        ],
+        "detected_cells": [
+          "C2",
+          "C3",
+          "C4"
+        ]
+      },
+      {
+        "file": "en/inconsistent_formula.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "INCONSISTENT_FORMULA"
+        ],
+        "detected_rules": [
+          "INCONSISTENT_FORMULA"
+        ],
+        "expected_cells": [
+          "C7"
+        ],
+        "detected_cells": [
+          "C7"
+        ]
+      },
+      {
+        "file": "en/missing_formula.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "detected_rules": [
+          "UNIT_INCONSISTENCY",
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "expected_cells": [
+          "C5"
+        ],
+        "detected_cells": [
+          "C5"
+        ]
+      },
+      {
+        "file": "en/clean_no_errors.xlsx",
+        "readable": true,
+        "expected_rules": [],
+        "detected_rules": [],
+        "expected_cells": [],
+        "detected_cells": []
+      },
+      {
+        "file": "en/mixed_errors.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY",
+          "TWO_DIGIT_YEAR"
+        ],
+        "detected_rules": [
+          "DATE_AMBIGUITY",
+          "TWO_DIGIT_YEAR",
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "expected_cells": [
+          "A2",
+          "A3",
+          "A4",
+          "A5",
+          "C8"
+        ],
+        "detected_cells": [
+          "A2",
+          "A3",
+          "A4",
+          "A5",
+          "A6",
+          "A7",
+          "D5"
+        ]
+      },
+      {
+        "file": "en/ratio_column.xlsx",
+        "readable": true,
+        "expected_rules": [],
+        "detected_rules": [],
+        "expected_cells": [],
+        "detected_cells": []
+      },
+      {
+        "file": "en/percentage_format.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "PERCENTAGE_FORMAT"
+        ],
+        "detected_rules": [
+          "PERCENTAGE_FORMAT",
+          "MARGIN_MISSING_DIV",
+          "DOUBLE_PERCENTAGE"
+        ],
+        "expected_cells": [
+          "C2",
+          "C3",
+          "C4",
+          "C5",
+          "C6",
+          "C7"
+        ],
+        "detected_cells": [
+          "C2",
+          "C3",
+          "C4",
+          "C5",
+          "C6",
+          "C7"
+        ]
+      },
+      {
+        "file": "ja/hardcoded_summary_1.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "detected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "expected_cells": [
+          "B7"
+        ],
+        "detected_cells": [
+          "B7"
+        ]
+      },
+      {
+        "file": "ja/hardcoded_summary_2.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "detected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "expected_cells": [
+          "B7"
+        ],
+        "detected_cells": [
+          "B7"
+        ]
+      },
+      {
+        "file": "ja/hardcoded_summary_3.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "detected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "expected_cells": [
+          "B7"
+        ],
+        "detected_cells": [
+          "B7"
+        ]
+      },
+      {
+        "file": "ja/hardcoded_formula_col.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "detected_rules": [
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "expected_cells": [
+          "C6"
+        ],
+        "detected_cells": [
+          "C6"
+        ]
+      },
+      {
+        "file": "ja/date_ambiguity.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "DATE_AMBIGUITY"
+        ],
+        "detected_rules": [
+          "DATE_AMBIGUITY"
+        ],
+        "expected_cells": [
+          "A2",
+          "A3"
+        ],
+        "detected_cells": [
+          "A2",
+          "A3"
+        ]
+      },
+      {
+        "file": "ja/circular_ref.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "CIRCULAR_REFERENCE"
+        ],
+        "detected_rules": [
+          "CIRCULAR_REFERENCE",
+          "EMPTY_CELL_REFERENCES"
+        ],
+        "expected_cells": [
+          "B6"
+        ],
+        "detected_cells": [
+          "B6"
+        ]
+      },
+      {
+        "file": "ja/function_spelling.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "FUNCTION_SPELLING"
+        ],
+        "detected_rules": [
+          "FUNCTION_SPELLING",
+          "INCONSISTENT_FORMULA"
+        ],
+        "expected_cells": [
+          "C2",
+          "C3",
+          "C4"
+        ],
+        "detected_cells": [
+          "C2",
+          "C3",
+          "C4"
+        ]
+      },
+      {
+        "file": "ja/inconsistent_formula.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "INCONSISTENT_FORMULA"
+        ],
+        "detected_rules": [
+          "INCONSISTENT_FORMULA"
+        ],
+        "expected_cells": [
+          "C7"
+        ],
+        "detected_cells": [
+          "C7"
+        ]
+      },
+      {
+        "file": "ja/missing_formula.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "detected_rules": [
+          "UNIT_INCONSISTENCY",
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "expected_cells": [
+          "C5"
+        ],
+        "detected_cells": [
+          "C5"
+        ]
+      },
+      {
+        "file": "ja/clean_no_errors.xlsx",
+        "readable": true,
+        "expected_rules": [],
+        "detected_rules": [],
+        "expected_cells": [],
+        "detected_cells": []
+      },
+      {
+        "file": "ja/mixed_errors.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "detected_rules": [
+          "DATE_AMBIGUITY",
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "expected_cells": [
+          "C8"
+        ],
+        "detected_cells": [
+          "A2",
+          "A3",
+          "A4",
+          "A5",
+          "A6",
+          "A7",
+          "D5"
+        ]
+      },
+      {
+        "file": "ja/ratio_column.xlsx",
+        "readable": true,
+        "expected_rules": [],
+        "detected_rules": [],
+        "expected_cells": [],
+        "detected_cells": []
+      },
+      {
+        "file": "ja/percentage_format.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "PERCENTAGE_FORMAT"
+        ],
+        "detected_rules": [
+          "PERCENTAGE_FORMAT",
+          "MARGIN_MISSING_DIV",
+          "DOUBLE_PERCENTAGE"
+        ],
+        "expected_cells": [
+          "C2",
+          "C3",
+          "C4",
+          "C5",
+          "C6",
+          "C7"
+        ],
+        "detected_cells": [
+          "C2",
+          "C3",
+          "C4",
+          "C5",
+          "C6",
+          "C7"
+        ]
+      },
+      {
+        "file": "zh/hardcoded_summary_1.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "detected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "expected_cells": [
+          "B7"
+        ],
+        "detected_cells": [
+          "B7"
+        ]
+      },
+      {
+        "file": "zh/hardcoded_summary_2.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "detected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "expected_cells": [
+          "B7"
+        ],
+        "detected_cells": [
+          "B7"
+        ]
+      },
+      {
+        "file": "zh/hardcoded_summary_3.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "detected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "expected_cells": [
+          "B7"
+        ],
+        "detected_cells": [
+          "B7"
+        ]
+      },
+      {
+        "file": "zh/hardcoded_formula_col.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "detected_rules": [
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "expected_cells": [
+          "C6"
+        ],
+        "detected_cells": [
+          "C6"
+        ]
+      },
+      {
+        "file": "zh/date_ambiguity.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "DATE_AMBIGUITY"
+        ],
+        "detected_rules": [
+          "DATE_AMBIGUITY"
+        ],
+        "expected_cells": [
+          "A2",
+          "A3"
+        ],
+        "detected_cells": [
+          "A2"
+        ]
+      },
+      {
+        "file": "zh/circular_ref.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "CIRCULAR_REFERENCE"
+        ],
+        "detected_rules": [
+          "CIRCULAR_REFERENCE",
+          "EMPTY_CELL_REFERENCES"
+        ],
+        "expected_cells": [
+          "B6"
+        ],
+        "detected_cells": [
+          "B6"
+        ]
+      },
+      {
+        "file": "zh/function_spelling.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "FUNCTION_SPELLING"
+        ],
+        "detected_rules": [
+          "FUNCTION_SPELLING",
+          "INCONSISTENT_FORMULA"
+        ],
+        "expected_cells": [
+          "C2",
+          "C3",
+          "C4"
+        ],
+        "detected_cells": [
+          "C2",
+          "C3",
+          "C4"
+        ]
+      },
+      {
+        "file": "zh/inconsistent_formula.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "INCONSISTENT_FORMULA"
+        ],
+        "detected_rules": [
+          "INCONSISTENT_FORMULA"
+        ],
+        "expected_cells": [
+          "C7"
+        ],
+        "detected_cells": [
+          "C7"
+        ]
+      },
+      {
+        "file": "zh/missing_formula.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "detected_rules": [
+          "UNIT_INCONSISTENCY",
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "expected_cells": [
+          "C5"
+        ],
+        "detected_cells": [
+          "C5"
+        ]
+      },
+      {
+        "file": "zh/clean_no_errors.xlsx",
+        "readable": true,
+        "expected_rules": [],
+        "detected_rules": [],
+        "expected_cells": [],
+        "detected_cells": []
+      },
+      {
+        "file": "zh/mixed_errors.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "detected_rules": [
+          "DATE_AMBIGUITY",
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "expected_cells": [
+          "C8"
+        ],
+        "detected_cells": [
+          "A2",
+          "A3",
+          "A4",
+          "A5",
+          "A6",
+          "A7",
+          "D5"
+        ]
+      },
+      {
+        "file": "zh/ratio_column.xlsx",
+        "readable": true,
+        "expected_rules": [],
+        "detected_rules": [],
+        "expected_cells": [],
+        "detected_cells": []
+      },
+      {
+        "file": "zh/percentage_format.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "PERCENTAGE_FORMAT"
+        ],
+        "detected_rules": [
+          "PERCENTAGE_FORMAT",
+          "MARGIN_MISSING_DIV",
+          "DOUBLE_PERCENTAGE"
+        ],
+        "expected_cells": [
+          "C2",
+          "C3",
+          "C4",
+          "C5",
+          "C6",
+          "C7"
+        ],
+        "detected_cells": [
+          "C2",
+          "C3",
+          "C4",
+          "C5",
+          "C6",
+          "C7"
+        ]
+      },
+      {
+        "file": "de/hardcoded_summary_1.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "detected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "expected_cells": [
+          "B7"
+        ],
+        "detected_cells": [
+          "B7"
+        ]
+      },
+      {
+        "file": "de/hardcoded_summary_2.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "detected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "expected_cells": [
+          "B7"
+        ],
+        "detected_cells": [
+          "B7"
+        ]
+      },
+      {
+        "file": "de/hardcoded_summary_3.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "detected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "expected_cells": [
+          "B7"
+        ],
+        "detected_cells": [
+          "B7"
+        ]
+      },
+      {
+        "file": "de/hardcoded_formula_col.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "detected_rules": [
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "expected_cells": [
+          "C6"
+        ],
+        "detected_cells": [
+          "C6"
+        ]
+      },
+      {
+        "file": "de/two_digit_year.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "TWO_DIGIT_YEAR"
+        ],
+        "detected_rules": [
+          "DATE_AMBIGUITY",
+          "TWO_DIGIT_YEAR"
+        ],
+        "expected_cells": [
+          "A2",
+          "A3",
+          "A4",
+          "A5"
+        ],
+        "detected_cells": [
+          "A2",
+          "A3",
+          "A4",
+          "A5"
+        ]
+      },
+      {
+        "file": "de/date_ambiguity.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "DATE_AMBIGUITY"
+        ],
+        "detected_rules": [
+          "DATE_AMBIGUITY"
+        ],
+        "expected_cells": [
+          "A2",
+          "A3",
+          "A4",
+          "A5",
+          "A6"
+        ],
+        "detected_cells": [
+          "A2",
+          "A3",
+          "A4",
+          "A5",
+          "A6"
+        ]
+      },
+      {
+        "file": "de/circular_ref.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "CIRCULAR_REFERENCE"
+        ],
+        "detected_rules": [
+          "CIRCULAR_REFERENCE",
+          "EMPTY_CELL_REFERENCES"
+        ],
+        "expected_cells": [
+          "B6"
+        ],
+        "detected_cells": [
+          "B6"
+        ]
+      },
+      {
+        "file": "de/function_spelling.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "FUNCTION_SPELLING"
+        ],
+        "detected_rules": [
+          "FUNCTION_SPELLING",
+          "INCONSISTENT_FORMULA"
+        ],
+        "expected_cells": [
+          "C2",
+          "C3",
+          "C4"
+        ],
+        "detected_cells": [
+          "C2",
+          "C3",
+          "C4"
+        ]
+      },
+      {
+        "file": "de/inconsistent_formula.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "INCONSISTENT_FORMULA"
+        ],
+        "detected_rules": [
+          "INCONSISTENT_FORMULA"
+        ],
+        "expected_cells": [
+          "C7"
+        ],
+        "detected_cells": [
+          "C7"
+        ]
+      },
+      {
+        "file": "de/missing_formula.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "detected_rules": [
+          "UNIT_INCONSISTENCY",
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "expected_cells": [
+          "C5"
+        ],
+        "detected_cells": [
+          "C5"
+        ]
+      },
+      {
+        "file": "de/clean_no_errors.xlsx",
+        "readable": true,
+        "expected_rules": [],
+        "detected_rules": [],
+        "expected_cells": [],
+        "detected_cells": []
+      },
+      {
+        "file": "de/mixed_errors.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY",
+          "TWO_DIGIT_YEAR"
+        ],
+        "detected_rules": [
+          "DATE_AMBIGUITY",
+          "TWO_DIGIT_YEAR",
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "expected_cells": [
+          "A2",
+          "A3",
+          "A4",
+          "A5",
+          "C8"
+        ],
+        "detected_cells": [
+          "A2",
+          "A3",
+          "A4",
+          "A5",
+          "A6",
+          "A7",
+          "D5"
+        ]
+      },
+      {
+        "file": "de/ratio_column.xlsx",
+        "readable": true,
+        "expected_rules": [],
+        "detected_rules": [],
+        "expected_cells": [],
+        "detected_cells": []
+      },
+      {
+        "file": "de/percentage_format.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "PERCENTAGE_FORMAT"
+        ],
+        "detected_rules": [
+          "PERCENTAGE_FORMAT",
+          "MARGIN_MISSING_DIV",
+          "DOUBLE_PERCENTAGE"
+        ],
+        "expected_cells": [
+          "C2",
+          "C3",
+          "C4",
+          "C5",
+          "C6",
+          "C7"
+        ],
+        "detected_cells": [
+          "C2",
+          "C3",
+          "C4",
+          "C5",
+          "C6",
+          "C7"
+        ]
+      },
+      {
+        "file": "fr/hardcoded_summary_1.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "detected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "expected_cells": [
+          "B7"
+        ],
+        "detected_cells": [
+          "B7"
+        ]
+      },
+      {
+        "file": "fr/hardcoded_summary_2.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "detected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "expected_cells": [
+          "B7"
+        ],
+        "detected_cells": [
+          "B7"
+        ]
+      },
+      {
+        "file": "fr/hardcoded_summary_3.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "detected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "expected_cells": [
+          "B7"
+        ],
+        "detected_cells": [
+          "B7"
+        ]
+      },
+      {
+        "file": "fr/hardcoded_formula_col.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "detected_rules": [
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "expected_cells": [
+          "C6"
+        ],
+        "detected_cells": [
+          "C6"
+        ]
+      },
+      {
+        "file": "fr/two_digit_year.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "TWO_DIGIT_YEAR"
+        ],
+        "detected_rules": [
+          "DATE_AMBIGUITY",
+          "TWO_DIGIT_YEAR"
+        ],
+        "expected_cells": [
+          "A2",
+          "A3",
+          "A4",
+          "A5"
+        ],
+        "detected_cells": [
+          "A2",
+          "A3",
+          "A4"
+        ]
+      },
+      {
+        "file": "fr/date_ambiguity.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "DATE_AMBIGUITY"
+        ],
+        "detected_rules": [
+          "DATE_AMBIGUITY"
+        ],
+        "expected_cells": [
+          "A2",
+          "A3",
+          "A4",
+          "A5"
+        ],
+        "detected_cells": [
+          "A2",
+          "A3",
+          "A4",
+          "A5"
+        ]
+      },
+      {
+        "file": "fr/circular_ref.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "CIRCULAR_REFERENCE"
+        ],
+        "detected_rules": [
+          "CIRCULAR_REFERENCE",
+          "EMPTY_CELL_REFERENCES"
+        ],
+        "expected_cells": [
+          "B6"
+        ],
+        "detected_cells": [
+          "B6"
+        ]
+      },
+      {
+        "file": "fr/function_spelling.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "FUNCTION_SPELLING"
+        ],
+        "detected_rules": [
+          "FUNCTION_SPELLING",
+          "INCONSISTENT_FORMULA"
+        ],
+        "expected_cells": [
+          "C2",
+          "C3",
+          "C4"
+        ],
+        "detected_cells": [
+          "C2",
+          "C3",
+          "C4"
+        ]
+      },
+      {
+        "file": "fr/inconsistent_formula.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "INCONSISTENT_FORMULA"
+        ],
+        "detected_rules": [
+          "INCONSISTENT_FORMULA"
+        ],
+        "expected_cells": [
+          "C7"
+        ],
+        "detected_cells": [
+          "C7"
+        ]
+      },
+      {
+        "file": "fr/missing_formula.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "detected_rules": [
+          "UNIT_INCONSISTENCY",
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "expected_cells": [
+          "C5"
+        ],
+        "detected_cells": [
+          "C5"
+        ]
+      },
+      {
+        "file": "fr/clean_no_errors.xlsx",
+        "readable": true,
+        "expected_rules": [],
+        "detected_rules": [],
+        "expected_cells": [],
+        "detected_cells": []
+      },
+      {
+        "file": "fr/mixed_errors.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY",
+          "TWO_DIGIT_YEAR"
+        ],
+        "detected_rules": [
+          "DATE_AMBIGUITY",
+          "TWO_DIGIT_YEAR",
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "expected_cells": [
+          "A2",
+          "A3",
+          "A4",
+          "A5",
+          "C8"
+        ],
+        "detected_cells": [
+          "A2",
+          "A3",
+          "A4",
+          "A6",
+          "A7",
+          "D5"
+        ]
+      },
+      {
+        "file": "fr/ratio_column.xlsx",
+        "readable": true,
+        "expected_rules": [],
+        "detected_rules": [],
+        "expected_cells": [],
+        "detected_cells": []
+      },
+      {
+        "file": "fr/percentage_format.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "PERCENTAGE_FORMAT"
+        ],
+        "detected_rules": [
+          "PERCENTAGE_FORMAT",
+          "MARGIN_MISSING_DIV",
+          "DOUBLE_PERCENTAGE"
+        ],
+        "expected_cells": [
+          "C2",
+          "C3",
+          "C4",
+          "C5",
+          "C6",
+          "C7"
+        ],
+        "detected_cells": [
+          "C2",
+          "C3",
+          "C4",
+          "C5",
+          "C6",
+          "C7"
+        ]
+      },
+      {
+        "file": "es/hardcoded_summary_1.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "detected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "expected_cells": [
+          "B7"
+        ],
+        "detected_cells": [
+          "B7"
+        ]
+      },
+      {
+        "file": "es/hardcoded_summary_2.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "detected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "expected_cells": [
+          "B7"
+        ],
+        "detected_cells": [
+          "B7"
+        ]
+      },
+      {
+        "file": "es/hardcoded_summary_3.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "detected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "expected_cells": [
+          "B7"
+        ],
+        "detected_cells": [
+          "B7"
+        ]
+      },
+      {
+        "file": "es/hardcoded_formula_col.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "detected_rules": [
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "expected_cells": [
+          "C6"
+        ],
+        "detected_cells": [
+          "C6"
+        ]
+      },
+      {
+        "file": "es/two_digit_year.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "TWO_DIGIT_YEAR"
+        ],
+        "detected_rules": [
+          "DATE_AMBIGUITY",
+          "TWO_DIGIT_YEAR"
+        ],
+        "expected_cells": [
+          "A2",
+          "A3"
+        ],
+        "detected_cells": [
+          "A2",
+          "A3"
+        ]
+      },
+      {
+        "file": "es/date_ambiguity.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "DATE_AMBIGUITY"
+        ],
+        "detected_rules": [
+          "DATE_AMBIGUITY"
+        ],
+        "expected_cells": [
+          "A2",
+          "A3",
+          "A4"
+        ],
+        "detected_cells": [
+          "A2",
+          "A3",
+          "A4"
+        ]
+      },
+      {
+        "file": "es/circular_ref.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "CIRCULAR_REFERENCE"
+        ],
+        "detected_rules": [
+          "CIRCULAR_REFERENCE",
+          "EMPTY_CELL_REFERENCES"
+        ],
+        "expected_cells": [
+          "B6"
+        ],
+        "detected_cells": [
+          "B6"
+        ]
+      },
+      {
+        "file": "es/function_spelling.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "FUNCTION_SPELLING"
+        ],
+        "detected_rules": [
+          "FUNCTION_SPELLING",
+          "INCONSISTENT_FORMULA"
+        ],
+        "expected_cells": [
+          "C2",
+          "C3",
+          "C4"
+        ],
+        "detected_cells": [
+          "C2",
+          "C3",
+          "C4"
+        ]
+      },
+      {
+        "file": "es/inconsistent_formula.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "INCONSISTENT_FORMULA"
+        ],
+        "detected_rules": [
+          "INCONSISTENT_FORMULA"
+        ],
+        "expected_cells": [
+          "C7"
+        ],
+        "detected_cells": [
+          "C7"
+        ]
+      },
+      {
+        "file": "es/missing_formula.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "detected_rules": [
+          "UNIT_INCONSISTENCY",
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "expected_cells": [
+          "C5"
+        ],
+        "detected_cells": [
+          "C5"
+        ]
+      },
+      {
+        "file": "es/clean_no_errors.xlsx",
+        "readable": true,
+        "expected_rules": [],
+        "detected_rules": [],
+        "expected_cells": [],
+        "detected_cells": []
+      },
+      {
+        "file": "es/mixed_errors.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY",
+          "TWO_DIGIT_YEAR"
+        ],
+        "detected_rules": [
+          "DATE_AMBIGUITY",
+          "TWO_DIGIT_YEAR",
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "expected_cells": [
+          "A2",
+          "A3",
+          "C8"
+        ],
+        "detected_cells": [
+          "A2",
+          "A3",
+          "A4",
+          "A5",
+          "A6",
+          "A7",
+          "D5"
+        ]
+      },
+      {
+        "file": "es/ratio_column.xlsx",
+        "readable": true,
+        "expected_rules": [],
+        "detected_rules": [],
+        "expected_cells": [],
+        "detected_cells": []
+      },
+      {
+        "file": "es/percentage_format.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "PERCENTAGE_FORMAT"
+        ],
+        "detected_rules": [
+          "PERCENTAGE_FORMAT",
+          "MARGIN_MISSING_DIV",
+          "DOUBLE_PERCENTAGE"
+        ],
+        "expected_cells": [
+          "C2",
+          "C3",
+          "C4",
+          "C5",
+          "C6",
+          "C7"
+        ],
+        "detected_cells": [
+          "C2",
+          "C3",
+          "C4",
+          "C5",
+          "C6",
+          "C7"
+        ]
+      },
+      {
+        "file": "pt/hardcoded_summary_1.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "detected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "expected_cells": [
+          "B7"
+        ],
+        "detected_cells": [
+          "B7"
+        ]
+      },
+      {
+        "file": "pt/hardcoded_summary_2.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "detected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "expected_cells": [
+          "B7"
+        ],
+        "detected_cells": [
+          "B7"
+        ]
+      },
+      {
+        "file": "pt/hardcoded_summary_3.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "detected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "expected_cells": [
+          "B7"
+        ],
+        "detected_cells": [
+          "B7"
+        ]
+      },
+      {
+        "file": "pt/hardcoded_formula_col.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "detected_rules": [
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "expected_cells": [
+          "C6"
+        ],
+        "detected_cells": [
+          "C6"
+        ]
+      },
+      {
+        "file": "pt/two_digit_year.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "TWO_DIGIT_YEAR"
+        ],
+        "detected_rules": [
+          "DATE_AMBIGUITY",
+          "TWO_DIGIT_YEAR"
+        ],
+        "expected_cells": [
+          "A2",
+          "A3"
+        ],
+        "detected_cells": [
+          "A2",
+          "A3"
+        ]
+      },
+      {
+        "file": "pt/date_ambiguity.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "DATE_AMBIGUITY"
+        ],
+        "detected_rules": [
+          "DATE_AMBIGUITY"
+        ],
+        "expected_cells": [
+          "A2",
+          "A3"
+        ],
+        "detected_cells": [
+          "A2",
+          "A3"
+        ]
+      },
+      {
+        "file": "pt/circular_ref.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "CIRCULAR_REFERENCE"
+        ],
+        "detected_rules": [
+          "CIRCULAR_REFERENCE",
+          "EMPTY_CELL_REFERENCES"
+        ],
+        "expected_cells": [
+          "B6"
+        ],
+        "detected_cells": [
+          "B6"
+        ]
+      },
+      {
+        "file": "pt/function_spelling.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "FUNCTION_SPELLING"
+        ],
+        "detected_rules": [
+          "FUNCTION_SPELLING",
+          "INCONSISTENT_FORMULA"
+        ],
+        "expected_cells": [
+          "C2",
+          "C3",
+          "C4"
+        ],
+        "detected_cells": [
+          "C2",
+          "C3",
+          "C4"
+        ]
+      },
+      {
+        "file": "pt/inconsistent_formula.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "INCONSISTENT_FORMULA"
+        ],
+        "detected_rules": [
+          "INCONSISTENT_FORMULA"
+        ],
+        "expected_cells": [
+          "C7"
+        ],
+        "detected_cells": [
+          "C7"
+        ]
+      },
+      {
+        "file": "pt/missing_formula.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "detected_rules": [
+          "UNIT_INCONSISTENCY",
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "expected_cells": [
+          "C5"
+        ],
+        "detected_cells": [
+          "C5"
+        ]
+      },
+      {
+        "file": "pt/clean_no_errors.xlsx",
+        "readable": true,
+        "expected_rules": [],
+        "detected_rules": [],
+        "expected_cells": [],
+        "detected_cells": []
+      },
+      {
+        "file": "pt/mixed_errors.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY",
+          "TWO_DIGIT_YEAR"
+        ],
+        "detected_rules": [
+          "DATE_AMBIGUITY",
+          "TWO_DIGIT_YEAR",
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "expected_cells": [
+          "A2",
+          "A3",
+          "C8"
+        ],
+        "detected_cells": [
+          "A2",
+          "A3",
+          "A4",
+          "A5",
+          "A6",
+          "A7",
+          "D5"
+        ]
+      },
+      {
+        "file": "pt/ratio_column.xlsx",
+        "readable": true,
+        "expected_rules": [],
+        "detected_rules": [],
+        "expected_cells": [],
+        "detected_cells": []
+      },
+      {
+        "file": "pt/percentage_format.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "PERCENTAGE_FORMAT"
+        ],
+        "detected_rules": [
+          "PERCENTAGE_FORMAT",
+          "MARGIN_MISSING_DIV",
+          "DOUBLE_PERCENTAGE"
+        ],
+        "expected_cells": [
+          "C2",
+          "C3",
+          "C4",
+          "C5",
+          "C6",
+          "C7"
+        ],
+        "detected_cells": [
+          "C2",
+          "C3",
+          "C4",
+          "C5",
+          "C6",
+          "C7"
+        ]
+      },
+      {
+        "file": "it/hardcoded_summary_1.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "detected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "expected_cells": [
+          "B7"
+        ],
+        "detected_cells": [
+          "B7"
+        ]
+      },
+      {
+        "file": "it/hardcoded_summary_2.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "detected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "expected_cells": [
+          "B7"
+        ],
+        "detected_cells": [
+          "B7"
+        ]
+      },
+      {
+        "file": "it/hardcoded_summary_3.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "detected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "expected_cells": [
+          "B7"
+        ],
+        "detected_cells": [
+          "B7"
+        ]
+      },
+      {
+        "file": "it/hardcoded_formula_col.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "detected_rules": [
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "expected_cells": [
+          "C6"
+        ],
+        "detected_cells": [
+          "C6"
+        ]
+      },
+      {
+        "file": "it/two_digit_year.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "TWO_DIGIT_YEAR"
+        ],
+        "detected_rules": [
+          "DATE_AMBIGUITY",
+          "TWO_DIGIT_YEAR"
+        ],
+        "expected_cells": [
+          "A2",
+          "A3"
+        ],
+        "detected_cells": [
+          "A2",
+          "A3"
+        ]
+      },
+      {
+        "file": "it/date_ambiguity.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "DATE_AMBIGUITY"
+        ],
+        "detected_rules": [
+          "DATE_AMBIGUITY"
+        ],
+        "expected_cells": [
+          "A2",
+          "A3"
+        ],
+        "detected_cells": [
+          "A2",
+          "A3"
+        ]
+      },
+      {
+        "file": "it/circular_ref.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "CIRCULAR_REFERENCE"
+        ],
+        "detected_rules": [
+          "CIRCULAR_REFERENCE",
+          "EMPTY_CELL_REFERENCES"
+        ],
+        "expected_cells": [
+          "B6"
+        ],
+        "detected_cells": [
+          "B6"
+        ]
+      },
+      {
+        "file": "it/function_spelling.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "FUNCTION_SPELLING"
+        ],
+        "detected_rules": [
+          "FUNCTION_SPELLING",
+          "INCONSISTENT_FORMULA"
+        ],
+        "expected_cells": [
+          "C2",
+          "C3",
+          "C4"
+        ],
+        "detected_cells": [
+          "C2",
+          "C3",
+          "C4"
+        ]
+      },
+      {
+        "file": "it/inconsistent_formula.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "INCONSISTENT_FORMULA"
+        ],
+        "detected_rules": [
+          "INCONSISTENT_FORMULA"
+        ],
+        "expected_cells": [
+          "C7"
+        ],
+        "detected_cells": [
+          "C7"
+        ]
+      },
+      {
+        "file": "it/missing_formula.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "detected_rules": [
+          "UNIT_INCONSISTENCY",
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "expected_cells": [
+          "C5"
+        ],
+        "detected_cells": [
+          "C5"
+        ]
+      },
+      {
+        "file": "it/clean_no_errors.xlsx",
+        "readable": true,
+        "expected_rules": [],
+        "detected_rules": [],
+        "expected_cells": [],
+        "detected_cells": []
+      },
+      {
+        "file": "it/mixed_errors.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY",
+          "TWO_DIGIT_YEAR"
+        ],
+        "detected_rules": [
+          "DATE_AMBIGUITY",
+          "TWO_DIGIT_YEAR",
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "expected_cells": [
+          "A2",
+          "A3",
+          "C8"
+        ],
+        "detected_cells": [
+          "A2",
+          "A3",
+          "A4",
+          "A5",
+          "A6",
+          "A7",
+          "D5"
+        ]
+      },
+      {
+        "file": "it/ratio_column.xlsx",
+        "readable": true,
+        "expected_rules": [],
+        "detected_rules": [],
+        "expected_cells": [],
+        "detected_cells": []
+      },
+      {
+        "file": "it/percentage_format.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "PERCENTAGE_FORMAT"
+        ],
+        "detected_rules": [
+          "PERCENTAGE_FORMAT",
+          "MARGIN_MISSING_DIV",
+          "DOUBLE_PERCENTAGE"
+        ],
+        "expected_cells": [
+          "C2",
+          "C3",
+          "C4",
+          "C5",
+          "C6",
+          "C7"
+        ],
+        "detected_cells": [
+          "C2",
+          "C3",
+          "C4",
+          "C5",
+          "C6",
+          "C7"
+        ]
+      },
+      {
+        "file": "ko/hardcoded_summary_1.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "detected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "expected_cells": [
+          "B7"
+        ],
+        "detected_cells": [
+          "B7"
+        ]
+      },
+      {
+        "file": "ko/hardcoded_summary_2.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "detected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "expected_cells": [
+          "B7"
+        ],
+        "detected_cells": [
+          "B7"
+        ]
+      },
+      {
+        "file": "ko/hardcoded_summary_3.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "detected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "expected_cells": [
+          "B7"
+        ],
+        "detected_cells": [
+          "B7"
+        ]
+      },
+      {
+        "file": "ko/hardcoded_formula_col.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "detected_rules": [
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "expected_cells": [
+          "C6"
+        ],
+        "detected_cells": [
+          "C6"
+        ]
+      },
+      {
+        "file": "ko/date_ambiguity.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "DATE_AMBIGUITY"
+        ],
+        "detected_rules": [],
+        "expected_cells": [
+          "A2",
+          "A3"
+        ],
+        "detected_cells": []
+      },
+      {
+        "file": "ko/circular_ref.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "CIRCULAR_REFERENCE"
+        ],
+        "detected_rules": [
+          "CIRCULAR_REFERENCE",
+          "EMPTY_CELL_REFERENCES"
+        ],
+        "expected_cells": [
+          "B6"
+        ],
+        "detected_cells": [
+          "B6"
+        ]
+      },
+      {
+        "file": "ko/function_spelling.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "FUNCTION_SPELLING"
+        ],
+        "detected_rules": [
+          "FUNCTION_SPELLING",
+          "INCONSISTENT_FORMULA"
+        ],
+        "expected_cells": [
+          "C2",
+          "C3",
+          "C4"
+        ],
+        "detected_cells": [
+          "C2",
+          "C3",
+          "C4"
+        ]
+      },
+      {
+        "file": "ko/inconsistent_formula.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "INCONSISTENT_FORMULA"
+        ],
+        "detected_rules": [
+          "INCONSISTENT_FORMULA"
+        ],
+        "expected_cells": [
+          "C7"
+        ],
+        "detected_cells": [
+          "C7"
+        ]
+      },
+      {
+        "file": "ko/missing_formula.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "detected_rules": [
+          "UNIT_INCONSISTENCY",
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "expected_cells": [
+          "C5"
+        ],
+        "detected_cells": [
+          "C5"
+        ]
+      },
+      {
+        "file": "ko/clean_no_errors.xlsx",
+        "readable": true,
+        "expected_rules": [],
+        "detected_rules": [],
+        "expected_cells": [],
+        "detected_cells": []
+      },
+      {
+        "file": "ko/mixed_errors.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "detected_rules": [
+          "DATE_AMBIGUITY",
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "expected_cells": [
+          "C8"
+        ],
+        "detected_cells": [
+          "A2",
+          "A3",
+          "A4",
+          "A5",
+          "A6",
+          "A7",
+          "D5"
+        ]
+      },
+      {
+        "file": "ko/ratio_column.xlsx",
+        "readable": true,
+        "expected_rules": [],
+        "detected_rules": [],
+        "expected_cells": [],
+        "detected_cells": []
+      },
+      {
+        "file": "ko/percentage_format.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "PERCENTAGE_FORMAT"
+        ],
+        "detected_rules": [
+          "PERCENTAGE_FORMAT",
+          "MARGIN_MISSING_DIV",
+          "DOUBLE_PERCENTAGE"
+        ],
+        "expected_cells": [
+          "C2",
+          "C3",
+          "C4",
+          "C5",
+          "C6",
+          "C7"
+        ],
+        "detected_cells": [
+          "C2",
+          "C3",
+          "C4",
+          "C5",
+          "C6",
+          "C7"
+        ]
+      },
+      {
+        "file": "ru/hardcoded_summary_1.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "detected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "expected_cells": [
+          "B7"
+        ],
+        "detected_cells": [
+          "B7"
+        ]
+      },
+      {
+        "file": "ru/hardcoded_summary_2.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "detected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "expected_cells": [
+          "B7"
+        ],
+        "detected_cells": [
+          "B7"
+        ]
+      },
+      {
+        "file": "ru/hardcoded_summary_3.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "detected_rules": [
+          "HARDCODED_SUMMARY"
+        ],
+        "expected_cells": [
+          "B7"
+        ],
+        "detected_cells": [
+          "B7"
+        ]
+      },
+      {
+        "file": "ru/hardcoded_formula_col.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "detected_rules": [
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "expected_cells": [
+          "C6"
+        ],
+        "detected_cells": [
+          "C6"
+        ]
+      },
+      {
+        "file": "ru/two_digit_year.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "TWO_DIGIT_YEAR"
+        ],
+        "detected_rules": [
+          "DATE_AMBIGUITY",
+          "TWO_DIGIT_YEAR"
+        ],
+        "expected_cells": [
+          "A2",
+          "A3",
+          "A4",
+          "A5"
+        ],
+        "detected_cells": [
+          "A2",
+          "A3"
+        ]
+      },
+      {
+        "file": "ru/date_ambiguity.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "DATE_AMBIGUITY"
+        ],
+        "detected_rules": [
+          "DATE_AMBIGUITY"
+        ],
+        "expected_cells": [
+          "A2",
+          "A3",
+          "A4"
+        ],
+        "detected_cells": [
+          "A2",
+          "A3",
+          "A4"
+        ]
+      },
+      {
+        "file": "ru/circular_ref.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "CIRCULAR_REFERENCE"
+        ],
+        "detected_rules": [
+          "CIRCULAR_REFERENCE",
+          "EMPTY_CELL_REFERENCES"
+        ],
+        "expected_cells": [
+          "B6"
+        ],
+        "detected_cells": [
+          "B6"
+        ]
+      },
+      {
+        "file": "ru/function_spelling.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "FUNCTION_SPELLING"
+        ],
+        "detected_rules": [
+          "FUNCTION_SPELLING",
+          "INCONSISTENT_FORMULA"
+        ],
+        "expected_cells": [
+          "C2",
+          "C3",
+          "C4"
+        ],
+        "detected_cells": [
+          "C2",
+          "C3",
+          "C4"
+        ]
+      },
+      {
+        "file": "ru/inconsistent_formula.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "INCONSISTENT_FORMULA"
+        ],
+        "detected_rules": [
+          "INCONSISTENT_FORMULA"
+        ],
+        "expected_cells": [
+          "C7"
+        ],
+        "detected_cells": [
+          "C7"
+        ]
+      },
+      {
+        "file": "ru/missing_formula.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "detected_rules": [
+          "UNIT_INCONSISTENCY",
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "expected_cells": [
+          "C5"
+        ],
+        "detected_cells": [
+          "C5"
+        ]
+      },
+      {
+        "file": "ru/clean_no_errors.xlsx",
+        "readable": true,
+        "expected_rules": [],
+        "detected_rules": [],
+        "expected_cells": [],
+        "detected_cells": []
+      },
+      {
+        "file": "ru/mixed_errors.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "HARDCODED_SUMMARY",
+          "TWO_DIGIT_YEAR"
+        ],
+        "detected_rules": [
+          "DATE_AMBIGUITY",
+          "TWO_DIGIT_YEAR",
+          "HARDCODED_IN_FORMULA_COL"
+        ],
+        "expected_cells": [
+          "A2",
+          "A3",
+          "A4",
+          "A5",
+          "C8"
+        ],
+        "detected_cells": [
+          "A2",
+          "A3",
+          "A6",
+          "A7",
+          "D5"
+        ]
+      },
+      {
+        "file": "ru/ratio_column.xlsx",
+        "readable": true,
+        "expected_rules": [],
+        "detected_rules": [],
+        "expected_cells": [],
+        "detected_cells": []
+      },
+      {
+        "file": "ru/percentage_format.xlsx",
+        "readable": true,
+        "expected_rules": [
+          "PERCENTAGE_FORMAT"
+        ],
+        "detected_rules": [
+          "PERCENTAGE_FORMAT",
+          "MARGIN_MISSING_DIV",
+          "DOUBLE_PERCENTAGE"
+        ],
+        "expected_cells": [
+          "C2",
+          "C3",
+          "C4",
+          "C5",
+          "C6",
+          "C7"
+        ],
+        "detected_cells": [
+          "C2",
+          "C3",
+          "C4",
+          "C5",
+          "C6",
+          "C7"
+        ]
+      }
+    ]
+  },
+  "scope": "Existing TypeScript rule engine only; historical unlabeled workbook alerts are not scored as correct or incorrect. Manifest rule and cell coverage scored separately, not as paired annotations."
+}

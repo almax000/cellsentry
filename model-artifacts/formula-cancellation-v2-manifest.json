@@ -1,0 +1,95 @@
+{
+  "repository": "yourblacksky/cellsentry-formula-review",
+  "tag": "formula-cancellation-v2-20261016",
+  "assets": [
+    {
+      "file": "formula-cancellation-v2-best.zip",
+      "bytes": 48898527,
+      "sha256": "482d17b02b1430aaef42ae221de21d5ce66028afb0294f01a8548f4b4bd9c1be",
+      "url": "https://github.com/yourblacksky/cellsentry-formula-review/releases/download/formula-cancellation-v2-20261016/formula-cancellation-v2-best.zip"
+    },
+    {
+      "file": "cellsentry-minicpm5-2b-cancel2-q4_k_m.gguf",
+      "bytes": 1561314592,
+      "sha256": "61d9c8ab8007dbbde0eb004089d1411fb6ec7167031f9d6fcc5b521fe8ebe49a",
+      "url": "https://github.com/yourblacksky/cellsentry-formula-review/releases/download/formula-cancellation-v2-20261016/cellsentry-minicpm5-2b-cancel2-q4_k_m.gguf"
+    }
+  ],
+  "package": {
+    "base": "openbmb/MiniCPM5-2B",
+    "revision": "f97400052a43d642bbc6e9975e2397e3ae6a6b52",
+    "best_step": 340,
+    "files": [
+      {
+        "name": "LICENSE",
+        "bytes": 11358,
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      },
+      {
+        "name": "NOTICE.txt",
+        "bytes": 435,
+        "sha256": "1a2cc06d37431499274cfb3e295060f2e6fb96971bf8f4c6338acbd034e72e02"
+      },
+      {
+        "name": "adapter_config.json",
+        "bytes": 1213,
+        "sha256": "cbcf29a3252cc9fb057ea20d6ca60b062bd35f4e6032bf3ba0cdb2b04ec67f01"
+      },
+      {
+        "name": "adapter_model.safetensors",
+        "bytes": 50310776,
+        "sha256": "d303fa763daa90e16b0d1ef690a6197faa7aeb97fd007baea3546a217a3cba0e"
+      },
+      {
+        "name": "chat_template.jinja",
+        "bytes": 5547,
+        "sha256": "36640aceb48856ef32633fa4071287c41ce0a1a3d231c696000d2da8467a87fc"
+      },
+      {
+        "name": "comparison.json",
+        "bytes": 20785,
+        "sha256": "a011f22afbe54ccd9c781364fe0318f940588598c7cf3198a9a0db60c3a8d2ae"
+      },
+      {
+        "name": "cpu-runtime-verification.json",
+        "bytes": 1050,
+        "sha256": "0cf2f4518ac73889b3fef64a44c76a2fbd07a993c030e29f91e5ea446367e2c0"
+      },
+      {
+        "name": "merge-verification.json",
+        "bytes": 485,
+        "sha256": "018ae23e1b41f502ed494bb41191abb6fead7ebe95182dead0bda8a5452a2109"
+      },
+      {
+        "name": "model-source.json",
+        "bytes": 2326,
+        "sha256": "4bf04c4862c171505a0d60e32f453aeacc90b5631462f3dff0f1026438aef1f3"
+      },
+      {
+        "name": "report.md",
+        "bytes": 5558,
+        "sha256": "acc4ab3b41f946075fd0d0bbfba7f84fe807124604ccf7960945f52623418192"
+      },
+      {
+        "name": "summary.json",
+        "bytes": 2061,
+        "sha256": "2ee74dbc9d187a49db3a08c6c7f7cc7a38d6d2c783f92b220177cbe6404f71aa"
+      },
+      {
+        "name": "tokenizer.json",
+        "bytes": 9894271,
+        "sha256": "3e065a558a034185fe299917b398685c1facd0169a9eea1e629eb30c171fed81"
+      },
+      {
+        "name": "tokenizer_config.json",
+        "bytes": 451,
+        "sha256": "9ade1bc52582b9678995023a08617ab19528347811d06cb4ed658bc6d9348823"
+      },
+      {
+        "name": "validation-frozen-withdrawal-policy.json",
+        "bytes": 617,
+        "sha256": "ee37d2aa8898edc2e28a073322e10bf40efd67fc8aaf4e9084f8cd79d02f1cfc"
+      }
+    ]
+  }
+}

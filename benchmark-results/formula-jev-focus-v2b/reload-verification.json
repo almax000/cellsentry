@@ -1,0 +1,9 @@
+{
+  "case_id": "public-37bfd9325330f9c5-1-D39-duplicate-0",
+  "same_decision": true,
+  "probability_difference": 0.00019127130508422852,
+  "passed": true,
+  "expected_error": false,
+  "prediction_correct": false,
+  "note": "Serialization consistency only; this clean public-derived case remains a false positive"
+}

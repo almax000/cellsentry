@@ -46,6 +46,11 @@ let modelDownloader: ModelDownloader | null = null
 
 export function getModelsDir(): string {
   const { app } = require('electron') as typeof import('electron')
+  if (process.env.CELLSENTRY_MODEL_DIR) return process.env.CELLSENTRY_MODEL_DIR
+  const bundledModels = join(process.resourcesPath, 'models')
+  if (app.isPackaged && existsSync(bundledModels)) return bundledModels
+  const localModels = join(app.getAppPath(), '..', 'models')
+  if (!app.isPackaged && existsSync(localModels)) return localModels
   return join(app.getPath('userData'), 'models')
 }
 

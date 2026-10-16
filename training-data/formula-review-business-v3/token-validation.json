@@ -1,0 +1,68 @@
+{
+  "splits": {
+    "train": {
+      "count": 5520,
+      "max_tokens": 317,
+      "mean_tokens": 137.0
+    },
+    "validation": {
+      "count": 480,
+      "max_tokens": 319,
+      "mean_tokens": 144.3
+    },
+    "test": {
+      "count": 960,
+      "max_tokens": 307,
+      "mean_tokens": 132.4
+    },
+    "challenge": {
+      "count": 240,
+      "max_tokens": 320,
+      "mean_tokens": 159.0
+    },
+    "benchmark": {
+      "count": 180,
+      "max_tokens": 161,
+      "mean_tokens": 138.7
+    }
+  },
+  "over_limit": [],
+  "max_by_category": {
+    "rate_scale": 169,
+    "imported_literal": 146,
+    "date_order": 190,
+    "optional_blank": 196,
+    "archived_snapshot": 162,
+    "duplicate_key": 165,
+    "external_link": 190,
+    "lookup_match": 217,
+    "rounding_tolerance": 165,
+    "division_zero": 143,
+    "contract_literal": 159,
+    "unit_conversion": 162,
+    "seasonal_spike": 212,
+    "percent_scale": 145,
+    "text_number": 145,
+    "lookup_column": 269,
+    "aggregation_type": 169,
+    "sum_scope": 320,
+    "iterative_cycle": 201,
+    "iferror": 146,
+    "stored_sign": 168,
+    "average_total": 137,
+    "text_identifier": 155,
+    "empty_denominator": 157,
+    "if_boundary": 151,
+    "relative_reference": 146,
+    "sum_range": 149,
+    "rounding": 142,
+    "lookup_key_type": 188,
+    "broken_reference": 151,
+    "sign": 147,
+    "count": 142,
+    "lookup_exact": 161,
+    "absolute_reference": 151,
+    "self_reference": 139,
+    "duplicate_total": 146
+  }
+}

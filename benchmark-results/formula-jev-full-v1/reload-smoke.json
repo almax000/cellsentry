@@ -1,0 +1,16 @@
+{
+  "id": "TC0001",
+  "isValid": true,
+  "error_probability": 1.0,
+  "options": [
+    "The alert is a false positive; the formula matches the requirements.",
+    "The flagged formula is a real error."
+  ],
+  "probabilities": [
+    5.610635511743567e-09,
+    1.0
+  ],
+  "cellAddress": "D5",
+  "ruleId": "division_zero",
+  "checkpoint": "benchmark-results\\formula-jev-full-v1\\best"
+}

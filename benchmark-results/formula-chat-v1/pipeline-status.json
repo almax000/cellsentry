@@ -1,0 +1,5 @@
+{
+  "state": "complete",
+  "thinking": false,
+  "note": "All native suites complete. Summary-only failure repaired: manifest uses canonical UTF-8 LF; actual Windows CRLF bytes verified separately in comparison.json."
+}

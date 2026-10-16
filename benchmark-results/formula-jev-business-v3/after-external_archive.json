@@ -1,0 +1,26 @@
+{
+  "count": 1217,
+  "accuracy": 0.6935086277732129,
+  "macro_f1": 0.652069573668514,
+  "nll": 1.22533648138331,
+  "brier": 0.25672802800044303,
+  "paired_groups": 0,
+  "paired_accuracy": null,
+  "confusion": {
+    "tp": 632,
+    "tn": 212,
+    "fp": 271,
+    "fn": 102
+  },
+  "seconds": 77.387,
+  "categories": {
+    "external_archive": {
+      "count": 637,
+      "correct": 349
+    },
+    "formula_related": {
+      "count": 580,
+      "correct": 495
+    }
+  }
+}

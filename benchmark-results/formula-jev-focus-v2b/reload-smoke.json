@@ -1,0 +1,16 @@
+{
+  "id": "public-37bfd9325330f9c5-1-D39-duplicate-0",
+  "isValid": true,
+  "error_probability": 0.9982300400733948,
+  "options": [
+    "The flagged formula is a real error.",
+    "The alert is a false positive; the formula matches the requirements."
+  ],
+  "probabilities": [
+    0.9982300400733948,
+    0.001769977854564786
+  ],
+  "cellAddress": "D39",
+  "ruleId": "sum_range",
+  "checkpoint": "benchmark-results\\formula-jev-focus-v2b\\best"
+}

@@ -1,0 +1,90 @@
+{
+  "count": 280,
+  "accuracy": 0.925,
+  "macro_f1": 0.9248379798289681,
+  "nll": 0.37647881539962236,
+  "brier": 0.0649163684747456,
+  "paired_groups": 140,
+  "paired_accuracy": 0.85,
+  "confusion": {
+    "tp": 123,
+    "tn": 136,
+    "fp": 4,
+    "fn": 17
+  },
+  "seconds": 18.492,
+  "categories": {
+    "absolute_reference": {
+      "count": 10,
+      "correct": 10
+    },
+    "average_total": {
+      "count": 10,
+      "correct": 10
+    },
+    "broken_reference": {
+      "count": 10,
+      "correct": 10
+    },
+    "count": {
+      "count": 10,
+      "correct": 10
+    },
+    "date_order": {
+      "count": 10,
+      "correct": 7
+    },
+    "division_zero": {
+      "count": 10,
+      "correct": 10
+    },
+    "duplicate_total": {
+      "count": 10,
+      "correct": 10
+    },
+    "if_boundary": {
+      "count": 10,
+      "correct": 10
+    },
+    "iferror": {
+      "count": 10,
+      "correct": 10
+    },
+    "lookup_column": {
+      "count": 60,
+      "correct": 46
+    },
+    "lookup_exact": {
+      "count": 10,
+      "correct": 10
+    },
+    "percent_scale": {
+      "count": 10,
+      "correct": 10
+    },
+    "relative_reference": {
+      "count": 10,
+      "correct": 10
+    },
+    "rounding": {
+      "count": 10,
+      "correct": 10
+    },
+    "self_reference": {
+      "count": 10,
+      "correct": 10
+    },
+    "sign": {
+      "count": 10,
+      "correct": 8
+    },
+    "sum_range": {
+      "count": 60,
+      "correct": 59
+    },
+    "text_number": {
+      "count": 10,
+      "correct": 9
+    }
+  }
+}

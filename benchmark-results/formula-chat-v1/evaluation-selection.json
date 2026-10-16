@@ -1,0 +1,1806 @@
+{
+  "validation": [
+    {
+      "id": "FCHAT-validation-00061",
+      "mode": "audit",
+      "category": "absolute_reference"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-09-0000-0",
+      "mode": "audit",
+      "category": "aggregation_type"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-02-0000-0",
+      "mode": "audit",
+      "category": "archived_snapshot"
+    },
+    {
+      "id": "FCHAT-validation-00041",
+      "mode": "audit",
+      "category": "average_total"
+    },
+    {
+      "id": "FCHAT-validation-00021",
+      "mode": "audit",
+      "category": "broken_reference"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-01-0000-0",
+      "mode": "audit",
+      "category": "contract_literal"
+    },
+    {
+      "id": "FCHAT-validation-00161",
+      "mode": "audit",
+      "category": "count"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-12-0000-0",
+      "mode": "audit",
+      "category": "date_order"
+    },
+    {
+      "id": "FCHAT-validation-00001",
+      "mode": "audit",
+      "category": "division_zero"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-14-0000-0",
+      "mode": "audit",
+      "category": "duplicate_key"
+    },
+    {
+      "id": "FCHAT-validation-00121",
+      "mode": "audit",
+      "category": "duplicate_total"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-18-0000-0",
+      "mode": "audit",
+      "category": "empty_denominator"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-04-0000-0",
+      "mode": "audit",
+      "category": "external_link"
+    },
+    {
+      "id": "FCHAT-validation-00101",
+      "mode": "audit",
+      "category": "if_boundary"
+    },
+    {
+      "id": "FCHAT-validation-00171",
+      "mode": "audit",
+      "category": "iferror"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-00-0000-0",
+      "mode": "audit",
+      "category": "imported_literal"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-03-0000-0",
+      "mode": "audit",
+      "category": "iterative_cycle"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-06-0000-0",
+      "mode": "audit",
+      "category": "lookup_column"
+    },
+    {
+      "id": "FCHAT-validation-00081",
+      "mode": "audit",
+      "category": "lookup_exact"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-07-0000-0",
+      "mode": "audit",
+      "category": "lookup_key_type"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-05-0000-0",
+      "mode": "audit",
+      "category": "lookup_match"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-13-0000-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "FCHAT-validation-00051",
+      "mode": "audit",
+      "category": "percent_scale"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-10-0000-0",
+      "mode": "audit",
+      "category": "rate_scale"
+    },
+    {
+      "id": "FCHAT-validation-00071",
+      "mode": "audit",
+      "category": "relative_reference"
+    },
+    {
+      "id": "FCHAT-validation-00151",
+      "mode": "audit",
+      "category": "rounding"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-16-0000-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-15-0000-0",
+      "mode": "audit",
+      "category": "seasonal_spike"
+    },
+    {
+      "id": "FCHAT-validation-00011",
+      "mode": "audit",
+      "category": "self_reference"
+    },
+    {
+      "id": "FCHAT-validation-00131",
+      "mode": "audit",
+      "category": "sign"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-11-0000-0",
+      "mode": "audit",
+      "category": "stored_sign"
+    },
+    {
+      "id": "FCHAT-validation-00031",
+      "mode": "audit",
+      "category": "sum_range"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-08-0000-0",
+      "mode": "audit",
+      "category": "sum_scope"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-17-0000-0",
+      "mode": "audit",
+      "category": "text_identifier"
+    },
+    {
+      "id": "FCHAT-validation-00111",
+      "mode": "audit",
+      "category": "text_number"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-19-0000-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "FCHAT-validation-00062",
+      "mode": "audit",
+      "category": "absolute_reference"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-09-0000-1",
+      "mode": "audit",
+      "category": "aggregation_type"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-02-0000-1",
+      "mode": "audit",
+      "category": "archived_snapshot"
+    },
+    {
+      "id": "FCHAT-validation-00042",
+      "mode": "audit",
+      "category": "average_total"
+    },
+    {
+      "id": "FCHAT-validation-00022",
+      "mode": "audit",
+      "category": "broken_reference"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-01-0000-1",
+      "mode": "audit",
+      "category": "contract_literal"
+    },
+    {
+      "id": "FCHAT-validation-00162",
+      "mode": "audit",
+      "category": "count"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-12-0000-1",
+      "mode": "audit",
+      "category": "date_order"
+    },
+    {
+      "id": "FCHAT-validation-00002",
+      "mode": "audit",
+      "category": "division_zero"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-14-0000-1",
+      "mode": "audit",
+      "category": "duplicate_key"
+    },
+    {
+      "id": "FCHAT-validation-00122",
+      "mode": "audit",
+      "category": "duplicate_total"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-18-0000-1",
+      "mode": "audit",
+      "category": "empty_denominator"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-04-0000-1",
+      "mode": "audit",
+      "category": "external_link"
+    },
+    {
+      "id": "FCHAT-validation-00102",
+      "mode": "audit",
+      "category": "if_boundary"
+    },
+    {
+      "id": "FCHAT-validation-00172",
+      "mode": "audit",
+      "category": "iferror"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-00-0000-1",
+      "mode": "audit",
+      "category": "imported_literal"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-03-0000-1",
+      "mode": "audit",
+      "category": "iterative_cycle"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-06-0000-1",
+      "mode": "audit",
+      "category": "lookup_column"
+    },
+    {
+      "id": "FCHAT-validation-00082",
+      "mode": "audit",
+      "category": "lookup_exact"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-07-0000-1",
+      "mode": "audit",
+      "category": "lookup_key_type"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-05-0000-1",
+      "mode": "audit",
+      "category": "lookup_match"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-13-0000-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "FCHAT-validation-00052",
+      "mode": "audit",
+      "category": "percent_scale"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-10-0000-1",
+      "mode": "audit",
+      "category": "rate_scale"
+    },
+    {
+      "id": "FCHAT-validation-00072",
+      "mode": "audit",
+      "category": "relative_reference"
+    },
+    {
+      "id": "FCHAT-validation-00152",
+      "mode": "audit",
+      "category": "rounding"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-16-0000-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-15-0000-1",
+      "mode": "audit",
+      "category": "seasonal_spike"
+    },
+    {
+      "id": "FCHAT-validation-00012",
+      "mode": "audit",
+      "category": "self_reference"
+    },
+    {
+      "id": "FCHAT-validation-00132",
+      "mode": "audit",
+      "category": "sign"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-11-0000-1",
+      "mode": "audit",
+      "category": "stored_sign"
+    },
+    {
+      "id": "FCHAT-validation-00032",
+      "mode": "audit",
+      "category": "sum_range"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-08-0000-1",
+      "mode": "audit",
+      "category": "sum_scope"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-17-0000-1",
+      "mode": "audit",
+      "category": "text_identifier"
+    },
+    {
+      "id": "FCHAT-validation-00112",
+      "mode": "audit",
+      "category": "text_number"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-19-0000-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "FCHAT-validation-00063",
+      "mode": "audit",
+      "category": "absolute_reference"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-09-0001-0",
+      "mode": "audit",
+      "category": "aggregation_type"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-02-0001-0",
+      "mode": "audit",
+      "category": "archived_snapshot"
+    },
+    {
+      "id": "FCHAT-validation-00043",
+      "mode": "audit",
+      "category": "average_total"
+    },
+    {
+      "id": "FCHAT-validation-00023",
+      "mode": "audit",
+      "category": "broken_reference"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-01-0001-0",
+      "mode": "audit",
+      "category": "contract_literal"
+    },
+    {
+      "id": "FCHAT-validation-00163",
+      "mode": "audit",
+      "category": "count"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-12-0001-0",
+      "mode": "audit",
+      "category": "date_order"
+    },
+    {
+      "id": "FCHAT-validation-00003",
+      "mode": "audit",
+      "category": "division_zero"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-14-0001-0",
+      "mode": "audit",
+      "category": "duplicate_key"
+    },
+    {
+      "id": "FCHAT-validation-00123",
+      "mode": "audit",
+      "category": "duplicate_total"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-18-0001-0",
+      "mode": "audit",
+      "category": "empty_denominator"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-04-0001-0",
+      "mode": "audit",
+      "category": "external_link"
+    },
+    {
+      "id": "FCHAT-validation-00103",
+      "mode": "audit",
+      "category": "if_boundary"
+    },
+    {
+      "id": "FCHAT-validation-00173",
+      "mode": "audit",
+      "category": "iferror"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-00-0001-0",
+      "mode": "audit",
+      "category": "imported_literal"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-03-0001-0",
+      "mode": "audit",
+      "category": "iterative_cycle"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-06-0001-0",
+      "mode": "audit",
+      "category": "lookup_column"
+    },
+    {
+      "id": "FCHAT-validation-00083",
+      "mode": "audit",
+      "category": "lookup_exact"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-07-0001-0",
+      "mode": "audit",
+      "category": "lookup_key_type"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-05-0001-0",
+      "mode": "audit",
+      "category": "lookup_match"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-13-0001-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "FCHAT-validation-00053",
+      "mode": "audit",
+      "category": "percent_scale"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-10-0001-0",
+      "mode": "audit",
+      "category": "rate_scale"
+    },
+    {
+      "id": "FCHAT-validation-00073",
+      "mode": "audit",
+      "category": "relative_reference"
+    },
+    {
+      "id": "FCHAT-validation-00153",
+      "mode": "audit",
+      "category": "rounding"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-16-0001-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-15-0001-0",
+      "mode": "audit",
+      "category": "seasonal_spike"
+    },
+    {
+      "id": "FCHAT-validation-00013",
+      "mode": "audit",
+      "category": "self_reference"
+    },
+    {
+      "id": "FCHAT-validation-00133",
+      "mode": "audit",
+      "category": "sign"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-11-0001-0",
+      "mode": "audit",
+      "category": "stored_sign"
+    },
+    {
+      "id": "FCHAT-validation-00033",
+      "mode": "audit",
+      "category": "sum_range"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-08-0001-0",
+      "mode": "audit",
+      "category": "sum_scope"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-17-0001-0",
+      "mode": "audit",
+      "category": "text_identifier"
+    },
+    {
+      "id": "FCHAT-validation-00113",
+      "mode": "audit",
+      "category": "text_number"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-19-0001-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "FCHAT-validation-00064",
+      "mode": "audit",
+      "category": "absolute_reference"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-09-0001-1",
+      "mode": "audit",
+      "category": "aggregation_type"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-02-0001-1",
+      "mode": "audit",
+      "category": "archived_snapshot"
+    },
+    {
+      "id": "FCHAT-validation-00044",
+      "mode": "audit",
+      "category": "average_total"
+    },
+    {
+      "id": "FCHAT-validation-00024",
+      "mode": "audit",
+      "category": "broken_reference"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-01-0001-1",
+      "mode": "audit",
+      "category": "contract_literal"
+    },
+    {
+      "id": "FCHAT-validation-00164",
+      "mode": "audit",
+      "category": "count"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-12-0001-1",
+      "mode": "audit",
+      "category": "date_order"
+    },
+    {
+      "id": "FCHAT-validation-00004",
+      "mode": "audit",
+      "category": "division_zero"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-14-0001-1",
+      "mode": "audit",
+      "category": "duplicate_key"
+    },
+    {
+      "id": "FCHAT-validation-00124",
+      "mode": "audit",
+      "category": "duplicate_total"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-18-0001-1",
+      "mode": "audit",
+      "category": "empty_denominator"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-04-0001-1",
+      "mode": "audit",
+      "category": "external_link"
+    },
+    {
+      "id": "FCHAT-validation-00104",
+      "mode": "audit",
+      "category": "if_boundary"
+    },
+    {
+      "id": "FCHAT-validation-00174",
+      "mode": "audit",
+      "category": "iferror"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-00-0001-1",
+      "mode": "audit",
+      "category": "imported_literal"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-03-0001-1",
+      "mode": "audit",
+      "category": "iterative_cycle"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-06-0001-1",
+      "mode": "audit",
+      "category": "lookup_column"
+    },
+    {
+      "id": "FCHAT-validation-00084",
+      "mode": "audit",
+      "category": "lookup_exact"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-07-0001-1",
+      "mode": "audit",
+      "category": "lookup_key_type"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-05-0001-1",
+      "mode": "audit",
+      "category": "lookup_match"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-13-0001-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "FCHAT-validation-00054",
+      "mode": "audit",
+      "category": "percent_scale"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-10-0001-1",
+      "mode": "audit",
+      "category": "rate_scale"
+    },
+    {
+      "id": "FCHAT-validation-00074",
+      "mode": "audit",
+      "category": "relative_reference"
+    },
+    {
+      "id": "FCHAT-validation-00154",
+      "mode": "audit",
+      "category": "rounding"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-16-0001-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-15-0001-1",
+      "mode": "audit",
+      "category": "seasonal_spike"
+    },
+    {
+      "id": "FCHAT-validation-00014",
+      "mode": "audit",
+      "category": "self_reference"
+    },
+    {
+      "id": "FCHAT-validation-00134",
+      "mode": "audit",
+      "category": "sign"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-11-0001-1",
+      "mode": "audit",
+      "category": "stored_sign"
+    },
+    {
+      "id": "FCHAT-validation-00034",
+      "mode": "audit",
+      "category": "sum_range"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-08-0001-1",
+      "mode": "audit",
+      "category": "sum_scope"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-17-0001-1",
+      "mode": "audit",
+      "category": "text_identifier"
+    },
+    {
+      "id": "FCHAT-validation-00114",
+      "mode": "audit",
+      "category": "text_number"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-19-0001-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "FCHAT-validation-00065",
+      "mode": "audit",
+      "category": "absolute_reference"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-09-0002-0",
+      "mode": "audit",
+      "category": "aggregation_type"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-02-0002-0",
+      "mode": "audit",
+      "category": "archived_snapshot"
+    },
+    {
+      "id": "FCHAT-validation-00045",
+      "mode": "audit",
+      "category": "average_total"
+    },
+    {
+      "id": "FCHAT-validation-00025",
+      "mode": "audit",
+      "category": "broken_reference"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-01-0002-0",
+      "mode": "audit",
+      "category": "contract_literal"
+    },
+    {
+      "id": "FCHAT-validation-00165",
+      "mode": "audit",
+      "category": "count"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-12-0002-0",
+      "mode": "audit",
+      "category": "date_order"
+    },
+    {
+      "id": "FCHAT-validation-00005",
+      "mode": "audit",
+      "category": "division_zero"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-14-0002-0",
+      "mode": "audit",
+      "category": "duplicate_key"
+    },
+    {
+      "id": "FCHAT-validation-00125",
+      "mode": "audit",
+      "category": "duplicate_total"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-18-0002-0",
+      "mode": "audit",
+      "category": "empty_denominator"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-04-0002-0",
+      "mode": "audit",
+      "category": "external_link"
+    },
+    {
+      "id": "FCHAT-validation-00105",
+      "mode": "audit",
+      "category": "if_boundary"
+    },
+    {
+      "id": "FCHAT-validation-00175",
+      "mode": "audit",
+      "category": "iferror"
+    },
+    {
+      "id": "FCHAT-BIZ3-validation-00-0002-0",
+      "mode": "audit",
+      "category": "imported_literal"
+    }
+  ],
+  "test": [
+    {
+      "id": "FCHAT-test-00121",
+      "mode": "audit",
+      "category": "absolute_reference"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-09-0000-0",
+      "mode": "audit",
+      "category": "aggregation_type"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-02-0000-0",
+      "mode": "audit",
+      "category": "archived_snapshot"
+    },
+    {
+      "id": "FCHAT-test-00081",
+      "mode": "audit",
+      "category": "average_total"
+    },
+    {
+      "id": "FCHAT-test-00041",
+      "mode": "audit",
+      "category": "broken_reference"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-01-0000-0",
+      "mode": "audit",
+      "category": "contract_literal"
+    },
+    {
+      "id": "FCHAT-test-00321",
+      "mode": "audit",
+      "category": "count"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-12-0000-0",
+      "mode": "audit",
+      "category": "date_order"
+    },
+    {
+      "id": "FCHAT-test-00001",
+      "mode": "audit",
+      "category": "division_zero"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-14-0000-0",
+      "mode": "audit",
+      "category": "duplicate_key"
+    },
+    {
+      "id": "FCHAT-test-00241",
+      "mode": "audit",
+      "category": "duplicate_total"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-18-0000-0",
+      "mode": "audit",
+      "category": "empty_denominator"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-04-0000-0",
+      "mode": "audit",
+      "category": "external_link"
+    },
+    {
+      "id": "FCHAT-test-00201",
+      "mode": "audit",
+      "category": "if_boundary"
+    },
+    {
+      "id": "FCHAT-test-00341",
+      "mode": "audit",
+      "category": "iferror"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-00-0000-0",
+      "mode": "audit",
+      "category": "imported_literal"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-03-0000-0",
+      "mode": "audit",
+      "category": "iterative_cycle"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-06-0000-0",
+      "mode": "audit",
+      "category": "lookup_column"
+    },
+    {
+      "id": "FCHAT-test-00161",
+      "mode": "audit",
+      "category": "lookup_exact"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-07-0000-0",
+      "mode": "audit",
+      "category": "lookup_key_type"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-05-0000-0",
+      "mode": "audit",
+      "category": "lookup_match"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-13-0000-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "FCHAT-test-00101",
+      "mode": "audit",
+      "category": "percent_scale"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-10-0000-0",
+      "mode": "audit",
+      "category": "rate_scale"
+    },
+    {
+      "id": "FCHAT-test-00141",
+      "mode": "audit",
+      "category": "relative_reference"
+    },
+    {
+      "id": "FCHAT-test-00301",
+      "mode": "audit",
+      "category": "rounding"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-16-0000-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-15-0000-0",
+      "mode": "audit",
+      "category": "seasonal_spike"
+    },
+    {
+      "id": "FCHAT-test-00021",
+      "mode": "audit",
+      "category": "self_reference"
+    },
+    {
+      "id": "FCHAT-test-00261",
+      "mode": "audit",
+      "category": "sign"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-11-0000-0",
+      "mode": "audit",
+      "category": "stored_sign"
+    },
+    {
+      "id": "FCHAT-test-00061",
+      "mode": "audit",
+      "category": "sum_range"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-08-0000-0",
+      "mode": "audit",
+      "category": "sum_scope"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-17-0000-0",
+      "mode": "audit",
+      "category": "text_identifier"
+    },
+    {
+      "id": "FCHAT-test-00221",
+      "mode": "audit",
+      "category": "text_number"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-19-0000-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "FCHAT-test-00122",
+      "mode": "audit",
+      "category": "absolute_reference"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-09-0000-1",
+      "mode": "audit",
+      "category": "aggregation_type"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-02-0000-1",
+      "mode": "audit",
+      "category": "archived_snapshot"
+    },
+    {
+      "id": "FCHAT-test-00082",
+      "mode": "audit",
+      "category": "average_total"
+    },
+    {
+      "id": "FCHAT-test-00042",
+      "mode": "audit",
+      "category": "broken_reference"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-01-0000-1",
+      "mode": "audit",
+      "category": "contract_literal"
+    },
+    {
+      "id": "FCHAT-test-00322",
+      "mode": "audit",
+      "category": "count"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-12-0000-1",
+      "mode": "audit",
+      "category": "date_order"
+    },
+    {
+      "id": "FCHAT-test-00002",
+      "mode": "audit",
+      "category": "division_zero"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-14-0000-1",
+      "mode": "audit",
+      "category": "duplicate_key"
+    },
+    {
+      "id": "FCHAT-test-00242",
+      "mode": "audit",
+      "category": "duplicate_total"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-18-0000-1",
+      "mode": "audit",
+      "category": "empty_denominator"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-04-0000-1",
+      "mode": "audit",
+      "category": "external_link"
+    },
+    {
+      "id": "FCHAT-test-00202",
+      "mode": "audit",
+      "category": "if_boundary"
+    },
+    {
+      "id": "FCHAT-test-00342",
+      "mode": "audit",
+      "category": "iferror"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-00-0000-1",
+      "mode": "audit",
+      "category": "imported_literal"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-03-0000-1",
+      "mode": "audit",
+      "category": "iterative_cycle"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-06-0000-1",
+      "mode": "audit",
+      "category": "lookup_column"
+    },
+    {
+      "id": "FCHAT-test-00162",
+      "mode": "audit",
+      "category": "lookup_exact"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-07-0000-1",
+      "mode": "audit",
+      "category": "lookup_key_type"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-05-0000-1",
+      "mode": "audit",
+      "category": "lookup_match"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-13-0000-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "FCHAT-test-00102",
+      "mode": "audit",
+      "category": "percent_scale"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-10-0000-1",
+      "mode": "audit",
+      "category": "rate_scale"
+    },
+    {
+      "id": "FCHAT-test-00142",
+      "mode": "audit",
+      "category": "relative_reference"
+    },
+    {
+      "id": "FCHAT-test-00302",
+      "mode": "audit",
+      "category": "rounding"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-16-0000-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-15-0000-1",
+      "mode": "audit",
+      "category": "seasonal_spike"
+    },
+    {
+      "id": "FCHAT-test-00022",
+      "mode": "audit",
+      "category": "self_reference"
+    },
+    {
+      "id": "FCHAT-test-00262",
+      "mode": "audit",
+      "category": "sign"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-11-0000-1",
+      "mode": "audit",
+      "category": "stored_sign"
+    },
+    {
+      "id": "FCHAT-test-00062",
+      "mode": "audit",
+      "category": "sum_range"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-08-0000-1",
+      "mode": "audit",
+      "category": "sum_scope"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-17-0000-1",
+      "mode": "audit",
+      "category": "text_identifier"
+    },
+    {
+      "id": "FCHAT-test-00222",
+      "mode": "audit",
+      "category": "text_number"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-19-0000-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "FCHAT-test-00123",
+      "mode": "audit",
+      "category": "absolute_reference"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-09-0001-0",
+      "mode": "audit",
+      "category": "aggregation_type"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-02-0001-0",
+      "mode": "audit",
+      "category": "archived_snapshot"
+    },
+    {
+      "id": "FCHAT-test-00083",
+      "mode": "audit",
+      "category": "average_total"
+    },
+    {
+      "id": "FCHAT-test-00043",
+      "mode": "audit",
+      "category": "broken_reference"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-01-0001-0",
+      "mode": "audit",
+      "category": "contract_literal"
+    },
+    {
+      "id": "FCHAT-test-00323",
+      "mode": "audit",
+      "category": "count"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-12-0001-0",
+      "mode": "audit",
+      "category": "date_order"
+    },
+    {
+      "id": "FCHAT-test-00003",
+      "mode": "audit",
+      "category": "division_zero"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-14-0001-0",
+      "mode": "audit",
+      "category": "duplicate_key"
+    },
+    {
+      "id": "FCHAT-test-00243",
+      "mode": "audit",
+      "category": "duplicate_total"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-18-0001-0",
+      "mode": "audit",
+      "category": "empty_denominator"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-04-0001-0",
+      "mode": "audit",
+      "category": "external_link"
+    },
+    {
+      "id": "FCHAT-test-00203",
+      "mode": "audit",
+      "category": "if_boundary"
+    },
+    {
+      "id": "FCHAT-test-00343",
+      "mode": "audit",
+      "category": "iferror"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-00-0001-0",
+      "mode": "audit",
+      "category": "imported_literal"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-03-0001-0",
+      "mode": "audit",
+      "category": "iterative_cycle"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-06-0001-0",
+      "mode": "audit",
+      "category": "lookup_column"
+    },
+    {
+      "id": "FCHAT-test-00163",
+      "mode": "audit",
+      "category": "lookup_exact"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-07-0001-0",
+      "mode": "audit",
+      "category": "lookup_key_type"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-05-0001-0",
+      "mode": "audit",
+      "category": "lookup_match"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-13-0001-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "FCHAT-test-00103",
+      "mode": "audit",
+      "category": "percent_scale"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-10-0001-0",
+      "mode": "audit",
+      "category": "rate_scale"
+    },
+    {
+      "id": "FCHAT-test-00143",
+      "mode": "audit",
+      "category": "relative_reference"
+    },
+    {
+      "id": "FCHAT-test-00303",
+      "mode": "audit",
+      "category": "rounding"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-16-0001-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-15-0001-0",
+      "mode": "audit",
+      "category": "seasonal_spike"
+    },
+    {
+      "id": "FCHAT-test-00023",
+      "mode": "audit",
+      "category": "self_reference"
+    },
+    {
+      "id": "FCHAT-test-00263",
+      "mode": "audit",
+      "category": "sign"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-11-0001-0",
+      "mode": "audit",
+      "category": "stored_sign"
+    },
+    {
+      "id": "FCHAT-test-00063",
+      "mode": "audit",
+      "category": "sum_range"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-08-0001-0",
+      "mode": "audit",
+      "category": "sum_scope"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-17-0001-0",
+      "mode": "audit",
+      "category": "text_identifier"
+    },
+    {
+      "id": "FCHAT-test-00223",
+      "mode": "audit",
+      "category": "text_number"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-19-0001-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "FCHAT-test-00124",
+      "mode": "audit",
+      "category": "absolute_reference"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-09-0001-1",
+      "mode": "audit",
+      "category": "aggregation_type"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-02-0001-1",
+      "mode": "audit",
+      "category": "archived_snapshot"
+    },
+    {
+      "id": "FCHAT-test-00084",
+      "mode": "audit",
+      "category": "average_total"
+    },
+    {
+      "id": "FCHAT-test-00044",
+      "mode": "audit",
+      "category": "broken_reference"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-01-0001-1",
+      "mode": "audit",
+      "category": "contract_literal"
+    },
+    {
+      "id": "FCHAT-test-00324",
+      "mode": "audit",
+      "category": "count"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-12-0001-1",
+      "mode": "audit",
+      "category": "date_order"
+    },
+    {
+      "id": "FCHAT-test-00004",
+      "mode": "audit",
+      "category": "division_zero"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-14-0001-1",
+      "mode": "audit",
+      "category": "duplicate_key"
+    },
+    {
+      "id": "FCHAT-test-00244",
+      "mode": "audit",
+      "category": "duplicate_total"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-18-0001-1",
+      "mode": "audit",
+      "category": "empty_denominator"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-04-0001-1",
+      "mode": "audit",
+      "category": "external_link"
+    },
+    {
+      "id": "FCHAT-test-00204",
+      "mode": "audit",
+      "category": "if_boundary"
+    },
+    {
+      "id": "FCHAT-test-00344",
+      "mode": "audit",
+      "category": "iferror"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-00-0001-1",
+      "mode": "audit",
+      "category": "imported_literal"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-03-0001-1",
+      "mode": "audit",
+      "category": "iterative_cycle"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-06-0001-1",
+      "mode": "audit",
+      "category": "lookup_column"
+    },
+    {
+      "id": "FCHAT-test-00164",
+      "mode": "audit",
+      "category": "lookup_exact"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-07-0001-1",
+      "mode": "audit",
+      "category": "lookup_key_type"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-05-0001-1",
+      "mode": "audit",
+      "category": "lookup_match"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-13-0001-1",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "FCHAT-test-00104",
+      "mode": "audit",
+      "category": "percent_scale"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-10-0001-1",
+      "mode": "audit",
+      "category": "rate_scale"
+    },
+    {
+      "id": "FCHAT-test-00144",
+      "mode": "audit",
+      "category": "relative_reference"
+    },
+    {
+      "id": "FCHAT-test-00304",
+      "mode": "audit",
+      "category": "rounding"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-16-0001-1",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-15-0001-1",
+      "mode": "audit",
+      "category": "seasonal_spike"
+    },
+    {
+      "id": "FCHAT-test-00024",
+      "mode": "audit",
+      "category": "self_reference"
+    },
+    {
+      "id": "FCHAT-test-00264",
+      "mode": "audit",
+      "category": "sign"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-11-0001-1",
+      "mode": "audit",
+      "category": "stored_sign"
+    },
+    {
+      "id": "FCHAT-test-00064",
+      "mode": "audit",
+      "category": "sum_range"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-08-0001-1",
+      "mode": "audit",
+      "category": "sum_scope"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-17-0001-1",
+      "mode": "audit",
+      "category": "text_identifier"
+    },
+    {
+      "id": "FCHAT-test-00224",
+      "mode": "audit",
+      "category": "text_number"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-19-0001-1",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "FCHAT-test-00125",
+      "mode": "audit",
+      "category": "absolute_reference"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-09-0002-0",
+      "mode": "audit",
+      "category": "aggregation_type"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-02-0002-0",
+      "mode": "audit",
+      "category": "archived_snapshot"
+    },
+    {
+      "id": "FCHAT-test-00085",
+      "mode": "audit",
+      "category": "average_total"
+    },
+    {
+      "id": "FCHAT-test-00045",
+      "mode": "audit",
+      "category": "broken_reference"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-01-0002-0",
+      "mode": "audit",
+      "category": "contract_literal"
+    },
+    {
+      "id": "FCHAT-test-00325",
+      "mode": "audit",
+      "category": "count"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-12-0002-0",
+      "mode": "audit",
+      "category": "date_order"
+    },
+    {
+      "id": "FCHAT-test-00005",
+      "mode": "audit",
+      "category": "division_zero"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-14-0002-0",
+      "mode": "audit",
+      "category": "duplicate_key"
+    },
+    {
+      "id": "FCHAT-test-00245",
+      "mode": "audit",
+      "category": "duplicate_total"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-18-0002-0",
+      "mode": "audit",
+      "category": "empty_denominator"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-04-0002-0",
+      "mode": "audit",
+      "category": "external_link"
+    },
+    {
+      "id": "FCHAT-test-00205",
+      "mode": "audit",
+      "category": "if_boundary"
+    },
+    {
+      "id": "FCHAT-test-00345",
+      "mode": "audit",
+      "category": "iferror"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-00-0002-0",
+      "mode": "audit",
+      "category": "imported_literal"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-03-0002-0",
+      "mode": "audit",
+      "category": "iterative_cycle"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-06-0002-0",
+      "mode": "audit",
+      "category": "lookup_column"
+    },
+    {
+      "id": "FCHAT-test-00165",
+      "mode": "audit",
+      "category": "lookup_exact"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-07-0002-0",
+      "mode": "audit",
+      "category": "lookup_key_type"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-05-0002-0",
+      "mode": "audit",
+      "category": "lookup_match"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-13-0002-0",
+      "mode": "audit",
+      "category": "optional_blank"
+    },
+    {
+      "id": "FCHAT-test-00105",
+      "mode": "audit",
+      "category": "percent_scale"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-10-0002-0",
+      "mode": "audit",
+      "category": "rate_scale"
+    },
+    {
+      "id": "FCHAT-test-00145",
+      "mode": "audit",
+      "category": "relative_reference"
+    },
+    {
+      "id": "FCHAT-test-00305",
+      "mode": "audit",
+      "category": "rounding"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-16-0002-0",
+      "mode": "audit",
+      "category": "rounding_tolerance"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-15-0002-0",
+      "mode": "audit",
+      "category": "seasonal_spike"
+    },
+    {
+      "id": "FCHAT-test-00025",
+      "mode": "audit",
+      "category": "self_reference"
+    },
+    {
+      "id": "FCHAT-test-00265",
+      "mode": "audit",
+      "category": "sign"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-11-0002-0",
+      "mode": "audit",
+      "category": "stored_sign"
+    },
+    {
+      "id": "FCHAT-test-00065",
+      "mode": "audit",
+      "category": "sum_range"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-08-0002-0",
+      "mode": "audit",
+      "category": "sum_scope"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-17-0002-0",
+      "mode": "audit",
+      "category": "text_identifier"
+    },
+    {
+      "id": "FCHAT-test-00225",
+      "mode": "audit",
+      "category": "text_number"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-19-0002-0",
+      "mode": "audit",
+      "category": "unit_conversion"
+    },
+    {
+      "id": "FCHAT-test-00126",
+      "mode": "audit",
+      "category": "absolute_reference"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-09-0002-1",
+      "mode": "audit",
+      "category": "aggregation_type"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-02-0002-1",
+      "mode": "audit",
+      "category": "archived_snapshot"
+    },
+    {
+      "id": "FCHAT-test-00086",
+      "mode": "audit",
+      "category": "average_total"
+    },
+    {
+      "id": "FCHAT-test-00046",
+      "mode": "audit",
+      "category": "broken_reference"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-01-0002-1",
+      "mode": "audit",
+      "category": "contract_literal"
+    },
+    {
+      "id": "FCHAT-test-00326",
+      "mode": "audit",
+      "category": "count"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-12-0002-1",
+      "mode": "audit",
+      "category": "date_order"
+    },
+    {
+      "id": "FCHAT-test-00006",
+      "mode": "audit",
+      "category": "division_zero"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-14-0002-1",
+      "mode": "audit",
+      "category": "duplicate_key"
+    },
+    {
+      "id": "FCHAT-test-00246",
+      "mode": "audit",
+      "category": "duplicate_total"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-18-0002-1",
+      "mode": "audit",
+      "category": "empty_denominator"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-04-0002-1",
+      "mode": "audit",
+      "category": "external_link"
+    },
+    {
+      "id": "FCHAT-test-00206",
+      "mode": "audit",
+      "category": "if_boundary"
+    },
+    {
+      "id": "FCHAT-test-00346",
+      "mode": "audit",
+      "category": "iferror"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-00-0002-1",
+      "mode": "audit",
+      "category": "imported_literal"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-03-0002-1",
+      "mode": "audit",
+      "category": "iterative_cycle"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-06-0002-1",
+      "mode": "audit",
+      "category": "lookup_column"
+    },
+    {
+      "id": "FCHAT-test-00166",
+      "mode": "audit",
+      "category": "lookup_exact"
+    },
+    {
+      "id": "FCHAT-BIZ3-test-07-0002-1",
+      "mode": "audit",
+      "category": "lookup_key_type"
+    }
+  ]
+}

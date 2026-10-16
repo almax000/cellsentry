@@ -1,0 +1,131 @@
+{
+  "total": 480,
+  "completed": 480,
+  "model": {
+    "model_id": "cellsentry-cancel2",
+    "model_sha256": "61d9c8ab8007dbbde0eb004089d1411fb6ec7167031f9d6fcc5b521fe8ebe49a",
+    "corpus_sha256": "dae44d402b18235046a6eea4653d1ec920c3188e330fdc962895c75b100bb700",
+    "prompt_sha256": "b36d7cd05731ca91af6f1a7f30433bf6330afa3e489b532b7ec07fa7aa0bee9e",
+    "temperature": 0,
+    "seed": 42,
+    "max_tokens": 420,
+    "base_url": "http://127.0.0.1:18770",
+    "server_build": "b11429-d81235049",
+    "context": 1024,
+    "corpus_file": "D:\\git\\cellsentry\\.runtime\\cancel2-new480.jsonl",
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "chat_template_sha256": "86d92dc38bc4ce4564b3432cbf64ba494d488c69e2360ceb2cd1c2f7a6e5962c",
+    "model_file": "D:\\git\\cellsentry\\models\\minicpm5-2b-cancellation-v2\\cellsentry-minicpm5-2b-cancel2-q4_k_m.gguf"
+  },
+  "modes": {
+    "audit": {
+      "completed": 480,
+      "passed": 399,
+      "json_valid": 480,
+      "schema_valid": 480,
+      "semantic_pass": 399,
+      "mean_seconds": 0.553
+    }
+  },
+  "categories": {
+    "absolute_rate": {
+      "completed": 40,
+      "passed": 40,
+      "json_valid": 40,
+      "schema_valid": 40,
+      "semantic_pass": 40,
+      "mean_seconds": 0.481
+    },
+    "approx_lookup": {
+      "completed": 40,
+      "passed": 40,
+      "json_valid": 40,
+      "schema_valid": 40,
+      "semantic_pass": 40,
+      "mean_seconds": 0.664
+    },
+    "conditional_total": {
+      "completed": 40,
+      "passed": 40,
+      "json_valid": 40,
+      "schema_valid": 40,
+      "semantic_pass": 40,
+      "mean_seconds": 0.488
+    },
+    "constant_receipt": {
+      "completed": 40,
+      "passed": 40,
+      "json_valid": 40,
+      "schema_valid": 40,
+      "semantic_pass": 40,
+      "mean_seconds": 0.531
+    },
+    "date_direction": {
+      "completed": 40,
+      "passed": 36,
+      "json_valid": 40,
+      "schema_valid": 40,
+      "semantic_pass": 36,
+      "mean_seconds": 0.493
+    },
+    "frozen_snapshot": {
+      "completed": 40,
+      "passed": 40,
+      "json_valid": 40,
+      "schema_valid": 40,
+      "semantic_pass": 40,
+      "mean_seconds": 0.522
+    },
+    "negative_amount": {
+      "completed": 40,
+      "passed": 40,
+      "json_valid": 40,
+      "schema_valid": 40,
+      "semantic_pass": 40,
+      "mean_seconds": 0.585
+    },
+    "optional_blank": {
+      "completed": 40,
+      "passed": 26,
+      "json_valid": 40,
+      "schema_valid": 40,
+      "semantic_pass": 26,
+      "mean_seconds": 0.575
+    },
+    "rounding_tolerance": {
+      "completed": 40,
+      "passed": 20,
+      "json_valid": 40,
+      "schema_valid": 40,
+      "semantic_pass": 20,
+      "mean_seconds": 0.478
+    },
+    "sum_exclusion": {
+      "completed": 40,
+      "passed": 40,
+      "json_valid": 40,
+      "schema_valid": 40,
+      "semantic_pass": 40,
+      "mean_seconds": 0.506
+    },
+    "unit_conversion": {
+      "completed": 40,
+      "passed": 16,
+      "json_valid": 40,
+      "schema_valid": 40,
+      "semantic_pass": 16,
+      "mean_seconds": 0.811
+    },
+    "zero_fallback": {
+      "completed": 40,
+      "passed": 21,
+      "json_valid": 40,
+      "schema_valid": 40,
+      "semantic_pass": 21,
+      "mean_seconds": 0.5
+    }
+  },
+  "passed": 399
+}

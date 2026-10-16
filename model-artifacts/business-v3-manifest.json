@@ -1,0 +1,90 @@
+{
+  "repository": "yourblacksky/cellsentry-formula-review",
+  "tag": "formula-jev-business-v3-20261015",
+  "asset": "formula-jev-business-v3-best.zip",
+  "bytes": 48636572,
+  "sha256": "1d94d7327b2e3896b89dbca8df6052b8fa77c0e2fa60a7b08b0fdae8b66ec45c",
+  "url": "https://github.com/yourblacksky/cellsentry-formula-review/releases/download/formula-jev-business-v3-20261015/formula-jev-business-v3-best.zip",
+  "package": {
+    "run": "formula-jev-business-v3",
+    "tag": "formula-jev-business-v3-20261015",
+    "best_step": 400,
+    "base_repository": "link921/CPM-jev",
+    "base_revision": "b17a85f115016ea74513f5cd9c7e4350e45a47a1",
+    "initialization": {
+      "path": "benchmark-results\\formula-jev-focus-v2b\\best",
+      "adapter_sha256": "4fe0397c121ade1e89878764637b86f8d63ec78f712d2ceda3bcd000fa87c379",
+      "head_sha256": "5084d648d2dbf0dcba56410fc24ab05da05cd00c6f4e914fb92337f4a1d6a485"
+    },
+    "original_adapter_config_sha256": "5a51f35b4447d6ac2355af77c19986de194bd773775aba97721eddb354e6780d",
+    "tensors_unchanged": true,
+    "includes_tokenizer": true,
+    "files": [
+      {
+        "name": "adapter_model.safetensors",
+        "bytes": 50307248,
+        "sha256": "e223be86eb786dbebc33cad4ab7298a0f6727f7edaba4a27db9fdbfbc6f20e01"
+      },
+      {
+        "name": "decision_head.safetensors",
+        "bytes": 8332,
+        "sha256": "e900dc6c1b230a5fb975efbe6379577605793fd37500c205702f9d16f7e1f585"
+      },
+      {
+        "name": "adapter_config.json",
+        "bytes": 1218,
+        "sha256": "58f62fd040079b9900f64109b8e210c03acd0bcebb0f019196e2891c975e43b1"
+      },
+      {
+        "name": "tokenizer.json",
+        "bytes": 9894271,
+        "sha256": "3e065a558a034185fe299917b398685c1facd0169a9eea1e629eb30c171fed81"
+      },
+      {
+        "name": "tokenizer_config.json",
+        "bytes": 648,
+        "sha256": "666e406ef3fa2d1bbbb4eafca1c36764dc5c2f481de465f79d0cda42c9674f1a"
+      },
+      {
+        "name": "LICENSE",
+        "bytes": 11358,
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      },
+      {
+        "name": "NOTICE",
+        "bytes": 459,
+        "sha256": "a7a41cb08ae6ffba0e74fb67460df9215959cef2f43182a4ac03fce9b5c3325d"
+      },
+      {
+        "name": "summary.json",
+        "bytes": 37539,
+        "sha256": "e8e2d06c6933264730bc59ea9d0d7572e91e1845318dff90fc8d753b1ea7d7dc"
+      },
+      {
+        "name": "overview.md",
+        "bytes": 2852,
+        "sha256": "0d83bdfa70eff9f0f858c33917e6ae9790c9614f48983c601aed42cac24867ab"
+      },
+      {
+        "name": "reload-verification.json",
+        "bytes": 155,
+        "sha256": "b2e9ca97ad1488821bcdae13e874d80a2dd36069fdb6d8f066e4fc7d5aafc22c"
+      },
+      {
+        "name": "run-request.json",
+        "bytes": 819,
+        "sha256": "6f373815dfa39e5fa1950047dfac5d40f194b49f4cf28c503f47fccad9c68156"
+      },
+      {
+        "name": "requirements-training.txt",
+        "bytes": 245,
+        "sha256": "2aad8b3a13aaed5a4447dc316f5cb4b1ed89392d8f964249d631038ae9647751"
+      },
+      {
+        "name": "README.md",
+        "bytes": 1228,
+        "sha256": "d13be9ac1ce5e0e6ebb4f3693579e1e20b8ad07cf5e7dfd38fa205da0cc0e411"
+      }
+    ]
+  }
+}

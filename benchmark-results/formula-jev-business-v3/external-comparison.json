@@ -1,0 +1,78 @@
+{
+  "before": {
+    "all": {
+      "count": 1217,
+      "correct": 800,
+      "accuracy": 0.657354149548069,
+      "macro_f1": 0.5884395641825179,
+      "confusion": {
+        "tp": 649,
+        "tn": 151,
+        "fp": 332,
+        "fn": 85
+      }
+    },
+    "formula_related": {
+      "count": 580,
+      "correct": 494,
+      "accuracy": 0.8517241379310345,
+      "macro_f1": 0.6849339296091361,
+      "confusion": {
+        "tp": 458,
+        "tn": 36,
+        "fp": 75,
+        "fn": 11
+      }
+    },
+    "business_other": {
+      "count": 637,
+      "correct": 306,
+      "accuracy": 0.4803767660910518,
+      "macro_f1": 0.4728732752823175,
+      "confusion": {
+        "tp": 191,
+        "tn": 115,
+        "fp": 257,
+        "fn": 74
+      }
+    }
+  },
+  "after": {
+    "all": {
+      "count": 1217,
+      "correct": 844,
+      "accuracy": 0.6935086277732129,
+      "macro_f1": 0.652069573668514,
+      "confusion": {
+        "tp": 632,
+        "tn": 212,
+        "fp": 271,
+        "fn": 102
+      }
+    },
+    "formula_related": {
+      "count": 580,
+      "correct": 495,
+      "accuracy": 0.853448275862069,
+      "macro_f1": 0.6764221345637607,
+      "confusion": {
+        "tp": 462,
+        "tn": 33,
+        "fp": 78,
+        "fn": 7
+      }
+    },
+    "business_other": {
+      "count": 637,
+      "correct": 349,
+      "accuracy": 0.5478806907378336,
+      "macro_f1": 0.5477904202244088,
+      "confusion": {
+        "tp": 170,
+        "tn": 179,
+        "fp": 193,
+        "fn": 95
+      }
+    }
+  }
+}

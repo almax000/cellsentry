@@ -1,0 +1,35 @@
+{
+  "reviewed_at": "2026-10-16T09:00:14.992764+08:00",
+  "training_and_evaluation_complete": true,
+  "private_release_published": true,
+  "github_weight_digests_and_sizes_reverified": true,
+  "original_services_healthy": {
+    "service": true,
+    "minicpm5": true
+  },
+  "conclusion": "Formula-only MiniCPM LoRA learned the synthetic task well. External accuracy remains84.5%. Dedicated Jev is not conclusively superior: fewer false negatives but more false positives. Keep original MiniCPM general-task path because merged formula LoRA regresses PII/extraction. Evaluate task routing before requiring a second full model.",
+  "external580": {
+    "formula_chat": {
+      "correct": 490,
+      "fp": 41,
+      "fn": 49,
+      "strict_protocol_passed": 434
+    },
+    "jev_business_v3": {
+      "correct": 495,
+      "fp": 78,
+      "fn": 7
+    }
+  },
+  "jev_scope": "Classifies a provided alert under supplied context; automatic whole-workbook formula discovery was not evaluated.",
+  "remaining_future_validation": [
+    "Independent human-labeled business examples",
+    "False-positive and false-negative tradeoff for the chosen workflow",
+    "Adapter switching and native decision-head runtime support",
+    "Actual edge device memory and latency"
+  ],
+  "application_default_replaced": false,
+  "mobile_deployment_completed": false,
+  "release_url": "https://github.com/yourblacksky/cellsentry-formula-review/releases/tag/formula-chat-v1-20261016",
+  "overnight_followup": "Complete; pause automation-3 after saving and delivery."
+}

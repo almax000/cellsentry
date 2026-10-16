@@ -1,0 +1,301 @@
+﻿id,mode,category,passed,json_valid,schema_valid,semantic_pass,seconds,errors
+MCP-BIZ3-test-04-0016-0,audit,external_link,False,True,True,False,0.309,wrong_judgment_or_identity
+MCP-BIZ3-test-18-0002-1,audit,empty_denominator,True,True,True,True,0.341,
+MCP-test-extract-00106,extraction,payroll,False,True,True,False,0.948,wrong_document_missing_extra_or_wrong_field
+MCP-test-extract-00157,extraction,receipt,False,True,True,False,1.241,wrong_document_missing_extra_or_wrong_field
+MCP-BIZ3-test-17-0000-0,audit,text_identifier,False,True,True,False,0.367,wrong_judgment_or_identity
+MCP-BIZ3-test-10-0003-0,audit,rate_scale,False,True,True,False,0.35,wrong_judgment_or_identity
+MCP-BIZ3-test-06-0010-1,audit,lookup_column,True,True,True,True,0.343,
+MCP-BIZ3-test-01-0022-1,audit,contract_literal,True,True,True,True,0.333,
+MCP-BIZ3-test-07-0009-1,audit,lookup_key_type,True,True,True,True,0.327,
+MCP-BIZ3-test-17-0002-1,audit,text_identifier,True,True,True,True,0.349,
+MCP-BIZ3-test-10-0002-1,audit,rate_scale,True,True,True,True,0.319,
+MCP-BIZ3-test-13-0011-0,audit,optional_blank,False,True,True,False,0.326,wrong_judgment_or_identity
+MCP-BIZ3-test-05-0002-1,audit,lookup_match,True,True,True,True,0.323,
+MCP-test-pii-00012,pii,email,True,True,True,True,0.241,
+MCP-BIZ3-test-07-0021-1,audit,lookup_key_type,True,True,True,True,0.332,
+MCP-test-pii-00161,pii,passport,True,True,True,True,0.244,
+MCP-BIZ3-test-18-0015-1,audit,empty_denominator,True,True,True,True,0.344,
+MCP-BIZ3-test-06-0001-1,audit,lookup_column,True,True,True,True,0.331,
+MCP-BIZ3-test-08-0017-1,audit,sum_scope,True,True,True,True,0.324,
+MCP-test-extract-00004,extraction,payroll,False,True,True,False,0.917,wrong_document_missing_extra_or_wrong_field
+MCP-BIZ3-test-19-0007-0,audit,unit_conversion,False,True,True,False,0.322,wrong_judgment_or_identity
+MCP-test-pii-00029,pii,passport,True,True,True,True,0.244,
+MCP-BIZ3-test-07-0014-1,audit,lookup_key_type,True,True,True,True,0.329,
+MCP-test-extract-00026,extraction,purchase_order,True,True,True,True,0.969,
+MCP-BIZ3-test-07-0022-1,audit,lookup_key_type,True,True,True,True,0.321,
+MCP-BIZ3-test-08-0023-1,audit,sum_scope,True,True,True,True,0.336,
+MCP-BIZ3-test-18-0005-1,audit,empty_denominator,True,True,True,True,0.389,
+MCP-BIZ3-test-03-0008-0,audit,iterative_cycle,False,True,True,False,0.351,wrong_judgment_or_identity
+MCP-BIZ3-test-07-0010-1,audit,lookup_key_type,True,True,True,True,0.321,
+MCP-BIZ3-test-18-0005-0,audit,empty_denominator,False,True,True,False,0.329,wrong_judgment_or_identity
+MCP-BIZ3-test-03-0018-1,audit,iterative_cycle,True,True,True,True,0.325,
+MCP-BIZ3-test-19-0017-1,audit,unit_conversion,True,True,True,True,0.339,
+MCP-BIZ3-test-14-0010-1,audit,duplicate_key,True,True,True,True,0.343,
+MCP-BIZ3-test-18-0022-0,audit,empty_denominator,False,True,True,False,0.33,wrong_judgment_or_identity
+MCP-test-pii-00234,pii,negative,True,True,True,True,0.048,
+MCP-test-extract-00221,extraction,unknown,True,True,True,True,0.112,
+MCP-BIZ3-test-07-0014-0,audit,lookup_key_type,False,True,True,False,0.364,wrong_judgment_or_identity
+MCP-BIZ3-test-12-0007-0,audit,date_order,False,True,True,False,0.326,wrong_judgment_or_identity
+MCP-BIZ3-test-08-0004-0,audit,sum_scope,False,True,True,False,0.339,wrong_judgment_or_identity
+MCP-BIZ3-test-02-0020-1,audit,archived_snapshot,True,True,True,True,0.364,
+MCP-test-extract-00057,extraction,expense_report,True,True,True,True,0.99,
+MCP-test-pii-00121,pii,phone,True,True,True,True,0.248,
+MCP-BIZ3-test-02-0015-1,audit,archived_snapshot,True,True,True,True,0.349,
+MCP-BIZ3-test-06-0005-0,audit,lookup_column,False,True,True,False,0.339,wrong_judgment_or_identity
+MCP-test-extract-00108,extraction,invoice,True,True,True,True,0.968,
+MCP-BIZ3-test-18-0010-0,audit,empty_denominator,False,True,True,False,0.327,wrong_judgment_or_identity
+MCP-BIZ3-test-19-0002-1,audit,unit_conversion,True,True,True,True,0.335,
+MCP-test-extract-00162,extraction,invoice,True,True,True,True,0.979,
+MCP-test-extract-00103,extraction,receipt,False,True,True,False,1.154,wrong_document_missing_extra_or_wrong_field
+MCP-BIZ3-test-08-0014-1,audit,sum_scope,True,True,True,True,0.327,
+MCP-BIZ3-test-10-0016-0,audit,rate_scale,False,True,True,False,0.32,wrong_judgment_or_identity
+MCP-BIZ3-test-07-0016-1,audit,lookup_key_type,True,True,True,True,0.333,
+MCP-BIZ3-test-10-0018-0,audit,rate_scale,False,True,True,False,0.345,wrong_judgment_or_identity
+MCP-BIZ3-test-05-0001-1,audit,lookup_match,True,True,True,True,0.327,
+MCP-BIZ3-test-04-0011-0,audit,external_link,True,True,True,True,0.344,
+MCP-BIZ3-test-18-0004-0,audit,empty_denominator,False,True,True,False,0.335,wrong_judgment_or_identity
+MCP-BIZ3-test-05-0021-0,audit,lookup_match,False,True,True,False,0.357,wrong_judgment_or_identity
+MCP-test-extract-00159,extraction,expense_report,True,True,True,True,0.955,
+MCP-BIZ3-test-03-0002-0,audit,iterative_cycle,False,True,True,False,0.327,wrong_judgment_or_identity
+MCP-BIZ3-test-15-0001-0,audit,seasonal_spike,False,True,True,False,0.347,wrong_judgment_or_identity
+MCP-BIZ3-test-19-0021-1,audit,unit_conversion,True,True,True,True,0.34,
+MCP-BIZ3-test-00-0001-1,audit,imported_literal,True,True,True,True,0.351,
+MCP-BIZ3-test-03-0007-0,audit,iterative_cycle,False,True,True,False,0.324,wrong_judgment_or_identity
+MCP-test-pii-00128,pii,negative,False,True,True,False,0.247,missed_extra_or_wrong_pii
+MCP-BIZ3-test-02-0021-1,audit,archived_snapshot,True,True,True,True,0.343,
+MCP-BIZ3-test-07-0005-1,audit,lookup_key_type,True,True,True,True,0.342,
+MCP-BIZ3-test-14-0011-1,audit,duplicate_key,True,True,True,True,0.35,
+MCP-test-extract-00030,extraction,invoice,False,True,True,False,1.133,wrong_document_missing_extra_or_wrong_field
+MCP-test-pii-00080,pii,negative,False,True,True,False,0.243,missed_extra_or_wrong_pii
+MCP-test-extract-00181,extraction,receipt,False,True,True,False,1.136,wrong_document_missing_extra_or_wrong_field
+MCP-BIZ3-test-02-0023-1,audit,archived_snapshot,True,True,True,True,0.321,
+MCP-BIZ3-test-12-0017-0,audit,date_order,False,True,True,False,0.331,wrong_judgment_or_identity
+MCP-test-pii-00052,pii,national_id,True,True,True,True,0.264,
+MCP-BIZ3-test-06-0011-1,audit,lookup_column,True,True,True,True,0.324,
+MCP-test-extract-00014,extraction,purchase_order,False,True,True,False,0.913,wrong_document_missing_extra_or_wrong_field
+MCP-BIZ3-test-02-0010-0,audit,archived_snapshot,False,True,True,False,0.315,wrong_judgment_or_identity
+MCP-test-pii-00035,pii,negative,True,True,True,True,0.066,
+MCP-test-extract-00192,extraction,invoice,True,True,True,True,0.95,
+MCP-test-extract-00190,extraction,payroll,True,True,True,True,0.704,
+MCP-BIZ3-test-11-0013-0,audit,stored_sign,False,True,True,False,0.316,wrong_judgment_or_identity
+MCP-BIZ3-test-16-0014-1,audit,rounding_tolerance,True,True,True,True,0.337,
+MCP-BIZ3-test-07-0006-1,audit,lookup_key_type,True,True,True,True,0.318,
+MCP-test-pii-00197,pii,passport,True,True,True,True,0.241,
+MCP-test-extract-00135,extraction,expense_report,True,True,True,True,0.937,
+MCP-BIZ3-test-15-0022-0,audit,seasonal_spike,False,True,True,False,0.36,wrong_judgment_or_identity
+MCP-BIZ3-test-17-0007-1,audit,text_identifier,True,True,True,True,0.316,
+MCP-BIZ3-test-04-0015-0,audit,external_link,False,True,True,False,0.321,wrong_judgment_or_identity
+MCP-BIZ3-test-04-0008-1,audit,external_link,True,True,True,True,0.3,
+MCP-test-pii-00112,pii,national_id,True,True,True,True,0.258,
+MCP-BIZ3-test-00-0013-1,audit,imported_literal,True,True,True,True,0.343,
+MCP-BIZ3-test-01-0023-1,audit,contract_literal,True,True,True,True,0.333,
+MCP-BIZ3-test-12-0022-0,audit,date_order,False,True,True,False,0.334,wrong_judgment_or_identity
+MCP-BIZ3-test-05-0002-0,audit,lookup_match,False,True,True,False,0.315,wrong_judgment_or_identity
+MCP-BIZ3-test-17-0023-0,audit,text_identifier,False,True,True,False,0.335,wrong_judgment_or_identity
+MCP-test-extract-00078,extraction,invoice,True,True,True,True,0.926,
+MCP-BIZ3-test-18-0001-1,audit,empty_denominator,True,True,True,True,0.328,
+MCP-BIZ3-test-00-0004-0,audit,imported_literal,False,True,True,False,0.339,wrong_judgment_or_identity
+MCP-BIZ3-test-18-0014-0,audit,empty_denominator,False,True,True,False,0.32,wrong_judgment_or_identity
+MCP-BIZ3-test-04-0017-1,audit,external_link,True,True,True,True,0.299,
+MCP-BIZ3-test-14-0016-0,audit,duplicate_key,False,True,True,False,0.311,wrong_judgment_or_identity
+MCP-BIZ3-test-05-0010-1,audit,lookup_match,True,True,True,True,0.313,
+MCP-BIZ3-test-16-0017-0,audit,rounding_tolerance,False,True,True,False,0.314,wrong_judgment_or_identity
+MCP-BIZ3-test-13-0011-1,audit,optional_blank,True,True,True,True,0.362,
+MCP-test-extract-00218,extraction,purchase_order,True,True,True,True,0.959,
+MCP-BIZ3-test-04-0009-0,audit,external_link,False,True,True,False,0.299,wrong_judgment_or_identity
+MCP-BIZ3-test-17-0009-0,audit,text_identifier,False,True,True,False,0.306,wrong_judgment_or_identity
+MCP-test-pii-00104,pii,negative,False,True,True,False,0.254,missed_extra_or_wrong_pii
+MCP-BIZ3-test-15-0011-1,audit,seasonal_spike,True,True,True,True,0.316,
+MCP-BIZ3-test-13-0017-1,audit,optional_blank,True,True,True,True,0.312,
+MCP-test-pii-00203,pii,negative,True,True,True,True,0.046,
+MCP-test-pii-00160,pii,national_id,True,True,True,True,0.23,
+MCP-BIZ3-test-15-0006-0,audit,seasonal_spike,False,True,True,False,0.313,wrong_judgment_or_identity
+MCP-BIZ3-test-04-0007-1,audit,external_link,True,True,True,True,0.311,
+MCP-BIZ3-test-08-0012-0,audit,sum_scope,False,True,True,False,0.319,wrong_judgment_or_identity
+MCP-BIZ3-test-14-0003-0,audit,duplicate_key,False,True,True,False,0.317,wrong_judgment_or_identity
+MCP-BIZ3-test-05-0021-1,audit,lookup_match,True,True,True,True,0.317,
+MCP-BIZ3-test-11-0023-0,audit,stored_sign,False,True,True,False,0.315,wrong_judgment_or_identity
+MCP-BIZ3-test-06-0018-1,audit,lookup_column,True,True,True,True,0.336,
+MCP-BIZ3-test-06-0007-1,audit,lookup_column,True,True,True,True,0.319,
+MCP-BIZ3-test-07-0003-0,audit,lookup_key_type,False,True,True,False,0.312,wrong_judgment_or_identity
+MCP-BIZ3-test-08-0014-0,audit,sum_scope,False,True,True,False,0.311,wrong_judgment_or_identity
+MCP-BIZ3-test-10-0001-1,audit,rate_scale,True,True,True,True,0.306,
+MCP-BIZ3-test-12-0018-1,audit,date_order,True,True,True,True,0.301,
+MCP-test-extract-00149,extraction,unknown,True,True,True,True,0.112,
+MCP-BIZ3-test-13-0004-0,audit,optional_blank,False,True,True,False,0.33,wrong_judgment_or_identity
+MCP-BIZ3-test-14-0022-1,audit,duplicate_key,True,True,True,True,0.316,
+MCP-test-pii-00060,pii,email,True,True,True,True,0.232,
+MCP-BIZ3-test-17-0005-0,audit,text_identifier,False,True,True,False,0.319,wrong_judgment_or_identity
+MCP-test-pii-00028,pii,national_id,True,True,True,True,0.237,
+MCP-BIZ3-test-04-0002-1,audit,external_link,True,True,True,True,0.308,
+MCP-BIZ3-test-14-0012-0,audit,duplicate_key,False,True,True,False,0.333,wrong_judgment_or_identity
+MCP-test-pii-00048,pii,email,True,True,True,True,0.26,
+MCP-BIZ3-test-15-0004-1,audit,seasonal_spike,True,True,True,True,0.341,
+MCP-BIZ3-test-12-0003-0,audit,date_order,False,True,True,False,0.326,wrong_judgment_or_identity
+MCP-BIZ3-test-00-0022-1,audit,imported_literal,True,True,True,True,0.359,
+MCP-BIZ3-test-19-0016-1,audit,unit_conversion,True,True,True,True,0.31,
+MCP-test-pii-00090,pii,negative,True,True,True,True,0.045,
+MCP-BIZ3-test-06-0022-0,audit,lookup_column,False,True,True,False,0.318,wrong_judgment_or_identity
+MCP-BIZ3-test-08-0011-0,audit,sum_scope,False,True,True,False,0.325,wrong_judgment_or_identity
+MCP-test-extract-00024,extraction,invoice,False,True,True,False,1.145,wrong_document_missing_extra_or_wrong_field
+MCP-BIZ3-test-01-0015-1,audit,contract_literal,True,True,True,True,0.344,
+MCP-BIZ3-test-16-0018-1,audit,rounding_tolerance,True,True,True,True,0.322,
+MCP-BIZ3-test-03-0011-1,audit,iterative_cycle,True,True,True,True,0.306,
+MCP-BIZ3-test-19-0020-0,audit,unit_conversion,False,True,True,False,0.311,wrong_judgment_or_identity
+MCP-BIZ3-test-11-0015-1,audit,stored_sign,True,True,True,True,0.315,
+MCP-test-extract-00237,extraction,expense_report,True,True,True,True,0.922,
+MCP-test-pii-00041,pii,passport,True,True,True,True,0.238,
+MCP-BIZ3-test-01-0020-0,audit,contract_literal,False,True,True,False,0.342,wrong_judgment_or_identity
+MCP-test-pii-00126,pii,negative,True,True,True,True,0.065,
+MCP-BIZ3-test-07-0020-0,audit,lookup_key_type,False,True,True,False,0.32,wrong_judgment_or_identity
+MCP-test-pii-00187,pii,negative,True,True,True,True,0.064,
+MCP-test-pii-00067,pii,negative,True,True,True,True,0.034,
+MCP-test-extract-00156,extraction,invoice,True,True,True,True,0.956,
+MCP-BIZ3-test-11-0001-0,audit,stored_sign,False,True,True,False,0.325,wrong_judgment_or_identity
+MCP-BIZ3-test-06-0000-1,audit,lookup_column,True,True,True,True,0.323,
+MCP-test-pii-00214,pii,negative,True,True,True,True,0.062,
+MCP-BIZ3-test-19-0006-1,audit,unit_conversion,True,True,True,True,0.34,
+MCP-BIZ3-test-15-0018-1,audit,seasonal_spike,True,True,True,True,0.323,
+MCP-test-extract-00063,extraction,expense_report,True,True,True,True,0.745,
+MCP-test-extract-00201,extraction,expense_report,True,True,True,True,0.956,
+MCP-BIZ3-test-01-0021-0,audit,contract_literal,False,True,True,False,0.359,wrong_judgment_or_identity
+MCP-BIZ3-test-06-0019-0,audit,lookup_column,False,True,True,False,0.334,wrong_judgment_or_identity
+MCP-test-pii-00125,pii,passport,True,True,True,True,0.248,
+MCP-BIZ3-test-04-0002-0,audit,external_link,False,True,True,False,0.294,wrong_judgment_or_identity
+MCP-BIZ3-test-07-0018-0,audit,lookup_key_type,False,True,True,False,0.344,wrong_judgment_or_identity
+MCP-test-pii-00184,pii,national_id,True,True,True,True,0.245,
+MCP-test-extract-00194,extraction,purchase_order,True,True,True,True,0.944,
+MCP-BIZ3-test-09-0000-0,audit,aggregation_type,False,True,True,False,0.326,wrong_judgment_or_identity
+MCP-BIZ3-test-03-0002-1,audit,iterative_cycle,True,True,True,True,0.323,
+MCP-test-extract-00133,extraction,receipt,False,True,True,False,0.969,wrong_document_missing_extra_or_wrong_field
+MCP-BIZ3-test-13-0021-1,audit,optional_blank,True,True,True,True,0.346,
+MCP-BIZ3-test-12-0009-1,audit,date_order,True,True,True,True,0.312,
+MCP-test-pii-00174,pii,negative,True,True,True,True,0.047,
+MCP-test-pii-00173,pii,passport,True,True,True,True,0.259,
+MCP-BIZ3-test-14-0002-1,audit,duplicate_key,True,True,True,True,0.333,
+MCP-test-pii-00148,pii,national_id,True,True,True,True,0.242,
+MCP-BIZ3-test-17-0020-0,audit,text_identifier,False,True,True,False,0.322,wrong_judgment_or_identity
+MCP-test-pii-00000,pii,email,True,True,True,True,0.241,
+MCP-BIZ3-test-13-0008-0,audit,optional_blank,False,True,True,False,0.373,wrong_judgment_or_identity
+MCP-test-pii-00140,pii,negative,False,True,True,False,0.252,missed_extra_or_wrong_pii
+MCP-BIZ3-test-10-0015-0,audit,rate_scale,False,True,True,False,0.341,wrong_judgment_or_identity
+MCP-BIZ3-test-04-0023-1,audit,external_link,True,True,True,True,0.329,
+MCP-BIZ3-test-19-0003-0,audit,unit_conversion,False,True,True,False,0.321,wrong_judgment_or_identity
+MCP-test-extract-00127,extraction,receipt,False,True,True,False,1.208,wrong_document_missing_extra_or_wrong_field
+MCP-BIZ3-test-09-0003-1,audit,aggregation_type,True,True,True,True,0.336,
+MCP-BIZ3-test-15-0014-0,audit,seasonal_spike,False,True,True,False,0.312,wrong_judgment_or_identity
+MCP-BIZ3-test-01-0019-0,audit,contract_literal,True,True,True,True,0.353,
+MCP-BIZ3-test-19-0006-0,audit,unit_conversion,False,True,True,False,0.324,wrong_judgment_or_identity
+MCP-test-pii-00081,pii,negative,False,True,True,False,0.234,missed_extra_or_wrong_pii
+MCP-BIZ3-test-03-0009-0,audit,iterative_cycle,False,True,True,False,0.322,wrong_judgment_or_identity
+MCP-BIZ3-test-03-0023-0,audit,iterative_cycle,False,True,True,False,0.294,wrong_judgment_or_identity
+MCP-test-extract-00132,extraction,invoice,True,True,True,True,0.961,
+MCP-test-extract-00143,extraction,unknown,True,True,True,True,0.093,
+MCP-test-extract-00228,extraction,invoice,True,True,True,True,0.952,
+MCP-BIZ3-test-03-0012-1,audit,iterative_cycle,True,True,True,True,0.344,
+MCP-BIZ3-test-15-0009-1,audit,seasonal_spike,True,True,True,True,0.357,
+MCP-BIZ3-test-14-0014-0,audit,duplicate_key,False,True,True,False,0.35,wrong_judgment_or_identity
+MCP-BIZ3-test-12-0014-0,audit,date_order,False,True,True,False,0.317,wrong_judgment_or_identity
+MCP-BIZ3-test-15-0006-1,audit,seasonal_spike,True,True,True,True,0.32,
+MCP-test-extract-00000,extraction,invoice,False,True,True,False,0.946,wrong_document_missing_extra_or_wrong_field
+MCP-BIZ3-test-02-0004-1,audit,archived_snapshot,True,True,True,True,0.361,
+MCP-BIZ3-test-11-0013-1,audit,stored_sign,True,True,True,True,0.317,
+MCP-BIZ3-test-17-0016-1,audit,text_identifier,True,True,True,True,0.363,
+MCP-test-pii-00109,pii,phone,True,True,True,True,0.253,
+MCP-BIZ3-test-13-0005-0,audit,optional_blank,False,True,True,False,0.36,wrong_judgment_or_identity
+MCP-BIZ3-test-14-0021-1,audit,duplicate_key,True,True,True,True,0.364,
+MCP-BIZ3-test-04-0004-0,audit,external_link,False,True,True,False,0.333,wrong_judgment_or_identity
+MCP-BIZ3-test-12-0022-1,audit,date_order,True,True,True,True,0.335,
+MCP-test-pii-00149,pii,passport,True,True,True,True,0.242,
+MCP-BIZ3-test-03-0003-0,audit,iterative_cycle,False,True,True,False,0.309,wrong_judgment_or_identity
+MCP-test-extract-00235,extraction,receipt,False,True,True,False,1.097,wrong_document_missing_extra_or_wrong_field
+MCP-BIZ3-test-12-0008-1,audit,date_order,True,True,True,True,0.329,
+MCP-BIZ3-test-06-0010-0,audit,lookup_column,False,True,True,False,0.331,wrong_judgment_or_identity
+MCP-BIZ3-test-18-0017-1,audit,empty_denominator,True,True,True,True,0.342,
+MCP-test-pii-00095,pii,negative,True,True,True,True,0.043,
+MCP-BIZ3-test-19-0002-0,audit,unit_conversion,False,True,True,False,0.315,wrong_judgment_or_identity
+MCP-BIZ3-test-18-0007-0,audit,empty_denominator,False,True,True,False,0.341,wrong_judgment_or_identity
+MCP-BIZ3-test-01-0013-0,audit,contract_literal,False,True,True,False,0.332,wrong_judgment_or_identity
+MCP-test-extract-00225,extraction,expense_report,True,True,True,True,1.001,
+MCP-BIZ3-test-15-0009-0,audit,seasonal_spike,False,True,True,False,0.358,wrong_judgment_or_identity
+MCP-BIZ3-test-06-0021-0,audit,lookup_column,False,True,True,False,0.35,wrong_judgment_or_identity
+MCP-BIZ3-test-16-0007-0,audit,rounding_tolerance,False,True,True,False,0.344,wrong_judgment_or_identity
+MCP-BIZ3-test-06-0003-0,audit,lookup_column,False,True,True,False,0.32,wrong_judgment_or_identity
+MCP-BIZ3-test-05-0001-0,audit,lookup_match,False,True,True,False,0.316,wrong_judgment_or_identity
+MCP-BIZ3-test-11-0006-1,audit,stored_sign,True,True,True,True,0.316,
+MCP-BIZ3-test-02-0001-1,audit,archived_snapshot,True,True,True,True,0.326,
+MCP-BIZ3-test-11-0018-0,audit,stored_sign,False,True,True,False,0.321,wrong_judgment_or_identity
+MCP-BIZ3-test-02-0011-1,audit,archived_snapshot,True,True,True,True,0.312,
+MCP-BIZ3-test-18-0003-1,audit,empty_denominator,True,True,True,True,0.33,
+MCP-BIZ3-test-09-0005-0,audit,aggregation_type,False,True,True,False,0.318,wrong_judgment_or_identity
+MCP-BIZ3-test-05-0003-0,audit,lookup_match,False,True,True,False,0.325,wrong_judgment_or_identity
+MCP-BIZ3-test-14-0017-0,audit,duplicate_key,False,True,True,False,0.313,wrong_judgment_or_identity
+MCP-BIZ3-test-03-0014-0,audit,iterative_cycle,False,True,True,False,0.303,wrong_judgment_or_identity
+MCP-test-extract-00207,extraction,expense_report,True,True,True,True,0.952,
+MCP-BIZ3-test-08-0007-1,audit,sum_scope,True,True,True,True,0.338,
+MCP-BIZ3-test-18-0019-0,audit,empty_denominator,False,True,True,False,0.335,wrong_judgment_or_identity
+MCP-BIZ3-test-16-0001-0,audit,rounding_tolerance,False,True,True,False,0.331,wrong_judgment_or_identity
+MCP-BIZ3-test-03-0017-0,audit,iterative_cycle,False,True,True,False,0.316,wrong_judgment_or_identity
+MCP-BIZ3-test-07-0000-1,audit,lookup_key_type,True,True,True,True,0.32,
+MCP-BIZ3-test-14-0019-0,audit,duplicate_key,False,True,True,False,0.33,wrong_judgment_or_identity
+MCP-test-extract-00186,extraction,invoice,True,True,True,True,0.948,
+MCP-test-pii-00066,pii,negative,True,True,True,True,0.069,
+MCP-test-pii-00224,pii,negative,False,True,True,False,0.241,missed_extra_or_wrong_pii
+MCP-BIZ3-test-01-0019-1,audit,contract_literal,False,True,True,False,0.349,wrong_judgment_or_identity
+MCP-BIZ3-test-18-0009-1,audit,empty_denominator,True,True,True,True,0.329,
+MCP-BIZ3-test-07-0013-0,audit,lookup_key_type,False,True,True,False,0.321,wrong_judgment_or_identity
+MCP-test-extract-00126,extraction,invoice,True,True,True,True,0.738,
+MCP-BIZ3-test-02-0004-0,audit,archived_snapshot,False,True,True,False,0.344,wrong_judgment_or_identity
+MCP-test-extract-00144,extraction,invoice,True,True,True,True,0.929,
+MCP-test-extract-00217,extraction,receipt,True,True,True,True,0.716,
+MCP-BIZ3-test-11-0019-1,audit,stored_sign,True,True,True,True,0.336,
+MCP-BIZ3-test-13-0009-1,audit,optional_blank,True,True,True,True,0.34,
+MCP-BIZ3-test-13-0003-1,audit,optional_blank,True,True,True,True,0.336,
+MCP-test-pii-00088,pii,national_id,True,True,True,True,0.239,
+MCP-BIZ3-test-04-0023-0,audit,external_link,False,True,True,False,0.293,wrong_judgment_or_identity
+MCP-BIZ3-test-08-0010-1,audit,sum_scope,True,True,True,True,0.314,
+MCP-BIZ3-test-02-0016-1,audit,archived_snapshot,True,True,True,True,0.345,
+MCP-test-extract-00076,extraction,payroll,False,True,True,False,0.683,wrong_document_missing_extra_or_wrong_field
+MCP-BIZ3-test-18-0008-0,audit,empty_denominator,False,True,True,False,0.321,wrong_judgment_or_identity
+MCP-BIZ3-test-05-0009-1,audit,lookup_match,True,True,True,True,0.32,
+MCP-BIZ3-test-02-0017-0,audit,archived_snapshot,False,True,True,False,0.343,wrong_judgment_or_identity
+MCP-test-pii-00217,pii,phone,True,True,True,True,0.231,
+MCP-BIZ3-test-07-0004-1,audit,lookup_key_type,True,True,True,True,0.328,
+MCP-test-extract-00154,extraction,payroll,False,True,True,False,0.728,wrong_document_missing_extra_or_wrong_field
+MCP-test-extract-00080,extraction,purchase_order,False,True,False,False,1.171,wrong_document_missing_extra_or_wrong_field;invalid_schema
+MCP-BIZ3-test-11-0000-1,audit,stored_sign,False,False,False,False,6.548,request_error: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+MCP-BIZ3-test-14-0009-0,audit,duplicate_key,False,False,False,False,2.04,request_error: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>
+MCP-BIZ3-test-18-0022-1,audit,empty_denominator,False,False,False,False,2.06,request_error: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>
+MCP-test-extract-00131,extraction,unknown,False,False,False,False,2.031,request_error: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>
+MCP-test-extract-00184,extraction,payroll,False,False,False,False,2.04,request_error: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>
+MCP-BIZ3-test-07-0023-1,audit,lookup_key_type,False,False,False,False,2.034,request_error: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>
+MCP-BIZ3-test-19-0010-0,audit,unit_conversion,False,False,False,False,2.044,request_error: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>
+MCP-BIZ3-test-01-0018-0,audit,contract_literal,False,False,False,False,2.058,request_error: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>
+MCP-test-pii-00239,pii,negative,False,False,False,False,2.037,request_error: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>
+MCP-BIZ3-test-13-0005-1,audit,optional_blank,False,False,False,False,2.041,request_error: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>
+MCP-test-pii-00077,pii,passport,False,False,False,False,2.036,request_error: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>
+MCP-test-pii-00181,pii,phone,False,False,False,False,2.036,request_error: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>
+MCP-BIZ3-test-04-0015-1,audit,external_link,False,False,False,False,2.052,request_error: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>
+MCP-BIZ3-test-00-0021-0,audit,imported_literal,False,False,False,False,2.054,request_error: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>
+MCP-test-extract-00062,extraction,purchase_order,False,False,False,False,2.043,request_error: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>
+MCP-BIZ3-test-08-0006-1,audit,sum_scope,False,False,False,False,2.054,request_error: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>
+MCP-BIZ3-test-16-0019-0,audit,rounding_tolerance,False,False,False,False,2.053,request_error: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>
+MCP-test-pii-00031,pii,negative,False,False,False,False,2.048,request_error: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>
+MCP-BIZ3-test-12-0011-1,audit,date_order,False,False,False,False,2.042,request_error: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>
+MCP-BIZ3-test-03-0005-0,audit,iterative_cycle,False,False,False,False,2.046,request_error: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>
+MCP-BIZ3-test-02-0012-0,audit,archived_snapshot,False,False,False,False,2.061,request_error: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>
+MCP-BIZ3-test-15-0003-1,audit,seasonal_spike,False,False,False,False,2.04,request_error: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>
+MCP-test-extract-00182,extraction,purchase_order,False,False,False,False,2.063,request_error: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>
+MCP-BIZ3-test-15-0000-1,audit,seasonal_spike,False,False,False,False,2.046,request_error: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>
+MCP-BIZ3-test-01-0001-0,audit,contract_literal,False,False,False,False,2.047,request_error: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>
+MCP-BIZ3-test-17-0012-1,audit,text_identifier,False,False,False,False,2.05,request_error: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>
+MCP-BIZ3-test-19-0004-0,audit,unit_conversion,False,False,False,False,2.053,request_error: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>
+MCP-BIZ3-test-01-0011-0,audit,contract_literal,False,False,False,False,2.027,request_error: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>
+MCP-BIZ3-test-13-0001-0,audit,optional_blank,False,False,False,False,2.032,request_error: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>
+MCP-test-pii-00063,pii,credit_card,False,False,False,False,2.045,request_error: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>
+MCP-test-extract-00124,extraction,payroll,False,False,False,False,2.05,request_error: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>
+MCP-test-extract-00060,extraction,invoice,False,False,False,False,2.055,request_error: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>
+MCP-test-pii-00164,pii,negative,False,False,False,False,2.043,request_error: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>
+MCP-BIZ3-test-16-0021-0,audit,rounding_tolerance,False,False,False,False,2.043,request_error: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>
+MCP-test-extract-00023,extraction,unknown,False,False,False,False,2.045,request_error: <urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>

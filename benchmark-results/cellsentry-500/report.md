@@ -1,0 +1,483 @@
+# cellsentry-1.5b-v3 本地模型 500 用例测试
+
+已执行 500/500；严格通过 56。
+
+这是合成数据上的模型直测；不代表 Excel 解析、规则引擎、UI 或生产数据表现。
+所有请求串行执行，temperature=0，seed=42；不强制 JSON grammar，不用模拟结果，不用规则替代模型回答。
+公式提示词遵循应用输出协议；PII/提取补充显式字段协议，因此是受控能力测试，并非缺失的原版 Python 服务复刻。
+
+|任务|执行|严格通过|语义通过|JSON有效|Schema有效|平均秒数|
+|---|---:|---:|---:|---:|---:|---:|
+|audit|180|8 (4.4%)|19|179|81|0.236|
+|extraction|160|9 (5.6%)|87|160|9|0.509|
+|pii|160|39 (24.4%)|39|138|68|0.135|
+
+严格通过要求：JSON 有效、字段协议正确、业务答案完全匹配。PII 按单元格和类型比较；提取按文档类型、字段名、原值和来源地址比较，额外/缺失字段均失败。
+测试集包含 18 种公式场景的正反例、32 类 PII 场景以及 5 种单据的 6 种布局和未知文档。每类有 5 个变体；部分变体共享结构，不能视为 500 个独立业务场景。
+PII 为合成/公开测试值；负例要求 SSN 范围、银行卡 Luhn、身份证校验有效。该定义可能比模型训练标签严格。
+
+## 失败用例
+
+- TC0001 audit/division_zero：wrong_judgment_or_identity
+- TC0002 audit/division_zero：wrong_judgment_or_identity, invalid_schema
+- TC0003 audit/division_zero：wrong_judgment_or_identity
+- TC0004 audit/division_zero：wrong_judgment_or_identity
+- TC0005 audit/division_zero：wrong_judgment_or_identity
+- TC0006 audit/division_zero：wrong_judgment_or_identity, invalid_schema
+- TC0007 audit/division_zero：wrong_judgment_or_identity, invalid_schema
+- TC0008 audit/division_zero：wrong_judgment_or_identity, invalid_schema
+- TC0009 audit/division_zero：wrong_judgment_or_identity
+- TC0010 audit/division_zero：wrong_judgment_or_identity, invalid_schema
+- TC0012 audit/self_reference：invalid_json
+- TC0013 audit/self_reference：wrong_judgment_or_identity, invalid_schema
+- TC0015 audit/self_reference：wrong_judgment_or_identity, invalid_schema
+- TC0016 audit/self_reference：wrong_judgment_or_identity, invalid_schema
+- TC0017 audit/self_reference：wrong_judgment_or_identity, invalid_schema
+- TC0018 audit/self_reference：wrong_judgment_or_identity, invalid_schema
+- TC0019 audit/self_reference：wrong_judgment_or_identity
+- TC0020 audit/self_reference：wrong_judgment_or_identity, invalid_schema
+- TC0021 audit/broken_reference：wrong_judgment_or_identity
+- TC0022 audit/broken_reference：wrong_judgment_or_identity, invalid_schema
+- TC0023 audit/broken_reference：wrong_judgment_or_identity
+- TC0024 audit/broken_reference：wrong_judgment_or_identity
+- TC0025 audit/broken_reference：wrong_judgment_or_identity
+- TC0026 audit/broken_reference：wrong_judgment_or_identity, invalid_schema
+- TC0027 audit/broken_reference：wrong_judgment_or_identity, invalid_schema
+- TC0028 audit/broken_reference：wrong_judgment_or_identity, invalid_schema
+- TC0029 audit/broken_reference：wrong_judgment_or_identity, invalid_schema
+- TC0030 audit/broken_reference：wrong_judgment_or_identity, invalid_schema
+- TC0033 audit/sum_range：wrong_judgment_or_identity, invalid_schema
+- TC0034 audit/sum_range：wrong_judgment_or_identity, invalid_schema
+- TC0035 audit/sum_range：wrong_judgment_or_identity, invalid_schema
+- TC0036 audit/sum_range：wrong_judgment_or_identity, invalid_schema
+- TC0037 audit/sum_range：invalid_schema
+- TC0038 audit/sum_range：invalid_schema
+- TC0039 audit/sum_range：wrong_judgment_or_identity
+- TC0040 audit/sum_range：wrong_judgment_or_identity, invalid_schema
+- TC0041 audit/average_total：wrong_judgment_or_identity
+- TC0042 audit/average_total：wrong_judgment_or_identity
+- TC0043 audit/average_total：wrong_judgment_or_identity
+- TC0044 audit/average_total：wrong_judgment_or_identity
+- TC0045 audit/average_total：wrong_judgment_or_identity
+- TC0046 audit/average_total：wrong_judgment_or_identity
+- TC0047 audit/average_total：wrong_judgment_or_identity, invalid_schema
+- TC0048 audit/average_total：wrong_judgment_or_identity
+- TC0049 audit/average_total：wrong_judgment_or_identity
+- TC0050 audit/average_total：wrong_judgment_or_identity
+- TC0051 audit/percent_scale：wrong_judgment_or_identity, invalid_schema
+- TC0052 audit/percent_scale：wrong_judgment_or_identity, invalid_schema
+- TC0053 audit/percent_scale：wrong_judgment_or_identity, invalid_schema
+- TC0054 audit/percent_scale：wrong_judgment_or_identity, invalid_schema
+- TC0055 audit/percent_scale：wrong_judgment_or_identity, invalid_schema
+- TC0056 audit/percent_scale：wrong_judgment_or_identity
+- TC0057 audit/percent_scale：wrong_judgment_or_identity, invalid_schema
+- TC0058 audit/percent_scale：wrong_judgment_or_identity, invalid_schema
+- TC0059 audit/percent_scale：wrong_judgment_or_identity, invalid_schema
+- TC0060 audit/percent_scale：wrong_judgment_or_identity
+- TC0061 audit/absolute_reference：wrong_judgment_or_identity
+- TC0062 audit/absolute_reference：wrong_judgment_or_identity, invalid_schema
+- TC0063 audit/absolute_reference：wrong_judgment_or_identity, invalid_schema
+- TC0064 audit/absolute_reference：wrong_judgment_or_identity
+- TC0065 audit/absolute_reference：wrong_judgment_or_identity
+- TC0066 audit/absolute_reference：wrong_judgment_or_identity, invalid_schema
+- TC0067 audit/absolute_reference：wrong_judgment_or_identity
+- TC0068 audit/absolute_reference：wrong_judgment_or_identity, invalid_schema
+- TC0069 audit/absolute_reference：wrong_judgment_or_identity, invalid_schema
+- TC0070 audit/absolute_reference：wrong_judgment_or_identity
+- TC0071 audit/relative_reference：wrong_judgment_or_identity
+- TC0072 audit/relative_reference：wrong_judgment_or_identity
+- TC0073 audit/relative_reference：wrong_judgment_or_identity
+- TC0074 audit/relative_reference：wrong_judgment_or_identity
+- TC0075 audit/relative_reference：wrong_judgment_or_identity
+- TC0076 audit/relative_reference：wrong_judgment_or_identity
+- TC0077 audit/relative_reference：wrong_judgment_or_identity, invalid_schema
+- TC0078 audit/relative_reference：wrong_judgment_or_identity
+- TC0079 audit/relative_reference：wrong_judgment_or_identity
+- TC0080 audit/relative_reference：wrong_judgment_or_identity
+- TC0082 audit/lookup_exact：wrong_judgment_or_identity
+- TC0083 audit/lookup_exact：wrong_judgment_or_identity, invalid_schema
+- TC0084 audit/lookup_exact：wrong_judgment_or_identity, invalid_schema
+- TC0085 audit/lookup_exact：wrong_judgment_or_identity, invalid_schema
+- TC0086 audit/lookup_exact：invalid_schema
+- TC0087 audit/lookup_exact：invalid_schema
+- TC0088 audit/lookup_exact：invalid_schema
+- TC0089 audit/lookup_exact：invalid_schema
+- TC0090 audit/lookup_exact：wrong_judgment_or_identity, invalid_schema
+- TC0091 audit/lookup_column：wrong_judgment_or_identity, invalid_schema
+- TC0092 audit/lookup_column：wrong_judgment_or_identity, invalid_schema
+- TC0093 audit/lookup_column：wrong_judgment_or_identity, invalid_schema
+- TC0094 audit/lookup_column：wrong_judgment_or_identity, invalid_schema
+- TC0095 audit/lookup_column：wrong_judgment_or_identity, invalid_schema
+- TC0096 audit/lookup_column：wrong_judgment_or_identity, invalid_schema
+- TC0097 audit/lookup_column：wrong_judgment_or_identity, invalid_schema
+- TC0098 audit/lookup_column：wrong_judgment_or_identity, invalid_schema
+- TC0099 audit/lookup_column：wrong_judgment_or_identity, invalid_schema
+- TC0100 audit/lookup_column：wrong_judgment_or_identity
+- TC0101 audit/if_boundary：wrong_judgment_or_identity
+- TC0102 audit/if_boundary：wrong_judgment_or_identity, invalid_schema
+- TC0103 audit/if_boundary：wrong_judgment_or_identity
+- TC0105 audit/if_boundary：wrong_judgment_or_identity
+- TC0106 audit/if_boundary：wrong_judgment_or_identity
+- TC0107 audit/if_boundary：wrong_judgment_or_identity
+- TC0108 audit/if_boundary：wrong_judgment_or_identity
+- TC0109 audit/if_boundary：wrong_judgment_or_identity
+- TC0110 audit/if_boundary：wrong_judgment_or_identity
+- TC0111 audit/text_number：wrong_judgment_or_identity
+- TC0112 audit/text_number：wrong_judgment_or_identity, invalid_schema
+- TC0113 audit/text_number：wrong_judgment_or_identity, invalid_schema
+- TC0114 audit/text_number：wrong_judgment_or_identity, invalid_schema
+- TC0115 audit/text_number：wrong_judgment_or_identity, invalid_schema
+- TC0116 audit/text_number：wrong_judgment_or_identity, invalid_schema
+- TC0117 audit/text_number：wrong_judgment_or_identity, invalid_schema
+- TC0118 audit/text_number：invalid_schema
+- TC0119 audit/text_number：wrong_judgment_or_identity, invalid_schema
+- TC0120 audit/text_number：wrong_judgment_or_identity, invalid_schema
+- TC0122 audit/duplicate_total：wrong_judgment_or_identity
+- TC0123 audit/duplicate_total：wrong_judgment_or_identity
+- TC0125 audit/duplicate_total：wrong_judgment_or_identity
+- TC0126 audit/duplicate_total：invalid_schema
+- TC0127 audit/duplicate_total：wrong_judgment_or_identity, invalid_schema
+- TC0128 audit/duplicate_total：wrong_judgment_or_identity, invalid_schema
+- TC0129 audit/duplicate_total：invalid_schema
+- TC0130 audit/duplicate_total：wrong_judgment_or_identity
+- TC0131 audit/sign：wrong_judgment_or_identity
+- TC0132 audit/sign：wrong_judgment_or_identity
+- TC0133 audit/sign：wrong_judgment_or_identity, invalid_schema
+- TC0134 audit/sign：wrong_judgment_or_identity
+- TC0135 audit/sign：wrong_judgment_or_identity, invalid_schema
+- TC0136 audit/sign：wrong_judgment_or_identity
+- TC0137 audit/sign：wrong_judgment_or_identity, invalid_schema
+- TC0138 audit/sign：wrong_judgment_or_identity, invalid_schema
+- TC0139 audit/sign：wrong_judgment_or_identity
+- TC0140 audit/sign：wrong_judgment_or_identity
+- TC0141 audit/date_order：wrong_judgment_or_identity, invalid_schema
+- TC0142 audit/date_order：wrong_judgment_or_identity
+- TC0143 audit/date_order：wrong_judgment_or_identity, invalid_schema
+- TC0144 audit/date_order：wrong_judgment_or_identity, invalid_schema
+- TC0145 audit/date_order：wrong_judgment_or_identity, invalid_schema
+- TC0146 audit/date_order：wrong_judgment_or_identity, invalid_schema
+- TC0147 audit/date_order：wrong_judgment_or_identity, invalid_schema
+- TC0148 audit/date_order：wrong_judgment_or_identity, invalid_schema
+- TC0149 audit/date_order：wrong_judgment_or_identity
+- TC0150 audit/date_order：wrong_judgment_or_identity, invalid_schema
+- TC0151 audit/rounding：wrong_judgment_or_identity
+- TC0152 audit/rounding：wrong_judgment_or_identity
+- TC0153 audit/rounding：wrong_judgment_or_identity
+- TC0154 audit/rounding：wrong_judgment_or_identity
+- TC0155 audit/rounding：wrong_judgment_or_identity, invalid_schema
+- TC0156 audit/rounding：wrong_judgment_or_identity
+- TC0157 audit/rounding：wrong_judgment_or_identity
+- TC0158 audit/rounding：wrong_judgment_or_identity
+- TC0159 audit/rounding：wrong_judgment_or_identity
+- TC0160 audit/rounding：wrong_judgment_or_identity, invalid_schema
+- TC0161 audit/count：wrong_judgment_or_identity, invalid_schema
+- TC0162 audit/count：wrong_judgment_or_identity, invalid_schema
+- TC0163 audit/count：wrong_judgment_or_identity, invalid_schema
+- TC0164 audit/count：wrong_judgment_or_identity, invalid_schema
+- TC0165 audit/count：wrong_judgment_or_identity, invalid_schema
+- TC0166 audit/count：wrong_judgment_or_identity, invalid_schema
+- TC0167 audit/count：wrong_judgment_or_identity
+- TC0168 audit/count：invalid_schema
+- TC0169 audit/count：invalid_schema
+- TC0170 audit/count：wrong_judgment_or_identity, invalid_schema
+- TC0171 audit/iferror：wrong_judgment_or_identity
+- TC0172 audit/iferror：wrong_judgment_or_identity, invalid_schema
+- TC0173 audit/iferror：wrong_judgment_or_identity, invalid_schema
+- TC0174 audit/iferror：wrong_judgment_or_identity
+- TC0175 audit/iferror：wrong_judgment_or_identity
+- TC0176 audit/iferror：wrong_judgment_or_identity
+- TC0177 audit/iferror：wrong_judgment_or_identity, invalid_schema
+- TC0178 audit/iferror：wrong_judgment_or_identity, invalid_schema
+- TC0179 audit/iferror：wrong_judgment_or_identity
+- TC0180 audit/iferror：wrong_judgment_or_identity, invalid_schema
+- TC0181 pii/email：invalid_json
+- TC0182 pii/email：invalid_json
+- TC0184 pii/email：invalid_json
+- TC0185 pii/email：invalid_json
+- TC0186 pii/phone_cn：missed_extra_or_wrong_pii
+- TC0187 pii/phone_cn：missed_extra_or_wrong_pii, invalid_schema
+- TC0188 pii/phone_cn：missed_extra_or_wrong_pii
+- TC0189 pii/phone_cn：missed_extra_or_wrong_pii, invalid_schema
+- TC0190 pii/phone_cn：missed_extra_or_wrong_pii, invalid_schema
+- TC0191 pii/phone_us：missed_extra_or_wrong_pii, invalid_schema
+- TC0192 pii/phone_us：missed_extra_or_wrong_pii
+- TC0193 pii/phone_us：missed_extra_or_wrong_pii, invalid_schema
+- TC0198 pii/ssn：missed_extra_or_wrong_pii, invalid_schema
+- TC0199 pii/ssn：missed_extra_or_wrong_pii, invalid_schema
+- TC0200 pii/ssn：missed_extra_or_wrong_pii, invalid_schema
+- TC0201 pii/credit_card：missed_extra_or_wrong_pii
+- TC0202 pii/credit_card：missed_extra_or_wrong_pii, invalid_schema
+- TC0203 pii/credit_card：missed_extra_or_wrong_pii, invalid_schema
+- TC0204 pii/credit_card：missed_extra_or_wrong_pii
+- TC0205 pii/credit_card：missed_extra_or_wrong_pii, invalid_schema
+- TC0206 pii/national_id：missed_extra_or_wrong_pii, invalid_schema
+- TC0207 pii/national_id：missed_extra_or_wrong_pii
+- TC0208 pii/national_id：missed_extra_or_wrong_pii, invalid_schema
+- TC0209 pii/national_id：missed_extra_or_wrong_pii, invalid_schema
+- TC0210 pii/national_id：missed_extra_or_wrong_pii, invalid_schema
+- TC0211 pii/iban：missed_extra_or_wrong_pii, invalid_schema
+- TC0212 pii/iban：missed_extra_or_wrong_pii
+- TC0213 pii/iban：missed_extra_or_wrong_pii
+- TC0214 pii/iban：missed_extra_or_wrong_pii, invalid_schema
+- TC0215 pii/iban：missed_extra_or_wrong_pii, invalid_schema
+- TC0216 pii/email_embedded：missed_extra_or_wrong_pii, invalid_schema
+- TC0217 pii/email_embedded：missed_extra_or_wrong_pii, invalid_schema
+- TC0218 pii/email_embedded：missed_extra_or_wrong_pii, invalid_schema
+- TC0219 pii/email_embedded：missed_extra_or_wrong_pii, invalid_schema
+- TC0220 pii/email_embedded：missed_extra_or_wrong_pii, invalid_schema
+- TC0221 pii/phone_cn_labeled：invalid_json
+- TC0222 pii/phone_cn_labeled：invalid_json
+- TC0223 pii/phone_cn_labeled：invalid_json
+- TC0224 pii/phone_cn_labeled：invalid_json
+- TC0225 pii/phone_cn_labeled：invalid_json
+- TC0231 pii/credit_card_spaced：missed_extra_or_wrong_pii, invalid_schema
+- TC0232 pii/credit_card_spaced：missed_extra_or_wrong_pii, invalid_schema
+- TC0233 pii/credit_card_spaced：missed_extra_or_wrong_pii, invalid_schema
+- TC0234 pii/credit_card_spaced：missed_extra_or_wrong_pii, invalid_schema
+- TC0235 pii/credit_card_spaced：missed_extra_or_wrong_pii, invalid_schema
+- TC0236 pii/passport：invalid_json
+- TC0237 pii/passport：invalid_json
+- TC0238 pii/passport：missed_extra_or_wrong_pii, invalid_schema
+- TC0239 pii/passport：missed_extra_or_wrong_pii, invalid_schema
+- TC0240 pii/passport：missed_extra_or_wrong_pii, invalid_schema
+- TC0241 pii/phone_in_sentence：invalid_json
+- TC0242 pii/phone_in_sentence：invalid_json
+- TC0243 pii/phone_in_sentence：invalid_json
+- TC0244 pii/phone_in_sentence：invalid_json
+- TC0245 pii/phone_in_sentence：invalid_json
+- TC0246 pii/national_id_labeled：missed_extra_or_wrong_pii
+- TC0247 pii/national_id_labeled：missed_extra_or_wrong_pii
+- TC0248 pii/national_id_labeled：missed_extra_or_wrong_pii
+- TC0249 pii/national_id_labeled：missed_extra_or_wrong_pii
+- TC0250 pii/national_id_labeled：missed_extra_or_wrong_pii
+- TC0251 pii/multi_email：missed_extra_or_wrong_pii, invalid_schema
+- TC0252 pii/multi_email：missed_extra_or_wrong_pii, invalid_schema
+- TC0253 pii/multi_email：missed_extra_or_wrong_pii, invalid_schema
+- TC0254 pii/multi_email：missed_extra_or_wrong_pii, invalid_schema
+- TC0255 pii/multi_email：missed_extra_or_wrong_pii, invalid_schema
+- TC0256 pii/mixed_pii：missed_extra_or_wrong_pii
+- TC0257 pii/mixed_pii：invalid_json
+- TC0258 pii/mixed_pii：invalid_json
+- TC0259 pii/mixed_pii：invalid_json
+- TC0260 pii/mixed_pii：invalid_json
+- TC0276 pii/sku：missed_extra_or_wrong_pii, invalid_schema
+- TC0277 pii/sku：missed_extra_or_wrong_pii, invalid_schema
+- TC0278 pii/sku：missed_extra_or_wrong_pii, invalid_schema
+- TC0279 pii/sku：missed_extra_or_wrong_pii, invalid_schema
+- TC0280 pii/sku：missed_extra_or_wrong_pii, invalid_schema
+- TC0282 pii/order_id：missed_extra_or_wrong_pii, invalid_schema
+- TC0283 pii/order_id：missed_extra_or_wrong_pii, invalid_schema
+- TC0285 pii/order_id：missed_extra_or_wrong_pii, invalid_schema
+- TC0286 pii/empty：missed_extra_or_wrong_pii, invalid_schema
+- TC0287 pii/empty：missed_extra_or_wrong_pii, invalid_schema
+- TC0288 pii/empty：missed_extra_or_wrong_pii, invalid_schema
+- TC0289 pii/empty：missed_extra_or_wrong_pii, invalid_schema
+- TC0290 pii/empty：missed_extra_or_wrong_pii, invalid_schema
+- TC0296 pii/email_no_at：invalid_json
+- TC0297 pii/email_no_at：missed_extra_or_wrong_pii, invalid_schema
+- TC0298 pii/email_no_at：missed_extra_or_wrong_pii, invalid_schema
+- TC0299 pii/email_no_at：missed_extra_or_wrong_pii, invalid_schema
+- TC0300 pii/email_no_at：missed_extra_or_wrong_pii, invalid_schema
+- TC0301 pii/email_no_domain：missed_extra_or_wrong_pii, invalid_schema
+- TC0302 pii/email_no_domain：invalid_json
+- TC0303 pii/email_no_domain：missed_extra_or_wrong_pii, invalid_schema
+- TC0304 pii/email_no_domain：missed_extra_or_wrong_pii, invalid_schema
+- TC0305 pii/email_no_domain：missed_extra_or_wrong_pii, invalid_schema
+- TC0306 pii/short_phone：missed_extra_or_wrong_pii, invalid_schema
+- TC0307 pii/short_phone：missed_extra_or_wrong_pii, invalid_schema
+- TC0308 pii/short_phone：missed_extra_or_wrong_pii, invalid_schema
+- TC0309 pii/short_phone：missed_extra_or_wrong_pii, invalid_schema
+- TC0310 pii/short_phone：missed_extra_or_wrong_pii, invalid_schema
+- TC0311 pii/invalid_ssn：missed_extra_or_wrong_pii
+- TC0312 pii/invalid_ssn：missed_extra_or_wrong_pii
+- TC0313 pii/invalid_ssn：missed_extra_or_wrong_pii
+- TC0314 pii/invalid_ssn：missed_extra_or_wrong_pii
+- TC0315 pii/invalid_ssn：missed_extra_or_wrong_pii
+- TC0316 pii/invalid_card：missed_extra_or_wrong_pii
+- TC0317 pii/invalid_card：missed_extra_or_wrong_pii
+- TC0318 pii/invalid_card：missed_extra_or_wrong_pii
+- TC0319 pii/invalid_card：missed_extra_or_wrong_pii
+- TC0320 pii/invalid_card：missed_extra_or_wrong_pii
+- TC0321 pii/invalid_cn_id：missed_extra_or_wrong_pii
+- TC0322 pii/invalid_cn_id：missed_extra_or_wrong_pii
+- TC0323 pii/invalid_cn_id：missed_extra_or_wrong_pii
+- TC0324 pii/invalid_cn_id：missed_extra_or_wrong_pii
+- TC0325 pii/invalid_cn_id：missed_extra_or_wrong_pii
+- TC0327 pii/version：missed_extra_or_wrong_pii, invalid_schema
+- TC0328 pii/version：missed_extra_or_wrong_pii, invalid_schema
+- TC0330 pii/version：missed_extra_or_wrong_pii, invalid_schema
+- TC0336 pii/injection：missed_extra_or_wrong_pii, invalid_schema
+- TC0337 pii/injection：missed_extra_or_wrong_pii, invalid_schema
+- TC0338 pii/injection：missed_extra_or_wrong_pii, invalid_schema
+- TC0339 pii/injection：missed_extra_or_wrong_pii, invalid_schema
+- TC0340 pii/injection：missed_extra_or_wrong_pii, invalid_schema
+- TC0341 extraction/invoice/horizontal：invalid_schema
+- TC0342 extraction/invoice/horizontal：invalid_schema
+- TC0343 extraction/invoice/horizontal：invalid_schema
+- TC0344 extraction/invoice/horizontal：invalid_schema
+- TC0345 extraction/invoice/horizontal：invalid_schema
+- TC0346 extraction/invoice/vertical：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0347 extraction/invoice/vertical：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0348 extraction/invoice/vertical：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0349 extraction/invoice/vertical：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0350 extraction/invoice/vertical：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0351 extraction/invoice/chinese：invalid_schema
+- TC0352 extraction/invoice/chinese：invalid_schema
+- TC0353 extraction/invoice/chinese：invalid_schema
+- TC0354 extraction/invoice/chinese：invalid_schema
+- TC0355 extraction/invoice/chinese：invalid_schema
+- TC0356 extraction/invoice/noise：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0357 extraction/invoice/noise：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0358 extraction/invoice/noise：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0359 extraction/invoice/noise：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0360 extraction/invoice/noise：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0361 extraction/invoice/missing_total：invalid_schema
+- TC0362 extraction/invoice/missing_total：invalid_schema
+- TC0363 extraction/invoice/missing_total：invalid_schema
+- TC0364 extraction/invoice/missing_total：invalid_schema
+- TC0365 extraction/invoice/missing_total：invalid_schema
+- TC0366 extraction/invoice/reordered：invalid_schema
+- TC0367 extraction/invoice/reordered：invalid_schema
+- TC0368 extraction/invoice/reordered：invalid_schema
+- TC0369 extraction/invoice/reordered：invalid_schema
+- TC0370 extraction/invoice/reordered：invalid_schema
+- TC0371 extraction/receipt/horizontal：invalid_schema
+- TC0372 extraction/receipt/horizontal：invalid_schema
+- TC0373 extraction/receipt/horizontal：invalid_schema
+- TC0374 extraction/receipt/horizontal：invalid_schema
+- TC0375 extraction/receipt/horizontal：invalid_schema
+- TC0376 extraction/receipt/vertical：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0377 extraction/receipt/vertical：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0378 extraction/receipt/vertical：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0379 extraction/receipt/vertical：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0380 extraction/receipt/vertical：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0381 extraction/receipt/chinese：invalid_schema
+- TC0382 extraction/receipt/chinese：invalid_schema
+- TC0383 extraction/receipt/chinese：invalid_schema
+- TC0384 extraction/receipt/chinese：invalid_schema
+- TC0385 extraction/receipt/chinese：invalid_schema
+- TC0386 extraction/receipt/noise：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0387 extraction/receipt/noise：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0388 extraction/receipt/noise：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0389 extraction/receipt/noise：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0390 extraction/receipt/noise：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0391 extraction/receipt/missing_total：invalid_schema
+- TC0392 extraction/receipt/missing_total：invalid_schema
+- TC0393 extraction/receipt/missing_total：invalid_schema
+- TC0394 extraction/receipt/missing_total：invalid_schema
+- TC0395 extraction/receipt/missing_total：invalid_schema
+- TC0396 extraction/receipt/reordered：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0397 extraction/receipt/reordered：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0398 extraction/receipt/reordered：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0399 extraction/receipt/reordered：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0400 extraction/receipt/reordered：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0401 extraction/purchase_order/horizontal：invalid_schema
+- TC0402 extraction/purchase_order/horizontal：invalid_schema
+- TC0403 extraction/purchase_order/horizontal：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0404 extraction/purchase_order/horizontal：invalid_schema
+- TC0405 extraction/purchase_order/horizontal：invalid_schema
+- TC0406 extraction/purchase_order/vertical：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0407 extraction/purchase_order/vertical：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0408 extraction/purchase_order/vertical：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0409 extraction/purchase_order/vertical：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0410 extraction/purchase_order/vertical：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0411 extraction/purchase_order/chinese：invalid_schema
+- TC0412 extraction/purchase_order/chinese：invalid_schema
+- TC0413 extraction/purchase_order/chinese：invalid_schema
+- TC0414 extraction/purchase_order/chinese：invalid_schema
+- TC0415 extraction/purchase_order/chinese：invalid_schema
+- TC0416 extraction/purchase_order/noise：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0417 extraction/purchase_order/noise：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0418 extraction/purchase_order/noise：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0419 extraction/purchase_order/noise：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0420 extraction/purchase_order/noise：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0421 extraction/purchase_order/missing_total：invalid_schema
+- TC0422 extraction/purchase_order/missing_total：invalid_schema
+- TC0423 extraction/purchase_order/missing_total：invalid_schema
+- TC0424 extraction/purchase_order/missing_total：invalid_schema
+- TC0425 extraction/purchase_order/missing_total：invalid_schema
+- TC0426 extraction/purchase_order/reordered：invalid_schema
+- TC0427 extraction/purchase_order/reordered：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0428 extraction/purchase_order/reordered：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0429 extraction/purchase_order/reordered：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0430 extraction/purchase_order/reordered：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0431 extraction/expense_report/horizontal：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0432 extraction/expense_report/horizontal：invalid_schema
+- TC0433 extraction/expense_report/horizontal：invalid_schema
+- TC0434 extraction/expense_report/horizontal：invalid_schema
+- TC0435 extraction/expense_report/horizontal：invalid_schema
+- TC0436 extraction/expense_report/vertical：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0437 extraction/expense_report/vertical：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0438 extraction/expense_report/vertical：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0439 extraction/expense_report/vertical：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0440 extraction/expense_report/vertical：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0441 extraction/expense_report/chinese：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0442 extraction/expense_report/chinese：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0443 extraction/expense_report/chinese：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0444 extraction/expense_report/chinese：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0445 extraction/expense_report/chinese：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0446 extraction/expense_report/noise：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0447 extraction/expense_report/noise：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0448 extraction/expense_report/noise：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0449 extraction/expense_report/noise：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0450 extraction/expense_report/noise：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0451 extraction/expense_report/missing_total：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0452 extraction/expense_report/missing_total：invalid_schema
+- TC0453 extraction/expense_report/missing_total：invalid_schema
+- TC0454 extraction/expense_report/missing_total：invalid_schema
+- TC0455 extraction/expense_report/missing_total：invalid_schema
+- TC0456 extraction/expense_report/reordered：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0457 extraction/expense_report/reordered：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0458 extraction/expense_report/reordered：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0459 extraction/expense_report/reordered：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0460 extraction/expense_report/reordered：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0461 extraction/payroll/horizontal：invalid_schema
+- TC0462 extraction/payroll/horizontal：invalid_schema
+- TC0463 extraction/payroll/horizontal：invalid_schema
+- TC0464 extraction/payroll/horizontal：invalid_schema
+- TC0465 extraction/payroll/horizontal：invalid_schema
+- TC0466 extraction/payroll/vertical：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0467 extraction/payroll/vertical：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0468 extraction/payroll/vertical：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0469 extraction/payroll/vertical：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0470 extraction/payroll/vertical：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0471 extraction/payroll/chinese：invalid_schema
+- TC0472 extraction/payroll/chinese：invalid_schema
+- TC0473 extraction/payroll/chinese：invalid_schema
+- TC0474 extraction/payroll/chinese：invalid_schema
+- TC0475 extraction/payroll/chinese：invalid_schema
+- TC0476 extraction/payroll/noise：invalid_schema
+- TC0477 extraction/payroll/noise：invalid_schema
+- TC0478 extraction/payroll/noise：invalid_schema
+- TC0479 extraction/payroll/noise：invalid_schema
+- TC0480 extraction/payroll/noise：invalid_schema
+- TC0481 extraction/payroll/missing_total：invalid_schema
+- TC0482 extraction/payroll/missing_total：invalid_schema
+- TC0483 extraction/payroll/missing_total：invalid_schema
+- TC0484 extraction/payroll/missing_total：invalid_schema
+- TC0485 extraction/payroll/missing_total：invalid_schema
+- TC0486 extraction/payroll/reordered：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0487 extraction/payroll/reordered：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0488 extraction/payroll/reordered：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0489 extraction/payroll/reordered：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0490 extraction/payroll/reordered：wrong_document_missing_extra_or_wrong_field, invalid_schema
+- TC0497 extraction/unknown/injection：wrong_document_missing_extra_or_wrong_field, invalid_schema
+
+## 公式真假判断诊断（不替代严格通过率）
+
+忽略规则 ID、地址和置信度等字段，仅检查唯一一条输出中的布尔判断：100/180（55.6%）。
+
+TP=48，TN=52，FP=27，FN=28，无法评分=25。
+
+唯一布尔输出中有 127 条改写了地址或规则 ID。错误请求 0；输出截断 0。
+请求耗时合计 145.593 秒，中位 0.228 秒，P95 0.635 秒。
+
+## 表达格式诊断（不修改严格评分）
+
+仅允许移除包住整个回答的 Markdown JSON 围栏，不修复 JSON。公式只看唯一布尔判断；PII 和提取仍要求业务结果完全匹配，但忽略置信度等协议字段。
+
+|任务|内容正确|移除围栏条数|
+|---|---:|---:|
+|audit|100/180 (55.6%)|0|
+|pii|39/160 (24.4%)|0|
+|extraction|87/160 (54.4%)|0|

@@ -1,0 +1,9 @@
+{
+  "target_achieved_on_external": false,
+  "training_completed": true,
+  "outcome": "Improved withdrawal precision and fewer real errors incorrectly withdrawn; external gate still below95% target.",
+  "unsafe_examples": 17,
+  "validation_threshold_unchanged": true,
+  "dataset_hashes_verified": true,
+  "deployment": "Research candidate, no default model replacement or automatic withdrawal integration."
+}

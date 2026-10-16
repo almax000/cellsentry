@@ -52,8 +52,9 @@ export async function analyzeWithLlm(
 
   // Batch into groups
   const allJudgments: LlmJudgment[] = []
-  for (let i = 0; i < issues.length; i += LLM_BATCH_SIZE) {
-    const batch = issues.slice(i, i + LLM_BATCH_SIZE)
+  // The formula-specialized GGUF was evaluated with one issue per request.
+  for (let i = 0; i < issues.length; i += 1) {
+    const batch = issues.slice(i, i + 1)
 
     const response = await llmBridge.send({
       method: 'analyze',

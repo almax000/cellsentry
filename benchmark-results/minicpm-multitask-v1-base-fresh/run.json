@@ -1,0 +1,18 @@
+{
+  "model_id": "MiniCPM5-2B-Q4_K_M",
+  "model_sha256": "ec2d5801640099e97d8d7e8003ad4d81f336e757811f03a26173dddf386602fd",
+  "corpus_sha256": "89b1716bfded045d5844f57d64478cf4f964064c6132328236771d195a0f08d0",
+  "prompt_sha256": "b344c4fadb0d99ff52c7d8abba60804381a274630461c373f1175ce96b72a342",
+  "temperature": 0,
+  "seed": 42,
+  "max_tokens": 420,
+  "base_url": "http://127.0.0.1:18766",
+  "server_build": "b11429-d81235049",
+  "context": 1024,
+  "corpus_file": "D:\\git\\cellsentry\\.runtime\\minicpm-multitask-test-cases.jsonl",
+  "chat_template_kwargs": {
+    "enable_thinking": false
+  },
+  "chat_template_sha256": "6e54652d84d698ebb3b7b2172204b6eeafd7f27533e006c8c1ebf8e743a7fd99",
+  "model_file": "D:\\git\\cellsentry\\models\\minicpm5-2b\\MiniCPM5-2B-Q4_K_M.gguf"
+}

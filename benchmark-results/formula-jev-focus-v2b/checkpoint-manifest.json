@@ -1,0 +1,32 @@
+[
+  {
+    "name": "best\\adapter_config.json",
+    "size": 1250,
+    "sha256": "75d9bd9f6d763dd847a12d491603d31fc0d7c13277e2bfc83a5143f1083d5a19"
+  },
+  {
+    "name": "best\\adapter_model.safetensors",
+    "size": 50307248,
+    "sha256": "4fe0397c121ade1e89878764637b86f8d63ec78f712d2ceda3bcd000fa87c379"
+  },
+  {
+    "name": "best\\decision_head.safetensors",
+    "size": 8332,
+    "sha256": "5084d648d2dbf0dcba56410fc24ab05da05cd00c6f4e914fb92337f4a1d6a485"
+  },
+  {
+    "name": "best\\README.md",
+    "size": 5188,
+    "sha256": "5a697bc725294407facd109c364efcd876ef8c348054395b6601e2b6fd16403c"
+  },
+  {
+    "name": "best\\tokenizer.json",
+    "size": 9894271,
+    "sha256": "3e065a558a034185fe299917b398685c1facd0169a9eea1e629eb30c171fed81"
+  },
+  {
+    "name": "best\\tokenizer_config.json",
+    "size": 648,
+    "sha256": "666e406ef3fa2d1bbbb4eafca1c36764dc5c2f481de465f79d0cda42c9674f1a"
+  }
+]

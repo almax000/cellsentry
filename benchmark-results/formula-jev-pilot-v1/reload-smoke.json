@@ -1,0 +1,16 @@
+{
+  "id": "TC0001",
+  "isValid": true,
+  "error_probability": 0.9986735582351685,
+  "options": [
+    "The alert is a false positive; the formula matches the requirements.",
+    "The flagged formula is a real error."
+  ],
+  "probabilities": [
+    0.0013264328008517623,
+    0.9986735582351685
+  ],
+  "cellAddress": "D5",
+  "ruleId": "division_zero",
+  "checkpoint": "D:\\git\\cellsentry\\benchmark-results\\formula-jev-pilot-v1\\best"
+}

@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "module": "model.layers.0.self_attn.q_proj.weight",
+      "relative_rms_error": 0.0014922169502824545,
+      "passed": true
+    },
+    {
+      "module": "model.layers.20.self_attn.v_proj.weight",
+      "relative_rms_error": 0.0014486666768789291,
+      "passed": true
+    },
+    {
+      "module": "model.layers.41.mlp.down_proj.weight",
+      "relative_rms_error": 0.0012280020164325833,
+      "passed": true
+    }
+  ]
+}

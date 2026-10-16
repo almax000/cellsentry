@@ -1,0 +1,37 @@
+{
+  "splits": {
+    "test": {
+      "count": 480,
+      "real_errors": 240,
+      "sha256": "b62e79e66a1f15c90c08bcab0594abbde3d466a9b51ed0c26ff0661d9495b386"
+    },
+    "validation": {
+      "count": 288,
+      "real_errors": 144,
+      "sha256": "4b39b9538a66efdcd4da6e44c3e977372610dd16b669c5d28ed243eddad0321a"
+    },
+    "train": {
+      "count": 2720,
+      "real_errors": 1353,
+      "sha256": "1639df6a85e3a678dc172afa7b298da72217cc85ed84ba85113d65dc75cc1c51"
+    }
+  },
+  "categories": [
+    "optional_blank",
+    "zero_fallback",
+    "approx_lookup",
+    "sum_exclusion",
+    "absolute_rate",
+    "negative_amount",
+    "rounding_tolerance",
+    "constant_receipt",
+    "frozen_snapshot",
+    "date_direction",
+    "conditional_total",
+    "unit_conversion"
+  ],
+  "scope": "Formula only; PII/extraction regression-only",
+  "pair_policy": "Same formula and alert, changed explicit business requirement. Split-disjoint pair groups and seeds.",
+  "replay": "800 samples exclusively from v1 training, no v1 heldout or external answers",
+  "warning": "Synthetic context templates shared across splits. Not an independent real-world evaluation."
+}

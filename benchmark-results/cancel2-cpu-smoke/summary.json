@@ -1,0 +1,59 @@
+{
+  "total": 3,
+  "completed": 3,
+  "model": {
+    "model_id": "cellsentry-cancel2-cpu",
+    "model_sha256": "61d9c8ab8007dbbde0eb004089d1411fb6ec7167031f9d6fcc5b521fe8ebe49a",
+    "corpus_sha256": "49dbf8e1a35efaaba829156966237e05c5f49ac2d38ca8ac2724a51f642cd94f",
+    "prompt_sha256": "10973f91379ef6f995462ab59f30cc98012c06a1ba172ae552e18f88b30d6ab5",
+    "temperature": 0,
+    "seed": 42,
+    "max_tokens": 420,
+    "base_url": "http://127.0.0.1:18770",
+    "server_build": "b11429-d81235049",
+    "context": 1024,
+    "corpus_file": "D:\\git\\cellsentry\\.runtime\\cancel2-cpu.jsonl",
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "chat_template_sha256": "86d92dc38bc4ce4564b3432cbf64ba494d488c69e2360ceb2cd1c2f7a6e5962c",
+    "model_file": "D:\\git\\cellsentry\\models\\minicpm5-2b-cancellation-v2\\cellsentry-minicpm5-2b-cancel2-q4_k_m.gguf"
+  },
+  "modes": {
+    "audit": {
+      "completed": 3,
+      "passed": 1,
+      "json_valid": 3,
+      "schema_valid": 3,
+      "semantic_pass": 1,
+      "mean_seconds": 2.132
+    }
+  },
+  "categories": {
+    "sum_exclusion": {
+      "completed": 1,
+      "passed": 1,
+      "json_valid": 1,
+      "schema_valid": 1,
+      "semantic_pass": 1,
+      "mean_seconds": 2.07
+    },
+    "unit_conversion": {
+      "completed": 1,
+      "passed": 0,
+      "json_valid": 1,
+      "schema_valid": 1,
+      "semantic_pass": 0,
+      "mean_seconds": 2.194
+    },
+    "zero_fallback": {
+      "completed": 1,
+      "passed": 0,
+      "json_valid": 1,
+      "schema_valid": 1,
+      "semantic_pass": 0,
+      "mean_seconds": 2.132
+    }
+  },
+  "passed": 1
+}

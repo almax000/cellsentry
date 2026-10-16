@@ -1,0 +1,20 @@
+{
+  "repository": "yourblacksky/cellsentry-formula-review",
+  "tag": "formula-chat-v1-20261016",
+  "checked_while_draft": true,
+  "assets": [
+    {
+      "file": "formula-chat-v1-best.zip",
+      "bytes": 48895696,
+      "sha256": "56b9fa12a4a34196d45923a524d4bb52616fedcc975acd9a184173270bfa7678",
+      "github_digest": "sha256:56b9fa12a4a34196d45923a524d4bb52616fedcc975acd9a184173270bfa7678"
+    },
+    {
+      "file": "cellsentry-minicpm5-2b-formula-v1-q4_k_m.gguf",
+      "bytes": 1561314592,
+      "sha256": "148c9448f60fc299babc7416ec839340d32fd52b4ef1dcaa5c767251174eb0e7",
+      "github_digest": "sha256:148c9448f60fc299babc7416ec839340d32fd52b4ef1dcaa5c767251174eb0e7"
+    }
+  ],
+  "sha256sums_verified": true
+}

@@ -1,0 +1,56 @@
+{
+  "date": "2026-10-16",
+  "source": "D:/git/cellsentry",
+  "source_commit": "86d19a4",
+  "default_model": "cellsentry-minicpm5-2b-cancel2-q4_k_m.gguf",
+  "sha256": "61d9c8ab8007dbbde0eb004089d1411fb6ec7167031f9d6fcc5b521fe8ebe49a",
+  "electron_startup": {
+    "model": {
+      "exists": true
+    },
+    "status": {
+      "available": true,
+      "backend": "llama.cpp",
+      "modelLoaded": true,
+      "modelName": "MiniCPM5-2B Cancellation v2"
+    }
+  },
+  "native_protocol_smoke": [
+    {
+      "id": 1,
+      "result": {
+        "status": {
+          "available": true,
+          "backend": "llama.cpp",
+          "modelLoaded": true,
+          "modelName": "MiniCPM5-2B Cancellation v2"
+        }
+      }
+    },
+    {
+      "id": 2,
+      "result": {
+        "judgments": [
+          {
+            "cellAddress": "D5",
+            "ruleId": "division_zero",
+            "isValid": true,
+            "adjustedConfidence": 0.95,
+            "reasoning": "给定公式或记录违反了明确的业务要求。"
+          }
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "result": {}
+    }
+  ],
+  "checks": [
+    "npm run build",
+    "npm run typecheck",
+    "test_llm_server.py: 3 passed",
+    "test_cancellation_policy.py: 4 passed using neighboring training environment and copied tokenizer"
+  ],
+  "notes": "Historical model evaluations copied without rerun. Default model replaced for audit, PII and extraction. CPU runtime, thinking disabled, one issue per audit request. No automatic withdrawal gate added. Installer not built; target machine still needs Python 3.11+."
+}

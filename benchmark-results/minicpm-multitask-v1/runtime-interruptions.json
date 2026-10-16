@@ -1,0 +1,8 @@
+{
+  "reason": "Original baseline llama.cpp service exited with CUDA error during long evaluation.",
+  "valid_responses_retained": 1176,
+  "service_errors_to_retry": 63,
+  "first_retry_id": "MCP-BIZ3-test-10-0019-1",
+  "mitigation": "Disable the extra 8192 MiB RAM prompt cache for restarted baseline and candidate (--cache-ram 0). Model weights, context, prompts and decoding remain unchanged.",
+  "note": "Latency is descriptive; restart/cache settings changed during the baseline run."
+}

@@ -1,0 +1,85 @@
+{
+  "repository": "yourblacksky/cellsentry-formula-review",
+  "tag": "formula-chat-v1-20261016",
+  "assets": [
+    {
+      "file": "formula-chat-v1-best.zip",
+      "bytes": 48895696,
+      "sha256": "56b9fa12a4a34196d45923a524d4bb52616fedcc975acd9a184173270bfa7678",
+      "url": "https://github.com/yourblacksky/cellsentry-formula-review/releases/download/formula-chat-v1-20261016/formula-chat-v1-best.zip"
+    },
+    {
+      "file": "cellsentry-minicpm5-2b-formula-v1-q4_k_m.gguf",
+      "bytes": 1561314592,
+      "sha256": "148c9448f60fc299babc7416ec839340d32fd52b4ef1dcaa5c767251174eb0e7",
+      "url": "https://github.com/yourblacksky/cellsentry-formula-review/releases/download/formula-chat-v1-20261016/cellsentry-minicpm5-2b-formula-v1-q4_k_m.gguf"
+    }
+  ],
+  "package": {
+    "base": "openbmb/MiniCPM5-2B",
+    "revision": "f97400052a43d642bbc6e9975e2397e3ae6a6b52",
+    "best_step": 825,
+    "files": [
+      {
+        "name": "LICENSE",
+        "bytes": 11358,
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      },
+      {
+        "name": "NOTICE.txt",
+        "bytes": 350,
+        "sha256": "3683717aec547440ca0ec4275b8f38381de19c4c54023daff7b8ce0fb4574786"
+      },
+      {
+        "name": "adapter_config.json",
+        "bytes": 1213,
+        "sha256": "bf447f7c6ff7e720d25db607f3da53521f7f1ba32842b8ccaf02cc0194cfff17"
+      },
+      {
+        "name": "adapter_model.safetensors",
+        "bytes": 50310776,
+        "sha256": "01f1ddaf3467bcfdf18b5364535ecf24c914696b789ac77d4db887339fb34c58"
+      },
+      {
+        "name": "chat_template.jinja",
+        "bytes": 5547,
+        "sha256": "36640aceb48856ef32633fa4071287c41ce0a1a3d231c696000d2da8467a87fc"
+      },
+      {
+        "name": "comparison.json",
+        "bytes": 35208,
+        "sha256": "a551ea4bcdd88892b7c835ea1e89f91345863ed2615652b721dad103a110cb07"
+      },
+      {
+        "name": "merge-verification.json",
+        "bytes": 485,
+        "sha256": "bc160f66adb1bd52342b1858059985fc6e3da30aee6c92e30ba8b1449e3014f4"
+      },
+      {
+        "name": "model-source.json",
+        "bytes": 2321,
+        "sha256": "79530b2f52cb49ff2c4cd6db7f587e406aec8685b96de278d49ce22ba6dc1d17"
+      },
+      {
+        "name": "report.md",
+        "bytes": 3548,
+        "sha256": "be856e1c8b7cb0875a93e713609b20166130b62e4d584a7438b6fc5e2d1e8d69"
+      },
+      {
+        "name": "summary.json",
+        "bytes": 2067,
+        "sha256": "480548f61a73bb91ad35c39a30a4361eff86c56a944b96c6c92b0eea2db5eaad"
+      },
+      {
+        "name": "tokenizer.json",
+        "bytes": 9894271,
+        "sha256": "3e065a558a034185fe299917b398685c1facd0169a9eea1e629eb30c171fed81"
+      },
+      {
+        "name": "tokenizer_config.json",
+        "bytes": 451,
+        "sha256": "9ade1bc52582b9678995023a08617ab19528347811d06cb4ed658bc6d9348823"
+      }
+    ]
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "total": 3,
+  "completed": 3,
+  "model": {
+    "model_id": "cellsentry-formula-v1-cpu",
+    "model_sha256": "148c9448f60fc299babc7416ec839340d32fd52b4ef1dcaa5c767251174eb0e7",
+    "corpus_sha256": "8e488ce40f574b949ccd6860eb832a22222bd4ba6d923b63709ab9376a3da603",
+    "prompt_sha256": "6bc7528ebbec3835247bf3d3e19312a37ce4e27c49c0d97cc3e89aaf491c9f08",
+    "temperature": 0,
+    "seed": 42,
+    "max_tokens": 420,
+    "base_url": "http://127.0.0.1:18770",
+    "server_build": "b11429-d81235049",
+    "context": 1024,
+    "corpus_file": "D:\\git\\cellsentry\\.runtime\\formula-chat-cpu-cases.jsonl",
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "chat_template_sha256": "86d92dc38bc4ce4564b3432cbf64ba494d488c69e2360ceb2cd1c2f7a6e5962c",
+    "model_file": "D:\\git\\cellsentry\\models\\minicpm5-2b-formula-chat-v1\\cellsentry-minicpm5-2b-formula-v1-q4_k_m.gguf"
+  },
+  "modes": {
+    "audit": {
+      "completed": 3,
+      "passed": 3,
+      "json_valid": 3,
+      "schema_valid": 3,
+      "semantic_pass": 3,
+      "mean_seconds": 1.962
+    }
+  },
+  "categories": {
+    "date_order": {
+      "completed": 1,
+      "passed": 1,
+      "json_valid": 1,
+      "schema_valid": 1,
+      "semantic_pass": 1,
+      "mean_seconds": 1.88
+    },
+    "external_link": {
+      "completed": 1,
+      "passed": 1,
+      "json_valid": 1,
+      "schema_valid": 1,
+      "semantic_pass": 1,
+      "mean_seconds": 1.853
+    },
+    "rate_scale": {
+      "completed": 1,
+      "passed": 1,
+      "json_valid": 1,
+      "schema_valid": 1,
+      "semantic_pass": 1,
+      "mean_seconds": 2.153
+    }
+  },
+  "passed": 3
+}

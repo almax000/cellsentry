@@ -1,0 +1,323 @@
+{
+  "total": 1320,
+  "completed": 1320,
+  "model": {
+    "model_id": "cellsentry-minicpm5-2b-formula-v1",
+    "model_sha256": "148c9448f60fc299babc7416ec839340d32fd52b4ef1dcaa5c767251174eb0e7",
+    "corpus_sha256": "7cb395829391afac22c6871c8d9ea95ae28709f6d5f7f0557148fa845c311e84",
+    "prompt_sha256": "2d2de47fb47750a19f121ca888b1628de439b8269815e4f41ae3deba234a0bc2",
+    "temperature": 0,
+    "seed": 42,
+    "max_tokens": 420,
+    "base_url": "http://127.0.0.1:18770",
+    "server_build": "b11429-d81235049",
+    "context": 1024,
+    "corpus_file": "D:\\git\\cellsentry\\.runtime\\formula-chat-test-cases.jsonl",
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "chat_template_sha256": "86d92dc38bc4ce4564b3432cbf64ba494d488c69e2360ceb2cd1c2f7a6e5962c",
+    "model_file": "D:\\git\\cellsentry\\models\\minicpm5-2b-formula-chat-v1\\cellsentry-minicpm5-2b-formula-v1-q4_k_m.gguf"
+  },
+  "modes": {
+    "audit": {
+      "completed": 1320,
+      "passed": 1274,
+      "json_valid": 1320,
+      "schema_valid": 1320,
+      "semantic_pass": 1274,
+      "mean_seconds": 0.521
+    }
+  },
+  "categories": {
+    "absolute_reference": {
+      "completed": 20,
+      "passed": 20,
+      "json_valid": 20,
+      "schema_valid": 20,
+      "semantic_pass": 20,
+      "mean_seconds": 0.465
+    },
+    "aggregation_type": {
+      "completed": 48,
+      "passed": 48,
+      "json_valid": 48,
+      "schema_valid": 48,
+      "semantic_pass": 48,
+      "mean_seconds": 0.494
+    },
+    "archived_snapshot": {
+      "completed": 48,
+      "passed": 46,
+      "json_valid": 48,
+      "schema_valid": 48,
+      "semantic_pass": 46,
+      "mean_seconds": 0.539
+    },
+    "average_total": {
+      "completed": 20,
+      "passed": 20,
+      "json_valid": 20,
+      "schema_valid": 20,
+      "semantic_pass": 20,
+      "mean_seconds": 0.473
+    },
+    "broken_reference": {
+      "completed": 20,
+      "passed": 20,
+      "json_valid": 20,
+      "schema_valid": 20,
+      "semantic_pass": 20,
+      "mean_seconds": 0.85
+    },
+    "contract_literal": {
+      "completed": 48,
+      "passed": 36,
+      "json_valid": 48,
+      "schema_valid": 48,
+      "semantic_pass": 36,
+      "mean_seconds": 0.529
+    },
+    "count": {
+      "completed": 20,
+      "passed": 20,
+      "json_valid": 20,
+      "schema_valid": 20,
+      "semantic_pass": 20,
+      "mean_seconds": 0.466
+    },
+    "date_order": {
+      "completed": 68,
+      "passed": 68,
+      "json_valid": 68,
+      "schema_valid": 68,
+      "semantic_pass": 68,
+      "mean_seconds": 0.487
+    },
+    "division_zero": {
+      "completed": 20,
+      "passed": 20,
+      "json_valid": 20,
+      "schema_valid": 20,
+      "semantic_pass": 20,
+      "mean_seconds": 0.492
+    },
+    "duplicate_key": {
+      "completed": 48,
+      "passed": 48,
+      "json_valid": 48,
+      "schema_valid": 48,
+      "semantic_pass": 48,
+      "mean_seconds": 0.493
+    },
+    "duplicate_total": {
+      "completed": 20,
+      "passed": 20,
+      "json_valid": 20,
+      "schema_valid": 20,
+      "semantic_pass": 20,
+      "mean_seconds": 0.485
+    },
+    "empty_denominator": {
+      "completed": 48,
+      "passed": 48,
+      "json_valid": 48,
+      "schema_valid": 48,
+      "semantic_pass": 48,
+      "mean_seconds": 0.5
+    },
+    "external_link": {
+      "completed": 48,
+      "passed": 48,
+      "json_valid": 48,
+      "schema_valid": 48,
+      "semantic_pass": 48,
+      "mean_seconds": 0.491
+    },
+    "if_boundary": {
+      "completed": 20,
+      "passed": 20,
+      "json_valid": 20,
+      "schema_valid": 20,
+      "semantic_pass": 20,
+      "mean_seconds": 0.5
+    },
+    "iferror": {
+      "completed": 20,
+      "passed": 17,
+      "json_valid": 20,
+      "schema_valid": 20,
+      "semantic_pass": 17,
+      "mean_seconds": 0.477
+    },
+    "imported_literal": {
+      "completed": 48,
+      "passed": 48,
+      "json_valid": 48,
+      "schema_valid": 48,
+      "semantic_pass": 48,
+      "mean_seconds": 0.534
+    },
+    "iterative_cycle": {
+      "completed": 48,
+      "passed": 27,
+      "json_valid": 48,
+      "schema_valid": 48,
+      "semantic_pass": 27,
+      "mean_seconds": 0.499
+    },
+    "lookup_column": {
+      "completed": 68,
+      "passed": 68,
+      "json_valid": 68,
+      "schema_valid": 68,
+      "semantic_pass": 68,
+      "mean_seconds": 0.492
+    },
+    "lookup_exact": {
+      "completed": 20,
+      "passed": 20,
+      "json_valid": 20,
+      "schema_valid": 20,
+      "semantic_pass": 20,
+      "mean_seconds": 0.495
+    },
+    "lookup_key_type": {
+      "completed": 48,
+      "passed": 48,
+      "json_valid": 48,
+      "schema_valid": 48,
+      "semantic_pass": 48,
+      "mean_seconds": 0.671
+    },
+    "lookup_match": {
+      "completed": 48,
+      "passed": 48,
+      "json_valid": 48,
+      "schema_valid": 48,
+      "semantic_pass": 48,
+      "mean_seconds": 0.495
+    },
+    "optional_blank": {
+      "completed": 48,
+      "passed": 46,
+      "json_valid": 48,
+      "schema_valid": 48,
+      "semantic_pass": 46,
+      "mean_seconds": 0.669
+    },
+    "percent_scale": {
+      "completed": 20,
+      "passed": 20,
+      "json_valid": 20,
+      "schema_valid": 20,
+      "semantic_pass": 20,
+      "mean_seconds": 0.497
+    },
+    "rate_scale": {
+      "completed": 48,
+      "passed": 48,
+      "json_valid": 48,
+      "schema_valid": 48,
+      "semantic_pass": 48,
+      "mean_seconds": 0.511
+    },
+    "relative_reference": {
+      "completed": 20,
+      "passed": 20,
+      "json_valid": 20,
+      "schema_valid": 20,
+      "semantic_pass": 20,
+      "mean_seconds": 0.481
+    },
+    "rounding": {
+      "completed": 20,
+      "passed": 20,
+      "json_valid": 20,
+      "schema_valid": 20,
+      "semantic_pass": 20,
+      "mean_seconds": 0.484
+    },
+    "rounding_tolerance": {
+      "completed": 48,
+      "passed": 48,
+      "json_valid": 48,
+      "schema_valid": 48,
+      "semantic_pass": 48,
+      "mean_seconds": 0.562
+    },
+    "seasonal_spike": {
+      "completed": 48,
+      "passed": 45,
+      "json_valid": 48,
+      "schema_valid": 48,
+      "semantic_pass": 45,
+      "mean_seconds": 0.532
+    },
+    "self_reference": {
+      "completed": 20,
+      "passed": 20,
+      "json_valid": 20,
+      "schema_valid": 20,
+      "semantic_pass": 20,
+      "mean_seconds": 0.476
+    },
+    "sign": {
+      "completed": 20,
+      "passed": 20,
+      "json_valid": 20,
+      "schema_valid": 20,
+      "semantic_pass": 20,
+      "mean_seconds": 0.474
+    },
+    "stored_sign": {
+      "completed": 48,
+      "passed": 45,
+      "json_valid": 48,
+      "schema_valid": 48,
+      "semantic_pass": 45,
+      "mean_seconds": 0.529
+    },
+    "sum_range": {
+      "completed": 20,
+      "passed": 20,
+      "json_valid": 20,
+      "schema_valid": 20,
+      "semantic_pass": 20,
+      "mean_seconds": 0.475
+    },
+    "sum_scope": {
+      "completed": 48,
+      "passed": 48,
+      "json_valid": 48,
+      "schema_valid": 48,
+      "semantic_pass": 48,
+      "mean_seconds": 0.5
+    },
+    "text_identifier": {
+      "completed": 48,
+      "passed": 48,
+      "json_valid": 48,
+      "schema_valid": 48,
+      "semantic_pass": 48,
+      "mean_seconds": 0.487
+    },
+    "text_number": {
+      "completed": 20,
+      "passed": 20,
+      "json_valid": 20,
+      "schema_valid": 20,
+      "semantic_pass": 20,
+      "mean_seconds": 0.48
+    },
+    "unit_conversion": {
+      "completed": 48,
+      "passed": 48,
+      "json_valid": 48,
+      "schema_valid": 48,
+      "semantic_pass": 48,
+      "mean_seconds": 0.532
+    }
+  },
+  "passed": 1274
+}

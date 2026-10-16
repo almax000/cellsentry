@@ -1,0 +1,315 @@
+{
+  "total": 1440,
+  "completed": 1440,
+  "model": {
+    "model_id": "MiniCPM5-2B-Q4_K_M",
+    "model_sha256": "ec2d5801640099e97d8d7e8003ad4d81f336e757811f03a26173dddf386602fd",
+    "corpus_sha256": "89b1716bfded045d5844f57d64478cf4f964064c6132328236771d195a0f08d0",
+    "prompt_sha256": "b344c4fadb0d99ff52c7d8abba60804381a274630461c373f1175ce96b72a342",
+    "temperature": 0,
+    "seed": 42,
+    "max_tokens": 420,
+    "base_url": "http://127.0.0.1:18766",
+    "server_build": "b11429-d81235049",
+    "context": 1024,
+    "corpus_file": "D:\\git\\cellsentry\\.runtime\\minicpm-multitask-test-cases.jsonl",
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "chat_template_sha256": "6e54652d84d698ebb3b7b2172204b6eeafd7f27533e006c8c1ebf8e743a7fd99",
+    "model_file": "D:\\git\\cellsentry\\models\\minicpm5-2b\\MiniCPM5-2B-Q4_K_M.gguf"
+  },
+  "modes": {
+    "audit": {
+      "completed": 960,
+      "passed": 58,
+      "json_valid": 955,
+      "schema_valid": 955,
+      "semantic_pass": 58,
+      "mean_seconds": 0.423
+    },
+    "extraction": {
+      "completed": 240,
+      "passed": 105,
+      "json_valid": 240,
+      "schema_valid": 236,
+      "semantic_pass": 106,
+      "mean_seconds": 0.593
+    },
+    "pii": {
+      "completed": 240,
+      "passed": 51,
+      "json_valid": 51,
+      "schema_valid": 51,
+      "semantic_pass": 51,
+      "mean_seconds": 0.294
+    }
+  },
+  "categories": {
+    "aggregation_type": {
+      "completed": 48,
+      "passed": 0,
+      "json_valid": 48,
+      "schema_valid": 48,
+      "semantic_pass": 0,
+      "mean_seconds": 0.398
+    },
+    "archived_snapshot": {
+      "completed": 48,
+      "passed": 5,
+      "json_valid": 48,
+      "schema_valid": 48,
+      "semantic_pass": 5,
+      "mean_seconds": 0.435
+    },
+    "contract_literal": {
+      "completed": 48,
+      "passed": 0,
+      "json_valid": 48,
+      "schema_valid": 48,
+      "semantic_pass": 0,
+      "mean_seconds": 0.397
+    },
+    "credit_card": {
+      "completed": 20,
+      "passed": 0,
+      "json_valid": 0,
+      "schema_valid": 0,
+      "semantic_pass": 0,
+      "mean_seconds": 0.415
+    },
+    "date_order": {
+      "completed": 48,
+      "passed": 0,
+      "json_valid": 48,
+      "schema_valid": 48,
+      "semantic_pass": 0,
+      "mean_seconds": 0.432
+    },
+    "duplicate_key": {
+      "completed": 48,
+      "passed": 0,
+      "json_valid": 48,
+      "schema_valid": 48,
+      "semantic_pass": 0,
+      "mean_seconds": 0.435
+    },
+    "email": {
+      "completed": 20,
+      "passed": 0,
+      "json_valid": 0,
+      "schema_valid": 0,
+      "semantic_pass": 0,
+      "mean_seconds": 0.311
+    },
+    "empty_denominator": {
+      "completed": 48,
+      "passed": 0,
+      "json_valid": 47,
+      "schema_valid": 47,
+      "semantic_pass": 0,
+      "mean_seconds": 0.418
+    },
+    "expense_report": {
+      "completed": 40,
+      "passed": 7,
+      "json_valid": 40,
+      "schema_valid": 40,
+      "semantic_pass": 7,
+      "mean_seconds": 0.814
+    },
+    "external_link": {
+      "completed": 48,
+      "passed": 12,
+      "json_valid": 48,
+      "schema_valid": 48,
+      "semantic_pass": 12,
+      "mean_seconds": 0.453
+    },
+    "imported_literal": {
+      "completed": 48,
+      "passed": 2,
+      "json_valid": 48,
+      "schema_valid": 48,
+      "semantic_pass": 2,
+      "mean_seconds": 0.419
+    },
+    "invoice": {
+      "completed": 40,
+      "passed": 31,
+      "json_valid": 40,
+      "schema_valid": 39,
+      "semantic_pass": 32,
+      "mean_seconds": 0.734
+    },
+    "iterative_cycle": {
+      "completed": 48,
+      "passed": 3,
+      "json_valid": 47,
+      "schema_valid": 47,
+      "semantic_pass": 3,
+      "mean_seconds": 0.413
+    },
+    "lookup_column": {
+      "completed": 48,
+      "passed": 4,
+      "json_valid": 48,
+      "schema_valid": 48,
+      "semantic_pass": 4,
+      "mean_seconds": 0.466
+    },
+    "lookup_key_type": {
+      "completed": 48,
+      "passed": 1,
+      "json_valid": 48,
+      "schema_valid": 48,
+      "semantic_pass": 1,
+      "mean_seconds": 0.415
+    },
+    "lookup_match": {
+      "completed": 48,
+      "passed": 5,
+      "json_valid": 48,
+      "schema_valid": 48,
+      "semantic_pass": 5,
+      "mean_seconds": 0.448
+    },
+    "national_id": {
+      "completed": 20,
+      "passed": 0,
+      "json_valid": 0,
+      "schema_valid": 0,
+      "semantic_pass": 0,
+      "mean_seconds": 0.365
+    },
+    "negative": {
+      "completed": 120,
+      "passed": 51,
+      "json_valid": 51,
+      "schema_valid": 51,
+      "semantic_pass": 51,
+      "mean_seconds": 0.23
+    },
+    "optional_blank": {
+      "completed": 48,
+      "passed": 1,
+      "json_valid": 46,
+      "schema_valid": 46,
+      "semantic_pass": 1,
+      "mean_seconds": 0.429
+    },
+    "passport": {
+      "completed": 20,
+      "passed": 0,
+      "json_valid": 0,
+      "schema_valid": 0,
+      "semantic_pass": 0,
+      "mean_seconds": 0.375
+    },
+    "payroll": {
+      "completed": 40,
+      "passed": 0,
+      "json_valid": 40,
+      "schema_valid": 39,
+      "semantic_pass": 0,
+      "mean_seconds": 0.56
+    },
+    "phone": {
+      "completed": 20,
+      "passed": 0,
+      "json_valid": 0,
+      "schema_valid": 0,
+      "semantic_pass": 0,
+      "mean_seconds": 0.332
+    },
+    "purchase_order": {
+      "completed": 40,
+      "passed": 5,
+      "json_valid": 40,
+      "schema_valid": 38,
+      "semantic_pass": 5,
+      "mean_seconds": 0.665
+    },
+    "rate_scale": {
+      "completed": 48,
+      "passed": 0,
+      "json_valid": 48,
+      "schema_valid": 48,
+      "semantic_pass": 0,
+      "mean_seconds": 0.413
+    },
+    "receipt": {
+      "completed": 40,
+      "passed": 22,
+      "json_valid": 40,
+      "schema_valid": 40,
+      "semantic_pass": 22,
+      "mean_seconds": 0.681
+    },
+    "rounding_tolerance": {
+      "completed": 48,
+      "passed": 0,
+      "json_valid": 48,
+      "schema_valid": 48,
+      "semantic_pass": 0,
+      "mean_seconds": 0.413
+    },
+    "seasonal_spike": {
+      "completed": 48,
+      "passed": 1,
+      "json_valid": 48,
+      "schema_valid": 48,
+      "semantic_pass": 1,
+      "mean_seconds": 0.408
+    },
+    "ssn": {
+      "completed": 20,
+      "passed": 0,
+      "json_valid": 0,
+      "schema_valid": 0,
+      "semantic_pass": 0,
+      "mean_seconds": 0.355
+    },
+    "stored_sign": {
+      "completed": 48,
+      "passed": 5,
+      "json_valid": 48,
+      "schema_valid": 48,
+      "semantic_pass": 5,
+      "mean_seconds": 0.398
+    },
+    "sum_scope": {
+      "completed": 48,
+      "passed": 14,
+      "json_valid": 48,
+      "schema_valid": 48,
+      "semantic_pass": 14,
+      "mean_seconds": 0.4
+    },
+    "text_identifier": {
+      "completed": 48,
+      "passed": 0,
+      "json_valid": 48,
+      "schema_valid": 48,
+      "semantic_pass": 0,
+      "mean_seconds": 0.429
+    },
+    "unit_conversion": {
+      "completed": 48,
+      "passed": 5,
+      "json_valid": 47,
+      "schema_valid": 47,
+      "semantic_pass": 5,
+      "mean_seconds": 0.447
+    },
+    "unknown": {
+      "completed": 40,
+      "passed": 40,
+      "json_valid": 40,
+      "schema_valid": 40,
+      "semantic_pass": 40,
+      "mean_seconds": 0.1
+    }
+  },
+  "passed": 214
+}

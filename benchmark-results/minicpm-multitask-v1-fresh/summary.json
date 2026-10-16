@@ -1,0 +1,307 @@
+{
+  "total": 1440,
+  "completed": 300,
+  "model": {
+    "model_id": "cellsentry-minicpm5-2b-v1",
+    "model_sha256": "e9f1a3de7fcd53cbb9d50d5ffde4e308424e5f098a7d3f621f7319743ae0f900",
+    "corpus_sha256": "89b1716bfded045d5844f57d64478cf4f964064c6132328236771d195a0f08d0",
+    "prompt_sha256": "b344c4fadb0d99ff52c7d8abba60804381a274630461c373f1175ce96b72a342",
+    "temperature": 0,
+    "seed": 42,
+    "max_tokens": 420,
+    "base_url": "http://127.0.0.1:18767",
+    "server_build": "b11429-d81235049",
+    "context": 1024,
+    "corpus_file": "D:\\git\\cellsentry\\.runtime\\minicpm-multitask-test-cases.jsonl",
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "chat_template_sha256": "86d92dc38bc4ce4564b3432cbf64ba494d488c69e2360ceb2cd1c2f7a6e5962c",
+    "model_file": "D:\\git\\cellsentry\\models\\minicpm5-2b-cellsentry-v1\\cellsentry-minicpm5-2b-v1-q4_k_m.gguf"
+  },
+  "modes": {
+    "audit": {
+      "completed": 208,
+      "passed": 94,
+      "json_valid": 186,
+      "schema_valid": 186,
+      "semantic_pass": 94,
+      "mean_seconds": 0.533
+    },
+    "extraction": {
+      "completed": 48,
+      "passed": 26,
+      "json_valid": 41,
+      "schema_valid": 40,
+      "semantic_pass": 26,
+      "mean_seconds": 1.064
+    },
+    "pii": {
+      "completed": 44,
+      "passed": 32,
+      "json_valid": 38,
+      "schema_valid": 38,
+      "semantic_pass": 32,
+      "mean_seconds": 0.442
+    }
+  },
+  "categories": {
+    "aggregation_type": {
+      "completed": 3,
+      "passed": 1,
+      "json_valid": 3,
+      "schema_valid": 3,
+      "semantic_pass": 1,
+      "mean_seconds": 0.327
+    },
+    "archived_snapshot": {
+      "completed": 12,
+      "passed": 8,
+      "json_valid": 11,
+      "schema_valid": 11,
+      "semantic_pass": 8,
+      "mean_seconds": 0.482
+    },
+    "contract_literal": {
+      "completed": 11,
+      "passed": 4,
+      "json_valid": 8,
+      "schema_valid": 8,
+      "semantic_pass": 4,
+      "mean_seconds": 0.807
+    },
+    "credit_card": {
+      "completed": 1,
+      "passed": 0,
+      "json_valid": 0,
+      "schema_valid": 0,
+      "semantic_pass": 0,
+      "mean_seconds": 2.045
+    },
+    "date_order": {
+      "completed": 10,
+      "passed": 4,
+      "json_valid": 9,
+      "schema_valid": 9,
+      "semantic_pass": 4,
+      "mean_seconds": 0.495
+    },
+    "duplicate_key": {
+      "completed": 12,
+      "passed": 5,
+      "json_valid": 11,
+      "schema_valid": 11,
+      "semantic_pass": 5,
+      "mean_seconds": 0.475
+    },
+    "email": {
+      "completed": 4,
+      "passed": 4,
+      "json_valid": 4,
+      "schema_valid": 4,
+      "semantic_pass": 4,
+      "mean_seconds": 0.243
+    },
+    "empty_denominator": {
+      "completed": 16,
+      "passed": 7,
+      "json_valid": 15,
+      "schema_valid": 15,
+      "semantic_pass": 7,
+      "mean_seconds": 0.444
+    },
+    "expense_report": {
+      "completed": 8,
+      "passed": 8,
+      "json_valid": 8,
+      "schema_valid": 8,
+      "semantic_pass": 8,
+      "mean_seconds": 0.932
+    },
+    "external_link": {
+      "completed": 13,
+      "passed": 6,
+      "json_valid": 12,
+      "schema_valid": 12,
+      "semantic_pass": 6,
+      "mean_seconds": 0.446
+    },
+    "imported_literal": {
+      "completed": 5,
+      "passed": 3,
+      "json_valid": 4,
+      "schema_valid": 4,
+      "semantic_pass": 3,
+      "mean_seconds": 0.689
+    },
+    "invoice": {
+      "completed": 14,
+      "passed": 10,
+      "json_valid": 13,
+      "schema_valid": 13,
+      "semantic_pass": 10,
+      "mean_seconds": 1.042
+    },
+    "iterative_cycle": {
+      "completed": 13,
+      "passed": 4,
+      "json_valid": 12,
+      "schema_valid": 12,
+      "semantic_pass": 4,
+      "mean_seconds": 0.453
+    },
+    "lookup_column": {
+      "completed": 12,
+      "passed": 6,
+      "json_valid": 12,
+      "schema_valid": 12,
+      "semantic_pass": 6,
+      "mean_seconds": 0.331
+    },
+    "lookup_key_type": {
+      "completed": 16,
+      "passed": 10,
+      "json_valid": 15,
+      "schema_valid": 15,
+      "semantic_pass": 10,
+      "mean_seconds": 0.435
+    },
+    "lookup_match": {
+      "completed": 9,
+      "passed": 5,
+      "json_valid": 9,
+      "schema_valid": 9,
+      "semantic_pass": 5,
+      "mean_seconds": 0.324
+    },
+    "national_id": {
+      "completed": 7,
+      "passed": 7,
+      "json_valid": 7,
+      "schema_valid": 7,
+      "semantic_pass": 7,
+      "mean_seconds": 0.245
+    },
+    "negative": {
+      "completed": 20,
+      "passed": 11,
+      "json_valid": 17,
+      "schema_valid": 17,
+      "semantic_pass": 11,
+      "mean_seconds": 0.409
+    },
+    "optional_blank": {
+      "completed": 11,
+      "passed": 5,
+      "json_valid": 9,
+      "schema_valid": 9,
+      "semantic_pass": 5,
+      "mean_seconds": 0.651
+    },
+    "passport": {
+      "completed": 8,
+      "passed": 7,
+      "json_valid": 7,
+      "schema_valid": 7,
+      "semantic_pass": 7,
+      "mean_seconds": 0.469
+    },
+    "payroll": {
+      "completed": 7,
+      "passed": 1,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 1,
+      "mean_seconds": 1.153
+    },
+    "phone": {
+      "completed": 4,
+      "passed": 3,
+      "json_valid": 3,
+      "schema_valid": 3,
+      "semantic_pass": 3,
+      "mean_seconds": 0.692
+    },
+    "purchase_order": {
+      "completed": 7,
+      "passed": 3,
+      "json_valid": 5,
+      "schema_valid": 4,
+      "semantic_pass": 3,
+      "mean_seconds": 1.295
+    },
+    "rate_scale": {
+      "completed": 6,
+      "passed": 2,
+      "json_valid": 6,
+      "schema_valid": 6,
+      "semantic_pass": 2,
+      "mean_seconds": 0.33
+    },
+    "receipt": {
+      "completed": 7,
+      "passed": 1,
+      "json_valid": 7,
+      "schema_valid": 7,
+      "semantic_pass": 1,
+      "mean_seconds": 1.074
+    },
+    "rounding_tolerance": {
+      "completed": 7,
+      "passed": 2,
+      "json_valid": 5,
+      "schema_valid": 5,
+      "semantic_pass": 2,
+      "mean_seconds": 0.821
+    },
+    "seasonal_spike": {
+      "completed": 12,
+      "passed": 5,
+      "json_valid": 10,
+      "schema_valid": 10,
+      "semantic_pass": 5,
+      "mean_seconds": 0.619
+    },
+    "stored_sign": {
+      "completed": 9,
+      "passed": 4,
+      "json_valid": 8,
+      "schema_valid": 8,
+      "semantic_pass": 4,
+      "mean_seconds": 1.012
+    },
+    "sum_scope": {
+      "completed": 10,
+      "passed": 5,
+      "json_valid": 9,
+      "schema_valid": 9,
+      "semantic_pass": 5,
+      "mean_seconds": 0.499
+    },
+    "text_identifier": {
+      "completed": 9,
+      "passed": 3,
+      "json_valid": 8,
+      "schema_valid": 8,
+      "semantic_pass": 3,
+      "mean_seconds": 0.525
+    },
+    "unit_conversion": {
+      "completed": 12,
+      "passed": 5,
+      "json_valid": 10,
+      "schema_valid": 10,
+      "semantic_pass": 5,
+      "mean_seconds": 0.613
+    },
+    "unknown": {
+      "completed": 5,
+      "passed": 3,
+      "json_valid": 3,
+      "schema_valid": 3,
+      "semantic_pass": 3,
+      "mean_seconds": 0.879
+    }
+  },
+  "passed": 152
+}

@@ -1,0 +1,1484 @@
+{
+  "base": "D:\\git\\cellsentry\\models\\cpm-jev",
+  "base_source": {
+    "repository": "link921/CPM-jev",
+    "revision": "b17a85f115016ea74513f5cd9c7e4350e45a47a1",
+    "files": [
+      {
+        "name": "LICENSE",
+        "size": 11358,
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      },
+      {
+        "name": "NOTICE",
+        "size": 459,
+        "sha256": "a7a41cb08ae6ffba0e74fb67460df9215959cef2f43182a4ac03fce9b5c3325d"
+      },
+      {
+        "name": "README.md",
+        "size": 10848,
+        "sha256": "89e5d67ad584183b89446321bcf209b2b795f705342c51517bd3ed5cc5a9eaad"
+      },
+      {
+        "name": "checksums.json",
+        "size": 3288,
+        "sha256": "e5615a8aac2ef426add1f83a85970a0d5bdd79083728b547425838b1d2529233"
+      },
+      {
+        "name": "config.json",
+        "size": 778,
+        "sha256": "877c2a5260a9433133c60aab933c59b2219f90241add4df5b039dab274238a6c"
+      },
+      {
+        "name": "decision_head.safetensors",
+        "size": 8332,
+        "sha256": "ab0c1216517b8389d2e02f1ede565d15a1719b46817a6aaf53ae9102b3a089a5"
+      },
+      {
+        "name": "inference.py",
+        "size": 3481,
+        "sha256": "3b8a47bd3c563881c3b322666238348ebb27a3cf12de75efe1df912bc13f30af"
+      },
+      {
+        "name": "model-00001-of-00005.safetensors",
+        "size": 1994478256,
+        "sha256": "c7d73af460dd39dc3d0fe2bef98881b1290b44c85ac2671c6ed39e4990bc0bde"
+      },
+      {
+        "name": "model-00002-of-00005.safetensors",
+        "size": 1956824992,
+        "sha256": "522379bcfa79e3fb572c690457511e851ebec8fea932459bd97dfadd27058ec4"
+      },
+      {
+        "name": "model-00003-of-00005.safetensors",
+        "size": 1990379488,
+        "sha256": "266feb53ba0ca9001afaf443ed1e66c7a7c5531cab7697edde3ee59c69a42e09"
+      },
+      {
+        "name": "model-00004-of-00005.safetensors",
+        "size": 1973602368,
+        "sha256": "9a99eeefc27b9e476a14ddd333c60a83588065dbffc2ca7d8037e45b8de58c05"
+      },
+      {
+        "name": "model-00005-of-00005.safetensors",
+        "size": 1082234448,
+        "sha256": "55e765753a3e1060a835d28986ae269470a2a1b7eff05a69972d2591638a328b"
+      },
+      {
+        "name": "model.py",
+        "size": 2311,
+        "sha256": "f3d91fafb698d842ca517c1e0f7cf311698101c5be18b33e133ddc6a3424a972"
+      },
+      {
+        "name": "model.safetensors.index.json",
+        "size": 29465,
+        "sha256": "1c5640d779b1fcc27c6dc4578aec7418b959a7beee8f01c15a4e878bd5911b40"
+      },
+      {
+        "name": "requirements.txt",
+        "size": 80,
+        "sha256": "5cb1a73a2fe90fabb4f7effa1a3aa5be2ba34430a87d471aa35ac923c1b9d7c4"
+      },
+      {
+        "name": "tokenizer.json",
+        "size": 9894522,
+        "sha256": "802c611522de84820f2e580878a96e953d534a16d153648fc0a21ca53e904e03"
+      },
+      {
+        "name": "tokenizer_config.json",
+        "size": 451,
+        "sha256": "19d05ca5469560f4128ab95cc88c888fe22d5e4af8f69e0a6b092d96a26b3820"
+      }
+    ]
+  },
+  "dataset": {
+    "version": "business-v3",
+    "seed_policy": "fixed independent split seeds; paired counterfactuals",
+    "newly_generated_train": 4800,
+    "replay_train": 720,
+    "replay_source_sha256": "29c2c898e9ed867974a39e61e48d31869d90d6a1832b3619825d857baf442687",
+    "benchmark_source_sha256": "e23c3f69463bb0effb5e5095c4fc58ad61b57b09bf28e472e54b62488eb319ea",
+    "external_archive_used": false,
+    "external_test_policy": "External archive informed topic selection only; no archive files or answers are read by this generator. It is now a development benchmark, not a pristine blind test.",
+    "split_policy": "disjoint paired groups, input hashes and category/fact hashes for new data; presentation families separated; shared scenario logic is NOT semantic independence",
+    "probabilities": "no calibrated confidence labels or teacher model labels",
+    "splits": {
+      "train": {
+        "count": 5520,
+        "labels": {
+          "False": 2760,
+          "True": 2760
+        },
+        "categories": {
+          "rate_scale": 240,
+          "imported_literal": 240,
+          "date_order": 280,
+          "optional_blank": 240,
+          "archived_snapshot": 240,
+          "duplicate_key": 240,
+          "external_link": 240,
+          "lookup_match": 240,
+          "rounding_tolerance": 240,
+          "division_zero": 40,
+          "contract_literal": 240,
+          "unit_conversion": 240,
+          "seasonal_spike": 240,
+          "percent_scale": 40,
+          "text_number": 40,
+          "lookup_column": 280,
+          "aggregation_type": 240,
+          "sum_scope": 240,
+          "iterative_cycle": 240,
+          "iferror": 40,
+          "stored_sign": 240,
+          "average_total": 40,
+          "text_identifier": 240,
+          "empty_denominator": 240,
+          "if_boundary": 40,
+          "relative_reference": 40,
+          "sum_range": 40,
+          "rounding": 40,
+          "lookup_key_type": 240,
+          "broken_reference": 40,
+          "sign": 40,
+          "count": 40,
+          "lookup_exact": 40,
+          "absolute_reference": 40,
+          "self_reference": 40,
+          "duplicate_total": 40
+        },
+        "languages": {
+          "zh": 3840,
+          "en": 1440,
+          "mixed": 240
+        },
+        "templates": [
+          "archive_record",
+          "ledger",
+          "structured"
+        ],
+        "sha256": "6df1b02437de2901ba7b30ca6d846bbee6e763c99439c669116d358603ce02c0",
+        "chat_sha256": "6f99e6572611d8e12b491bc136ae8a8f3d5fbaa51c36113c5fc9847c774cff92"
+      },
+      "validation": {
+        "count": 480,
+        "labels": {
+          "True": 240,
+          "False": 240
+        },
+        "categories": {
+          "stored_sign": 24,
+          "external_link": 24,
+          "duplicate_key": 24,
+          "seasonal_spike": 24,
+          "iterative_cycle": 24,
+          "date_order": 24,
+          "imported_literal": 24,
+          "archived_snapshot": 24,
+          "text_identifier": 24,
+          "optional_blank": 24,
+          "rate_scale": 24,
+          "unit_conversion": 24,
+          "contract_literal": 24,
+          "sum_scope": 24,
+          "empty_denominator": 24,
+          "lookup_column": 24,
+          "lookup_match": 24,
+          "aggregation_type": 24,
+          "rounding_tolerance": 24,
+          "lookup_key_type": 24
+        },
+        "languages": {
+          "zh": 384,
+          "en": 72,
+          "mixed": 24
+        },
+        "templates": [
+          "table"
+        ],
+        "sha256": "527ca5e679d1ee588bb4116d4c8b08402e5cf9e78766e7579850fde249182070",
+        "chat_sha256": "0000f2b300fe2d7a7e74c292ed6a941adf925fb0dab3be5aefb9b32d80b19da6"
+      },
+      "test": {
+        "count": 960,
+        "labels": {
+          "False": 480,
+          "True": 480
+        },
+        "categories": {
+          "duplicate_key": 48,
+          "imported_literal": 48,
+          "rate_scale": 48,
+          "sum_scope": 48,
+          "empty_denominator": 48,
+          "lookup_column": 48,
+          "stored_sign": 48,
+          "rounding_tolerance": 48,
+          "lookup_key_type": 48,
+          "optional_blank": 48,
+          "iterative_cycle": 48,
+          "lookup_match": 48,
+          "seasonal_spike": 48,
+          "aggregation_type": 48,
+          "date_order": 48,
+          "unit_conversion": 48,
+          "external_link": 48,
+          "contract_literal": 48,
+          "archived_snapshot": 48,
+          "text_identifier": 48
+        },
+        "languages": {
+          "zh": 768,
+          "en": 144,
+          "mixed": 48
+        },
+        "templates": [
+          "memo"
+        ],
+        "sha256": "b2ad1f5eb0f3367b3a82895012db5b0108c54505f4e468a46d72a085912afb5b",
+        "chat_sha256": "ed3d3fde43b46f671ef35afb50010b16b9a403df73161625b5370b77a41571ff"
+      },
+      "challenge": {
+        "count": 240,
+        "labels": {
+          "False": 120,
+          "True": 120
+        },
+        "categories": {
+          "unit_conversion": 12,
+          "rate_scale": 12,
+          "date_order": 12,
+          "lookup_match": 12,
+          "text_identifier": 12,
+          "sum_scope": 12,
+          "empty_denominator": 12,
+          "imported_literal": 12,
+          "optional_blank": 12,
+          "archived_snapshot": 12,
+          "aggregation_type": 12,
+          "lookup_key_type": 12,
+          "lookup_column": 12,
+          "stored_sign": 12,
+          "rounding_tolerance": 12,
+          "duplicate_key": 12,
+          "iterative_cycle": 12,
+          "contract_literal": 12,
+          "external_link": 12,
+          "seasonal_spike": 12
+        },
+        "languages": {
+          "zh": 192,
+          "en": 36,
+          "mixed": 12
+        },
+        "templates": [
+          "noisy_export"
+        ],
+        "sha256": "1d75e988166fda7822e092a5efc5cbf1c3cc47d54342bc7d63f26796cc483f13",
+        "chat_sha256": "34062405a037e2ef369528e90f105287d3c10298dc51af6da8ab672c2b06cd4a"
+      },
+      "benchmark": {
+        "count": 180,
+        "labels": {
+          "True": 90,
+          "False": 90
+        },
+        "categories": {
+          "division_zero": 10,
+          "self_reference": 10,
+          "broken_reference": 10,
+          "sum_range": 10,
+          "average_total": 10,
+          "percent_scale": 10,
+          "absolute_reference": 10,
+          "relative_reference": 10,
+          "lookup_exact": 10,
+          "lookup_column": 10,
+          "if_boundary": 10,
+          "text_number": 10,
+          "duplicate_total": 10,
+          "sign": 10,
+          "date_order": 10,
+          "rounding": 10,
+          "count": 10,
+          "iferror": 10
+        },
+        "languages": {
+          "source_mixed": 180
+        },
+        "templates": [
+          "structured"
+        ],
+        "sha256": "59e5607f799231ff98f430a4fd18bb5f9080f0ca176535ccf856bb56daa811ca",
+        "chat_sha256": "5946bf099a8b6ff78b268bec3fa77796db6c2a034c704180001690297dd56c27"
+      }
+    }
+  },
+  "data_directory": "training-data\\formula-review-business-v3",
+  "initialization": {
+    "path": "benchmark-results\\formula-jev-focus-v2b\\best",
+    "adapter_sha256": "4fe0397c121ade1e89878764637b86f8d63ec78f712d2ceda3bcd000fa87c379",
+    "head_sha256": "5084d648d2dbf0dcba56410fc24ab05da05cd00c6f4e914fb92337f4a1d6a485"
+  },
+  "learning_rate": 2e-05,
+  "method": "NF4 QLoRA rank8 alpha16 + trainable scalar decision head",
+  "steps": 690,
+  "eval_every": 100,
+  "best_step": 400,
+  "seed": 42,
+  "effective_batch": 8,
+  "micro_batch": 8,
+  "accumulation": 1,
+  "used_training_examples": 5520,
+  "eval_batch": 8,
+  "extra_evaluation": {
+    "old_synthetic": {
+      "path": "training-data\\formula-review-v1\\test.jsonl",
+      "sha256": "afe037340d38d0d1cd14f3f1d7e9143f589a8faa9f8d0361a5d43df43e6499b2",
+      "count": 360,
+      "usage": "evaluation only; never checkpoint selection"
+    },
+    "focus_challenge": {
+      "path": "training-data\\formula-review-v2\\challenge.jsonl",
+      "sha256": "698626b50d1bcde6c6126ef2d8617bda5fb3ef428cc23c1308596a8bc677053c",
+      "count": 100,
+      "usage": "evaluation only; never checkpoint selection"
+    },
+    "public_test": {
+      "path": "training-data\\formula-review-v2\\public_test.jsonl",
+      "sha256": "83edf02564699d589a4d0e3c385fe37d4268c05890d0e28b22fa9e1951257f39",
+      "count": 42,
+      "usage": "evaluation only; never checkpoint selection"
+    },
+    "external_archive": {
+      "path": ".runtime\\archive-test-20261015\\cases.jsonl",
+      "sha256": "bf1b9bfd7f84a59e4bc4dc26e43e75db4dd37b5253fdaa7f6fa18bfdd8abdae5",
+      "count": 1217,
+      "usage": "evaluation only; never checkpoint selection"
+    }
+  },
+  "unique_used_examples": 5520,
+  "trainable_parameters": 12560385,
+  "max_candidate_tokens": 320,
+  "versions": {
+    "torch": "2.14.1+cu130",
+    "transformers": "5.19.0",
+    "peft": "0.21.2",
+    "bitsandbytes": "0.50.2",
+    "accelerate": "1.15.0",
+    "safetensors": "0.8.0"
+  },
+  "gpu": "NVIDIA GeForce RTX 5060 Ti",
+  "peak_gib": 4.878116607666016,
+  "seconds": 2417.342,
+  "before": {
+    "validation": {
+      "count": 480,
+      "accuracy": 0.73125,
+      "macro_f1": 0.7309124726762302,
+      "nll": 1.4034548254413222,
+      "brier": 0.2447474895179755,
+      "paired_groups": 240,
+      "paired_accuracy": 0.4791666666666667,
+      "confusion": {
+        "tp": 167,
+        "tn": 184,
+        "fp": 56,
+        "fn": 73
+      },
+      "seconds": 40.098,
+      "categories": {
+        "aggregation_type": {
+          "count": 24,
+          "correct": 22
+        },
+        "archived_snapshot": {
+          "count": 24,
+          "correct": 19
+        },
+        "contract_literal": {
+          "count": 24,
+          "correct": 18
+        },
+        "date_order": {
+          "count": 24,
+          "correct": 20
+        },
+        "duplicate_key": {
+          "count": 24,
+          "correct": 12
+        },
+        "empty_denominator": {
+          "count": 24,
+          "correct": 17
+        },
+        "external_link": {
+          "count": 24,
+          "correct": 24
+        },
+        "imported_literal": {
+          "count": 24,
+          "correct": 24
+        },
+        "iterative_cycle": {
+          "count": 24,
+          "correct": 12
+        },
+        "lookup_column": {
+          "count": 24,
+          "correct": 13
+        },
+        "lookup_key_type": {
+          "count": 24,
+          "correct": 20
+        },
+        "lookup_match": {
+          "count": 24,
+          "correct": 19
+        },
+        "optional_blank": {
+          "count": 24,
+          "correct": 12
+        },
+        "rate_scale": {
+          "count": 24,
+          "correct": 13
+        },
+        "rounding_tolerance": {
+          "count": 24,
+          "correct": 18
+        },
+        "seasonal_spike": {
+          "count": 24,
+          "correct": 12
+        },
+        "stored_sign": {
+          "count": 24,
+          "correct": 18
+        },
+        "sum_scope": {
+          "count": 24,
+          "correct": 23
+        },
+        "text_identifier": {
+          "count": 24,
+          "correct": 23
+        },
+        "unit_conversion": {
+          "count": 24,
+          "correct": 12
+        }
+      }
+    },
+    "test": {
+      "count": 960,
+      "accuracy": 0.74375,
+      "macro_f1": 0.7428750609713608,
+      "nll": 1.190485556441245,
+      "brier": 0.2169618767761136,
+      "paired_groups": 480,
+      "paired_accuracy": 0.5270833333333333,
+      "confusion": {
+        "tp": 385,
+        "tn": 329,
+        "fp": 151,
+        "fn": 95
+      },
+      "seconds": 70.298,
+      "categories": {
+        "aggregation_type": {
+          "count": 48,
+          "correct": 37
+        },
+        "archived_snapshot": {
+          "count": 48,
+          "correct": 32
+        },
+        "contract_literal": {
+          "count": 48,
+          "correct": 36
+        },
+        "date_order": {
+          "count": 48,
+          "correct": 45
+        },
+        "duplicate_key": {
+          "count": 48,
+          "correct": 30
+        },
+        "empty_denominator": {
+          "count": 48,
+          "correct": 31
+        },
+        "external_link": {
+          "count": 48,
+          "correct": 48
+        },
+        "imported_literal": {
+          "count": 48,
+          "correct": 48
+        },
+        "iterative_cycle": {
+          "count": 48,
+          "correct": 27
+        },
+        "lookup_column": {
+          "count": 48,
+          "correct": 45
+        },
+        "lookup_key_type": {
+          "count": 48,
+          "correct": 24
+        },
+        "lookup_match": {
+          "count": 48,
+          "correct": 37
+        },
+        "optional_blank": {
+          "count": 48,
+          "correct": 22
+        },
+        "rate_scale": {
+          "count": 48,
+          "correct": 22
+        },
+        "rounding_tolerance": {
+          "count": 48,
+          "correct": 48
+        },
+        "seasonal_spike": {
+          "count": 48,
+          "correct": 24
+        },
+        "stored_sign": {
+          "count": 48,
+          "correct": 39
+        },
+        "sum_scope": {
+          "count": 48,
+          "correct": 40
+        },
+        "text_identifier": {
+          "count": 48,
+          "correct": 44
+        },
+        "unit_conversion": {
+          "count": 48,
+          "correct": 35
+        }
+      }
+    },
+    "benchmark": {
+      "count": 180,
+      "accuracy": 0.9111111111111111,
+      "macro_f1": 0.911100135819237,
+      "nll": 0.32138414241542335,
+      "brier": 0.06630574611545038,
+      "paired_groups": 0,
+      "paired_accuracy": null,
+      "confusion": {
+        "tp": 83,
+        "tn": 81,
+        "fp": 9,
+        "fn": 7
+      },
+      "seconds": 11.077,
+      "categories": {
+        "absolute_reference": {
+          "count": 10,
+          "correct": 10
+        },
+        "average_total": {
+          "count": 10,
+          "correct": 10
+        },
+        "broken_reference": {
+          "count": 10,
+          "correct": 9
+        },
+        "count": {
+          "count": 10,
+          "correct": 10
+        },
+        "date_order": {
+          "count": 10,
+          "correct": 10
+        },
+        "division_zero": {
+          "count": 10,
+          "correct": 10
+        },
+        "duplicate_total": {
+          "count": 10,
+          "correct": 10
+        },
+        "if_boundary": {
+          "count": 10,
+          "correct": 10
+        },
+        "iferror": {
+          "count": 10,
+          "correct": 10
+        },
+        "lookup_column": {
+          "count": 10,
+          "correct": 5
+        },
+        "lookup_exact": {
+          "count": 10,
+          "correct": 9
+        },
+        "percent_scale": {
+          "count": 10,
+          "correct": 7
+        },
+        "relative_reference": {
+          "count": 10,
+          "correct": 5
+        },
+        "rounding": {
+          "count": 10,
+          "correct": 10
+        },
+        "self_reference": {
+          "count": 10,
+          "correct": 10
+        },
+        "sign": {
+          "count": 10,
+          "correct": 10
+        },
+        "sum_range": {
+          "count": 10,
+          "correct": 9
+        },
+        "text_number": {
+          "count": 10,
+          "correct": 10
+        }
+      }
+    },
+    "challenge": {
+      "count": 240,
+      "accuracy": 0.6041666666666666,
+      "macro_f1": 0.5990926834414728,
+      "nll": 2.311057906546129,
+      "brier": 0.37399924960823616,
+      "paired_groups": 120,
+      "paired_accuracy": 0.25,
+      "confusion": {
+        "tp": 86,
+        "tn": 59,
+        "fp": 61,
+        "fn": 34
+      },
+      "seconds": 21.397,
+      "categories": {
+        "aggregation_type": {
+          "count": 12,
+          "correct": 6
+        },
+        "archived_snapshot": {
+          "count": 12,
+          "correct": 10
+        },
+        "contract_literal": {
+          "count": 12,
+          "correct": 6
+        },
+        "date_order": {
+          "count": 12,
+          "correct": 11
+        },
+        "duplicate_key": {
+          "count": 12,
+          "correct": 6
+        },
+        "empty_denominator": {
+          "count": 12,
+          "correct": 9
+        },
+        "external_link": {
+          "count": 12,
+          "correct": 6
+        },
+        "imported_literal": {
+          "count": 12,
+          "correct": 6
+        },
+        "iterative_cycle": {
+          "count": 12,
+          "correct": 6
+        },
+        "lookup_column": {
+          "count": 12,
+          "correct": 12
+        },
+        "lookup_key_type": {
+          "count": 12,
+          "correct": 7
+        },
+        "lookup_match": {
+          "count": 12,
+          "correct": 8
+        },
+        "optional_blank": {
+          "count": 12,
+          "correct": 6
+        },
+        "rate_scale": {
+          "count": 12,
+          "correct": 3
+        },
+        "rounding_tolerance": {
+          "count": 12,
+          "correct": 6
+        },
+        "seasonal_spike": {
+          "count": 12,
+          "correct": 6
+        },
+        "stored_sign": {
+          "count": 12,
+          "correct": 10
+        },
+        "sum_scope": {
+          "count": 12,
+          "correct": 9
+        },
+        "text_identifier": {
+          "count": 12,
+          "correct": 6
+        },
+        "unit_conversion": {
+          "count": 12,
+          "correct": 6
+        }
+      }
+    },
+    "old_synthetic": {
+      "count": 360,
+      "accuracy": 0.9888888888888889,
+      "macro_f1": 0.9888888888888889,
+      "nll": 0.03660211268752368,
+      "brier": 0.0093563571515191,
+      "paired_groups": 180,
+      "paired_accuracy": 0.9777777777777777,
+      "confusion": {
+        "tp": 178,
+        "tn": 178,
+        "fp": 2,
+        "fn": 2
+      },
+      "seconds": 19.105,
+      "categories": {
+        "absolute_reference": {
+          "count": 20,
+          "correct": 20
+        },
+        "average_total": {
+          "count": 20,
+          "correct": 20
+        },
+        "broken_reference": {
+          "count": 20,
+          "correct": 18
+        },
+        "count": {
+          "count": 20,
+          "correct": 20
+        },
+        "date_order": {
+          "count": 20,
+          "correct": 20
+        },
+        "division_zero": {
+          "count": 20,
+          "correct": 20
+        },
+        "duplicate_total": {
+          "count": 20,
+          "correct": 20
+        },
+        "if_boundary": {
+          "count": 20,
+          "correct": 20
+        },
+        "iferror": {
+          "count": 20,
+          "correct": 19
+        },
+        "lookup_column": {
+          "count": 20,
+          "correct": 20
+        },
+        "lookup_exact": {
+          "count": 20,
+          "correct": 20
+        },
+        "percent_scale": {
+          "count": 20,
+          "correct": 20
+        },
+        "relative_reference": {
+          "count": 20,
+          "correct": 20
+        },
+        "rounding": {
+          "count": 20,
+          "correct": 20
+        },
+        "self_reference": {
+          "count": 20,
+          "correct": 20
+        },
+        "sign": {
+          "count": 20,
+          "correct": 20
+        },
+        "sum_range": {
+          "count": 20,
+          "correct": 20
+        },
+        "text_number": {
+          "count": 20,
+          "correct": 19
+        }
+      }
+    },
+    "focus_challenge": {
+      "count": 100,
+      "accuracy": 0.7,
+      "macro_f1": 0.6995192307692308,
+      "nll": 2.015248539127066,
+      "brier": 0.2897208089068887,
+      "paired_groups": 50,
+      "paired_accuracy": 0.42,
+      "confusion": {
+        "tp": 33,
+        "tn": 37,
+        "fp": 13,
+        "fn": 17
+      },
+      "seconds": 7.502,
+      "categories": {
+        "lookup_column": {
+          "count": 50,
+          "correct": 26
+        },
+        "sum_range": {
+          "count": 50,
+          "correct": 44
+        }
+      }
+    },
+    "public_test": {
+      "count": 42,
+      "accuracy": 0.5238095238095238,
+      "macro_f1": 0.3841642228739003,
+      "nll": 4.1509932658665365,
+      "brier": 0.42907185600756276,
+      "paired_groups": 21,
+      "paired_accuracy": 0.047619047619047616,
+      "confusion": {
+        "tp": 21,
+        "tn": 1,
+        "fp": 20,
+        "fn": 0
+      },
+      "seconds": 4.051,
+      "categories": {
+        "lookup_column": {
+          "count": 12,
+          "correct": 7
+        },
+        "sum_range": {
+          "count": 30,
+          "correct": 15
+        }
+      }
+    },
+    "external_archive": {
+      "count": 1217,
+      "accuracy": 0.657354149548069,
+      "macro_f1": 0.5884395641825179,
+      "nll": 1.222525522342621,
+      "brier": 0.2791469825083147,
+      "paired_groups": 0,
+      "paired_accuracy": null,
+      "confusion": {
+        "tp": 649,
+        "tn": 151,
+        "fp": 332,
+        "fn": 85
+      },
+      "seconds": 52.77,
+      "categories": {
+        "external_archive": {
+          "count": 637,
+          "correct": 306
+        },
+        "formula_related": {
+          "count": 580,
+          "correct": 494
+        }
+      }
+    }
+  },
+  "after": {
+    "validation": {
+      "count": 480,
+      "accuracy": 0.84375,
+      "macro_f1": 0.8430079673456572,
+      "nll": 0.6295423253542035,
+      "brier": 0.1276298323809601,
+      "paired_groups": 240,
+      "paired_accuracy": 0.7041666666666667,
+      "confusion": {
+        "tp": 186,
+        "tn": 219,
+        "fp": 21,
+        "fn": 54
+      },
+      "seconds": 58.259,
+      "categories": {
+        "aggregation_type": {
+          "count": 24,
+          "correct": 18
+        },
+        "archived_snapshot": {
+          "count": 24,
+          "correct": 18
+        },
+        "contract_literal": {
+          "count": 24,
+          "correct": 18
+        },
+        "date_order": {
+          "count": 24,
+          "correct": 22
+        },
+        "duplicate_key": {
+          "count": 24,
+          "correct": 19
+        },
+        "empty_denominator": {
+          "count": 24,
+          "correct": 19
+        },
+        "external_link": {
+          "count": 24,
+          "correct": 24
+        },
+        "imported_literal": {
+          "count": 24,
+          "correct": 24
+        },
+        "iterative_cycle": {
+          "count": 24,
+          "correct": 20
+        },
+        "lookup_column": {
+          "count": 24,
+          "correct": 23
+        },
+        "lookup_key_type": {
+          "count": 24,
+          "correct": 24
+        },
+        "lookup_match": {
+          "count": 24,
+          "correct": 20
+        },
+        "optional_blank": {
+          "count": 24,
+          "correct": 16
+        },
+        "rate_scale": {
+          "count": 24,
+          "correct": 15
+        },
+        "rounding_tolerance": {
+          "count": 24,
+          "correct": 24
+        },
+        "seasonal_spike": {
+          "count": 24,
+          "correct": 15
+        },
+        "stored_sign": {
+          "count": 24,
+          "correct": 18
+        },
+        "sum_scope": {
+          "count": 24,
+          "correct": 24
+        },
+        "text_identifier": {
+          "count": 24,
+          "correct": 24
+        },
+        "unit_conversion": {
+          "count": 24,
+          "correct": 20
+        }
+      }
+    },
+    "test": {
+      "count": 960,
+      "accuracy": 0.80625,
+      "macro_f1": 0.8061481941470998,
+      "nll": 0.739628357138942,
+      "brier": 0.15862988842925038,
+      "paired_groups": 480,
+      "paired_accuracy": 0.6291666666666667,
+      "confusion": {
+        "tp": 398,
+        "tn": 376,
+        "fp": 104,
+        "fn": 82
+      },
+      "seconds": 76.777,
+      "categories": {
+        "aggregation_type": {
+          "count": 48,
+          "correct": 37
+        },
+        "archived_snapshot": {
+          "count": 48,
+          "correct": 25
+        },
+        "contract_literal": {
+          "count": 48,
+          "correct": 35
+        },
+        "date_order": {
+          "count": 48,
+          "correct": 48
+        },
+        "duplicate_key": {
+          "count": 48,
+          "correct": 35
+        },
+        "empty_denominator": {
+          "count": 48,
+          "correct": 42
+        },
+        "external_link": {
+          "count": 48,
+          "correct": 48
+        },
+        "imported_literal": {
+          "count": 48,
+          "correct": 48
+        },
+        "iterative_cycle": {
+          "count": 48,
+          "correct": 36
+        },
+        "lookup_column": {
+          "count": 48,
+          "correct": 47
+        },
+        "lookup_key_type": {
+          "count": 48,
+          "correct": 26
+        },
+        "lookup_match": {
+          "count": 48,
+          "correct": 41
+        },
+        "optional_blank": {
+          "count": 48,
+          "correct": 28
+        },
+        "rate_scale": {
+          "count": 48,
+          "correct": 27
+        },
+        "rounding_tolerance": {
+          "count": 48,
+          "correct": 48
+        },
+        "seasonal_spike": {
+          "count": 48,
+          "correct": 25
+        },
+        "stored_sign": {
+          "count": 48,
+          "correct": 36
+        },
+        "sum_scope": {
+          "count": 48,
+          "correct": 46
+        },
+        "text_identifier": {
+          "count": 48,
+          "correct": 48
+        },
+        "unit_conversion": {
+          "count": 48,
+          "correct": 48
+        }
+      }
+    },
+    "benchmark": {
+      "count": 180,
+      "accuracy": 0.9333333333333333,
+      "macro_f1": 0.9332591768631813,
+      "nll": 0.1884687692012975,
+      "brier": 0.0447879201664612,
+      "paired_groups": 0,
+      "paired_accuracy": null,
+      "confusion": {
+        "tp": 81,
+        "tn": 87,
+        "fp": 3,
+        "fn": 9
+      },
+      "seconds": 12.164,
+      "categories": {
+        "absolute_reference": {
+          "count": 10,
+          "correct": 10
+        },
+        "average_total": {
+          "count": 10,
+          "correct": 10
+        },
+        "broken_reference": {
+          "count": 10,
+          "correct": 9
+        },
+        "count": {
+          "count": 10,
+          "correct": 10
+        },
+        "date_order": {
+          "count": 10,
+          "correct": 10
+        },
+        "division_zero": {
+          "count": 10,
+          "correct": 10
+        },
+        "duplicate_total": {
+          "count": 10,
+          "correct": 10
+        },
+        "if_boundary": {
+          "count": 10,
+          "correct": 10
+        },
+        "iferror": {
+          "count": 10,
+          "correct": 10
+        },
+        "lookup_column": {
+          "count": 10,
+          "correct": 6
+        },
+        "lookup_exact": {
+          "count": 10,
+          "correct": 10
+        },
+        "percent_scale": {
+          "count": 10,
+          "correct": 9
+        },
+        "relative_reference": {
+          "count": 10,
+          "correct": 9
+        },
+        "rounding": {
+          "count": 10,
+          "correct": 10
+        },
+        "self_reference": {
+          "count": 10,
+          "correct": 10
+        },
+        "sign": {
+          "count": 10,
+          "correct": 9
+        },
+        "sum_range": {
+          "count": 10,
+          "correct": 6
+        },
+        "text_number": {
+          "count": 10,
+          "correct": 10
+        }
+      }
+    },
+    "challenge": {
+      "count": 240,
+      "accuracy": 0.6916666666666667,
+      "macro_f1": 0.6914738378153013,
+      "nll": 1.2385394546899378,
+      "brier": 0.25749586851655504,
+      "paired_groups": 120,
+      "paired_accuracy": 0.4166666666666667,
+      "confusion": {
+        "tp": 80,
+        "tn": 86,
+        "fp": 34,
+        "fn": 40
+      },
+      "seconds": 23.91,
+      "categories": {
+        "aggregation_type": {
+          "count": 12,
+          "correct": 6
+        },
+        "archived_snapshot": {
+          "count": 12,
+          "correct": 7
+        },
+        "contract_literal": {
+          "count": 12,
+          "correct": 6
+        },
+        "date_order": {
+          "count": 12,
+          "correct": 12
+        },
+        "duplicate_key": {
+          "count": 12,
+          "correct": 8
+        },
+        "empty_denominator": {
+          "count": 12,
+          "correct": 9
+        },
+        "external_link": {
+          "count": 12,
+          "correct": 7
+        },
+        "imported_literal": {
+          "count": 12,
+          "correct": 6
+        },
+        "iterative_cycle": {
+          "count": 12,
+          "correct": 9
+        },
+        "lookup_column": {
+          "count": 12,
+          "correct": 11
+        },
+        "lookup_key_type": {
+          "count": 12,
+          "correct": 7
+        },
+        "lookup_match": {
+          "count": 12,
+          "correct": 10
+        },
+        "optional_blank": {
+          "count": 12,
+          "correct": 7
+        },
+        "rate_scale": {
+          "count": 12,
+          "correct": 5
+        },
+        "rounding_tolerance": {
+          "count": 12,
+          "correct": 12
+        },
+        "seasonal_spike": {
+          "count": 12,
+          "correct": 6
+        },
+        "stored_sign": {
+          "count": 12,
+          "correct": 11
+        },
+        "sum_scope": {
+          "count": 12,
+          "correct": 9
+        },
+        "text_identifier": {
+          "count": 12,
+          "correct": 10
+        },
+        "unit_conversion": {
+          "count": 12,
+          "correct": 8
+        }
+      }
+    },
+    "old_synthetic": {
+      "count": 360,
+      "accuracy": 0.9722222222222222,
+      "macro_f1": 0.9722187924435115,
+      "nll": 0.10576661615929153,
+      "brier": 0.0249960077081104,
+      "paired_groups": 180,
+      "paired_accuracy": 0.9444444444444444,
+      "confusion": {
+        "tp": 177,
+        "tn": 173,
+        "fp": 7,
+        "fn": 3
+      },
+      "seconds": 21.907,
+      "categories": {
+        "absolute_reference": {
+          "count": 20,
+          "correct": 20
+        },
+        "average_total": {
+          "count": 20,
+          "correct": 20
+        },
+        "broken_reference": {
+          "count": 20,
+          "correct": 20
+        },
+        "count": {
+          "count": 20,
+          "correct": 20
+        },
+        "date_order": {
+          "count": 20,
+          "correct": 20
+        },
+        "division_zero": {
+          "count": 20,
+          "correct": 20
+        },
+        "duplicate_total": {
+          "count": 20,
+          "correct": 20
+        },
+        "if_boundary": {
+          "count": 20,
+          "correct": 20
+        },
+        "iferror": {
+          "count": 20,
+          "correct": 20
+        },
+        "lookup_column": {
+          "count": 20,
+          "correct": 17
+        },
+        "lookup_exact": {
+          "count": 20,
+          "correct": 20
+        },
+        "percent_scale": {
+          "count": 20,
+          "correct": 17
+        },
+        "relative_reference": {
+          "count": 20,
+          "correct": 19
+        },
+        "rounding": {
+          "count": 20,
+          "correct": 20
+        },
+        "self_reference": {
+          "count": 20,
+          "correct": 20
+        },
+        "sign": {
+          "count": 20,
+          "correct": 19
+        },
+        "sum_range": {
+          "count": 20,
+          "correct": 20
+        },
+        "text_number": {
+          "count": 20,
+          "correct": 18
+        }
+      }
+    },
+    "focus_challenge": {
+      "count": 100,
+      "accuracy": 0.71,
+      "macro_f1": 0.7092731829573935,
+      "nll": 2.2318923785216382,
+      "brier": 0.28423181349068927,
+      "paired_groups": 50,
+      "paired_accuracy": 0.42,
+      "confusion": {
+        "tp": 33,
+        "tn": 38,
+        "fp": 12,
+        "fn": 17
+      },
+      "seconds": 8.536,
+      "categories": {
+        "lookup_column": {
+          "count": 50,
+          "correct": 28
+        },
+        "sum_range": {
+          "count": 50,
+          "correct": 43
+        }
+      }
+    },
+    "public_test": {
+      "count": 42,
+      "accuracy": 0.5476190476190477,
+      "macro_f1": 0.48148148148148145,
+      "nll": 4.014512493721547,
+      "brier": 0.45038035305272206,
+      "paired_groups": 21,
+      "paired_accuracy": 0.19047619047619047,
+      "confusion": {
+        "tp": 19,
+        "tn": 4,
+        "fp": 17,
+        "fn": 2
+      },
+      "seconds": 4.521,
+      "categories": {
+        "lookup_column": {
+          "count": 12,
+          "correct": 7
+        },
+        "sum_range": {
+          "count": 30,
+          "correct": 16
+        }
+      }
+    },
+    "external_archive": {
+      "count": 1217,
+      "accuracy": 0.6935086277732129,
+      "macro_f1": 0.652069573668514,
+      "nll": 1.22533648138331,
+      "brier": 0.25672802800044303,
+      "paired_groups": 0,
+      "paired_accuracy": null,
+      "confusion": {
+        "tp": 632,
+        "tn": 212,
+        "fp": 271,
+        "fn": 102
+      },
+      "seconds": 77.387,
+      "categories": {
+        "external_archive": {
+          "count": 637,
+          "correct": 349
+        },
+        "formula_related": {
+          "count": 580,
+          "correct": 495
+        }
+      }
+    }
+  },
+  "checkpoint": "benchmark-results\\formula-jev-business-v3\\best",
+  "probabilities": "raw softmax, not calibrated for the formula task"
+}

@@ -1,0 +1,917 @@
+{
+  "base": "D:\\git\\cellsentry\\models\\cpm-jev",
+  "base_source": {
+    "repository": "link921/CPM-jev",
+    "revision": "b17a85f115016ea74513f5cd9c7e4350e45a47a1",
+    "files": [
+      {
+        "name": "LICENSE",
+        "size": 11358,
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      },
+      {
+        "name": "NOTICE",
+        "size": 459,
+        "sha256": "a7a41cb08ae6ffba0e74fb67460df9215959cef2f43182a4ac03fce9b5c3325d"
+      },
+      {
+        "name": "README.md",
+        "size": 10848,
+        "sha256": "89e5d67ad584183b89446321bcf209b2b795f705342c51517bd3ed5cc5a9eaad"
+      },
+      {
+        "name": "checksums.json",
+        "size": 3288,
+        "sha256": "e5615a8aac2ef426add1f83a85970a0d5bdd79083728b547425838b1d2529233"
+      },
+      {
+        "name": "config.json",
+        "size": 778,
+        "sha256": "877c2a5260a9433133c60aab933c59b2219f90241add4df5b039dab274238a6c"
+      },
+      {
+        "name": "decision_head.safetensors",
+        "size": 8332,
+        "sha256": "ab0c1216517b8389d2e02f1ede565d15a1719b46817a6aaf53ae9102b3a089a5"
+      },
+      {
+        "name": "inference.py",
+        "size": 3481,
+        "sha256": "3b8a47bd3c563881c3b322666238348ebb27a3cf12de75efe1df912bc13f30af"
+      },
+      {
+        "name": "model-00001-of-00005.safetensors",
+        "size": 1994478256,
+        "sha256": "c7d73af460dd39dc3d0fe2bef98881b1290b44c85ac2671c6ed39e4990bc0bde"
+      },
+      {
+        "name": "model-00002-of-00005.safetensors",
+        "size": 1956824992,
+        "sha256": "522379bcfa79e3fb572c690457511e851ebec8fea932459bd97dfadd27058ec4"
+      },
+      {
+        "name": "model-00003-of-00005.safetensors",
+        "size": 1990379488,
+        "sha256": "266feb53ba0ca9001afaf443ed1e66c7a7c5531cab7697edde3ee59c69a42e09"
+      },
+      {
+        "name": "model-00004-of-00005.safetensors",
+        "size": 1973602368,
+        "sha256": "9a99eeefc27b9e476a14ddd333c60a83588065dbffc2ca7d8037e45b8de58c05"
+      },
+      {
+        "name": "model-00005-of-00005.safetensors",
+        "size": 1082234448,
+        "sha256": "55e765753a3e1060a835d28986ae269470a2a1b7eff05a69972d2591638a328b"
+      },
+      {
+        "name": "model.py",
+        "size": 2311,
+        "sha256": "f3d91fafb698d842ca517c1e0f7cf311698101c5be18b33e133ddc6a3424a972"
+      },
+      {
+        "name": "model.safetensors.index.json",
+        "size": 29465,
+        "sha256": "1c5640d779b1fcc27c6dc4578aec7418b959a7beee8f01c15a4e878bd5911b40"
+      },
+      {
+        "name": "requirements.txt",
+        "size": 80,
+        "sha256": "5cb1a73a2fe90fabb4f7effa1a3aa5be2ba34430a87d471aa35ac923c1b9d7c4"
+      },
+      {
+        "name": "tokenizer.json",
+        "size": 9894522,
+        "sha256": "802c611522de84820f2e580878a96e953d534a16d153648fc0a21ca53e904e03"
+      },
+      {
+        "name": "tokenizer_config.json",
+        "size": 451,
+        "sha256": "19d05ca5469560f4128ab95cc88c888fe22d5e4af8f69e0a6b092d96a26b3820"
+      }
+    ]
+  },
+  "dataset": {
+    "version": 2,
+    "origin": "synthetic only; no real customer workbooks",
+    "split_policy": "paired groups, fresh column starts and presentation styles separated; shared semantic families except horizontal SUM challenge",
+    "training_replay_source_sha256": "29c2c898e9ed867974a39e61e48d31869d90d6a1832b3619825d857baf442687",
+    "splits": {
+      "train": {
+        "count": 1176,
+        "sha256": "8900e131d1eac5ed2da5a7f485c732ef558d2ec9b2e186c0cb4dd80bd7f87ad2",
+        "categories": {
+          "lookup_column": 332,
+          "date_order": 32,
+          "percent_scale": 32,
+          "sum_range": 332,
+          "count": 32,
+          "rounding": 32,
+          "iferror": 32,
+          "absolute_reference": 32,
+          "sign": 32,
+          "relative_reference": 32,
+          "broken_reference": 32,
+          "text_number": 32,
+          "division_zero": 32,
+          "if_boundary": 32,
+          "duplicate_total": 32,
+          "average_total": 32,
+          "lookup_exact": 32,
+          "self_reference": 32
+        },
+        "labels": {
+          "True": 588,
+          "False": 588
+        }
+      },
+      "validation": {
+        "count": 280,
+        "sha256": "9e93d35fccde8e6a04ddc5ca7b4ee58afb8ad3be090b8db7ecbdf280c0c3aae3",
+        "categories": {
+          "lookup_column": 60,
+          "sum_range": 60,
+          "if_boundary": 10,
+          "duplicate_total": 10,
+          "relative_reference": 10,
+          "count": 10,
+          "absolute_reference": 10,
+          "broken_reference": 10,
+          "percent_scale": 10,
+          "text_number": 10,
+          "rounding": 10,
+          "self_reference": 10,
+          "division_zero": 10,
+          "iferror": 10,
+          "average_total": 10,
+          "date_order": 10,
+          "sign": 10,
+          "lookup_exact": 10
+        },
+        "labels": {
+          "True": 140,
+          "False": 140
+        }
+      },
+      "test": {
+        "count": 560,
+        "sha256": "bcd957452ca52cde26f25a34347b7861a3c6041b57a40b63b4df53986052ead7",
+        "categories": {
+          "division_zero": 20,
+          "sum_range": 120,
+          "percent_scale": 20,
+          "date_order": 20,
+          "average_total": 20,
+          "duplicate_total": 20,
+          "lookup_exact": 20,
+          "if_boundary": 20,
+          "lookup_column": 120,
+          "self_reference": 20,
+          "text_number": 20,
+          "count": 20,
+          "absolute_reference": 20,
+          "rounding": 20,
+          "sign": 20,
+          "relative_reference": 20,
+          "broken_reference": 20,
+          "iferror": 20
+        },
+        "labels": {
+          "False": 280,
+          "True": 280
+        }
+      },
+      "challenge": {
+        "count": 100,
+        "sha256": "698626b50d1bcde6c6126ef2d8617bda5fb3ef428cc23c1308596a8bc677053c",
+        "categories": {
+          "sum_range": 50,
+          "lookup_column": 50
+        },
+        "labels": {
+          "True": 50,
+          "False": 50
+        }
+      },
+      "benchmark": {
+        "count": 180,
+        "sha256": "8752d5bf52a72a388c83f4f397926c637abb785c193dc7c2be6245bf04623699",
+        "categories": {
+          "count": 10,
+          "duplicate_total": 10,
+          "lookup_exact": 10,
+          "division_zero": 10,
+          "relative_reference": 10,
+          "sum_range": 10,
+          "text_number": 10,
+          "average_total": 10,
+          "date_order": 10,
+          "sign": 10,
+          "absolute_reference": 10,
+          "lookup_column": 10,
+          "self_reference": 10,
+          "if_boundary": 10,
+          "broken_reference": 10,
+          "percent_scale": 10,
+          "iferror": 10,
+          "rounding": 10
+        },
+        "labels": {
+          "True": 90,
+          "False": 90
+        }
+      },
+      "public_test": {
+        "count": 42,
+        "sha256": "83edf02564699d589a4d0e3c385fe37d4268c05890d0e28b22fa9e1951257f39",
+        "labels": {
+          "False": 21,
+          "True": 21
+        },
+        "workbooks": 3,
+        "training_overlap": false,
+        "label_scope": "explicit controlled arithmetic/lookup contract derived from source cells; not human business gold"
+      }
+    }
+  },
+  "data_directory": "training-data\\formula-review-v2",
+  "initialization": {
+    "path": "benchmark-results\\formula-jev-full-v1\\best",
+    "adapter_sha256": "081c39fa5a23b4b1cd4fc6c63606d14d51d0d95c14ced23d013ca4400b96e87e",
+    "head_sha256": "0337a5a430fb0aa2af898119584cbe718d70727109500027eb959d32f653e493"
+  },
+  "learning_rate": 3e-05,
+  "method": "NF4 QLoRA rank8 alpha16 + trainable scalar decision head",
+  "steps": 294,
+  "eval_every": 50,
+  "best_step": 100,
+  "seed": 42,
+  "effective_batch": 4,
+  "micro_batch": 4,
+  "accumulation": 1,
+  "used_training_examples": 1176,
+  "unique_used_examples": 1176,
+  "trainable_parameters": 12560385,
+  "max_candidate_tokens": 247,
+  "versions": {
+    "torch": "2.14.1+cu130",
+    "transformers": "5.19.0",
+    "peft": "0.21.2",
+    "bitsandbytes": "0.50.2",
+    "accelerate": "1.15.0",
+    "safetensors": "0.8.0"
+  },
+  "gpu": "NVIDIA GeForce RTX 5060 Ti",
+  "peak_gib": 3.0556640625,
+  "seconds": 600.492,
+  "before": {
+    "validation": {
+      "count": 280,
+      "accuracy": 0.9178571428571428,
+      "macro_f1": 0.9178309409888357,
+      "nll": 0.7433885905438503,
+      "brier": 0.07332190977191962,
+      "paired_groups": 140,
+      "paired_accuracy": 0.8571428571428571,
+      "confusion": {
+        "tp": 126,
+        "tn": 131,
+        "fp": 9,
+        "fn": 14
+      },
+      "seconds": 20.368,
+      "categories": {
+        "absolute_reference": {
+          "count": 10,
+          "correct": 10
+        },
+        "average_total": {
+          "count": 10,
+          "correct": 10
+        },
+        "broken_reference": {
+          "count": 10,
+          "correct": 10
+        },
+        "count": {
+          "count": 10,
+          "correct": 10
+        },
+        "date_order": {
+          "count": 10,
+          "correct": 9
+        },
+        "division_zero": {
+          "count": 10,
+          "correct": 10
+        },
+        "duplicate_total": {
+          "count": 10,
+          "correct": 10
+        },
+        "if_boundary": {
+          "count": 10,
+          "correct": 10
+        },
+        "iferror": {
+          "count": 10,
+          "correct": 10
+        },
+        "lookup_column": {
+          "count": 60,
+          "correct": 39
+        },
+        "lookup_exact": {
+          "count": 10,
+          "correct": 10
+        },
+        "percent_scale": {
+          "count": 10,
+          "correct": 10
+        },
+        "relative_reference": {
+          "count": 10,
+          "correct": 10
+        },
+        "rounding": {
+          "count": 10,
+          "correct": 10
+        },
+        "self_reference": {
+          "count": 10,
+          "correct": 10
+        },
+        "sign": {
+          "count": 10,
+          "correct": 10
+        },
+        "sum_range": {
+          "count": 60,
+          "correct": 59
+        },
+        "text_number": {
+          "count": 10,
+          "correct": 10
+        }
+      }
+    },
+    "test": {
+      "count": 560,
+      "accuracy": 0.8910714285714286,
+      "macro_f1": 0.8909180320540045,
+      "nll": 1.0439037972816188,
+      "brier": 0.10299302446539538,
+      "paired_groups": 280,
+      "paired_accuracy": 0.8178571428571428,
+      "confusion": {
+        "tp": 239,
+        "tn": 260,
+        "fp": 20,
+        "fn": 41
+      },
+      "seconds": 37.935,
+      "categories": {
+        "absolute_reference": {
+          "count": 20,
+          "correct": 20
+        },
+        "average_total": {
+          "count": 20,
+          "correct": 20
+        },
+        "broken_reference": {
+          "count": 20,
+          "correct": 20
+        },
+        "count": {
+          "count": 20,
+          "correct": 20
+        },
+        "date_order": {
+          "count": 20,
+          "correct": 20
+        },
+        "division_zero": {
+          "count": 20,
+          "correct": 20
+        },
+        "duplicate_total": {
+          "count": 20,
+          "correct": 20
+        },
+        "if_boundary": {
+          "count": 20,
+          "correct": 20
+        },
+        "iferror": {
+          "count": 20,
+          "correct": 18
+        },
+        "lookup_column": {
+          "count": 120,
+          "correct": 70
+        },
+        "lookup_exact": {
+          "count": 20,
+          "correct": 20
+        },
+        "percent_scale": {
+          "count": 20,
+          "correct": 20
+        },
+        "relative_reference": {
+          "count": 20,
+          "correct": 20
+        },
+        "rounding": {
+          "count": 20,
+          "correct": 20
+        },
+        "self_reference": {
+          "count": 20,
+          "correct": 19
+        },
+        "sign": {
+          "count": 20,
+          "correct": 20
+        },
+        "sum_range": {
+          "count": 120,
+          "correct": 112
+        },
+        "text_number": {
+          "count": 20,
+          "correct": 20
+        }
+      }
+    },
+    "benchmark": {
+      "count": 180,
+      "accuracy": 0.9222222222222223,
+      "macro_f1": 0.9221357063403781,
+      "nll": 0.3802227018635591,
+      "brier": 0.07068193836785831,
+      "paired_groups": 0,
+      "paired_accuracy": null,
+      "confusion": {
+        "tp": 80,
+        "tn": 86,
+        "fp": 4,
+        "fn": 10
+      },
+      "seconds": 11.014,
+      "categories": {
+        "absolute_reference": {
+          "count": 10,
+          "correct": 10
+        },
+        "average_total": {
+          "count": 10,
+          "correct": 10
+        },
+        "broken_reference": {
+          "count": 10,
+          "correct": 9
+        },
+        "count": {
+          "count": 10,
+          "correct": 10
+        },
+        "date_order": {
+          "count": 10,
+          "correct": 10
+        },
+        "division_zero": {
+          "count": 10,
+          "correct": 10
+        },
+        "duplicate_total": {
+          "count": 10,
+          "correct": 10
+        },
+        "if_boundary": {
+          "count": 10,
+          "correct": 10
+        },
+        "iferror": {
+          "count": 10,
+          "correct": 10
+        },
+        "lookup_column": {
+          "count": 10,
+          "correct": 5
+        },
+        "lookup_exact": {
+          "count": 10,
+          "correct": 8
+        },
+        "percent_scale": {
+          "count": 10,
+          "correct": 9
+        },
+        "relative_reference": {
+          "count": 10,
+          "correct": 9
+        },
+        "rounding": {
+          "count": 10,
+          "correct": 10
+        },
+        "self_reference": {
+          "count": 10,
+          "correct": 10
+        },
+        "sign": {
+          "count": 10,
+          "correct": 10
+        },
+        "sum_range": {
+          "count": 10,
+          "correct": 6
+        },
+        "text_number": {
+          "count": 10,
+          "correct": 10
+        }
+      }
+    },
+    "challenge": {
+      "count": 100,
+      "accuracy": 0.72,
+      "macro_f1": 0.7189883580891208,
+      "nll": 2.7395995184250035,
+      "brier": 0.26506798071881227,
+      "paired_groups": 50,
+      "paired_accuracy": 0.48,
+      "confusion": {
+        "tp": 33,
+        "tn": 39,
+        "fp": 11,
+        "fn": 17
+      },
+      "seconds": 7.275,
+      "categories": {
+        "lookup_column": {
+          "count": 50,
+          "correct": 26
+        },
+        "sum_range": {
+          "count": 50,
+          "correct": 46
+        }
+      }
+    },
+    "public_test": {
+      "count": 42,
+      "accuracy": 0.47619047619047616,
+      "macro_f1": 0.4107142857142857,
+      "nll": 7.1433252270567005,
+      "brier": 0.5225025509407756,
+      "paired_groups": 21,
+      "paired_accuracy": 0.09523809523809523,
+      "confusion": {
+        "tp": 17,
+        "tn": 3,
+        "fp": 18,
+        "fn": 4
+      },
+      "seconds": 3.72,
+      "categories": {
+        "lookup_column": {
+          "count": 12,
+          "correct": 3
+        },
+        "sum_range": {
+          "count": 30,
+          "correct": 17
+        }
+      }
+    }
+  },
+  "after": {
+    "validation": {
+      "count": 280,
+      "accuracy": 0.9285714285714286,
+      "macro_f1": 0.9285130718954249,
+      "nll": 0.4373091941169947,
+      "brier": 0.07123624839758079,
+      "paired_groups": 140,
+      "paired_accuracy": 0.8642857142857143,
+      "confusion": {
+        "tp": 126,
+        "tn": 134,
+        "fp": 6,
+        "fn": 14
+      },
+      "seconds": 18.242,
+      "categories": {
+        "absolute_reference": {
+          "count": 10,
+          "correct": 10
+        },
+        "average_total": {
+          "count": 10,
+          "correct": 10
+        },
+        "broken_reference": {
+          "count": 10,
+          "correct": 10
+        },
+        "count": {
+          "count": 10,
+          "correct": 10
+        },
+        "date_order": {
+          "count": 10,
+          "correct": 6
+        },
+        "division_zero": {
+          "count": 10,
+          "correct": 10
+        },
+        "duplicate_total": {
+          "count": 10,
+          "correct": 10
+        },
+        "if_boundary": {
+          "count": 10,
+          "correct": 10
+        },
+        "iferror": {
+          "count": 10,
+          "correct": 10
+        },
+        "lookup_column": {
+          "count": 60,
+          "correct": 47
+        },
+        "lookup_exact": {
+          "count": 10,
+          "correct": 10
+        },
+        "percent_scale": {
+          "count": 10,
+          "correct": 10
+        },
+        "relative_reference": {
+          "count": 10,
+          "correct": 10
+        },
+        "rounding": {
+          "count": 10,
+          "correct": 10
+        },
+        "self_reference": {
+          "count": 10,
+          "correct": 10
+        },
+        "sign": {
+          "count": 10,
+          "correct": 10
+        },
+        "sum_range": {
+          "count": 60,
+          "correct": 58
+        },
+        "text_number": {
+          "count": 10,
+          "correct": 9
+        }
+      }
+    },
+    "test": {
+      "count": 560,
+      "accuracy": 0.9053571428571429,
+      "macro_f1": 0.9053061120310371,
+      "nll": 0.5746768932088023,
+      "brier": 0.08679719356167032,
+      "paired_groups": 280,
+      "paired_accuracy": 0.8214285714285714,
+      "confusion": {
+        "tp": 247,
+        "tn": 260,
+        "fp": 20,
+        "fn": 33
+      },
+      "seconds": 36.345,
+      "categories": {
+        "absolute_reference": {
+          "count": 20,
+          "correct": 20
+        },
+        "average_total": {
+          "count": 20,
+          "correct": 20
+        },
+        "broken_reference": {
+          "count": 20,
+          "correct": 18
+        },
+        "count": {
+          "count": 20,
+          "correct": 20
+        },
+        "date_order": {
+          "count": 20,
+          "correct": 20
+        },
+        "division_zero": {
+          "count": 20,
+          "correct": 20
+        },
+        "duplicate_total": {
+          "count": 20,
+          "correct": 20
+        },
+        "if_boundary": {
+          "count": 20,
+          "correct": 20
+        },
+        "iferror": {
+          "count": 20,
+          "correct": 19
+        },
+        "lookup_column": {
+          "count": 120,
+          "correct": 74
+        },
+        "lookup_exact": {
+          "count": 20,
+          "correct": 20
+        },
+        "percent_scale": {
+          "count": 20,
+          "correct": 20
+        },
+        "relative_reference": {
+          "count": 20,
+          "correct": 20
+        },
+        "rounding": {
+          "count": 20,
+          "correct": 20
+        },
+        "self_reference": {
+          "count": 20,
+          "correct": 20
+        },
+        "sign": {
+          "count": 20,
+          "correct": 20
+        },
+        "sum_range": {
+          "count": 120,
+          "correct": 117
+        },
+        "text_number": {
+          "count": 20,
+          "correct": 19
+        }
+      }
+    },
+    "benchmark": {
+      "count": 180,
+      "accuracy": 0.9222222222222223,
+      "macro_f1": 0.9222222222222223,
+      "nll": 0.3265792287606083,
+      "brier": 0.06633487050841731,
+      "paired_groups": 0,
+      "paired_accuracy": null,
+      "confusion": {
+        "tp": 83,
+        "tn": 83,
+        "fp": 7,
+        "fn": 7
+      },
+      "seconds": 10.739,
+      "categories": {
+        "absolute_reference": {
+          "count": 10,
+          "correct": 10
+        },
+        "average_total": {
+          "count": 10,
+          "correct": 10
+        },
+        "broken_reference": {
+          "count": 10,
+          "correct": 9
+        },
+        "count": {
+          "count": 10,
+          "correct": 10
+        },
+        "date_order": {
+          "count": 10,
+          "correct": 10
+        },
+        "division_zero": {
+          "count": 10,
+          "correct": 10
+        },
+        "duplicate_total": {
+          "count": 10,
+          "correct": 10
+        },
+        "if_boundary": {
+          "count": 10,
+          "correct": 10
+        },
+        "iferror": {
+          "count": 10,
+          "correct": 10
+        },
+        "lookup_column": {
+          "count": 10,
+          "correct": 5
+        },
+        "lookup_exact": {
+          "count": 10,
+          "correct": 9
+        },
+        "percent_scale": {
+          "count": 10,
+          "correct": 8
+        },
+        "relative_reference": {
+          "count": 10,
+          "correct": 6
+        },
+        "rounding": {
+          "count": 10,
+          "correct": 10
+        },
+        "self_reference": {
+          "count": 10,
+          "correct": 10
+        },
+        "sign": {
+          "count": 10,
+          "correct": 10
+        },
+        "sum_range": {
+          "count": 10,
+          "correct": 9
+        },
+        "text_number": {
+          "count": 10,
+          "correct": 10
+        }
+      }
+    },
+    "challenge": {
+      "count": 100,
+      "accuracy": 0.69,
+      "macro_f1": 0.6892230576441103,
+      "nll": 1.9953822589862458,
+      "brier": 0.2914786007891656,
+      "paired_groups": 50,
+      "paired_accuracy": 0.4,
+      "confusion": {
+        "tp": 32,
+        "tn": 37,
+        "fp": 13,
+        "fn": 18
+      },
+      "seconds": 7.183,
+      "categories": {
+        "lookup_column": {
+          "count": 50,
+          "correct": 26
+        },
+        "sum_range": {
+          "count": 50,
+          "correct": 43
+        }
+      }
+    },
+    "public_test": {
+      "count": 42,
+      "accuracy": 0.5238095238095238,
+      "macro_f1": 0.3841642228739003,
+      "nll": 4.163181501743251,
+      "brier": 0.42994697738777093,
+      "paired_groups": 21,
+      "paired_accuracy": 0.047619047619047616,
+      "confusion": {
+        "tp": 21,
+        "tn": 1,
+        "fp": 20,
+        "fn": 0
+      },
+      "seconds": 3.633,
+      "categories": {
+        "lookup_column": {
+          "count": 12,
+          "correct": 7
+        },
+        "sum_range": {
+          "count": 30,
+          "correct": 15
+        }
+      }
+    }
+  },
+  "checkpoint": "benchmark-results\\formula-jev-focus-v2b\\best",
+  "probabilities": "raw softmax, not calibrated for the formula task"
+}

@@ -1,0 +1,131 @@
+{
+  "total": 480,
+  "completed": 480,
+  "model": {
+    "model_id": "cellsentry-formula-v1",
+    "model_sha256": "148c9448f60fc299babc7416ec839340d32fd52b4ef1dcaa5c767251174eb0e7",
+    "corpus_sha256": "dae44d402b18235046a6eea4653d1ec920c3188e330fdc962895c75b100bb700",
+    "prompt_sha256": "b36d7cd05731ca91af6f1a7f30433bf6330afa3e489b532b7ec07fa7aa0bee9e",
+    "temperature": 0,
+    "seed": 42,
+    "max_tokens": 420,
+    "base_url": "http://127.0.0.1:18770",
+    "server_build": "b11429-d81235049",
+    "context": 1024,
+    "corpus_file": "D:\\git\\cellsentry\\.runtime\\cancel2-new480.jsonl",
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "chat_template_sha256": "86d92dc38bc4ce4564b3432cbf64ba494d488c69e2360ceb2cd1c2f7a6e5962c",
+    "model_file": "D:\\git\\cellsentry\\models\\minicpm5-2b-formula-chat-v1\\cellsentry-minicpm5-2b-formula-v1-q4_k_m.gguf"
+  },
+  "modes": {
+    "audit": {
+      "completed": 480,
+      "passed": 424,
+      "json_valid": 480,
+      "schema_valid": 480,
+      "semantic_pass": 424,
+      "mean_seconds": 0.521
+    }
+  },
+  "categories": {
+    "absolute_rate": {
+      "completed": 40,
+      "passed": 40,
+      "json_valid": 40,
+      "schema_valid": 40,
+      "semantic_pass": 40,
+      "mean_seconds": 0.49
+    },
+    "approx_lookup": {
+      "completed": 40,
+      "passed": 21,
+      "json_valid": 40,
+      "schema_valid": 40,
+      "semantic_pass": 21,
+      "mean_seconds": 0.484
+    },
+    "conditional_total": {
+      "completed": 40,
+      "passed": 40,
+      "json_valid": 40,
+      "schema_valid": 40,
+      "semantic_pass": 40,
+      "mean_seconds": 0.499
+    },
+    "constant_receipt": {
+      "completed": 40,
+      "passed": 40,
+      "json_valid": 40,
+      "schema_valid": 40,
+      "semantic_pass": 40,
+      "mean_seconds": 0.548
+    },
+    "date_direction": {
+      "completed": 40,
+      "passed": 40,
+      "json_valid": 40,
+      "schema_valid": 40,
+      "semantic_pass": 40,
+      "mean_seconds": 0.496
+    },
+    "frozen_snapshot": {
+      "completed": 40,
+      "passed": 40,
+      "json_valid": 40,
+      "schema_valid": 40,
+      "semantic_pass": 40,
+      "mean_seconds": 0.511
+    },
+    "negative_amount": {
+      "completed": 40,
+      "passed": 40,
+      "json_valid": 40,
+      "schema_valid": 40,
+      "semantic_pass": 40,
+      "mean_seconds": 0.49
+    },
+    "optional_blank": {
+      "completed": 40,
+      "passed": 40,
+      "json_valid": 40,
+      "schema_valid": 40,
+      "semantic_pass": 40,
+      "mean_seconds": 0.497
+    },
+    "rounding_tolerance": {
+      "completed": 40,
+      "passed": 20,
+      "json_valid": 40,
+      "schema_valid": 40,
+      "semantic_pass": 20,
+      "mean_seconds": 0.48
+    },
+    "sum_exclusion": {
+      "completed": 40,
+      "passed": 40,
+      "json_valid": 40,
+      "schema_valid": 40,
+      "semantic_pass": 40,
+      "mean_seconds": 0.494
+    },
+    "unit_conversion": {
+      "completed": 40,
+      "passed": 23,
+      "json_valid": 40,
+      "schema_valid": 40,
+      "semantic_pass": 23,
+      "mean_seconds": 0.761
+    },
+    "zero_fallback": {
+      "completed": 40,
+      "passed": 40,
+      "json_valid": 40,
+      "schema_valid": 40,
+      "semantic_pass": 40,
+      "mean_seconds": 0.501
+    }
+  },
+  "passed": 424
+}

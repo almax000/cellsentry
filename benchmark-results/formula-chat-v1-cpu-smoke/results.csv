@@ -1,0 +1,4 @@
+﻿id,mode,category,passed,json_valid,schema_valid,semantic_pass,seconds,errors
+FCHAT-BIZ3-test-12-0008-1,audit,date_order,True,True,True,True,1.88,
+FCHAT-BIZ3-test-04-0016-0,audit,external_link,True,True,True,True,1.853,
+FCHAT-BIZ3-test-10-0002-0,audit,rate_scale,True,True,True,True,2.153,

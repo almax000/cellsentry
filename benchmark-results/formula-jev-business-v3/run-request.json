@@ -1,0 +1,17 @@
+{
+  "initialization": "benchmark-results\\formula-jev-focus-v2b\\best",
+  "init_adapter_sha256": "4fe0397c121ade1e89878764637b86f8d63ec78f712d2ceda3bcd000fa87c379",
+  "init_head_sha256": "5084d648d2dbf0dcba56410fc24ab05da05cd00c6f4e914fb92337f4a1d6a485",
+  "data": "training-data\\formula-review-business-v3",
+  "data_manifest_sha256": "5820f287999478340c5cfc3c22f0d58035028749f65ce20dcc2bc622c8365194",
+  "train_script_sha256": "3fff41b4da8af758146c360487fadeb64929a5d96451e657befec32ecd9a660a",
+  "steps": 690,
+  "micro_batch": 8,
+  "accumulation": 1,
+  "learning_rate": 2e-05,
+  "expected_examples": 5520,
+  "eval_every": 100,
+  "selection": "validation only; accuracy then NLL",
+  "external_archive_usage": "frozen evaluation only",
+  "initial_phase": "initial evaluation, then optimizer training"
+}

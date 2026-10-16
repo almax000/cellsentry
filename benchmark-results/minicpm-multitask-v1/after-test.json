@@ -1,0 +1,19 @@
+{
+  "modes": {
+    "audit": {
+      "count": 80,
+      "mean_loss": 0.030447779658425135
+    },
+    "pii": {
+      "count": 80,
+      "mean_loss": 0.13157898209909719
+    },
+    "extraction": {
+      "count": 80,
+      "mean_loss": 0.07701694469942595
+    }
+  },
+  "macro_loss": 0.07968123548564943,
+  "seconds": 52.62083673477173,
+  "note": "Teacher-forced assistant loss, not generation accuracy. Final capability measured separately with GGUF."
+}

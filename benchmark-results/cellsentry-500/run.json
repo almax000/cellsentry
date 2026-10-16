@@ -1,0 +1,12 @@
+{
+  "model_id": "cellsentry-1.5b-v3",
+  "model_sha256": "4ae17b3886e4a5089671bf16aa133eaa6d8917a118bde6c75a54c1c3610f7cd3",
+  "corpus_sha256": "97193606bcf9f38c3682f7f3ed5edb18ad3841270b060b4ef48ed4833de5a386",
+  "prompt_sha256": "65480de679413239962e46b5c0d622ae4d029cf5186ff9856889e42deb5bc0af",
+  "temperature": 0,
+  "seed": 42,
+  "max_tokens": 420,
+  "base_url": "http://127.0.0.1:18765",
+  "server_build": "b11429-d81235049",
+  "context": 1024
+}
