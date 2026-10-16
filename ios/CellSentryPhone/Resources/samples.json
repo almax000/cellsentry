@@ -1,0 +1,44 @@
+[
+  {
+    "id": "TC0001",
+    "issue": {
+      "ruleId": "division_zero",
+      "cellAddress": "D5",
+      "sheetName": "Sheet1",
+      "formula": "=B5/C5",
+      "message": "Possible division by zero",
+      "confidence": 0.8,
+      "context": "B5=120; C5=0; no error handling. Workbook: monthly financial review."
+    },
+    "expectedIsValid": true,
+    "expectedPrompt": "You are a spreadsheet formula auditor. An automated rule engine found the following potential issues.\nFor each issue, determine whether it is a real error or a false positive.\n\nIssues:\n1. [division_zero] Cell Sheet1!D5\n   Formula: =B5/C5\n   Finding: Possible division by zero\n   Rule confidence: 0.8\n   Context: B5=120; C5=0; no error handling. Workbook: monthly financial review.\n\nRespond with a JSON array. Each element must have exactly these fields:\n- cellAddress (string): the cell reference\n- ruleId (string): the rule that flagged it\n- isValid (boolean): true if the rule-engine finding is a real error, false if it is a false positive\n- adjustedConfidence (number): your confidence from 0 to 1\n- reasoning (string): one sentence explaining your judgment\n\nOutput ONLY the JSON array, no markdown fences or extra text."
+  },
+  {
+    "id": "TC0006",
+    "issue": {
+      "ruleId": "division_zero",
+      "cellAddress": "D5",
+      "sheetName": "Sheet1",
+      "formula": "=B5/C5",
+      "message": "Possible division by zero",
+      "confidence": 0.8,
+      "context": "B5=120; C5=4; denominator is validated to be positive. Workbook: monthly financial review."
+    },
+    "expectedIsValid": false,
+    "expectedPrompt": "You are a spreadsheet formula auditor. An automated rule engine found the following potential issues.\nFor each issue, determine whether it is a real error or a false positive.\n\nIssues:\n1. [division_zero] Cell Sheet1!D5\n   Formula: =B5/C5\n   Finding: Possible division by zero\n   Rule confidence: 0.8\n   Context: B5=120; C5=4; denominator is validated to be positive. Workbook: monthly financial review.\n\nRespond with a JSON array. Each element must have exactly these fields:\n- cellAddress (string): the cell reference\n- ruleId (string): the rule that flagged it\n- isValid (boolean): true if the rule-engine finding is a real error, false if it is a false positive\n- adjustedConfidence (number): your confidence from 0 to 1\n- reasoning (string): one sentence explaining your judgment\n\nOutput ONLY the JSON array, no markdown fences or extra text."
+  },
+  {
+    "id": "TC0031",
+    "issue": {
+      "ruleId": "sum_range",
+      "cellAddress": "B6",
+      "sheetName": "Sheet1",
+      "formula": "=SUM(B2:B4)",
+      "message": "Total range may omit a row",
+      "confidence": 0.8,
+      "context": "B2:B5 are four sales rows. B6 must total all four, but B5 is omitted. Workbook: monthly financial review."
+    },
+    "expectedIsValid": true,
+    "expectedPrompt": "You are a spreadsheet formula auditor. An automated rule engine found the following potential issues.\nFor each issue, determine whether it is a real error or a false positive.\n\nIssues:\n1. [sum_range] Cell Sheet1!B6\n   Formula: =SUM(B2:B4)\n   Finding: Total range may omit a row\n   Rule confidence: 0.8\n   Context: B2:B5 are four sales rows. B6 must total all four, but B5 is omitted. Workbook: monthly financial review.\n\nRespond with a JSON array. Each element must have exactly these fields:\n- cellAddress (string): the cell reference\n- ruleId (string): the rule that flagged it\n- isValid (boolean): true if the rule-engine finding is a real error, false if it is a false positive\n- adjustedConfidence (number): your confidence from 0 to 1\n- reasoning (string): one sentence explaining your judgment\n\nOutput ONLY the JSON array, no markdown fences or extra text."
+  }
+]

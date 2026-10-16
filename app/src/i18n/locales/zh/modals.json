@@ -14,7 +14,12 @@
     "oneTimeSubtitle": "这是一次性下载。AI 模型完全在您的设备上运行。",
     "sha256Check": "SHA-256 校验中...",
     "getStarted": "开始使用",
-    "retryDownload": "重试下载"
+    "retryDownload": "重试下载",
+    "prepareModel": "准备端侧模型",
+    "importLocal": "导入本地 GGUF 模型",
+    "importFailed": "模型导入失败",
+    "downloadNow": "下载模型",
+    "setupFailed": "模型准备失败"
   },
   "confirm": {
     "defaultConfirm": "确认",

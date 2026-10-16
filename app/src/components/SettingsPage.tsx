@@ -49,7 +49,7 @@ export default function SettingsPage(): JSX.Element {
             <div>
               <div className="settings-label">{t('modelStatus')}</div>
               <div className="settings-desc">
-                {modelName || 'cellsentry-1.5b-v2'} (920 MB)
+                {modelName || 'MiniCPM5-2B Cancellation v2'} (1.56 GB)
               </div>
             </div>
             <div

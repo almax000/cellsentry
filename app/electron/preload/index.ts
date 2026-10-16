@@ -26,6 +26,7 @@ const api: SidecarAPI = {
   scanFolder: (folderPath: string) => ipcRenderer.invoke('sidecar:scan-folder', folderPath),
   checkModelExists: () => ipcRenderer.invoke('sidecar:model-check'),
   downloadModel: () => ipcRenderer.invoke('sidecar:model-download'),
+  importModel: () => ipcRenderer.invoke('sidecar:model-import'),
   onModelDownloadProgress: (callback) => {
     const handler = (_event: Electron.IpcRendererEvent, progress: ModelDownloadProgress): void => {
       callback(progress)

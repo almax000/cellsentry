@@ -21,6 +21,7 @@ interface SidecarAPI {
   scanFolder: (folderPath: string) => Promise<FolderScanResult>
   checkModelExists: () => Promise<{ exists: boolean; type: string }>
   downloadModel: () => Promise<{ success: boolean; status: string }>
+  importModel: () => Promise<{ success: boolean; cancelled?: boolean; error?: string }>
   onModelDownloadProgress: (callback: (progress: ModelDownloadProgress) => void) => () => void
   notifyModelReady: () => void
   checkForUpdates: () => Promise<void>

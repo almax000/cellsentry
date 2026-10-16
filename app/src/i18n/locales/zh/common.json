@@ -11,7 +11,7 @@
   "ai": "AI",
   "rule": "规则",
   "file": "文件",
-  "connectionLost": "Python 引擎已断开 — 正在重新连接…",
+  "connectionLost": "分析引擎已断开 — 正在重新连接…",
   "sidebar": {
     "home": "首页",
     "spreadsheetAudit": "表格审计",

@@ -1,8 +1,8 @@
 /**
  * LLM lifecycle management — lazy start, graceful shutdown, convenience API.
  *
- * The bridge starts on first request (not at app launch) to keep startup fast.
- * If Python or the model is unavailable, all functions degrade gracefully.
+ * The main window warms the native runtime in the background; requests can also start it lazily.
+ * If the native runtime or model is unavailable, analysis uses the rule engine.
  */
 
 import { app } from 'electron'
@@ -19,8 +19,16 @@ import type {
 const LLM_BATCH_SIZE = 8
 
 export function setupLlmLifecycle(): void {
-  app.on('before-quit', async () => {
+  let stopped = false
+  let stopping = false
+  app.on('before-quit', async (event) => {
+    if (stopped) return
+    event.preventDefault()
+    if (stopping) return
+    stopping = true
     await llmBridge.shutdown()
+    stopped = true
+    app.quit()
   })
 }
 

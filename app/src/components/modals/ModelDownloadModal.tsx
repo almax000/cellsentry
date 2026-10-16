@@ -7,7 +7,7 @@ interface ModelDownloadModalProps {
   onClose: () => void
 }
 
-type DownloadPhase = 'checking' | 'downloading' | 'verifying' | 'done' | 'error'
+type DownloadPhase = 'checking' | 'ready' | 'downloading' | 'verifying' | 'done' | 'error'
 
 export default function ModelDownloadModal({ onClose }: ModelDownloadModalProps): JSX.Element {
   const { t } = useTranslation('modals')
@@ -54,10 +54,10 @@ export default function ModelDownloadModal({ onClose }: ModelDownloadModalProps)
           setPhase('done')
           setMessage(t('modelDownload.modelIsReady'))
         } else {
-          startDownload()
+          setPhase('ready')
         }
       } catch {
-        startDownload()
+        setPhase('ready')
       }
     }
 
@@ -87,13 +87,27 @@ export default function ModelDownloadModal({ onClose }: ModelDownloadModalProps)
     return unsubscribe
   }, [t])
 
-  const sizeDownloaded = Math.round(progress * 9.2)
+  const sizeDownloaded = Math.round(progress * 15.61314592)
+
+  const importModel = async (): Promise<void> => {
+    setPhase('verifying')
+    setError('')
+    try {
+      const result = await window.api.importModel()
+      if (result.cancelled) { setPhase('ready'); return }
+      if (!result.success) throw new Error(result.error || t('modelDownload.importFailed'))
+      setPhase('done')
+    } catch (error) {
+      setPhase('error')
+      setError(error instanceof Error ? error.message : String(error))
+    }
+  }
 
   const title =
-    phase === 'done'
+    phase === 'ready' ? t('modelDownload.prepareModel') : phase === 'done'
       ? t('modelDownload.modelReady')
       : phase === 'error'
-        ? t('modelDownload.downloadFailed')
+        ? t('modelDownload.setupFailed')
         : phase === 'verifying'
           ? t('modelDownload.verifying')
           : phase === 'checking'
@@ -135,7 +149,7 @@ export default function ModelDownloadModal({ onClose }: ModelDownloadModalProps)
               <span>
                 {phase === 'verifying'
                   ? t('modelDownload.sha256Check')
-                  : message || `${sizeDownloaded} MB / 920 MB`}
+                  : message || `${sizeDownloaded} MB / 1561 MB`}
               </span>
               <span className="progress-percent">
                 {Math.min(Math.round(progress), 100)}%
@@ -154,13 +168,19 @@ export default function ModelDownloadModal({ onClose }: ModelDownloadModalProps)
           </button>
         )}
 
-        {phase === 'error' && (
+        {(phase === 'ready' || phase === 'error') && (
           <button
             className="btn btn-primary"
             onClick={() => { setError(''); startDownload() }}
             style={{ width: '100%', justifyContent: 'center', padding: '10px' }}
           >
-            {t('modelDownload.retryDownload')}
+            {t(phase === 'ready' ? 'modelDownload.downloadNow' : 'modelDownload.retryDownload')}
+          </button>
+        )}
+        {(phase === 'ready' || phase === 'error') && (
+          <button className="btn" onClick={importModel}
+            style={{ width: '100%', justifyContent: 'center', padding: '10px', marginTop: '8px' }}>
+            {t('modelDownload.importLocal')}
           </button>
         )}
       </div>

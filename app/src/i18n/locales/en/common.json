@@ -11,7 +11,7 @@
   "ai": "AI",
   "rule": "Rule",
   "file": "File",
-  "connectionLost": "Python engine disconnected — reconnecting…",
+  "connectionLost": "Analysis engine disconnected — reconnecting…",
   "sidebar": {
     "home": "Home",
     "spreadsheetAudit": "Spreadsheet Audit",

@@ -1,0 +1,10 @@
+{
+  "filename": "cellsentry-minicpm5-2b-cancel2-q4_k_m.gguf",
+  "bytes": 1561314592,
+  "sha256": "61d9c8ab8007dbbde0eb004089d1411fb6ec7167031f9d6fcc5b521fe8ebe49a",
+  "runtime": "b11429",
+  "context": 1024,
+  "maxTokens": 420,
+  "thinking": false,
+  "quantization": "Q4_K_M"
+}

@@ -1,5 +1,5 @@
 /**
- * LLM Bridge types — JSON-RPC protocol between Electron and Python subprocess.
+ * Platform-neutral LLM request and result types.
  */
 
 export interface LlmRequest {

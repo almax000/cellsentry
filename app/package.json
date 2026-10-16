@@ -7,6 +7,8 @@
   "license": "MIT",
   "scripts": {
     "dev": "electron-vite dev",
+    "runtime:prepare": "node ../scripts/prepare-native.mjs",
+    "test:native": "node --test ../scripts/test-native-runtime.cjs",
     "build": "electron-vite build",
     "postinstall": "patch-package && electron-builder install-app-deps",
     "preview": "electron-vite preview",
@@ -20,8 +22,8 @@
     "test:pii": "npx playwright test --project=pii",
     "test:extraction": "npx playwright test --project=extraction",
     "test:ci": "electron-vite build && npm run typecheck:node && npx playwright test",
-    "build:win": "npm run build && npx electron-builder --win --x64",
-    "build:mac": "npm run build && npx electron-builder --mac"
+    "build:win": "node ../scripts/prepare-native.mjs win32-x64 && npm run build && npx electron-builder --win --x64",
+    "build:mac": "npm run runtime:prepare && npm run build && npx electron-builder --mac"
   },
   "dependencies": {
     "electron-updater": "^6.8.3",

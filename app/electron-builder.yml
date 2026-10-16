@@ -1,21 +1,5 @@
 appId: com.cellsentry.app
 productName: CellSentry Beta
-extraResources:
-  - from: ../scripts
-    to: scripts
-    filter:
-      - llm_server.py
-      - model_benchmark.py
-  - from: ../.runtime/llama-b11429
-    to: .runtime/llama-b11429
-    filter:
-      - '*.exe'
-      - '*.dll'
-      - LICENSE*
-  - from: ../models
-    to: models
-    filter:
-      - cellsentry-minicpm5-2b-cancel2-q4_k_m.gguf
 directories:
   buildResources: resources
   output: dist
@@ -30,6 +14,9 @@ files:
 
 # ── Windows ──────────────────────────────────────────────────────────────
 win:
+  extraResources:
+    - from: ../native/win32-${arch}
+      to: native/win32-${arch}
   target: nsis
   icon: resources/icon.ico
 
@@ -41,6 +28,9 @@ nsis:
 
 # ── macOS ────────────────────────────────────────────────────────────────
 mac:
+  extraResources:
+    - from: ../native/darwin-${arch}
+      to: native/darwin-${arch}
   category: public.app-category.productivity
   darkModeSupport: false
   target:

@@ -14,7 +14,12 @@
     "oneTimeSubtitle": "This is a one-time download. The AI model runs entirely on your device.",
     "sha256Check": "SHA-256 check...",
     "getStarted": "Get Started",
-    "retryDownload": "Retry Download"
+    "retryDownload": "Retry Download",
+    "prepareModel": "Prepare on-device model",
+    "importLocal": "Import local GGUF model",
+    "importFailed": "Model import failed",
+    "downloadNow": "Download model",
+    "setupFailed": "Model setup failed"
   },
   "confirm": {
     "defaultConfirm": "Confirm",

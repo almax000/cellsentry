@@ -26,7 +26,10 @@ function logIpcError(handler: string, filePath: string, error: unknown): void {
 import { analyzeExcel, analyzeExcelFromSheets, type RendererIssue } from '../engine/ruleEngine'
 import { getFileInfo, readFileCells, readWorkbook } from '../engine/excelReader'
 import { generateReport } from '../report/generator'
-import { ModelDownloader } from '../model/downloader'
+import { ModelDownloader, DEFAULT_MODEL } from '../model/downloader'
+import { importModelFile } from '../model/importer'
+import { getModelsDir } from '../model/paths'
+export { getModelsDir } from '../model/paths'
 import { scanForPii, scanForPiiFromSheets } from '../pii/scanner'
 import { redactFile } from '../pii/redactor'
 import { extractDocument, extractDocumentFromSheets } from '../extraction/extractor'
@@ -43,16 +46,6 @@ function validateFilePath(filePath: unknown): filePath is string {
 }
 
 let modelDownloader: ModelDownloader | null = null
-
-export function getModelsDir(): string {
-  const { app } = require('electron') as typeof import('electron')
-  if (process.env.CELLSENTRY_MODEL_DIR) return process.env.CELLSENTRY_MODEL_DIR
-  const bundledModels = join(process.resourcesPath, 'models')
-  if (app.isPackaged && existsSync(bundledModels)) return bundledModels
-  const localModels = join(app.getAppPath(), '..', 'models')
-  if (!app.isPackaged && existsSync(localModels)) return localModels
-  return join(app.getPath('userData'), 'models')
-}
 
 export function getDownloader(): ModelDownloader {
   if (!modelDownloader) {
@@ -278,6 +271,15 @@ export function registerIpcHandlers(): void {
   })
 
   // ── Model ───────────────────────────────────────────────
+  ipcMain.handle('sidecar:model-import', async () => {
+    const chosen = await dialog.showOpenDialog({ properties: ['openFile'],
+      filters: [{ name: 'GGUF model', extensions: ['gguf'] }] })
+    if (chosen.canceled || !chosen.filePaths[0]) return { success: false, cancelled: true }
+    try {
+      await importModelFile(chosen.filePaths[0], getDownloader().getModelPath(), DEFAULT_MODEL.size, DEFAULT_MODEL.sha256)
+      return { success: true }
+    } catch (error) { return { success: false, error: String(error) } }
+  })
   ipcMain.handle('sidecar:model-check', async () => {
     if (process.env.CELLSENTRY_TEST_MODE === '1') {
       return { exists: true }

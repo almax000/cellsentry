@@ -107,7 +107,7 @@ export class ModelDownloader {
 
   private async _downloadWithRetry(): Promise<boolean> {
     if (!this.checkDiskSpace()) {
-      throw new Error('Insufficient disk space. Need approximately 1 GB free.')
+      throw new Error(`Insufficient disk space for the ${Math.ceil(this.modelInfo.size / 1_000_000)} MB model.`)
     }
 
     const urls = this.buildUrlList()
