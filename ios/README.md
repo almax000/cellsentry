@@ -6,6 +6,8 @@
 
 1. 安装可支持目标手机系统的 Xcode，以及 Node.js 20+；Xcode 工程部署目标为 iOS 17.0。
 2. 在仓库根目录执行 `node scripts/prepare-ios.mjs`。脚本下载固定的 llama.cpp b11429 官方 XCFramework，验证 SHA256 后用 ditto 解压，保留 Apple 框架符号链接。框架位于 `ios/Vendor/llama.xcframework`。
+
+   官方 b11429 下载包仅含设备与 macOS 库。需要模拟器或 XCTest 时，改为执行 `node scripts/prepare-ios.mjs --simulator`：需要 Mac 上的 Git/CMake/Xcode，从固定提交 `d81235049384534c167caea52b85a694f6103d14` 构建并补入模拟器库，保留官方设备库。CI 使用这一选项。
 3. 打开 `ios/CellSentryPhone.xcodeproj`，选择 `CellSentryPhone` scheme。
 4. 在 Signing & Capabilities 中设置自己的 Team；如 Bundle ID 冲突，更换 `com.cellsentry.phone.test`。
 5. 连接 iPhone 16e，信任此 Mac，按系统提示开启开发者模式，选择该真机后 Run。日常性能测量使用 Release 配置；首次 Metal 编译和加载应单独记录。
