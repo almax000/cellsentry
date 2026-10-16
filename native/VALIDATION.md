@@ -15,9 +15,17 @@
 
 ## 尚未验证
 
-- 当前主机无 Xcode，未完成 Mac 应用编译、签名、公证或运行。
-- 未编译 iOS Swift/Objective-C++，未执行 XCTest，未生成签名 IPA，也未进行 iPhone 16e 真机测试。工程解析和 token 对齐检查不能代替这些步骤。
-- 新增的 GitHub Actions iOS 构建流程尚未运行。Windows 打包验证为未签名目录构建，不是签名安装器验收。
+- 当前主机无 Xcode；Mac 桌面应用仍未完成编译、签名、公证或运行。
+- iOS Swift/Objective-C++ 已在 GitHub macOS CI 编译通过；XCTest 仅完成编译，未执行；未生成签名 IPA，也未进行 iPhone 16e 真机测试。
+- Windows 打包验证为未签名目录构建，不是签名安装器验收。
 - 尚无 iPhone 内存峰值、耗时、能耗或热稳定性结论；测试 App 提供导出这些测量记录的入口。
 
-在 Mac 完成 `ios/README.md` 的准备、构建和真机步骤后，才能确认手机运行表现。原始历史模型能力报告仍保留其适用范围与限制。
+在 Mac 完成签名及 `ios/README.md` 的真机步骤后，才能确认手机运行表现。原始历史模型能力报告仍保留其适用范围与限制。
+
+## iOS 云端编译补充验证
+
+- 首轮 CI：设备 Release 编译通过，模拟器测试编译因官方 b11429 XCFramework 不含 Simulator 库而失败。
+- 修复提交：`aa47256393fd7849aec818146d2cb4b8e7a73ba8`。通过 `prepare-ios.mjs --simulator` 从固定 b11429 源码提交构建模拟器库，并与已校验的官方设备库组合。
+- [第二轮 CI](https://github.com/almax000/cellsentry-dev/actions/runs/38854062092)：2026-10-16 全部通过，总作业用时 2 分 7 秒；包括 iPhone 未签名 Release 构建、模拟器 XCTest 编译和未签名 App 产物上传。
+- 仍有非阻塞警告：Swift 非 Sendable 对象捕获、旧 onChange 接口、重复 C++ 链接库以及未使用 AppIntents 元数据提取。
+- 这次验证没有执行 XCTest、没有加载模型进行模拟器推理，也不能代替手机签名安装和真机性能测试。

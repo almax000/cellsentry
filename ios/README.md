@@ -1,6 +1,6 @@
 # iPhone 16e 最小端侧测试
 
-这是可以交给 Xcode 编译的最小工程，尚未在本 Windows 开发机上完成 Apple 编译、签名或真机测试；没有生成可安装 IPA。
+最小工程已通过 GitHub macOS CI 的 iPhone 设备与模拟器测试编译。本 Windows 开发机不执行 Apple 编译；尚未签名或进行真机测试，没有生成可安装 IPA。
 
 ## 在 Mac 上准备
 
@@ -56,4 +56,4 @@ xcodebuild -project ios/CellSentryPhone.xcodeproj -scheme CellSentryPhone \
 
 这条命令只验证未签名构建，不能产生可直接装手机的签名包。Xcode 的 Product > Test 可运行协议测试；模拟器的性能不能用于推断 iPhone 16e 真机性能。
 
-`.github/workflows/build-ios.yml` 提供设备构建及模拟器测试编译检查，当前新增流程尚未运行。这个最小版本暂不包含 Excel 文件解析和完整表格界面。
+`.github/workflows/build-ios.yml` 提供设备构建及模拟器测试编译检查，[2026-10-16 CI 已全部通过](https://github.com/almax000/cellsentry-dev/actions/runs/38854062092)。XCTest 只完成编译，尚未执行。这个最小版本暂不包含 Excel 文件解析和完整表格界面。
