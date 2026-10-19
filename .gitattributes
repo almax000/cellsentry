@@ -21,3 +21,5 @@ scripts/pii-candidate-rules.mjs text eol=lf
 scripts/benchmark-pii-v2.mjs text eol=lf
 training-data/pii-mmbert-v*/*.json -text whitespace=cr-at-eol
 benchmark-results/pii-mmbert-v*/**/*.json* -text whitespace=cr-at-eol
+scripts/pii_q8_weight_only.py text eol=lf
+scripts/quantize-pii-mmbert.py text eol=lf

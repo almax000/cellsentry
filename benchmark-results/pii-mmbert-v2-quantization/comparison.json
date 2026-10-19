@@ -1,0 +1,94 @@
+{
+  "source_checkpoint": {
+    "best_step": 400,
+    "development_f1": 1,
+    "development_precision": 1,
+    "threshold": 0.95,
+    "max_test_tokens": 210,
+    "seconds": 715.7635123999789,
+    "peak_cuda_allocated_bytes": 4140124672,
+    "checkpoint_hashes": {
+      "model.safetensors": "928fa7ec980654f6f2e71e770cba9359325cbaf465a5d123e64511ea0bcc43b4",
+      "pii_head.safetensors": "d356f257ca3ab47529752493ee05e4e3c8e45ded4c89b401e9a3f25f975af037",
+      "config.json": "980fd75fbd201a23a022a59ac872c01108672e6fcf828b1daa66ca510a7a0350"
+    },
+    "note": "Local experimental checkpoint, not yet converted to GGUF or validated on iPhone; test not used for selection"
+  },
+  "q8": {
+    "recipe": "Rowwise symmetric int8 Linear weights; rowwise affine uint8 Embedding; FP32 activations, norms, head",
+    "format": "custom tensor-only safetensors Q8; not GGUF and not an optimized INT8 matmul runtime",
+    "source_sha256": "928fa7ec980654f6f2e71e770cba9359325cbaf465a5d123e64511ea0bcc43b4",
+    "sha256": "8a7d20c92b77a7f5f26cc95b8f0996fc4d2e0914dc6d4430ae1638149f475765",
+    "bytes": 309677640,
+    "selection": "No training or calibration; fixed rowwise recipe; source step400 threshold0.95 unchanged",
+    "limitations": "CPU storage/memory proof, weights dequantized per layer during compute. Mac/iPhone peak RAM/performance and GGUF integration unvalidated."
+  },
+  "q8_dev128_parity": {
+    "dev_sample": 128,
+    "class_flips": 0,
+    "max_probability_difference": 2.866983413696289e-05,
+    "mean_max_probability_difference": 1.995375607410921e-06
+  },
+  "dynamic_int8": {
+    "format": "PyTorch quantized state_dict, CPU experiment; not GGUF",
+    "recipe": "INT8 dynamic Linear + uint8 rowwise Embedding; FP32 norms and PII head",
+    "source_sha256": "928fa7ec980654f6f2e71e770cba9359325cbaf465a5d123e64511ea0bcc43b4",
+    "head_source_sha256": "d356f257ca3ab47529752493ee05e4e3c8e45ded4c89b401e9a3f25f975af037",
+    "quantized_sha256": "08815e6fcdc046fdbe733c760290fcbff51d6fb504afa890d100071cfc1e53d5",
+    "bytes": 309233739,
+    "under_500_decimal_MB": true,
+    "script_sha256": "0c66accafbd372e0ec3bb7650e89366a7036fa51dafc7e90fe686d465ae77580",
+    "input_sha256": "398afe314cdcb873ed109a528710dff6ae82464a12e223df1bc631443ac25268",
+    "candidates": 446,
+    "seconds": 23.16000139992684,
+    "reload_max_difference": 0.0,
+    "torch": "2.14.1+cu130",
+    "engine": "onednn",
+    "selection": "No training, calibration or threshold changes. Source selected step400 and threshold0.95 stay frozen.",
+    "limitations": "Windows CPU proof only. Mac/iPhone/runtime GGUF compatibility and peak RAM not validated."
+  },
+  "regression64": {
+    "source_cuda_bf16": {
+      "gold": 323,
+      "predicted": 246,
+      "tp": 223,
+      "fp": 23,
+      "fn": 100,
+      "precision": 0.9065040650406504,
+      "recall": 0.6904024767801857,
+      "f1": 0.7838312829525483
+    },
+    "source_cpu_fp32": {
+      "gold": 323,
+      "predicted": 246,
+      "tp": 223,
+      "fp": 23,
+      "fn": 100,
+      "precision": 0.9065040650406504,
+      "recall": 0.6904024767801857,
+      "f1": 0.7838312829525483
+    },
+    "dynamic_int8": {
+      "gold": 323,
+      "predicted": 61,
+      "tp": 59,
+      "fp": 2,
+      "fn": 264,
+      "precision": 0.9672131147540983,
+      "recall": 0.1826625386996904,
+      "f1": 0.3072916666666667
+    },
+    "q8_weight_only": {
+      "gold": 323,
+      "predicted": 245,
+      "tp": 224,
+      "fp": 21,
+      "fn": 99,
+      "precision": 0.9142857142857143,
+      "recall": 0.6934984520123839,
+      "f1": 0.7887323943661971
+    }
+  },
+  "policy": "No training or calibration, no gold edits, same source step400 and threshold0.95; previously audited regression, not new blind data",
+  "issue2": "Size feasible after Q8. Accuracy, Mac performance/runtime and A/B/C comparison not complete. No issue update/closure requested."
+}

@@ -1,0 +1,19 @@
+{
+  "repo": "cellsentry-team/cellsentry-minicpm5-2b-formula-v3-GGUF",
+  "private": true,
+  "original": {
+    "oid": "2a04be4ff841975b802a8ad68f05a0966c045803",
+    "url": "https://huggingface.co/cellsentry-team/cellsentry-minicpm5-2b-formula-v3-GGUF/commit/2a04be4ff841975b802a8ad68f05a0966c045803"
+  },
+  "q8": {
+    "oid": "bd9cf1cfddaa955f94282704eef509a7deb2c4e2",
+    "url": "https://huggingface.co/cellsentry-team/cellsentry-minicpm5-2b-formula-v3-GGUF/commit/bd9cf1cfddaa955f94282704eef509a7deb2c4e2",
+    "files": 13,
+    "bytes": 344062553,
+    "private": true,
+    "all_existing_files_preserved": true
+  },
+  "formula_files_preserved": true,
+  "datasets_uploaded": false,
+  "note": "Remote file sizes and LFS SHA256 verified by both upload scripts"
+}

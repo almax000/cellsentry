@@ -1,0 +1,7 @@
+{
+  "gold_unchanged": true,
+  "source_weights_unchanged": true,
+  "q8_identity_verified": true,
+  "q8_model_tokenizer_config_bytes": 344043622,
+  "no_training_or_calibration": true
+}
