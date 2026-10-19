@@ -22,6 +22,7 @@ export interface Issue {
   category: string
   layer: 'rule' | 'ai'
   llmVerified?: boolean
+  llmReviewRequired?: boolean
   llmConfidence?: number
   llmReasoning?: string
 }

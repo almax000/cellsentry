@@ -1,4 +1,5 @@
 {
+  "aiReviewRequired": "Alert retained — needs review",
   "allClear": "All clear!",
   "noIssuesMsg": "No formula errors detected.\nYour spreadsheet looks good.",
   "sheetsAndCells": "{{sheets}} sheets · {{cells}} cells",

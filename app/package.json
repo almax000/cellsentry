@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "electron-vite dev",
     "runtime:prepare": "node ../scripts/prepare-native.mjs",
-    "test:native": "node --test ../scripts/test-native-runtime.cjs",
+    "test:native": "node --test ../scripts/test-native-runtime.cjs ../scripts/test-cancellation-policy.cjs ../scripts/test-formula-benchmark.mjs",
     "build": "electron-vite build",
     "postinstall": "patch-package && electron-builder install-app-deps",
     "preview": "electron-vite preview",

@@ -120,6 +120,7 @@ function mapRawResult(filePath: string, fileName: string, rawResult: Record<stri
       category: (ri.category as string) || '',
       layer: (ri.layer as 'rule' | 'ai') || 'rule',
       ...(ri.llmVerified !== undefined && { llmVerified: ri.llmVerified as boolean }),
+      ...(ri.llmReviewRequired === true && { llmReviewRequired: true }),
       ...(ri.llmConfidence !== undefined && { llmConfidence: ri.llmConfidence as number }),
       ...(ri.llmReasoning !== undefined && { llmReasoning: ri.llmReasoning as string }),
     })

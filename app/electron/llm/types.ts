@@ -34,6 +34,9 @@ export interface LlmJudgment {
   isValid: boolean
   adjustedConfidence: number
   reasoning: string
+  /** Model decision is preserved; protected cancellations require human review. */
+  requiresReview?: boolean
+  reviewReason?: string
 }
 
 export interface PiiLlmFinding {

@@ -7,6 +7,7 @@
 
 import { app } from 'electron'
 import { llmBridge } from './bridge'
+import { cancellationAction } from './cancellationPolicy'
 import type {
   LlmIssueInput,
   LlmJudgment,
@@ -138,14 +139,15 @@ export async function analyzeWithLlmExtraction(
  * Merge LLM judgments back into engine issues.
  *
  * For each issue that the LLM reviewed:
- * - If isValid is false (false positive), the issue can be filtered out
- * - adjustedConfidence replaces the original confidence
+ * - Protected cancellation suggestions abstain and keep the original issue
+ * - Other isValid=false judgments are attached as model disagreement
+ * - Model confidence is stored separately from original rule confidence
  * - reasoning is attached for display in the UI
  */
-export function mergeJudgments<T extends { ruleId: string; cellAddress: string | null }>(
+export function mergeJudgments<T extends { ruleId: string; cellAddress: string | null; formula?: string | null }>(
   issues: T[],
   judgments: LlmJudgment[],
-): Array<T & { llmVerified?: boolean; llmConfidence?: number; llmReasoning?: string }> {
+): Array<T & { llmVerified?: boolean; llmConfidence?: number; llmReasoning?: string; llmReviewRequired?: boolean }> {
   const judgmentMap = new Map(
     judgments.map((j) => [`${j.ruleId}:${j.cellAddress}`, j]),
   )
@@ -156,9 +158,13 @@ export function mergeJudgments<T extends { ruleId: string; cellAddress: string |
 
     if (!judgment) return issue
 
+    // Reapply locally at the merge boundary, including judgments from other callers.
+    const requiresReview = cancellationAction(issue.ruleId, issue.formula ?? '', judgment.isValid).action === 'review'
+
     return {
       ...issue,
-      llmVerified: judgment.isValid,
+      llmVerified: requiresReview ? undefined : judgment.isValid,
+      llmReviewRequired: requiresReview,
       llmConfidence: judgment.adjustedConfidence,
       llmReasoning: judgment.reasoning,
     }

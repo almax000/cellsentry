@@ -1,4 +1,5 @@
 import type { ExtractionLlmResult, LlmIssueInput, LlmJudgment, PiiLlmFinding } from './types'
+import { cancellationAction } from './cancellationPolicy'
 
 type RecordValue = Record<string, unknown>
 function object(value: unknown): value is RecordValue {
@@ -16,7 +17,15 @@ export function parseAudit(raw: string, issue: LlmIssueInput): LlmJudgment[] {
   if (!object(j) || j.cellAddress !== issue.cellAddress || j.ruleId !== issue.ruleId
     || typeof j.isValid !== 'boolean' || !confidence(j.adjustedConfidence)
     || typeof j.reasoning !== 'string' || !j.reasoning.trim()) throw new Error('Invalid audit judgment or identity')
-  return [j as unknown as LlmJudgment]
+  // Ignore model-supplied policy fields; only local code sets review status.
+  const judgment: LlmJudgment = { cellAddress: j.cellAddress as string, ruleId: j.ruleId as string,
+    isValid: j.isValid, adjustedConfidence: j.adjustedConfidence, reasoning: j.reasoning }
+  const policy = cancellationAction(issue.ruleId, issue.formula, judgment.isValid)
+  if (policy.action === 'review') {
+    judgment.requiresReview = true
+    judgment.reviewReason = policy.reason
+  }
+  return [judgment]
 }
 
 export function parsePii(raw: string, addresses: Set<string>): PiiLlmFinding[] {

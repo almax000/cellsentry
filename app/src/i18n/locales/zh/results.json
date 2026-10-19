@@ -1,4 +1,5 @@
 {
+  "aiReviewRequired": "保留告警，需人工复核",
   "allClear": "全部通过!",
   "noIssuesMsg": "未检测到公式错误。\n您的表格看起来没有问题。",
   "sheetsAndCells": "{{sheets}} 个工作表 · {{cells}} 个单元格",
