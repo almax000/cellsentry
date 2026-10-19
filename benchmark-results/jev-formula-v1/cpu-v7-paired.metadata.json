@@ -1,0 +1,21 @@
+{
+  "execution": "fresh CPU inference, batch size 1, 4 threads",
+  "checkpoint": "D:\\git\\cellsentry\\benchmark-results\\formula-multitask-v7\\paired\\fp16",
+  "formulation": "binary",
+  "torch": "2.14.1+cu130",
+  "inputs_sha256": "2dc9921b95718b111f5de105f164e41d4ac91e8c84260cfd9c4fed9d8a1e5b64",
+  "predictions_sha256": "84838b1774624d1954dbc35d8750f48440ec0cc26a9b15d6f84a1051fe93754e",
+  "loading_seconds": 3.4690196001902223,
+  "inference_total_seconds": 26.00976329855621,
+  "inference_mean_seconds": 0.09031167811998683,
+  "inference_p95_seconds": 0.14658430009149015,
+  "model_parameter_dtype": "torch.float32",
+  "checkpoint_hashes": {
+    "model.safetensors": "c125ce45291b0ad4a4e144cd663d6e794efef3f0f182660847277f7a6f32e755",
+    "decision_head.safetensors": "9344fe0464e35443ffc70bee065a6c3dad061583471c983f96f220f437d9d381",
+    "config.json": "82bcac46ab02806a8a26fdfff7a3e89661b677d77c6951d33312eac358659c40"
+  },
+  "encoder_script_sha256": "3eb34a6d54821cc11d7c43b38a0e3289a340c1074c6c1ee74ba0053d72008db0",
+  "adapter_sha256": "d226b7b50cdd2e253864b97d67b753e275f7ac07dfe79fbdea2793709efbc3bb",
+  "note": "Stored FP16 weights loaded as FP32 by original builder. Windows CPU timings, not iPhone measurements; includes tokenization, no warmup."
+}

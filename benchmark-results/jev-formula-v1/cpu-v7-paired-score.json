@@ -1,0 +1,875 @@
+{
+  "decision_rule": "saved predicted_error (original protocol)",
+  "all": {
+    "count": 288,
+    "confusion": {
+      "tp": 88,
+      "tn": 99,
+      "fp": 45,
+      "fn": 56
+    },
+    "accuracy": 0.6493055555555556,
+    "error_precision": 0.6616541353383458,
+    "error_recall": 0.6111111111111112,
+    "error_f1": 0.6353790613718412,
+    "macro_f1": 0.6487932096156865,
+    "cancellation_precision": 0.6387096774193548,
+    "false_alert_cancellation_rate": 0.6875,
+    "erroneous_cancellation_rate": 0.3888888888888889,
+    "cancellation_coverage": 0.5381944444444444,
+    "paired_groups": 144,
+    "paired_group_accuracy": 0.3819444444444444,
+    "probability_count": 288,
+    "nll": 2.4494090991358743,
+    "brier": 0.3398144971747703
+  },
+  "categories": {
+    "key_type": {
+      "count": 48,
+      "confusion": {
+        "tp": 20,
+        "tn": 4,
+        "fp": 20,
+        "fn": 4
+      },
+      "accuracy": 0.5,
+      "error_precision": 0.5,
+      "error_recall": 0.8333333333333334,
+      "error_f1": 0.625,
+      "macro_f1": 0.4375,
+      "cancellation_precision": 0.5,
+      "false_alert_cancellation_rate": 0.16666666666666666,
+      "erroneous_cancellation_rate": 0.16666666666666666,
+      "cancellation_coverage": 0.16666666666666666,
+      "paired_groups": 24,
+      "paired_group_accuracy": 0.041666666666666664,
+      "probability_count": 48,
+      "nll": 3.0223395609437134,
+      "brier": 0.45505042513497296
+    },
+    "parameter": {
+      "count": 48,
+      "confusion": {
+        "tp": 24,
+        "tn": 12,
+        "fp": 12,
+        "fn": 0
+      },
+      "accuracy": 0.75,
+      "error_precision": 0.6666666666666666,
+      "error_recall": 1,
+      "error_f1": 0.8,
+      "macro_f1": 0.7333333333333334,
+      "cancellation_precision": 1,
+      "false_alert_cancellation_rate": 0.5,
+      "erroneous_cancellation_rate": 0,
+      "cancellation_coverage": 0.25,
+      "paired_groups": 24,
+      "paired_group_accuracy": 0.5,
+      "probability_count": 48,
+      "nll": 1.6678984046434426,
+      "brier": 0.25045012312041887
+    },
+    "ratio": {
+      "count": 48,
+      "confusion": {
+        "tp": 13,
+        "tn": 11,
+        "fp": 13,
+        "fn": 11
+      },
+      "accuracy": 0.5,
+      "error_precision": 0.5,
+      "error_recall": 0.5416666666666666,
+      "error_f1": 0.52,
+      "macro_f1": 0.4991304347826087,
+      "cancellation_precision": 0.5,
+      "false_alert_cancellation_rate": 0.4583333333333333,
+      "erroneous_cancellation_rate": 0.4583333333333333,
+      "cancellation_coverage": 0.4583333333333333,
+      "paired_groups": 24,
+      "paired_group_accuracy": 0.4583333333333333,
+      "probability_count": 48,
+      "nll": 4.221994823706015,
+      "brier": 0.4954235307748652
+    },
+    "sheet": {
+      "count": 48,
+      "confusion": {
+        "tp": 24,
+        "tn": 24,
+        "fp": 0,
+        "fn": 0
+      },
+      "accuracy": 1,
+      "error_precision": 1,
+      "error_recall": 1,
+      "error_f1": 1,
+      "macro_f1": 1,
+      "cancellation_precision": 1,
+      "false_alert_cancellation_rate": 1,
+      "erroneous_cancellation_rate": 0,
+      "cancellation_coverage": 0.5,
+      "paired_groups": 24,
+      "paired_group_accuracy": 1,
+      "probability_count": 48,
+      "nll": 0.000029159521664676212,
+      "brier": 8.925844823892222e-10
+    },
+    "spelling": {
+      "count": 48,
+      "confusion": {
+        "tp": 7,
+        "tn": 24,
+        "fp": 0,
+        "fn": 17
+      },
+      "accuracy": 0.6458333333333334,
+      "error_precision": 1,
+      "error_recall": 0.2916666666666667,
+      "error_f1": 0.45161290322580644,
+      "macro_f1": 0.5950372208436725,
+      "cancellation_precision": 0.5853658536585366,
+      "false_alert_cancellation_rate": 1,
+      "erroneous_cancellation_rate": 0.7083333333333334,
+      "cancellation_coverage": 0.8541666666666666,
+      "paired_groups": 24,
+      "paired_group_accuracy": 0.2916666666666667,
+      "probability_count": 48,
+      "nll": 2.1805845789773457,
+      "brier": 0.3401025212547912
+    },
+    "storage": {
+      "count": 48,
+      "confusion": {
+        "tp": 0,
+        "tn": 24,
+        "fp": 0,
+        "fn": 24
+      },
+      "accuracy": 0.5,
+      "error_precision": null,
+      "error_recall": 0,
+      "error_f1": 0,
+      "macro_f1": 0.3333333333333333,
+      "cancellation_precision": 0.5,
+      "false_alert_cancellation_rate": 1,
+      "erroneous_cancellation_rate": 1,
+      "cancellation_coverage": 1,
+      "paired_groups": 24,
+      "paired_group_accuracy": 0,
+      "probability_count": 48,
+      "nll": 3.603608067023064,
+      "brier": 0.49786038187098997
+    }
+  },
+  "mistakes": [
+    {
+      "id": "IND7/test/ratio/1/0",
+      "category": "ratio",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9997085928916931
+    },
+    {
+      "id": "IND7/test/ratio/1/1",
+      "category": "ratio",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.00011547737085493281
+    },
+    {
+      "id": "IND7/test/ratio/3/0",
+      "category": "ratio",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9997196793556213
+    },
+    {
+      "id": "IND7/test/ratio/3/1",
+      "category": "ratio",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.00009713254257803783
+    },
+    {
+      "id": "IND7/test/ratio/5/0",
+      "category": "ratio",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9991692304611206
+    },
+    {
+      "id": "IND7/test/ratio/5/1",
+      "category": "ratio",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.0005317569593898952
+    },
+    {
+      "id": "IND7/test/ratio/7/0",
+      "category": "ratio",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9998620748519897
+    },
+    {
+      "id": "IND7/test/ratio/7/1",
+      "category": "ratio",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.0008451426983810961
+    },
+    {
+      "id": "IND7/test/ratio/9/0",
+      "category": "ratio",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9997960925102234
+    },
+    {
+      "id": "IND7/test/ratio/9/1",
+      "category": "ratio",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.0003154017322231084
+    },
+    {
+      "id": "IND7/test/ratio/11/0",
+      "category": "ratio",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9999738931655884
+    },
+    {
+      "id": "IND7/test/ratio/11/1",
+      "category": "ratio",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.0002080171398120001
+    },
+    {
+      "id": "IND7/test/ratio/12/0",
+      "category": "ratio",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.7552266120910645
+    },
+    {
+      "id": "IND7/test/ratio/13/0",
+      "category": "ratio",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9999058246612549
+    },
+    {
+      "id": "IND7/test/ratio/13/1",
+      "category": "ratio",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.0001283069868804887
+    },
+    {
+      "id": "IND7/test/ratio/15/0",
+      "category": "ratio",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9999198913574219
+    },
+    {
+      "id": "IND7/test/ratio/17/0",
+      "category": "ratio",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9998015761375427
+    },
+    {
+      "id": "IND7/test/ratio/17/1",
+      "category": "ratio",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.0002907695306930691
+    },
+    {
+      "id": "IND7/test/ratio/19/0",
+      "category": "ratio",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9999796152114868
+    },
+    {
+      "id": "IND7/test/ratio/19/1",
+      "category": "ratio",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.00022738002007827163
+    },
+    {
+      "id": "IND7/test/ratio/21/0",
+      "category": "ratio",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9999792575836182
+    },
+    {
+      "id": "IND7/test/ratio/21/1",
+      "category": "ratio",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.0006046719499863684
+    },
+    {
+      "id": "IND7/test/ratio/23/0",
+      "category": "ratio",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9999655485153198
+    },
+    {
+      "id": "IND7/test/ratio/23/1",
+      "category": "ratio",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.0005453767371363938
+    },
+    {
+      "id": "IND7/test/parameter/0/0",
+      "category": "parameter",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9998841285705566
+    },
+    {
+      "id": "IND7/test/parameter/2/0",
+      "category": "parameter",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9976564645767212
+    },
+    {
+      "id": "IND7/test/parameter/4/0",
+      "category": "parameter",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9998862743377686
+    },
+    {
+      "id": "IND7/test/parameter/6/0",
+      "category": "parameter",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9963512420654297
+    },
+    {
+      "id": "IND7/test/parameter/8/0",
+      "category": "parameter",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.997687578201294
+    },
+    {
+      "id": "IND7/test/parameter/10/0",
+      "category": "parameter",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9988881945610046
+    },
+    {
+      "id": "IND7/test/parameter/12/0",
+      "category": "parameter",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9656734466552734
+    },
+    {
+      "id": "IND7/test/parameter/14/0",
+      "category": "parameter",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9998001456260681
+    },
+    {
+      "id": "IND7/test/parameter/16/0",
+      "category": "parameter",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9977879524230957
+    },
+    {
+      "id": "IND7/test/parameter/18/0",
+      "category": "parameter",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.998051643371582
+    },
+    {
+      "id": "IND7/test/parameter/20/0",
+      "category": "parameter",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9960809350013733
+    },
+    {
+      "id": "IND7/test/parameter/22/0",
+      "category": "parameter",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.998591959476471
+    },
+    {
+      "id": "IND7/test/storage/0/1",
+      "category": "storage",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.006310559809207916
+    },
+    {
+      "id": "IND7/test/storage/1/1",
+      "category": "storage",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.00037193569005467
+    },
+    {
+      "id": "IND7/test/storage/2/1",
+      "category": "storage",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.00037568435072898865
+    },
+    {
+      "id": "IND7/test/storage/3/1",
+      "category": "storage",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.0016464588697999716
+    },
+    {
+      "id": "IND7/test/storage/4/1",
+      "category": "storage",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.00024039405980147421
+    },
+    {
+      "id": "IND7/test/storage/5/1",
+      "category": "storage",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.0003827382461167872
+    },
+    {
+      "id": "IND7/test/storage/6/1",
+      "category": "storage",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.0003348147147335112
+    },
+    {
+      "id": "IND7/test/storage/7/1",
+      "category": "storage",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.010779664851725101
+    },
+    {
+      "id": "IND7/test/storage/8/1",
+      "category": "storage",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.0008706427761353552
+    },
+    {
+      "id": "IND7/test/storage/9/1",
+      "category": "storage",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.006797615438699722
+    },
+    {
+      "id": "IND7/test/storage/10/1",
+      "category": "storage",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.0010639035608619452
+    },
+    {
+      "id": "IND7/test/storage/11/1",
+      "category": "storage",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.0000935801217565313
+    },
+    {
+      "id": "IND7/test/storage/12/1",
+      "category": "storage",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.0002242940099677071
+    },
+    {
+      "id": "IND7/test/storage/13/1",
+      "category": "storage",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.01068329531699419
+    },
+    {
+      "id": "IND7/test/storage/14/1",
+      "category": "storage",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.00020617168047465384
+    },
+    {
+      "id": "IND7/test/storage/15/1",
+      "category": "storage",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.0003352964122314006
+    },
+    {
+      "id": "IND7/test/storage/16/1",
+      "category": "storage",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.003113260492682457
+    },
+    {
+      "id": "IND7/test/storage/17/1",
+      "category": "storage",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.0003925431228708476
+    },
+    {
+      "id": "IND7/test/storage/18/1",
+      "category": "storage",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.000830065633635968
+    },
+    {
+      "id": "IND7/test/storage/19/1",
+      "category": "storage",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.0006571987178176641
+    },
+    {
+      "id": "IND7/test/storage/20/1",
+      "category": "storage",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.00531297130510211
+    },
+    {
+      "id": "IND7/test/storage/21/1",
+      "category": "storage",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.00013879592006560415
+    },
+    {
+      "id": "IND7/test/storage/22/1",
+      "category": "storage",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.00014548252511303872
+    },
+    {
+      "id": "IND7/test/storage/23/1",
+      "category": "storage",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.00022580072982236743
+    },
+    {
+      "id": "IND7/test/key_type/0/0",
+      "category": "key_type",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.7635215520858765
+    },
+    {
+      "id": "IND7/test/key_type/0/1",
+      "category": "key_type",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.12342726439237595
+    },
+    {
+      "id": "IND7/test/key_type/1/0",
+      "category": "key_type",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9758367538452148
+    },
+    {
+      "id": "IND7/test/key_type/2/0",
+      "category": "key_type",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9814949035644531
+    },
+    {
+      "id": "IND7/test/key_type/3/0",
+      "category": "key_type",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9999880790710449
+    },
+    {
+      "id": "IND7/test/key_type/4/0",
+      "category": "key_type",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.999923586845398
+    },
+    {
+      "id": "IND7/test/key_type/6/0",
+      "category": "key_type",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9953330159187317
+    },
+    {
+      "id": "IND7/test/key_type/7/0",
+      "category": "key_type",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9995459914207458
+    },
+    {
+      "id": "IND7/test/key_type/8/0",
+      "category": "key_type",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9999028444290161
+    },
+    {
+      "id": "IND7/test/key_type/9/1",
+      "category": "key_type",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.38093796372413635
+    },
+    {
+      "id": "IND7/test/key_type/10/0",
+      "category": "key_type",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.7327247858047485
+    },
+    {
+      "id": "IND7/test/key_type/11/0",
+      "category": "key_type",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9995936751365662
+    },
+    {
+      "id": "IND7/test/key_type/12/1",
+      "category": "key_type",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.21123285591602325
+    },
+    {
+      "id": "IND7/test/key_type/13/0",
+      "category": "key_type",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9994180202484131
+    },
+    {
+      "id": "IND7/test/key_type/14/0",
+      "category": "key_type",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9997325539588928
+    },
+    {
+      "id": "IND7/test/key_type/15/0",
+      "category": "key_type",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9998823404312134
+    },
+    {
+      "id": "IND7/test/key_type/16/0",
+      "category": "key_type",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9998613595962524
+    },
+    {
+      "id": "IND7/test/key_type/17/0",
+      "category": "key_type",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9790474772453308
+    },
+    {
+      "id": "IND7/test/key_type/18/0",
+      "category": "key_type",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9997809529304504
+    },
+    {
+      "id": "IND7/test/key_type/19/0",
+      "category": "key_type",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9998533725738525
+    },
+    {
+      "id": "IND7/test/key_type/20/0",
+      "category": "key_type",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9994059801101685
+    },
+    {
+      "id": "IND7/test/key_type/21/1",
+      "category": "key_type",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.01132697332650423
+    },
+    {
+      "id": "IND7/test/key_type/22/0",
+      "category": "key_type",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9971776008605957
+    },
+    {
+      "id": "IND7/test/key_type/23/0",
+      "category": "key_type",
+      "expected_error": false,
+      "predicted_error": true,
+      "error_probability": 0.9973233342170715
+    },
+    {
+      "id": "IND7/test/spelling/1/1",
+      "category": "spelling",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.0018782797269523144
+    },
+    {
+      "id": "IND7/test/spelling/2/1",
+      "category": "spelling",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.005371867213398218
+    },
+    {
+      "id": "IND7/test/spelling/4/1",
+      "category": "spelling",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.0007148944423533976
+    },
+    {
+      "id": "IND7/test/spelling/5/1",
+      "category": "spelling",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.0009007882326841354
+    },
+    {
+      "id": "IND7/test/spelling/7/1",
+      "category": "spelling",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.00045495908125303686
+    },
+    {
+      "id": "IND7/test/spelling/8/1",
+      "category": "spelling",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.005896094720810652
+    },
+    {
+      "id": "IND7/test/spelling/10/1",
+      "category": "spelling",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.0019354195101186633
+    },
+    {
+      "id": "IND7/test/spelling/11/1",
+      "category": "spelling",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.00042166048660874367
+    },
+    {
+      "id": "IND7/test/spelling/12/1",
+      "category": "spelling",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.4581228196620941
+    },
+    {
+      "id": "IND7/test/spelling/13/1",
+      "category": "spelling",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.0015149140963330865
+    },
+    {
+      "id": "IND7/test/spelling/14/1",
+      "category": "spelling",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.0026198169216513634
+    },
+    {
+      "id": "IND7/test/spelling/16/1",
+      "category": "spelling",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.015177270397543907
+    },
+    {
+      "id": "IND7/test/spelling/17/1",
+      "category": "spelling",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.0011110742343589664
+    },
+    {
+      "id": "IND7/test/spelling/19/1",
+      "category": "spelling",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.002878635423257947
+    },
+    {
+      "id": "IND7/test/spelling/20/1",
+      "category": "spelling",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.00044808213715441525
+    },
+    {
+      "id": "IND7/test/spelling/22/1",
+      "category": "spelling",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.0011370264692232013
+    },
+    {
+      "id": "IND7/test/spelling/23/1",
+      "category": "spelling",
+      "expected_error": true,
+      "predicted_error": false,
+      "error_probability": 0.0012525079073384404
+    }
+  ]
+}

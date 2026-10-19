@@ -1,0 +1,301 @@
+{
+  "version": 1,
+  "purpose": "synthetic regression only; no independent holdout claim",
+  "datasets": {
+    "benchmark": {
+      "source_project": "cellsentry-dev",
+      "source_path": "training-data/formula-review-business-v3/benchmark.jsonl",
+      "sha256": "59e5607f799231ff98f430a4fd18bb5f9080f0ca176535ccf856bb56daa811ca",
+      "count": 180,
+      "exact_input_overlap_with_preceding_sets": 0,
+      "categories": {
+        "absolute_reference": 10,
+        "average_total": 10,
+        "broken_reference": 10,
+        "count": 10,
+        "date_order": 10,
+        "division_zero": 10,
+        "duplicate_total": 10,
+        "if_boundary": 10,
+        "iferror": 10,
+        "lookup_column": 10,
+        "lookup_exact": 10,
+        "percent_scale": 10,
+        "relative_reference": 10,
+        "rounding": 10,
+        "self_reference": 10,
+        "sign": 10,
+        "sum_range": 10,
+        "text_number": 10
+      }
+    },
+    "legacy_test": {
+      "source_project": "cellsentry-dev",
+      "source_path": "training-data/formula-review-business-v3/test.jsonl",
+      "sha256": "b2ad1f5eb0f3367b3a82895012db5b0108c54505f4e468a46d72a085912afb5b",
+      "count": 960,
+      "exact_input_overlap_with_preceding_sets": 0,
+      "categories": {
+        "aggregation_type": 48,
+        "archived_snapshot": 48,
+        "contract_literal": 48,
+        "date_order": 48,
+        "duplicate_key": 48,
+        "empty_denominator": 48,
+        "external_link": 48,
+        "imported_literal": 48,
+        "iterative_cycle": 48,
+        "lookup_column": 48,
+        "lookup_key_type": 48,
+        "lookup_match": 48,
+        "optional_blank": 48,
+        "rate_scale": 48,
+        "rounding_tolerance": 48,
+        "seasonal_spike": 48,
+        "stored_sign": 48,
+        "sum_scope": 48,
+        "text_identifier": 48,
+        "unit_conversion": 48
+      }
+    },
+    "v5_test": {
+      "source_project": "cellsentry",
+      "source_path": "training-data/formula-review-multiview-v5/test.jsonl",
+      "sha256": "ee3d90c51a3c1b07796572dd3fe24f0d50e537a136e8532fbca4ee4e25fc4c38",
+      "count": 288,
+      "exact_input_overlap_with_preceding_sets": 0,
+      "categories": {
+        "cycle": 24,
+        "external": 24,
+        "first_match": 24,
+        "hidden": 24,
+        "key_type": 24,
+        "lookup": 24,
+        "parameter": 24,
+        "ratio": 24,
+        "sheet": 24,
+        "spelling": 24,
+        "storage": 24,
+        "sum": 24
+      }
+    },
+    "v6_test": {
+      "source_project": "cellsentry",
+      "source_path": "training-data/formula-review-multiview-v6/test.jsonl",
+      "sha256": "45ad9ae128839152a095e1ad519221b1a18779d35d757bd13078b50f3441719e",
+      "count": 480,
+      "exact_input_overlap_with_preceding_sets": 0,
+      "categories": {
+        "cycle": 40,
+        "external": 40,
+        "first_match": 40,
+        "hidden": 40,
+        "key_type": 40,
+        "lookup": 40,
+        "parameter": 40,
+        "ratio": 40,
+        "sheet": 40,
+        "spelling": 40,
+        "storage": 40,
+        "sum": 40
+      }
+    },
+    "v7_test": {
+      "source_project": "cellsentry",
+      "source_path": "training-data/formula-multitask-v7/test.jsonl",
+      "sha256": "87ec4877568dee9d9e1e46b1abcf471dc04134b950c25e1dbb75161eace1d5f2",
+      "count": 288,
+      "exact_input_overlap_with_preceding_sets": 0,
+      "categories": {
+        "key_type": 48,
+        "parameter": 48,
+        "ratio": 48,
+        "sheet": 48,
+        "spelling": 48,
+        "storage": 48
+      }
+    }
+  },
+  "predictions": [
+    {
+      "model": "mmbert-v6-fp16",
+      "dataset": "benchmark",
+      "file": "predictions/mmbert-v6-fp16/benchmark.jsonl",
+      "source_project": "cellsentry",
+      "source_path": "benchmark-results/formula-multitask-v7/v6-baseline/fp16-benchmark.jsonl",
+      "sha256": "3e533bae8b91c27a42394c31744a2be563d414c9df6c4cf19d4a7ccfbcbcd20b",
+      "dataset_sha256": "59e5607f799231ff98f430a4fd18bb5f9080f0ca176535ccf856bb56daa811ca",
+      "execution": "saved local predictions; replay, not fresh inference"
+    },
+    {
+      "model": "mmbert-v6-fp16",
+      "dataset": "legacy_test",
+      "file": "predictions/mmbert-v6-fp16/legacy_test.jsonl",
+      "source_project": "cellsentry",
+      "source_path": "benchmark-results/formula-multitask-v7/v6-baseline/fp16-legacy_test.jsonl",
+      "sha256": "59a21ee9b82b985206c11de6e7ec640cdd198cd2d21df881ca224966189f35b7",
+      "dataset_sha256": "b2ad1f5eb0f3367b3a82895012db5b0108c54505f4e468a46d72a085912afb5b",
+      "execution": "saved local predictions; replay, not fresh inference"
+    },
+    {
+      "model": "mmbert-v6-fp16",
+      "dataset": "v5_test",
+      "file": "predictions/mmbert-v6-fp16/v5_test.jsonl",
+      "source_project": "cellsentry",
+      "source_path": "benchmark-results/formula-multitask-v7/v6-baseline/fp16-v5_test.jsonl",
+      "sha256": "c1a5ec26292af009c17a09341b9f0b8eb43aaa488b13b65cef2f4ba4eabb36f5",
+      "dataset_sha256": "ee3d90c51a3c1b07796572dd3fe24f0d50e537a136e8532fbca4ee4e25fc4c38",
+      "execution": "saved local predictions; replay, not fresh inference"
+    },
+    {
+      "model": "mmbert-v6-fp16",
+      "dataset": "v6_test",
+      "file": "predictions/mmbert-v6-fp16/v6_test.jsonl",
+      "source_project": "cellsentry",
+      "source_path": "benchmark-results/formula-multitask-v7/v6-baseline/fp16-v6_test.jsonl",
+      "sha256": "698ff3d20eb99f44ddcdf7df8004720835247ae6ad8d060e2ee09de25642747b",
+      "dataset_sha256": "45ad9ae128839152a095e1ad519221b1a18779d35d757bd13078b50f3441719e",
+      "execution": "saved local predictions; replay, not fresh inference"
+    },
+    {
+      "model": "mmbert-v6-fp16",
+      "dataset": "v7_test",
+      "file": "predictions/mmbert-v6-fp16/v7_test.jsonl",
+      "source_project": "cellsentry",
+      "source_path": "benchmark-results/formula-multitask-v7/v6-baseline/fp16-test.jsonl",
+      "sha256": "cee8df593e2d8c0900ae153f11f5d80a4df88e57026e30ba53768d0b97daa842",
+      "dataset_sha256": "87ec4877568dee9d9e1e46b1abcf471dc04134b950c25e1dbb75161eace1d5f2",
+      "execution": "saved local predictions; replay, not fresh inference"
+    },
+    {
+      "model": "mmbert-v7-paired-fp16",
+      "dataset": "benchmark",
+      "file": "predictions/mmbert-v7-paired-fp16/benchmark.jsonl",
+      "source_project": "cellsentry",
+      "source_path": "benchmark-results/formula-multitask-v7/paired/fp16-benchmark.jsonl",
+      "sha256": "43da08010c3ebb7f48dfab401d198bc1ccc22371707190bb293af36087562623",
+      "dataset_sha256": "59e5607f799231ff98f430a4fd18bb5f9080f0ca176535ccf856bb56daa811ca",
+      "execution": "saved local predictions; replay, not fresh inference"
+    },
+    {
+      "model": "mmbert-v7-paired-fp16",
+      "dataset": "legacy_test",
+      "file": "predictions/mmbert-v7-paired-fp16/legacy_test.jsonl",
+      "source_project": "cellsentry",
+      "source_path": "benchmark-results/formula-multitask-v7/paired/fp16-legacy_test.jsonl",
+      "sha256": "febba66193c2464c6ba9440afa08c89a917f42da24c16555ae530f4a35cba6d9",
+      "dataset_sha256": "b2ad1f5eb0f3367b3a82895012db5b0108c54505f4e468a46d72a085912afb5b",
+      "execution": "saved local predictions; replay, not fresh inference"
+    },
+    {
+      "model": "mmbert-v7-paired-fp16",
+      "dataset": "v5_test",
+      "file": "predictions/mmbert-v7-paired-fp16/v5_test.jsonl",
+      "source_project": "cellsentry",
+      "source_path": "benchmark-results/formula-multitask-v7/paired/fp16-v5_test.jsonl",
+      "sha256": "6246471bf5f6810e5c523e1e81a9c0bb85014a19c1b3593e81732359292e13e5",
+      "dataset_sha256": "ee3d90c51a3c1b07796572dd3fe24f0d50e537a136e8532fbca4ee4e25fc4c38",
+      "execution": "saved local predictions; replay, not fresh inference"
+    },
+    {
+      "model": "mmbert-v7-paired-fp16",
+      "dataset": "v6_test",
+      "file": "predictions/mmbert-v7-paired-fp16/v6_test.jsonl",
+      "source_project": "cellsentry",
+      "source_path": "benchmark-results/formula-multitask-v7/paired/fp16-v6_test.jsonl",
+      "sha256": "0583199e7fe42d02d08b345a1a94c07ca06f0442d27d8f8d992cf8fef47fbfcc",
+      "dataset_sha256": "45ad9ae128839152a095e1ad519221b1a18779d35d757bd13078b50f3441719e",
+      "execution": "saved local predictions; replay, not fresh inference"
+    },
+    {
+      "model": "mmbert-v7-paired-fp16",
+      "dataset": "v7_test",
+      "file": "predictions/mmbert-v7-paired-fp16/v7_test.jsonl",
+      "source_project": "cellsentry",
+      "source_path": "benchmark-results/formula-multitask-v7/paired/fp16-test.jsonl",
+      "sha256": "2cb7f5a359d154a4ae18802af626e5a83ae8140844461a4720da519f86d12537",
+      "dataset_sha256": "87ec4877568dee9d9e1e46b1abcf471dc04134b950c25e1dbb75161eace1d5f2",
+      "execution": "saved local predictions; replay, not fresh inference"
+    },
+    {
+      "model": "mmbert-v7-multitask-fp16",
+      "dataset": "benchmark",
+      "file": "predictions/mmbert-v7-multitask-fp16/benchmark.jsonl",
+      "source_project": "cellsentry",
+      "source_path": "benchmark-results/formula-multitask-v7/multitask/fp16-benchmark.jsonl",
+      "sha256": "1c8184e3975fddef7cd72686e0484f69275bbd7831aa806fada1b4c087229025",
+      "dataset_sha256": "59e5607f799231ff98f430a4fd18bb5f9080f0ca176535ccf856bb56daa811ca",
+      "execution": "saved local predictions; replay, not fresh inference"
+    },
+    {
+      "model": "mmbert-v7-multitask-fp16",
+      "dataset": "legacy_test",
+      "file": "predictions/mmbert-v7-multitask-fp16/legacy_test.jsonl",
+      "source_project": "cellsentry",
+      "source_path": "benchmark-results/formula-multitask-v7/multitask/fp16-legacy_test.jsonl",
+      "sha256": "808db7eedcf40563addc6fa899594f29773c17a4e7dec008730bf8fde5b6157a",
+      "dataset_sha256": "b2ad1f5eb0f3367b3a82895012db5b0108c54505f4e468a46d72a085912afb5b",
+      "execution": "saved local predictions; replay, not fresh inference"
+    },
+    {
+      "model": "mmbert-v7-multitask-fp16",
+      "dataset": "v5_test",
+      "file": "predictions/mmbert-v7-multitask-fp16/v5_test.jsonl",
+      "source_project": "cellsentry",
+      "source_path": "benchmark-results/formula-multitask-v7/multitask/fp16-v5_test.jsonl",
+      "sha256": "85526db3af63702ea276d15432190fdc7719f285bc6b20ff2e89c6b9d5037b08",
+      "dataset_sha256": "ee3d90c51a3c1b07796572dd3fe24f0d50e537a136e8532fbca4ee4e25fc4c38",
+      "execution": "saved local predictions; replay, not fresh inference"
+    },
+    {
+      "model": "mmbert-v7-multitask-fp16",
+      "dataset": "v6_test",
+      "file": "predictions/mmbert-v7-multitask-fp16/v6_test.jsonl",
+      "source_project": "cellsentry",
+      "source_path": "benchmark-results/formula-multitask-v7/multitask/fp16-v6_test.jsonl",
+      "sha256": "d2f54a30b0baba15bed21934a223216a5027ed8fcb4dd0b470c020ce184c6857",
+      "dataset_sha256": "45ad9ae128839152a095e1ad519221b1a18779d35d757bd13078b50f3441719e",
+      "execution": "saved local predictions; replay, not fresh inference"
+    },
+    {
+      "model": "mmbert-v7-multitask-fp16",
+      "dataset": "v7_test",
+      "file": "predictions/mmbert-v7-multitask-fp16/v7_test.jsonl",
+      "source_project": "cellsentry",
+      "source_path": "benchmark-results/formula-multitask-v7/multitask/fp16-test.jsonl",
+      "sha256": "b6de2e9753ced79c3d3296586b1c4ad39cc6b2af08a76869b47b27c1827eb500",
+      "dataset_sha256": "87ec4877568dee9d9e1e46b1abcf471dc04134b950c25e1dbb75161eace1d5f2",
+      "execution": "saved local predictions; replay, not fresh inference"
+    },
+    {
+      "model": "cpm-jev",
+      "dataset": "v7_test",
+      "file": "predictions/cpm-jev/v7_test.jsonl",
+      "source_project": "cellsentry",
+      "source_path": "benchmark-results/formula-multitask-v7/cpm-baseline/after-test.jsonl",
+      "sha256": "2b36a10155c22622060f61e90766e102e29dd32cafe759a42ebb5e89266158b4",
+      "dataset_sha256": "87ec4877568dee9d9e1e46b1abcf471dc04134b950c25e1dbb75161eace1d5f2",
+      "execution": "saved local predictions; replay, not fresh inference"
+    },
+    {
+      "model": "cpm-jev",
+      "dataset": "benchmark",
+      "file": "predictions/cpm-jev/benchmark.jsonl",
+      "source_project": "cellsentry",
+      "source_path": "benchmark-results/formula-jev-business-v3/after-benchmark.jsonl",
+      "sha256": "c8cbbd2807af77f010d3b753121bb68724b96ac1169c481f15bf20c9ca7dd4e7",
+      "dataset_sha256": "59e5607f799231ff98f430a4fd18bb5f9080f0ca176535ccf856bb56daa811ca",
+      "execution": "saved local predictions; replay, not fresh inference"
+    },
+    {
+      "model": "cpm-jev",
+      "dataset": "legacy_test",
+      "file": "predictions/cpm-jev/legacy_test.jsonl",
+      "source_project": "cellsentry",
+      "source_path": "benchmark-results/formula-jev-business-v3/after-test.jsonl",
+      "sha256": "0389d0eb677f74ff791ffc7a6d8b569b4db4c73dad6b06d2aad2c49d43dcf729",
+      "dataset_sha256": "b2ad1f5eb0f3367b3a82895012db5b0108c54505f4e468a46d72a085912afb5b",
+      "execution": "saved local predictions; replay, not fresh inference"
+    }
+  ]
+}
