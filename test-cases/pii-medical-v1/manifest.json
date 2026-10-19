@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "seed": 20261019,
+  "synthetic": true,
+  "offsets": "UTF-16 code units; end exclusive; no normalization",
+  "generator_sha256": "3db35b8c37204b63b49cba1049ff8dfbc51f337d8bb97b823c95d030e1e3b7de",
+  "splits": {
+    "dev": {
+      "documents": 120,
+      "positive_entities": 1120,
+      "negative_spans": 1080,
+      "negative_documents": 24,
+      "layouts": {
+        "form": 40,
+        "table": 40,
+        "free_text": 40
+      },
+      "medical_documents": 102,
+      "per_type": {
+        "name": 160,
+        "phone": 160,
+        "national_id": 160,
+        "social_security": 160,
+        "bank_card": 160,
+        "email": 160,
+        "address": 160
+      },
+      "sha256": "42506bd3353355029f06486a34973b2d6aab040ffb94223f232acde0a11ee536",
+      "inputs_sha256": "b72d5204e0c998389b326f93cdae9abd6a2d01ab355baf256a3a3a11aeec2d5d"
+    },
+    "test": {
+      "documents": 360,
+      "positive_entities": 3360,
+      "negative_spans": 3240,
+      "negative_documents": 72,
+      "layouts": {
+        "form": 120,
+        "table": 120,
+        "free_text": 120
+      },
+      "medical_documents": 300,
+      "per_type": {
+        "name": 480,
+        "phone": 480,
+        "national_id": 480,
+        "social_security": 480,
+        "bank_card": 480,
+        "email": 480,
+        "address": 480
+      },
+      "sha256": "147ef25c179aa6b2d61df9aae40c92660207167de309d323e9f677b68663fa6d",
+      "inputs_sha256": "aa09cfee390997b38417c957532a482b6523f4b2f5745163556e59a089f3253e"
+    }
+  }
+}

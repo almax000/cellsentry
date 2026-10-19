@@ -1,0 +1,10 @@
+{
+  "method": "existing app regex/validator component; all matches per text unit, not full production scanner",
+  "input_sha256": "aa09cfee390997b38417c957532a482b6523f4b2f5745163556e59a089f3253e",
+  "predictions_sha256": "c6c50a35dce4e14246a53ea32e500eb18f9d7182af12bd6c416cd8a42fea7059",
+  "patterns_sha256": "4044d2930fc0463a1fb5f1824aede009fc31ec33e4c68dc784f232638210e1f2",
+  "elapsed_ms": 42.467600000000004,
+  "device": "local Node CPU; not Mac/iPhone benchmark",
+  "review_policy": "Every proposed match awaits review; no automatic acceptance or rejection is claimed",
+  "caveats": "Existing patterns include US/EU variants. Unsupported primary-schema types skipped. No name/address/Chinese social-security rule added or tuned."
+}

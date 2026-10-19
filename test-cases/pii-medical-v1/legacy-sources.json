@@ -1,0 +1,17 @@
+{
+  "sources": [
+    {
+      "project": "cellsentry-dev",
+      "path": "test-cases/model-coverage/cases.jsonl",
+      "sha256": "97193606bcf9f38c3682f7f3ed5edb18ad3841270b060b4ef48ed4833de5a386",
+      "pii_cases": 160
+    },
+    {
+      "project": "cellsentry",
+      "path": "test-cases/model-coverage/cases.jsonl",
+      "sha256": "97193606bcf9f38c3682f7f3ed5edb18ad3841270b060b4ef48ed4833de5a386",
+      "pii_cases": 160
+    }
+  ],
+  "usage": "Inventory only. Same 160 cases in both projects; not 320 independent examples. Excluded from new medical span test: cell/type labels, previous development exposure and differing invalid-ID policy. No real-world archive imported."
+}

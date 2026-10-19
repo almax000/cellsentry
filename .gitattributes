@@ -2,3 +2,7 @@
 test-cases/jev-formula-v1/**/*.jsonl -text whitespace=cr-at-eol
 test-cases/jev-formula-v1/*.jsonl -text whitespace=cr-at-eol
 benchmark-results/jev-formula-v1/*.jsonl -text whitespace=cr-at-eol
+test-cases/pii-medical-v1/*.jsonl -text whitespace=cr-at-eol
+benchmark-results/pii-medical-v1/*.jsonl -text whitespace=cr-at-eol
+scripts/pii-corpus.mjs text eol=lf
+scripts/pii-benchmark.mjs text eol=lf
