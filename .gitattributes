@@ -1,4 +1,4 @@
 # Frozen benchmark hashes refer to exact bytes, independent of checkout platform.
-test-cases/jev-formula-v1/**/*.jsonl -text
-test-cases/jev-formula-v1/*.jsonl -text
-benchmark-results/jev-formula-v1/*.jsonl -text
+test-cases/jev-formula-v1/**/*.jsonl -text whitespace=cr-at-eol
+test-cases/jev-formula-v1/*.jsonl -text whitespace=cr-at-eol
+benchmark-results/jev-formula-v1/*.jsonl -text whitespace=cr-at-eol
