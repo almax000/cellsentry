@@ -1,0 +1,443 @@
+{
+  "audit_kind": "post-evaluation Codex qualitative audit; not expert/human adjudication",
+  "seed": "audit-20261019-v1",
+  "selection": "One SHA256-ranked document per angle, then two additional per generator; independent of labels, predictions and scores; nonproportional diagnostic sample",
+  "gold_sha256": "70b0ba27f8c0cfee87f04a0319fd2510f1bcc1b986e01afb12c252033e74b8f5",
+  "predictions_sha256": "1876f71a730b669e79cf68f8409b4854cbd508648610794ba0d743278373baa5",
+  "full": {
+    "documents": 64,
+    "gold": 323,
+    "tp": 120,
+    "fn_no_exact_candidate": 135,
+    "fn_no_overlapping_candidate": 107,
+    "fn_boundary_candidate_only": 28,
+    "fn_exact_candidate": 68,
+    "fn_wrong_type_same_span": 56,
+    "fn_exact_candidate_not_output": 12,
+    "fp_wrong_type_same_span": 56,
+    "fp_boundary_overlap": 11,
+    "fp_annotated_background": 52,
+    "fp_other": 56,
+    "pii_fully_covered_ignoring_type": 191
+  },
+  "sample": {
+    "documents": 18,
+    "gold": 72,
+    "tp": 25,
+    "fn_no_exact_candidate": 30,
+    "fn_no_overlapping_candidate": 26,
+    "fn_boundary_candidate_only": 4,
+    "fn_exact_candidate": 17,
+    "fn_wrong_type_same_span": 13,
+    "fn_exact_candidate_not_output": 4,
+    "fp_wrong_type_same_span": 13,
+    "fp_boundary_overlap": 1,
+    "fp_annotated_background": 8,
+    "fp_other": 11,
+    "pii_fully_covered_ignoring_type": 38
+  },
+  "sample_metrics": {
+    "documents": 18,
+    "strict": {
+      "gold": 72,
+      "predicted": 58,
+      "tp": 25,
+      "fp": 33,
+      "fn": 47,
+      "precision": 0.43103448275862066,
+      "recall": 0.3472222222222222,
+      "f1": 0.38461538461538464
+    },
+    "overlap": {
+      "gold": 72,
+      "predicted": 58,
+      "tp": 26,
+      "fp": 32,
+      "fn": 46,
+      "precision": 0.4482758620689655,
+      "recall": 0.3611111111111111,
+      "f1": 0.4
+    },
+    "per_type": {
+      "name": {
+        "strict": {
+          "gold": 21,
+          "predicted": 24,
+          "tp": 6,
+          "fp": 18,
+          "fn": 15,
+          "precision": 0.25,
+          "recall": 0.2857142857142857,
+          "f1": 0.26666666666666666
+        },
+        "overlap": {
+          "gold": 21,
+          "predicted": 24,
+          "tp": 6,
+          "fp": 18,
+          "fn": 15,
+          "precision": 0.25,
+          "recall": 0.2857142857142857,
+          "f1": 0.26666666666666666
+        },
+        "candidate_exact_recall": 0.42857142857142855,
+        "candidate_coverage_recall": 0.47619047619047616,
+        "candidate_conditioned_strict_recall": 0.6666666666666666,
+        "documents_with_type": 14,
+        "residual_documents": 10,
+        "residual_rate_in_type_documents": 0.7142857142857143
+      },
+      "phone": {
+        "strict": {
+          "gold": 19,
+          "predicted": 9,
+          "tp": 8,
+          "fp": 1,
+          "fn": 11,
+          "precision": 0.8888888888888888,
+          "recall": 0.42105263157894735,
+          "f1": 0.5714285714285714
+        },
+        "overlap": {
+          "gold": 19,
+          "predicted": 9,
+          "tp": 9,
+          "fp": 0,
+          "fn": 10,
+          "precision": 1,
+          "recall": 0.47368421052631576,
+          "f1": 0.6428571428571429
+        },
+        "candidate_exact_recall": 0.7894736842105263,
+        "candidate_coverage_recall": 0.8947368421052632,
+        "candidate_conditioned_strict_recall": 0.5333333333333333,
+        "documents_with_type": 13,
+        "residual_documents": 5,
+        "residual_rate_in_type_documents": 0.38461538461538464
+      },
+      "national_id": {
+        "strict": {
+          "gold": 6,
+          "predicted": 20,
+          "tp": 6,
+          "fp": 14,
+          "fn": 0,
+          "precision": 0.3,
+          "recall": 1,
+          "f1": 0.46153846153846156
+        },
+        "overlap": {
+          "gold": 6,
+          "predicted": 20,
+          "tp": 6,
+          "fp": 14,
+          "fn": 0,
+          "precision": 0.3,
+          "recall": 1,
+          "f1": 0.46153846153846156
+        },
+        "candidate_exact_recall": 1,
+        "candidate_coverage_recall": 1,
+        "candidate_conditioned_strict_recall": 1,
+        "documents_with_type": 6,
+        "residual_documents": 0,
+        "residual_rate_in_type_documents": 0
+      },
+      "social_security": {
+        "strict": {
+          "gold": 3,
+          "predicted": 0,
+          "tp": 0,
+          "fp": 0,
+          "fn": 3,
+          "precision": null,
+          "recall": 0,
+          "f1": 0
+        },
+        "overlap": {
+          "gold": 3,
+          "predicted": 0,
+          "tp": 0,
+          "fp": 0,
+          "fn": 3,
+          "precision": null,
+          "recall": 0,
+          "f1": 0
+        },
+        "candidate_exact_recall": 0.6666666666666666,
+        "candidate_coverage_recall": 0.6666666666666666,
+        "candidate_conditioned_strict_recall": 0,
+        "documents_with_type": 3,
+        "residual_documents": 1,
+        "residual_rate_in_type_documents": 0.3333333333333333
+      },
+      "bank_card": {
+        "strict": {
+          "gold": 0,
+          "predicted": 0,
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "precision": null,
+          "recall": null,
+          "f1": null
+        },
+        "overlap": {
+          "gold": 0,
+          "predicted": 0,
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "precision": null,
+          "recall": null,
+          "f1": null
+        },
+        "candidate_exact_recall": null,
+        "candidate_coverage_recall": null,
+        "candidate_conditioned_strict_recall": null,
+        "documents_with_type": 0,
+        "residual_documents": 0,
+        "residual_rate_in_type_documents": null
+      },
+      "email": {
+        "strict": {
+          "gold": 9,
+          "predicted": 5,
+          "tp": 5,
+          "fp": 0,
+          "fn": 4,
+          "precision": 1,
+          "recall": 0.5555555555555556,
+          "f1": 0.7142857142857143
+        },
+        "overlap": {
+          "gold": 9,
+          "predicted": 5,
+          "tp": 5,
+          "fp": 0,
+          "fn": 4,
+          "precision": 1,
+          "recall": 0.5555555555555556,
+          "f1": 0.7142857142857143
+        },
+        "candidate_exact_recall": 0.8888888888888888,
+        "candidate_coverage_recall": 0.8888888888888888,
+        "candidate_conditioned_strict_recall": 0.625,
+        "documents_with_type": 8,
+        "residual_documents": 2,
+        "residual_rate_in_type_documents": 0.25
+      },
+      "address": {
+        "strict": {
+          "gold": 14,
+          "predicted": 0,
+          "tp": 0,
+          "fp": 0,
+          "fn": 14,
+          "precision": null,
+          "recall": 0,
+          "f1": 0
+        },
+        "overlap": {
+          "gold": 14,
+          "predicted": 0,
+          "tp": 0,
+          "fp": 0,
+          "fn": 14,
+          "precision": null,
+          "recall": 0,
+          "f1": 0
+        },
+        "candidate_exact_recall": 0.14285714285714285,
+        "candidate_coverage_recall": 0.14285714285714285,
+        "candidate_conditioned_strict_recall": 0,
+        "documents_with_type": 11,
+        "residual_documents": 10,
+        "residual_rate_in_type_documents": 0.9090909090909091
+      }
+    },
+    "residual_documents": 14,
+    "residual_document_rate": 0.7777777777777778,
+    "structured_identifier_residual_documents": 6,
+    "structured_identifier_residual_document_rate": 0.3333333333333333,
+    "strict_incomplete_documents": 14,
+    "strict_incomplete_document_rate": 0.7777777777777778,
+    "negative_documents": 4,
+    "negative_documents_with_false_positives": 0,
+    "negative_document_false_positive_rate": 0,
+    "confusable_spans": 81,
+    "confusable_false_positives": 8,
+    "confusable_false_positive_rate": 0.09876543209876543,
+    "candidate_documents": 18,
+    "candidate_exact_recall": 0.5833333333333334,
+    "candidate_coverage_recall": 0.625,
+    "candidate_conditioned_strict_recall": 0.5952380952380952,
+    "decision_items": 79,
+    "review_items": 79,
+    "review_per_document": 4.388888888888889,
+    "automatic_decisions": 0,
+    "automatic_share": 0,
+    "automatic_errors": 0,
+    "automatic_error_rate": null,
+    "high_confidence_auto_threshold": 0.95,
+    "high_confidence_automatic_decisions": 0,
+    "high_confidence_automatic_share": 0,
+    "high_confidence_automatic_errors": 0,
+    "high_confidence_automatic_error_rate": null
+  },
+  "selected": [
+    {
+      "id": "ARK/2/address_variants/2",
+      "generator": "glm-5.3",
+      "reviewer": "doubao-seed-2.1-lite",
+      "angle": "address_variants",
+      "status": "possible_missing_partial_address",
+      "impact": "Potential additional positive, so correcting it could increase rather than reduce FN",
+      "note": "An earlier quoted vague home-location description is unannotated, while the later more precise description is positive. Policy does not define minimum address specificity.",
+      "observation": "See issue note."
+    },
+    {
+      "id": "ARK/0/discharge_prose/2",
+      "generator": "doubao-seed-2.1-lite",
+      "reviewer": "deepseek-v4.1-flash",
+      "angle": "discharge_prose",
+      "status": "synthetic_realism_and_boundary_ambiguity",
+      "impact": "One email boundary is debatable; not enough evidence to delete the whole case",
+      "note": "Email local part contains a space. Under literal patient-field protection it can still be sensitive; under valid-email-only recognition it is malformed. This angle was prose rather than OCR.",
+      "observation": "See issue note."
+    },
+    {
+      "id": "ARK/0/family_contacts/1",
+      "generator": "doubao-seed-2.1-lite",
+      "reviewer": "deepseek-v4.1-flash",
+      "angle": "family_contacts",
+      "status": "no_obvious_gold_issue_found",
+      "observation": "Repeated patient names and home addresses are legitimate positives; table rows never become separate cells in the current blind adapter. Model labels a visit-card number and header as names."
+    },
+    {
+      "id": "ARK/0/injection_literal/2",
+      "generator": "doubao-seed-2.1-lite",
+      "reviewer": "deepseek-v4.1-flash",
+      "angle": "injection_literal",
+      "status": "no_obvious_gold_issue_found",
+      "observation": "Name and email have exact candidates but no final output. Address has no candidate. Presence of an injected instruction alone does not establish causation."
+    },
+    {
+      "id": "ARK/2/medical_front/0",
+      "generator": "glm-5.3",
+      "reviewer": "doubao-seed-2.1-lite",
+      "angle": "medical_front",
+      "status": "no_obvious_gold_issue_found",
+      "observation": "Hyphenated mobile and tab-separated address are missed; doctor name is wrongly emitted as patient name."
+    },
+    {
+      "id": "ARK/1/mixed_language/0",
+      "generator": "deepseek-v4.1-flash",
+      "reviewer": "glm-5.3",
+      "angle": "mixed_language",
+      "status": "no_obvious_gold_issue_found",
+      "observation": "International phone prefix causes boundary error; full address is emitted as name, with several clear background false positives."
+    },
+    {
+      "id": "ARK/1/negation_history/0",
+      "generator": "deepseek-v4.1-flash",
+      "reviewer": "glm-5.3",
+      "angle": "negation_history",
+      "status": "no_obvious_gold_issue_found",
+      "observation": "Both old and new identifiers remain sensitive under the frozen policy; phones and one email are emitted as national IDs."
+    },
+    {
+      "id": "ARK/0/negative_only/0",
+      "generator": "doubao-seed-2.1-lite",
+      "reviewer": "deepseek-v4.1-flash",
+      "angle": "negative_only",
+      "status": "no_obvious_gold_issue_found",
+      "observation": "No obvious protected identifiers; empty model output is appropriate."
+    },
+    {
+      "id": "ARK/0/number_confusables/2",
+      "generator": "doubao-seed-2.1-lite",
+      "reviewer": "deepseek-v4.1-flash",
+      "angle": "number_confusables",
+      "status": "no_obvious_gold_issue_found",
+      "observation": "Social-security field defines the class even when the value resembles a national ID; teaching code is explicitly nonpersonal but emitted as national ID."
+    },
+    {
+      "id": "ARK/2/ocr_noise/2",
+      "generator": "glm-5.3",
+      "reviewer": "doubao-seed-2.1-lite",
+      "angle": "ocr_noise",
+      "status": "scope_ambiguity",
+      "impact": "One address positive may be out of the home-address-only policy; requires owner adjudication",
+      "note": "Text says workplace address, but gold marks it as home-address PII. Fullwidth/OCR identifier strings remain legitimate redaction targets.",
+      "observation": "See issue note."
+    },
+    {
+      "id": "ARK/0/role_counterfactual/1",
+      "generator": "doubao-seed-2.1-lite",
+      "reviewer": "deepseek-v4.1-flash",
+      "angle": "role_counterfactual",
+      "status": "confirmed_background_annotation_error",
+      "impact": "No change to strict PII TP/FP/FN from this issue alone; confusable-negative metrics affected",
+      "note": "doctor_name points to the first historical-person occurrence instead of the treating doctor; another historical occurrence is unannotated. Patient occurrence is correctly positive.",
+      "observation": "See issue note."
+    },
+    {
+      "id": "ARK/2/sparse_layout/2",
+      "generator": "glm-5.3",
+      "reviewer": "doubao-seed-2.1-lite",
+      "angle": "sparse_layout",
+      "status": "no_obvious_gold_issue_found",
+      "observation": "Detached headers and values cause missed names/addresses; doctor and teaching code are wrongly emitted."
+    },
+    {
+      "id": "ARK/1/injection_literal/2",
+      "generator": "deepseek-v4.1-flash",
+      "reviewer": "glm-5.3",
+      "angle": "injection_literal",
+      "status": "no_obvious_gold_issue_found",
+      "observation": "Six exact gold candidates are emitted with the wrong class, alongside a doctor false positive. Supports context/class confusion, not proof of prompt-injection causality."
+    },
+    {
+      "id": "ARK/1/negative_only/0",
+      "generator": "deepseek-v4.1-flash",
+      "reviewer": "glm-5.3",
+      "angle": "negative_only",
+      "status": "no_obvious_gold_issue_found",
+      "observation": "No obvious protected identifiers; empty model output is appropriate."
+    },
+    {
+      "id": "ARK/0/injection_literal/0",
+      "generator": "doubao-seed-2.1-lite",
+      "reviewer": "deepseek-v4.1-flash",
+      "angle": "injection_literal",
+      "status": "no_obvious_gold_issue_found",
+      "observation": "Name without a direct role prefix and narrative address have no exact candidate."
+    },
+    {
+      "id": "ARK/0/negative_only/1",
+      "generator": "doubao-seed-2.1-lite",
+      "reviewer": "deepseek-v4.1-flash",
+      "angle": "negative_only",
+      "status": "no_obvious_gold_issue_found",
+      "observation": "No obvious protected identifiers; empty model output is appropriate."
+    },
+    {
+      "id": "ARK/2/discharge_prose/0",
+      "generator": "glm-5.3",
+      "reviewer": "doubao-seed-2.1-lite",
+      "angle": "discharge_prose",
+      "status": "no_obvious_gold_issue_found",
+      "observation": "Hyphenated family phone and spouse name are missed; public department phone is correctly not emitted."
+    },
+    {
+      "id": "ARK/2/negative_only/0",
+      "generator": "glm-5.3",
+      "reviewer": "doubao-seed-2.1-lite",
+      "angle": "negative_only",
+      "status": "no_obvious_gold_issue_found",
+      "observation": "No obvious protected identifiers; empty model output is appropriate."
+    }
+  ],
+  "mutation": "No labels, predictions, candidates, thresholds or weights changed. No training performed. Sample texts are now exposed for audit, so cannot serve as unseen future holdout."
+}

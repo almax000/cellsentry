@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "purpose": "independent synthetic blind challenge; never training or threshold selection",
+  "config_sha256": "225415607a0c0199c664a914e0cbc7d141a3e5d7bb610abec6b24a50bb52d69b",
+  "script_sha256": "bc5663445966c9275abc479b745df2efe754b04d229e335bc5901a02c5736b6c",
+  "documents": 64,
+  "entities": 323,
+  "negatives": 264,
+  "accepted_per_generator": {
+    "doubao-seed-2.1-lite": 24,
+    "deepseek-v4.1-flash": 19,
+    "glm-5.3": 21
+  },
+  "quarantined": 40,
+  "test_sha256": "70b0ba27f8c0cfee87f04a0319fd2510f1bcc1b986e01afb12c252033e74b8f5",
+  "inputs_sha256": "bdcb8511442d36c60ddbb68944a28c4123300c061cab1f355619c1857e53fef6",
+  "calls": 79,
+  "tokens": 139356,
+  "offsets": "UTF-16 code units, end exclusive",
+  "normalization": "Explicit background type tags misplaced under entities are excluded from positive annotations; unknown types rejected.",
+  "limitation": "Two-model agreement is not expert gold; disagreements excluded may bias difficulty. Same-provider correlations remain. No prompt tuning on generated cases."
+}

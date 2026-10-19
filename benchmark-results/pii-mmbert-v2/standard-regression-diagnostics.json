@@ -1,0 +1,44 @@
+{
+  "name": {
+    "correct": 3,
+    "background_argmax": 413,
+    "below_threshold": 64,
+    "other_output_error": 0
+  },
+  "phone": {
+    "correct": 177,
+    "background_argmax": 60,
+    "below_threshold": 173,
+    "other_output_error": 70
+  },
+  "national_id": {
+    "correct": 480,
+    "background_argmax": 0,
+    "below_threshold": 0,
+    "other_output_error": 0
+  },
+  "social_security": {
+    "correct": 480,
+    "background_argmax": 0,
+    "below_threshold": 0,
+    "other_output_error": 0
+  },
+  "bank_card": {
+    "correct": 391,
+    "background_argmax": 0,
+    "below_threshold": 89,
+    "other_output_error": 0
+  },
+  "email": {
+    "correct": 480,
+    "background_argmax": 0,
+    "below_threshold": 0,
+    "other_output_error": 0
+  },
+  "address": {
+    "correct": 478,
+    "background_argmax": 0,
+    "below_threshold": 2,
+    "other_output_error": 0
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "version": 2,
+  "seed": 982713,
+  "classes": [
+    "background",
+    "name",
+    "phone",
+    "national_id",
+    "social_security",
+    "bank_card",
+    "email",
+    "address"
+  ],
+  "pipeline": "v2",
+  "selection": "independent generated dev strict F1 then precision; never 64-case challenge",
+  "excluded_sources": [
+    ".runtime/pii-ark-blind-v1",
+    "challenge gold/texts/predictions"
+  ],
+  "positive_overlap_original_test": 0,
+  "splits": {
+    "train": {
+      "documents": 1840,
+      "candidates": 36794,
+      "sha256": "fec179bc49787b7213a568297526bc82970580c7fcff9f4a1a036ca9d3a0755c",
+      "inputs_sha256": "7f2202d3e629648cba2471af844d3fa208c83e9db106748f315f00a6bc0ce3f1",
+      "labels": {
+        "background": 20002,
+        "name": 3007,
+        "phone": 2620,
+        "national_id": 2233,
+        "social_security": 2233,
+        "bank_card": 2233,
+        "email": 2233,
+        "address": 2233
+      }
+    },
+    "dev": {
+      "documents": 160,
+      "candidates": 2688,
+      "sha256": "0ee1c1d9a892fb8c5747e468ea7a51f309eb0302b92e1cf1d209868ec480a1d2",
+      "inputs_sha256": "d70f68e214de8955e880e6101d43cbe9a60cbf91045975ee46c6cfe4723e536c",
+      "labels": {
+        "background": 1494,
+        "name": 257,
+        "phone": 202,
+        "national_id": 147,
+        "social_security": 147,
+        "bank_card": 147,
+        "email": 147,
+        "address": 147
+      }
+    },
+    "test": {
+      "documents": 360,
+      "candidates": 6946,
+      "sha256": "260eaa0d81eeea48ed99b3e68b5e44d6bc2c2871a15c30adfe7ccd728880fb71",
+      "inputs_sha256": "bfe4aca1e77062dc813b02b7862c1f38fa2596cbeb2faa9542286045ca05a613",
+      "labels": {
+        "background": 3586,
+        "name": 480,
+        "phone": 480,
+        "national_id": 480,
+        "social_security": 480,
+        "bank_card": 480,
+        "email": 480,
+        "address": 480
+      }
+    }
+  },
+  "source_hashes": {
+    "prepare-pii-mmbert-v2.mjs": "57147ea197f49c2b1ce13050ec5e3c3121d534262a1e0e61741adbcdc87a8563",
+    "pii-decision-v2.mjs": "8f5fadad1d3eb772fe708609b06a91f458eafcd4ef84dbe14f342d9f4556d132"
+  }
+}

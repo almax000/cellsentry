@@ -1,0 +1,39 @@
+{
+  "task": "PII patient/family typed decision, independent of formula audit",
+  "base": "jhu-clsp/mmBERT-base",
+  "base_revision": "c5955035435e2bf121cde7f3c8863ef52ff35d82",
+  "base_license": "MIT",
+  "checkpoint": "benchmark-results/pii-mmbert-v1/best",
+  "selected_step": 600,
+  "classes": [
+    "background",
+    "name",
+    "phone",
+    "national_id",
+    "social_security",
+    "bank_card",
+    "email",
+    "address"
+  ],
+  "threshold": 0.5,
+  "files": [
+    {
+      "name": "model.safetensors",
+      "sha256": "9f47573ea831b4238dcc9d2bc61b4f760944e0c459cf160c987d65411d34b51d",
+      "size": 1227771776
+    },
+    {
+      "name": "pii_head.safetensors",
+      "sha256": "a514c3d26de4fb2d62c5b95e42ce6da3a88a30f4980c933bf1280fec5b553a0f",
+      "size": 24744
+    },
+    {
+      "name": "config.json",
+      "sha256": "233918f562782d4ff351166d4cc39103e9592828a22320fd354f413faf9d3006",
+      "size": 2172
+    }
+  ],
+  "deployment": "experimental FP32 checkpoint; not GGUF, not packaged, not deployed",
+  "status": "not suitable for automatic redaction based on blind challenge",
+  "blind_sha256": "70b0ba27f8c0cfee87f04a0319fd2510f1bcc1b986e01afb12c252033e74b8f5"
+}

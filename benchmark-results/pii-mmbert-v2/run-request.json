@@ -1,0 +1,92 @@
+{
+  "base": {
+    "repo": "jhu-clsp/mmBERT-base",
+    "revision": "c5955035435e2bf121cde7f3c8863ef52ff35d82",
+    "files": [
+      {
+        "rfilename": "config.json",
+        "blobId": "3702d5b491de759f4e8a6c35012745b1c313a418",
+        "size": 1188,
+        "verified_sha256": "47b40fd2e1df8299426dd5f4bb18c28f028cfafcb51b73645f83e596d187eb37"
+      },
+      {
+        "rfilename": "tokenizer_config.json",
+        "blobId": "de9f252583194a9d4fe1e4f95e8cdb61df7bbb1e",
+        "size": 46440,
+        "verified_sha256": "1d2f82c1341a79748e00efe82e67690f99d00b3c2a894f2b23128fd9d3519da3"
+      },
+      {
+        "rfilename": "special_tokens_map.json",
+        "blobId": "8d6368f7e735fbe4781bf6e956b7c6ad0586df80",
+        "size": 636,
+        "verified_sha256": "baec30ea10906f16adb8c18af7a34023002c1746542612b8b41c9f09e1351351"
+      },
+      {
+        "rfilename": "tokenizer.json",
+        "blobId": "0583d4773a52f0137fac67368fb92aefbe7816c8",
+        "size": 17525329,
+        "lfs": {
+          "sha256": "197d4cc5406ee12cc50c8b5511f2393cc32d9db321545979ce041c1199178356",
+          "size": 17525329,
+          "pointerSize": 133
+        },
+        "verified_sha256": "197d4cc5406ee12cc50c8b5511f2393cc32d9db321545979ce041c1199178356"
+      },
+      {
+        "rfilename": "pytorch_model.bin",
+        "blobId": "1498581e30b1d32517eedab5f4d0ac2f9b0f3ff1",
+        "size": 1231188142,
+        "lfs": {
+          "sha256": "8ea64ec1ea4eb8fca0fc14b69a2ae571de6bfbc25fd214bb932dd4aba6a3a04e",
+          "size": 1231188142,
+          "pointerSize": 135
+        },
+        "verified_sha256": "8ea64ec1ea4eb8fca0fc14b69a2ae571de6bfbc25fd214bb932dd4aba6a3a04e"
+      },
+      {
+        "rfilename": "README.md",
+        "blobId": "29d50f7aa2c43c82c408fdc1877d3e9fa325618f",
+        "size": 29650,
+        "verified_sha256": "35724415037ee3159aa733c16050620cc19a76219112a6ceeb3949572e0b37e9"
+      }
+    ]
+  },
+  "seed": 42,
+  "classes": [
+    "background",
+    "name",
+    "phone",
+    "national_id",
+    "social_security",
+    "bank_card",
+    "email",
+    "address"
+  ],
+  "pipeline": "v2",
+  "steps": 1000,
+  "micro_batch": 4,
+  "accumulation": 4,
+  "lr": 2e-05,
+  "warmup": 30,
+  "optimizer": "Adafactor",
+  "precision": "BF16 autocast, FP32 parameters/head",
+  "input": "candidate/context/options only; no label/oracle",
+  "contract_sha256": "f6aad5fc487a5e73bc1cc27163e571c85b7509bb5a6e9845781a87044c3a7e3a",
+  "script_sha256": "626d1aaaab2c6ef5056083dbd3245d9dc46d2b35740a7b737f7028320f926cee",
+  "max_train_tokens": 217,
+  "max_dev_tokens": 217,
+  "selection": "independent generated dev strict F1 then precision; never 64-case challenge",
+  "torch": "2.14.1+cu130",
+  "formula_models": "not loaded or modified",
+  "gpu": "NVIDIA GeForce RTX 5060 Ti",
+  "train_count": 36794,
+  "state": "running",
+  "threshold_grid": [
+    0.5,
+    0.7,
+    0.85,
+    0.95
+  ],
+  "blind_challenge_config_sha256": "225415607a0c0199c664a914e0cbc7d141a3e5d7bb610abec6b24a50bb52d69b",
+  "blind_policy": "Independent cloud generation may run concurrently; no challenge content or labels enter training/selection"
+}

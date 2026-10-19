@@ -1,0 +1,24 @@
+{
+  "device": "cuda",
+  "precision": "BF16 autocast / FP32 head",
+  "loading_seconds": 3.80843500001356,
+  "inference_seconds": 27.622481000144035,
+  "input_candidates": 6634,
+  "processed_candidates": 6634,
+  "failed_candidates": 0,
+  "inputs_sha256": "aa47b91a8c6ea151c9b1754c80ea9da913723095035245e18d49cea8170b3e7f",
+  "output_sha256": "239b2bda2fc67a8d2890079647b34b47039be6fc99acc872e5c922c3af3be77f",
+  "head_sha256": "a514c3d26de4fb2d62c5b95e42ce6da3a88a30f4980c933bf1280fec5b553a0f",
+  "script_sha256": "d229e7f19ee955f46b5496a3c09b33be7a812acc0f7c7a828b24a90e32cdd0ac",
+  "classes": [
+    "background",
+    "name",
+    "phone",
+    "national_id",
+    "social_security",
+    "bank_card",
+    "email",
+    "address"
+  ],
+  "note": "Uncalibrated probabilities; experimental offline checkpoint, not a mobile runtime"
+}

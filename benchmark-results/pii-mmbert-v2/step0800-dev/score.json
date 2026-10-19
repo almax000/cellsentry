@@ -1,0 +1,1561 @@
+{
+  "pipeline": "v2",
+  "threshold": 0.95,
+  "selection": "development strict F1 then precision; fixed grid",
+  "inputs_sha256": "2a836307a854eb1a69c0f057d025820adb154f0eab6d375f377be625b23b224b",
+  "gold_sha256": "6c76aeec2fc2135ccc38ad3a3c24f82fd40587ebe38d36aedd81b7989108f4d4",
+  "candidate_probabilities_sha256": "b04dfcce619b62a1f62ad4f3399dceec5872166666a41d11f1bfba2723453614",
+  "inference_failed_candidates": 0,
+  "metrics": {
+    "all": {
+      "documents": 160,
+      "strict": {
+        "gold": 1194,
+        "predicted": 1194,
+        "tp": 1194,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "overlap": {
+        "gold": 1194,
+        "predicted": 1194,
+        "tp": 1194,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "per_type": {
+        "name": {
+          "strict": {
+            "gold": 257,
+            "predicted": 257,
+            "tp": 257,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "overlap": {
+            "gold": 257,
+            "predicted": 257,
+            "tp": 257,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 1,
+          "documents_with_type": 147,
+          "residual_documents": 0,
+          "residual_rate_in_type_documents": 0
+        },
+        "phone": {
+          "strict": {
+            "gold": 202,
+            "predicted": 202,
+            "tp": 202,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "overlap": {
+            "gold": 202,
+            "predicted": 202,
+            "tp": 202,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 1,
+          "documents_with_type": 147,
+          "residual_documents": 0,
+          "residual_rate_in_type_documents": 0
+        },
+        "national_id": {
+          "strict": {
+            "gold": 147,
+            "predicted": 147,
+            "tp": 147,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "overlap": {
+            "gold": 147,
+            "predicted": 147,
+            "tp": 147,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 1,
+          "documents_with_type": 147,
+          "residual_documents": 0,
+          "residual_rate_in_type_documents": 0
+        },
+        "social_security": {
+          "strict": {
+            "gold": 147,
+            "predicted": 147,
+            "tp": 147,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "overlap": {
+            "gold": 147,
+            "predicted": 147,
+            "tp": 147,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 1,
+          "documents_with_type": 147,
+          "residual_documents": 0,
+          "residual_rate_in_type_documents": 0
+        },
+        "bank_card": {
+          "strict": {
+            "gold": 147,
+            "predicted": 147,
+            "tp": 147,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "overlap": {
+            "gold": 147,
+            "predicted": 147,
+            "tp": 147,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 1,
+          "documents_with_type": 147,
+          "residual_documents": 0,
+          "residual_rate_in_type_documents": 0
+        },
+        "email": {
+          "strict": {
+            "gold": 147,
+            "predicted": 147,
+            "tp": 147,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "overlap": {
+            "gold": 147,
+            "predicted": 147,
+            "tp": 147,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 1,
+          "documents_with_type": 147,
+          "residual_documents": 0,
+          "residual_rate_in_type_documents": 0
+        },
+        "address": {
+          "strict": {
+            "gold": 147,
+            "predicted": 147,
+            "tp": 147,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "overlap": {
+            "gold": 147,
+            "predicted": 147,
+            "tp": 147,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 1,
+          "documents_with_type": 147,
+          "residual_documents": 0,
+          "residual_rate_in_type_documents": 0
+        }
+      },
+      "residual_documents": 0,
+      "residual_document_rate": 0,
+      "structured_identifier_residual_documents": 0,
+      "structured_identifier_residual_document_rate": 0,
+      "strict_incomplete_documents": 0,
+      "strict_incomplete_document_rate": 0,
+      "negative_documents": 13,
+      "negative_documents_with_false_positives": 0,
+      "negative_document_false_positive_rate": 0,
+      "confusable_spans": 1495,
+      "confusable_false_positives": 0,
+      "confusable_false_positive_rate": 0,
+      "candidate_documents": 160,
+      "candidate_exact_recall": 1,
+      "candidate_coverage_recall": 1,
+      "candidate_conditioned_strict_recall": 1,
+      "decision_items": 2688,
+      "review_items": 2688,
+      "review_per_document": 16.8,
+      "automatic_decisions": 0,
+      "automatic_share": 0,
+      "automatic_errors": 0,
+      "automatic_error_rate": null,
+      "high_confidence_auto_threshold": 0.95,
+      "high_confidence_automatic_decisions": 0,
+      "high_confidence_automatic_share": 0,
+      "high_confidence_automatic_errors": 0,
+      "high_confidence_automatic_error_rate": null
+    },
+    "structured": {
+      "documents": 100,
+      "strict": {
+        "gold": 644,
+        "predicted": 644,
+        "tp": 644,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "overlap": {
+        "gold": 644,
+        "predicted": 644,
+        "tp": 644,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "per_type": {
+        "name": {
+          "strict": {
+            "gold": 92,
+            "predicted": 92,
+            "tp": 92,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "overlap": {
+            "gold": 92,
+            "predicted": 92,
+            "tp": 92,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 1,
+          "documents_with_type": 92,
+          "residual_documents": 0,
+          "residual_rate_in_type_documents": 0
+        },
+        "phone": {
+          "strict": {
+            "gold": 92,
+            "predicted": 92,
+            "tp": 92,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "overlap": {
+            "gold": 92,
+            "predicted": 92,
+            "tp": 92,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 1,
+          "documents_with_type": 92,
+          "residual_documents": 0,
+          "residual_rate_in_type_documents": 0
+        },
+        "national_id": {
+          "strict": {
+            "gold": 92,
+            "predicted": 92,
+            "tp": 92,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "overlap": {
+            "gold": 92,
+            "predicted": 92,
+            "tp": 92,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 1,
+          "documents_with_type": 92,
+          "residual_documents": 0,
+          "residual_rate_in_type_documents": 0
+        },
+        "social_security": {
+          "strict": {
+            "gold": 92,
+            "predicted": 92,
+            "tp": 92,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "overlap": {
+            "gold": 92,
+            "predicted": 92,
+            "tp": 92,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 1,
+          "documents_with_type": 92,
+          "residual_documents": 0,
+          "residual_rate_in_type_documents": 0
+        },
+        "bank_card": {
+          "strict": {
+            "gold": 92,
+            "predicted": 92,
+            "tp": 92,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "overlap": {
+            "gold": 92,
+            "predicted": 92,
+            "tp": 92,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 1,
+          "documents_with_type": 92,
+          "residual_documents": 0,
+          "residual_rate_in_type_documents": 0
+        },
+        "email": {
+          "strict": {
+            "gold": 92,
+            "predicted": 92,
+            "tp": 92,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "overlap": {
+            "gold": 92,
+            "predicted": 92,
+            "tp": 92,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 1,
+          "documents_with_type": 92,
+          "residual_documents": 0,
+          "residual_rate_in_type_documents": 0
+        },
+        "address": {
+          "strict": {
+            "gold": 92,
+            "predicted": 92,
+            "tp": 92,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "overlap": {
+            "gold": 92,
+            "predicted": 92,
+            "tp": 92,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 1,
+          "documents_with_type": 92,
+          "residual_documents": 0,
+          "residual_rate_in_type_documents": 0
+        }
+      },
+      "residual_documents": 0,
+      "residual_document_rate": 0,
+      "structured_identifier_residual_documents": 0,
+      "structured_identifier_residual_document_rate": 0,
+      "strict_incomplete_documents": 0,
+      "strict_incomplete_document_rate": 0,
+      "negative_documents": 8,
+      "negative_documents_with_false_positives": 0,
+      "negative_document_false_positive_rate": 0,
+      "confusable_spans": 900,
+      "confusable_false_positives": 0,
+      "confusable_false_positive_rate": 0,
+      "candidate_documents": 100,
+      "candidate_exact_recall": 1,
+      "candidate_coverage_recall": 1,
+      "candidate_conditioned_strict_recall": 1,
+      "decision_items": 1560,
+      "review_items": 1560,
+      "review_per_document": 15.6,
+      "automatic_decisions": 0,
+      "automatic_share": 0,
+      "automatic_errors": 0,
+      "automatic_error_rate": null,
+      "high_confidence_auto_threshold": 0.95,
+      "high_confidence_automatic_decisions": 0,
+      "high_confidence_automatic_share": 0,
+      "high_confidence_automatic_errors": 0,
+      "high_confidence_automatic_error_rate": null
+    },
+    "free_text": {
+      "documents": 60,
+      "strict": {
+        "gold": 550,
+        "predicted": 550,
+        "tp": 550,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "overlap": {
+        "gold": 550,
+        "predicted": 550,
+        "tp": 550,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "per_type": {
+        "name": {
+          "strict": {
+            "gold": 165,
+            "predicted": 165,
+            "tp": 165,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "overlap": {
+            "gold": 165,
+            "predicted": 165,
+            "tp": 165,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 1,
+          "documents_with_type": 55,
+          "residual_documents": 0,
+          "residual_rate_in_type_documents": 0
+        },
+        "phone": {
+          "strict": {
+            "gold": 110,
+            "predicted": 110,
+            "tp": 110,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "overlap": {
+            "gold": 110,
+            "predicted": 110,
+            "tp": 110,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 1,
+          "documents_with_type": 55,
+          "residual_documents": 0,
+          "residual_rate_in_type_documents": 0
+        },
+        "national_id": {
+          "strict": {
+            "gold": 55,
+            "predicted": 55,
+            "tp": 55,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "overlap": {
+            "gold": 55,
+            "predicted": 55,
+            "tp": 55,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 1,
+          "documents_with_type": 55,
+          "residual_documents": 0,
+          "residual_rate_in_type_documents": 0
+        },
+        "social_security": {
+          "strict": {
+            "gold": 55,
+            "predicted": 55,
+            "tp": 55,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "overlap": {
+            "gold": 55,
+            "predicted": 55,
+            "tp": 55,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 1,
+          "documents_with_type": 55,
+          "residual_documents": 0,
+          "residual_rate_in_type_documents": 0
+        },
+        "bank_card": {
+          "strict": {
+            "gold": 55,
+            "predicted": 55,
+            "tp": 55,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "overlap": {
+            "gold": 55,
+            "predicted": 55,
+            "tp": 55,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 1,
+          "documents_with_type": 55,
+          "residual_documents": 0,
+          "residual_rate_in_type_documents": 0
+        },
+        "email": {
+          "strict": {
+            "gold": 55,
+            "predicted": 55,
+            "tp": 55,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "overlap": {
+            "gold": 55,
+            "predicted": 55,
+            "tp": 55,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 1,
+          "documents_with_type": 55,
+          "residual_documents": 0,
+          "residual_rate_in_type_documents": 0
+        },
+        "address": {
+          "strict": {
+            "gold": 55,
+            "predicted": 55,
+            "tp": 55,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "overlap": {
+            "gold": 55,
+            "predicted": 55,
+            "tp": 55,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 1,
+          "documents_with_type": 55,
+          "residual_documents": 0,
+          "residual_rate_in_type_documents": 0
+        }
+      },
+      "residual_documents": 0,
+      "residual_document_rate": 0,
+      "structured_identifier_residual_documents": 0,
+      "structured_identifier_residual_document_rate": 0,
+      "strict_incomplete_documents": 0,
+      "strict_incomplete_document_rate": 0,
+      "negative_documents": 5,
+      "negative_documents_with_false_positives": 0,
+      "negative_document_false_positive_rate": 0,
+      "confusable_spans": 595,
+      "confusable_false_positives": 0,
+      "confusable_false_positive_rate": 0,
+      "candidate_documents": 60,
+      "candidate_exact_recall": 1,
+      "candidate_coverage_recall": 1,
+      "candidate_conditioned_strict_recall": 1,
+      "decision_items": 1128,
+      "review_items": 1128,
+      "review_per_document": 18.8,
+      "automatic_decisions": 0,
+      "automatic_share": 0,
+      "automatic_errors": 0,
+      "automatic_error_rate": null,
+      "high_confidence_auto_threshold": 0.95,
+      "high_confidence_automatic_decisions": 0,
+      "high_confidence_automatic_share": 0,
+      "high_confidence_automatic_errors": 0,
+      "high_confidence_automatic_error_rate": null
+    },
+    "layouts": {
+      "form": {
+        "documents": 40,
+        "strict": {
+          "gold": 259,
+          "predicted": 259,
+          "tp": 259,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1,
+          "recall": 1,
+          "f1": 1
+        },
+        "overlap": {
+          "gold": 259,
+          "predicted": 259,
+          "tp": 259,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1,
+          "recall": 1,
+          "f1": 1
+        },
+        "per_type": {
+          "name": {
+            "strict": {
+              "gold": 37,
+              "predicted": 37,
+              "tp": 37,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "overlap": {
+              "gold": 37,
+              "predicted": 37,
+              "tp": 37,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 1,
+            "documents_with_type": 37,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          },
+          "phone": {
+            "strict": {
+              "gold": 37,
+              "predicted": 37,
+              "tp": 37,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "overlap": {
+              "gold": 37,
+              "predicted": 37,
+              "tp": 37,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 1,
+            "documents_with_type": 37,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          },
+          "national_id": {
+            "strict": {
+              "gold": 37,
+              "predicted": 37,
+              "tp": 37,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "overlap": {
+              "gold": 37,
+              "predicted": 37,
+              "tp": 37,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 1,
+            "documents_with_type": 37,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          },
+          "social_security": {
+            "strict": {
+              "gold": 37,
+              "predicted": 37,
+              "tp": 37,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "overlap": {
+              "gold": 37,
+              "predicted": 37,
+              "tp": 37,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 1,
+            "documents_with_type": 37,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          },
+          "bank_card": {
+            "strict": {
+              "gold": 37,
+              "predicted": 37,
+              "tp": 37,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "overlap": {
+              "gold": 37,
+              "predicted": 37,
+              "tp": 37,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 1,
+            "documents_with_type": 37,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          },
+          "email": {
+            "strict": {
+              "gold": 37,
+              "predicted": 37,
+              "tp": 37,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "overlap": {
+              "gold": 37,
+              "predicted": 37,
+              "tp": 37,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 1,
+            "documents_with_type": 37,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          },
+          "address": {
+            "strict": {
+              "gold": 37,
+              "predicted": 37,
+              "tp": 37,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "overlap": {
+              "gold": 37,
+              "predicted": 37,
+              "tp": 37,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 1,
+            "documents_with_type": 37,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          }
+        },
+        "residual_documents": 0,
+        "residual_document_rate": 0,
+        "structured_identifier_residual_documents": 0,
+        "structured_identifier_residual_document_rate": 0,
+        "strict_incomplete_documents": 0,
+        "strict_incomplete_document_rate": 0,
+        "negative_documents": 3,
+        "negative_documents_with_false_positives": 0,
+        "negative_document_false_positive_rate": 0,
+        "confusable_spans": 360,
+        "confusable_false_positives": 0,
+        "confusable_false_positive_rate": 0,
+        "candidate_documents": 40,
+        "candidate_exact_recall": 1,
+        "candidate_coverage_recall": 1,
+        "candidate_conditioned_strict_recall": 1,
+        "decision_items": 627,
+        "review_items": 627,
+        "review_per_document": 15.675,
+        "automatic_decisions": 0,
+        "automatic_share": 0,
+        "automatic_errors": 0,
+        "automatic_error_rate": null,
+        "high_confidence_auto_threshold": 0.95,
+        "high_confidence_automatic_decisions": 0,
+        "high_confidence_automatic_share": 0,
+        "high_confidence_automatic_errors": 0,
+        "high_confidence_automatic_error_rate": null
+      },
+      "table": {
+        "documents": 60,
+        "strict": {
+          "gold": 385,
+          "predicted": 385,
+          "tp": 385,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1,
+          "recall": 1,
+          "f1": 1
+        },
+        "overlap": {
+          "gold": 385,
+          "predicted": 385,
+          "tp": 385,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1,
+          "recall": 1,
+          "f1": 1
+        },
+        "per_type": {
+          "name": {
+            "strict": {
+              "gold": 55,
+              "predicted": 55,
+              "tp": 55,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "overlap": {
+              "gold": 55,
+              "predicted": 55,
+              "tp": 55,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 1,
+            "documents_with_type": 55,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          },
+          "phone": {
+            "strict": {
+              "gold": 55,
+              "predicted": 55,
+              "tp": 55,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "overlap": {
+              "gold": 55,
+              "predicted": 55,
+              "tp": 55,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 1,
+            "documents_with_type": 55,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          },
+          "national_id": {
+            "strict": {
+              "gold": 55,
+              "predicted": 55,
+              "tp": 55,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "overlap": {
+              "gold": 55,
+              "predicted": 55,
+              "tp": 55,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 1,
+            "documents_with_type": 55,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          },
+          "social_security": {
+            "strict": {
+              "gold": 55,
+              "predicted": 55,
+              "tp": 55,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "overlap": {
+              "gold": 55,
+              "predicted": 55,
+              "tp": 55,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 1,
+            "documents_with_type": 55,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          },
+          "bank_card": {
+            "strict": {
+              "gold": 55,
+              "predicted": 55,
+              "tp": 55,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "overlap": {
+              "gold": 55,
+              "predicted": 55,
+              "tp": 55,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 1,
+            "documents_with_type": 55,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          },
+          "email": {
+            "strict": {
+              "gold": 55,
+              "predicted": 55,
+              "tp": 55,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "overlap": {
+              "gold": 55,
+              "predicted": 55,
+              "tp": 55,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 1,
+            "documents_with_type": 55,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          },
+          "address": {
+            "strict": {
+              "gold": 55,
+              "predicted": 55,
+              "tp": 55,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "overlap": {
+              "gold": 55,
+              "predicted": 55,
+              "tp": 55,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 1,
+            "documents_with_type": 55,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          }
+        },
+        "residual_documents": 0,
+        "residual_document_rate": 0,
+        "structured_identifier_residual_documents": 0,
+        "structured_identifier_residual_document_rate": 0,
+        "strict_incomplete_documents": 0,
+        "strict_incomplete_document_rate": 0,
+        "negative_documents": 5,
+        "negative_documents_with_false_positives": 0,
+        "negative_document_false_positive_rate": 0,
+        "confusable_spans": 540,
+        "confusable_false_positives": 0,
+        "confusable_false_positive_rate": 0,
+        "candidate_documents": 60,
+        "candidate_exact_recall": 1,
+        "candidate_coverage_recall": 1,
+        "candidate_conditioned_strict_recall": 1,
+        "decision_items": 933,
+        "review_items": 933,
+        "review_per_document": 15.55,
+        "automatic_decisions": 0,
+        "automatic_share": 0,
+        "automatic_errors": 0,
+        "automatic_error_rate": null,
+        "high_confidence_auto_threshold": 0.95,
+        "high_confidence_automatic_decisions": 0,
+        "high_confidence_automatic_share": 0,
+        "high_confidence_automatic_errors": 0,
+        "high_confidence_automatic_error_rate": null
+      },
+      "free_text": {
+        "documents": 60,
+        "strict": {
+          "gold": 550,
+          "predicted": 550,
+          "tp": 550,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1,
+          "recall": 1,
+          "f1": 1
+        },
+        "overlap": {
+          "gold": 550,
+          "predicted": 550,
+          "tp": 550,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1,
+          "recall": 1,
+          "f1": 1
+        },
+        "per_type": {
+          "name": {
+            "strict": {
+              "gold": 165,
+              "predicted": 165,
+              "tp": 165,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "overlap": {
+              "gold": 165,
+              "predicted": 165,
+              "tp": 165,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 1,
+            "documents_with_type": 55,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          },
+          "phone": {
+            "strict": {
+              "gold": 110,
+              "predicted": 110,
+              "tp": 110,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "overlap": {
+              "gold": 110,
+              "predicted": 110,
+              "tp": 110,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 1,
+            "documents_with_type": 55,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          },
+          "national_id": {
+            "strict": {
+              "gold": 55,
+              "predicted": 55,
+              "tp": 55,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "overlap": {
+              "gold": 55,
+              "predicted": 55,
+              "tp": 55,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 1,
+            "documents_with_type": 55,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          },
+          "social_security": {
+            "strict": {
+              "gold": 55,
+              "predicted": 55,
+              "tp": 55,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "overlap": {
+              "gold": 55,
+              "predicted": 55,
+              "tp": 55,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 1,
+            "documents_with_type": 55,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          },
+          "bank_card": {
+            "strict": {
+              "gold": 55,
+              "predicted": 55,
+              "tp": 55,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "overlap": {
+              "gold": 55,
+              "predicted": 55,
+              "tp": 55,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 1,
+            "documents_with_type": 55,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          },
+          "email": {
+            "strict": {
+              "gold": 55,
+              "predicted": 55,
+              "tp": 55,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "overlap": {
+              "gold": 55,
+              "predicted": 55,
+              "tp": 55,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 1,
+            "documents_with_type": 55,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          },
+          "address": {
+            "strict": {
+              "gold": 55,
+              "predicted": 55,
+              "tp": 55,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "overlap": {
+              "gold": 55,
+              "predicted": 55,
+              "tp": 55,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 1,
+            "documents_with_type": 55,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          }
+        },
+        "residual_documents": 0,
+        "residual_document_rate": 0,
+        "structured_identifier_residual_documents": 0,
+        "structured_identifier_residual_document_rate": 0,
+        "strict_incomplete_documents": 0,
+        "strict_incomplete_document_rate": 0,
+        "negative_documents": 5,
+        "negative_documents_with_false_positives": 0,
+        "negative_document_false_positive_rate": 0,
+        "confusable_spans": 595,
+        "confusable_false_positives": 0,
+        "confusable_false_positive_rate": 0,
+        "candidate_documents": 60,
+        "candidate_exact_recall": 1,
+        "candidate_coverage_recall": 1,
+        "candidate_conditioned_strict_recall": 1,
+        "decision_items": 1128,
+        "review_items": 1128,
+        "review_per_document": 18.8,
+        "automatic_decisions": 0,
+        "automatic_share": 0,
+        "automatic_errors": 0,
+        "automatic_error_rate": null,
+        "high_confidence_auto_threshold": 0.95,
+        "high_confidence_automatic_decisions": 0,
+        "high_confidence_automatic_share": 0,
+        "high_confidence_automatic_errors": 0,
+        "high_confidence_automatic_error_rate": null
+      }
+    }
+  },
+  "threshold_grid": [
+    {
+      "threshold": 0.95,
+      "strict": {
+        "gold": 1194,
+        "predicted": 1194,
+        "tp": 1194,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      }
+    },
+    {
+      "threshold": 0.85,
+      "strict": {
+        "gold": 1194,
+        "predicted": 1194,
+        "tp": 1194,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      }
+    },
+    {
+      "threshold": 0.7,
+      "strict": {
+        "gold": 1194,
+        "predicted": 1194,
+        "tp": 1194,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      }
+    },
+    {
+      "threshold": 0.5,
+      "strict": {
+        "gold": 1194,
+        "predicted": 1194,
+        "tp": 1194,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      }
+    }
+  ]
+}

@@ -1,0 +1,1560 @@
+{
+  "threshold": 0.5,
+  "selection": "development strict F1 then precision; fixed grid",
+  "inputs_sha256": "b72d5204e0c998389b326f93cdae9abd6a2d01ab355baf256a3a3a11aeec2d5d",
+  "gold_sha256": "42506bd3353355029f06486a34973b2d6aab040ffb94223f232acde0a11ee536",
+  "candidate_probabilities_sha256": "0e97d40806ee2f12599cd9353f9edbbbce9386208ff1ffd283e5610c59eb7c9a",
+  "inference_failed_candidates": 0,
+  "metrics": {
+    "all": {
+      "documents": 120,
+      "strict": {
+        "gold": 1120,
+        "predicted": 1034,
+        "tp": 1031,
+        "fp": 3,
+        "fn": 89,
+        "precision": 0.9970986460348162,
+        "recall": 0.9205357142857142,
+        "f1": 0.957288765088208
+      },
+      "overlap": {
+        "gold": 1120,
+        "predicted": 1034,
+        "tp": 1031,
+        "fp": 3,
+        "fn": 89,
+        "precision": 0.9970986460348162,
+        "recall": 0.9205357142857142,
+        "f1": 0.957288765088208
+      },
+      "per_type": {
+        "name": {
+          "strict": {
+            "gold": 160,
+            "predicted": 160,
+            "tp": 160,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "overlap": {
+            "gold": 160,
+            "predicted": 160,
+            "tp": 160,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 1,
+          "documents_with_type": 96,
+          "residual_documents": 0,
+          "residual_rate_in_type_documents": 0
+        },
+        "phone": {
+          "strict": {
+            "gold": 160,
+            "predicted": 160,
+            "tp": 160,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "overlap": {
+            "gold": 160,
+            "predicted": 160,
+            "tp": 160,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 1,
+          "documents_with_type": 96,
+          "residual_documents": 0,
+          "residual_rate_in_type_documents": 0
+        },
+        "national_id": {
+          "strict": {
+            "gold": 160,
+            "predicted": 162,
+            "tp": 159,
+            "fp": 3,
+            "fn": 1,
+            "precision": 0.9814814814814815,
+            "recall": 0.99375,
+            "f1": 0.9875776397515528
+          },
+          "overlap": {
+            "gold": 160,
+            "predicted": 162,
+            "tp": 159,
+            "fp": 3,
+            "fn": 1,
+            "precision": 0.9814814814814815,
+            "recall": 0.99375,
+            "f1": 0.9875776397515528
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 0.99375,
+          "documents_with_type": 96,
+          "residual_documents": 1,
+          "residual_rate_in_type_documents": 0.010416666666666666
+        },
+        "social_security": {
+          "strict": {
+            "gold": 160,
+            "predicted": 157,
+            "tp": 157,
+            "fp": 0,
+            "fn": 3,
+            "precision": 1,
+            "recall": 0.98125,
+            "f1": 0.9905362776025236
+          },
+          "overlap": {
+            "gold": 160,
+            "predicted": 157,
+            "tp": 157,
+            "fp": 0,
+            "fn": 3,
+            "precision": 1,
+            "recall": 0.98125,
+            "f1": 0.9905362776025236
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 0.98125,
+          "documents_with_type": 96,
+          "residual_documents": 0,
+          "residual_rate_in_type_documents": 0
+        },
+        "bank_card": {
+          "strict": {
+            "gold": 160,
+            "predicted": 160,
+            "tp": 160,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "overlap": {
+            "gold": 160,
+            "predicted": 160,
+            "tp": 160,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 1,
+          "documents_with_type": 96,
+          "residual_documents": 0,
+          "residual_rate_in_type_documents": 0
+        },
+        "email": {
+          "strict": {
+            "gold": 160,
+            "predicted": 160,
+            "tp": 160,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "overlap": {
+            "gold": 160,
+            "predicted": 160,
+            "tp": 160,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 1,
+          "documents_with_type": 96,
+          "residual_documents": 0,
+          "residual_rate_in_type_documents": 0
+        },
+        "address": {
+          "strict": {
+            "gold": 160,
+            "predicted": 75,
+            "tp": 75,
+            "fp": 0,
+            "fn": 85,
+            "precision": 1,
+            "recall": 0.46875,
+            "f1": 0.6382978723404256
+          },
+          "overlap": {
+            "gold": 160,
+            "predicted": 75,
+            "tp": 75,
+            "fp": 0,
+            "fn": 85,
+            "precision": 1,
+            "recall": 0.46875,
+            "f1": 0.6382978723404256
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 0.46875,
+          "documents_with_type": 96,
+          "residual_documents": 85,
+          "residual_rate_in_type_documents": 0.8854166666666666
+        }
+      },
+      "residual_documents": 85,
+      "residual_document_rate": 0.7083333333333334,
+      "structured_identifier_residual_documents": 1,
+      "structured_identifier_residual_document_rate": 0.008333333333333333,
+      "strict_incomplete_documents": 85,
+      "strict_incomplete_document_rate": 0.7083333333333334,
+      "negative_documents": 24,
+      "negative_documents_with_false_positives": 0,
+      "negative_document_false_positive_rate": 0,
+      "confusable_spans": 1080,
+      "confusable_false_positives": 0,
+      "confusable_false_positive_rate": 0,
+      "candidate_documents": 120,
+      "candidate_exact_recall": 1,
+      "candidate_coverage_recall": 1,
+      "candidate_conditioned_strict_recall": 0.9205357142857142,
+      "decision_items": 2214,
+      "review_items": 2214,
+      "review_per_document": 18.45,
+      "automatic_decisions": 0,
+      "automatic_share": 0,
+      "automatic_errors": 0,
+      "automatic_error_rate": null,
+      "high_confidence_auto_threshold": 0.95,
+      "high_confidence_automatic_decisions": 0,
+      "high_confidence_automatic_share": 0,
+      "high_confidence_automatic_errors": 0,
+      "high_confidence_automatic_error_rate": null
+    },
+    "structured": {
+      "documents": 80,
+      "strict": {
+        "gold": 896,
+        "predicted": 843,
+        "tp": 840,
+        "fp": 3,
+        "fn": 56,
+        "precision": 0.99644128113879,
+        "recall": 0.9375,
+        "f1": 0.9660724554341575
+      },
+      "overlap": {
+        "gold": 896,
+        "predicted": 843,
+        "tp": 840,
+        "fp": 3,
+        "fn": 56,
+        "precision": 0.99644128113879,
+        "recall": 0.9375,
+        "f1": 0.9660724554341575
+      },
+      "per_type": {
+        "name": {
+          "strict": {
+            "gold": 128,
+            "predicted": 128,
+            "tp": 128,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "overlap": {
+            "gold": 128,
+            "predicted": 128,
+            "tp": 128,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 1,
+          "documents_with_type": 64,
+          "residual_documents": 0,
+          "residual_rate_in_type_documents": 0
+        },
+        "phone": {
+          "strict": {
+            "gold": 128,
+            "predicted": 128,
+            "tp": 128,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "overlap": {
+            "gold": 128,
+            "predicted": 128,
+            "tp": 128,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 1,
+          "documents_with_type": 64,
+          "residual_documents": 0,
+          "residual_rate_in_type_documents": 0
+        },
+        "national_id": {
+          "strict": {
+            "gold": 128,
+            "predicted": 131,
+            "tp": 128,
+            "fp": 3,
+            "fn": 0,
+            "precision": 0.9770992366412213,
+            "recall": 1,
+            "f1": 0.9884169884169884
+          },
+          "overlap": {
+            "gold": 128,
+            "predicted": 131,
+            "tp": 128,
+            "fp": 3,
+            "fn": 0,
+            "precision": 0.9770992366412213,
+            "recall": 1,
+            "f1": 0.9884169884169884
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 1,
+          "documents_with_type": 64,
+          "residual_documents": 0,
+          "residual_rate_in_type_documents": 0
+        },
+        "social_security": {
+          "strict": {
+            "gold": 128,
+            "predicted": 125,
+            "tp": 125,
+            "fp": 0,
+            "fn": 3,
+            "precision": 1,
+            "recall": 0.9765625,
+            "f1": 0.9881422924901185
+          },
+          "overlap": {
+            "gold": 128,
+            "predicted": 125,
+            "tp": 125,
+            "fp": 0,
+            "fn": 3,
+            "precision": 1,
+            "recall": 0.9765625,
+            "f1": 0.9881422924901185
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 0.9765625,
+          "documents_with_type": 64,
+          "residual_documents": 0,
+          "residual_rate_in_type_documents": 0
+        },
+        "bank_card": {
+          "strict": {
+            "gold": 128,
+            "predicted": 128,
+            "tp": 128,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "overlap": {
+            "gold": 128,
+            "predicted": 128,
+            "tp": 128,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 1,
+          "documents_with_type": 64,
+          "residual_documents": 0,
+          "residual_rate_in_type_documents": 0
+        },
+        "email": {
+          "strict": {
+            "gold": 128,
+            "predicted": 128,
+            "tp": 128,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "overlap": {
+            "gold": 128,
+            "predicted": 128,
+            "tp": 128,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 1,
+          "documents_with_type": 64,
+          "residual_documents": 0,
+          "residual_rate_in_type_documents": 0
+        },
+        "address": {
+          "strict": {
+            "gold": 128,
+            "predicted": 75,
+            "tp": 75,
+            "fp": 0,
+            "fn": 53,
+            "precision": 1,
+            "recall": 0.5859375,
+            "f1": 0.7389162561576355
+          },
+          "overlap": {
+            "gold": 128,
+            "predicted": 75,
+            "tp": 75,
+            "fp": 0,
+            "fn": 53,
+            "precision": 1,
+            "recall": 0.5859375,
+            "f1": 0.7389162561576355
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 0.5859375,
+          "documents_with_type": 64,
+          "residual_documents": 53,
+          "residual_rate_in_type_documents": 0.828125
+        }
+      },
+      "residual_documents": 53,
+      "residual_document_rate": 0.6625,
+      "structured_identifier_residual_documents": 0,
+      "structured_identifier_residual_document_rate": 0,
+      "strict_incomplete_documents": 53,
+      "strict_incomplete_document_rate": 0.6625,
+      "negative_documents": 16,
+      "negative_documents_with_false_positives": 0,
+      "negative_document_false_positive_rate": 0,
+      "confusable_spans": 720,
+      "confusable_false_positives": 0,
+      "confusable_false_positive_rate": 0,
+      "candidate_documents": 80,
+      "candidate_exact_recall": 1,
+      "candidate_coverage_recall": 1,
+      "candidate_conditioned_strict_recall": 0.9375,
+      "decision_items": 1628,
+      "review_items": 1628,
+      "review_per_document": 20.35,
+      "automatic_decisions": 0,
+      "automatic_share": 0,
+      "automatic_errors": 0,
+      "automatic_error_rate": null,
+      "high_confidence_auto_threshold": 0.95,
+      "high_confidence_automatic_decisions": 0,
+      "high_confidence_automatic_share": 0,
+      "high_confidence_automatic_errors": 0,
+      "high_confidence_automatic_error_rate": null
+    },
+    "free_text": {
+      "documents": 40,
+      "strict": {
+        "gold": 224,
+        "predicted": 191,
+        "tp": 191,
+        "fp": 0,
+        "fn": 33,
+        "precision": 1,
+        "recall": 0.8526785714285714,
+        "f1": 0.9204819277108434
+      },
+      "overlap": {
+        "gold": 224,
+        "predicted": 191,
+        "tp": 191,
+        "fp": 0,
+        "fn": 33,
+        "precision": 1,
+        "recall": 0.8526785714285714,
+        "f1": 0.9204819277108434
+      },
+      "per_type": {
+        "name": {
+          "strict": {
+            "gold": 32,
+            "predicted": 32,
+            "tp": 32,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "overlap": {
+            "gold": 32,
+            "predicted": 32,
+            "tp": 32,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 1,
+          "documents_with_type": 32,
+          "residual_documents": 0,
+          "residual_rate_in_type_documents": 0
+        },
+        "phone": {
+          "strict": {
+            "gold": 32,
+            "predicted": 32,
+            "tp": 32,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "overlap": {
+            "gold": 32,
+            "predicted": 32,
+            "tp": 32,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 1,
+          "documents_with_type": 32,
+          "residual_documents": 0,
+          "residual_rate_in_type_documents": 0
+        },
+        "national_id": {
+          "strict": {
+            "gold": 32,
+            "predicted": 31,
+            "tp": 31,
+            "fp": 0,
+            "fn": 1,
+            "precision": 1,
+            "recall": 0.96875,
+            "f1": 0.9841269841269841
+          },
+          "overlap": {
+            "gold": 32,
+            "predicted": 31,
+            "tp": 31,
+            "fp": 0,
+            "fn": 1,
+            "precision": 1,
+            "recall": 0.96875,
+            "f1": 0.9841269841269841
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 0.96875,
+          "documents_with_type": 32,
+          "residual_documents": 1,
+          "residual_rate_in_type_documents": 0.03125
+        },
+        "social_security": {
+          "strict": {
+            "gold": 32,
+            "predicted": 32,
+            "tp": 32,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "overlap": {
+            "gold": 32,
+            "predicted": 32,
+            "tp": 32,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 1,
+          "documents_with_type": 32,
+          "residual_documents": 0,
+          "residual_rate_in_type_documents": 0
+        },
+        "bank_card": {
+          "strict": {
+            "gold": 32,
+            "predicted": 32,
+            "tp": 32,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "overlap": {
+            "gold": 32,
+            "predicted": 32,
+            "tp": 32,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 1,
+          "documents_with_type": 32,
+          "residual_documents": 0,
+          "residual_rate_in_type_documents": 0
+        },
+        "email": {
+          "strict": {
+            "gold": 32,
+            "predicted": 32,
+            "tp": 32,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "overlap": {
+            "gold": 32,
+            "predicted": 32,
+            "tp": 32,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1,
+            "recall": 1,
+            "f1": 1
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 1,
+          "documents_with_type": 32,
+          "residual_documents": 0,
+          "residual_rate_in_type_documents": 0
+        },
+        "address": {
+          "strict": {
+            "gold": 32,
+            "predicted": 0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 32,
+            "precision": null,
+            "recall": 0,
+            "f1": 0
+          },
+          "overlap": {
+            "gold": 32,
+            "predicted": 0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 32,
+            "precision": null,
+            "recall": 0,
+            "f1": 0
+          },
+          "candidate_exact_recall": 1,
+          "candidate_coverage_recall": 1,
+          "candidate_conditioned_strict_recall": 0,
+          "documents_with_type": 32,
+          "residual_documents": 32,
+          "residual_rate_in_type_documents": 1
+        }
+      },
+      "residual_documents": 32,
+      "residual_document_rate": 0.8,
+      "structured_identifier_residual_documents": 1,
+      "structured_identifier_residual_document_rate": 0.025,
+      "strict_incomplete_documents": 32,
+      "strict_incomplete_document_rate": 0.8,
+      "negative_documents": 8,
+      "negative_documents_with_false_positives": 0,
+      "negative_document_false_positive_rate": 0,
+      "confusable_spans": 360,
+      "confusable_false_positives": 0,
+      "confusable_false_positive_rate": 0,
+      "candidate_documents": 40,
+      "candidate_exact_recall": 1,
+      "candidate_coverage_recall": 1,
+      "candidate_conditioned_strict_recall": 0.8526785714285714,
+      "decision_items": 586,
+      "review_items": 586,
+      "review_per_document": 14.65,
+      "automatic_decisions": 0,
+      "automatic_share": 0,
+      "automatic_errors": 0,
+      "automatic_error_rate": null,
+      "high_confidence_auto_threshold": 0.95,
+      "high_confidence_automatic_decisions": 0,
+      "high_confidence_automatic_share": 0,
+      "high_confidence_automatic_errors": 0,
+      "high_confidence_automatic_error_rate": null
+    },
+    "layouts": {
+      "form": {
+        "documents": 40,
+        "strict": {
+          "gold": 224,
+          "predicted": 193,
+          "tp": 192,
+          "fp": 1,
+          "fn": 32,
+          "precision": 0.9948186528497409,
+          "recall": 0.8571428571428571,
+          "f1": 0.920863309352518
+        },
+        "overlap": {
+          "gold": 224,
+          "predicted": 193,
+          "tp": 192,
+          "fp": 1,
+          "fn": 32,
+          "precision": 0.9948186528497409,
+          "recall": 0.8571428571428571,
+          "f1": 0.920863309352518
+        },
+        "per_type": {
+          "name": {
+            "strict": {
+              "gold": 32,
+              "predicted": 32,
+              "tp": 32,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "overlap": {
+              "gold": 32,
+              "predicted": 32,
+              "tp": 32,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 1,
+            "documents_with_type": 32,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          },
+          "phone": {
+            "strict": {
+              "gold": 32,
+              "predicted": 32,
+              "tp": 32,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "overlap": {
+              "gold": 32,
+              "predicted": 32,
+              "tp": 32,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 1,
+            "documents_with_type": 32,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          },
+          "national_id": {
+            "strict": {
+              "gold": 32,
+              "predicted": 33,
+              "tp": 32,
+              "fp": 1,
+              "fn": 0,
+              "precision": 0.9696969696969697,
+              "recall": 1,
+              "f1": 0.9846153846153847
+            },
+            "overlap": {
+              "gold": 32,
+              "predicted": 33,
+              "tp": 32,
+              "fp": 1,
+              "fn": 0,
+              "precision": 0.9696969696969697,
+              "recall": 1,
+              "f1": 0.9846153846153847
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 1,
+            "documents_with_type": 32,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          },
+          "social_security": {
+            "strict": {
+              "gold": 32,
+              "predicted": 31,
+              "tp": 31,
+              "fp": 0,
+              "fn": 1,
+              "precision": 1,
+              "recall": 0.96875,
+              "f1": 0.9841269841269841
+            },
+            "overlap": {
+              "gold": 32,
+              "predicted": 31,
+              "tp": 31,
+              "fp": 0,
+              "fn": 1,
+              "precision": 1,
+              "recall": 0.96875,
+              "f1": 0.9841269841269841
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 0.96875,
+            "documents_with_type": 32,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          },
+          "bank_card": {
+            "strict": {
+              "gold": 32,
+              "predicted": 32,
+              "tp": 32,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "overlap": {
+              "gold": 32,
+              "predicted": 32,
+              "tp": 32,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 1,
+            "documents_with_type": 32,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          },
+          "email": {
+            "strict": {
+              "gold": 32,
+              "predicted": 32,
+              "tp": 32,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "overlap": {
+              "gold": 32,
+              "predicted": 32,
+              "tp": 32,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 1,
+            "documents_with_type": 32,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          },
+          "address": {
+            "strict": {
+              "gold": 32,
+              "predicted": 1,
+              "tp": 1,
+              "fp": 0,
+              "fn": 31,
+              "precision": 1,
+              "recall": 0.03125,
+              "f1": 0.06060606060606061
+            },
+            "overlap": {
+              "gold": 32,
+              "predicted": 1,
+              "tp": 1,
+              "fp": 0,
+              "fn": 31,
+              "precision": 1,
+              "recall": 0.03125,
+              "f1": 0.06060606060606061
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 0.03125,
+            "documents_with_type": 32,
+            "residual_documents": 31,
+            "residual_rate_in_type_documents": 0.96875
+          }
+        },
+        "residual_documents": 31,
+        "residual_document_rate": 0.775,
+        "structured_identifier_residual_documents": 0,
+        "structured_identifier_residual_document_rate": 0,
+        "strict_incomplete_documents": 31,
+        "strict_incomplete_document_rate": 0.775,
+        "negative_documents": 8,
+        "negative_documents_with_false_positives": 0,
+        "negative_document_false_positive_rate": 0,
+        "confusable_spans": 360,
+        "confusable_false_positives": 0,
+        "confusable_false_positive_rate": 0,
+        "candidate_documents": 40,
+        "candidate_exact_recall": 1,
+        "candidate_coverage_recall": 1,
+        "candidate_conditioned_strict_recall": 0.8571428571428571,
+        "decision_items": 589,
+        "review_items": 589,
+        "review_per_document": 14.725,
+        "automatic_decisions": 0,
+        "automatic_share": 0,
+        "automatic_errors": 0,
+        "automatic_error_rate": null,
+        "high_confidence_auto_threshold": 0.95,
+        "high_confidence_automatic_decisions": 0,
+        "high_confidence_automatic_share": 0,
+        "high_confidence_automatic_errors": 0,
+        "high_confidence_automatic_error_rate": null
+      },
+      "table": {
+        "documents": 40,
+        "strict": {
+          "gold": 672,
+          "predicted": 650,
+          "tp": 648,
+          "fp": 2,
+          "fn": 24,
+          "precision": 0.9969230769230769,
+          "recall": 0.9642857142857143,
+          "f1": 0.9803328290468987
+        },
+        "overlap": {
+          "gold": 672,
+          "predicted": 650,
+          "tp": 648,
+          "fp": 2,
+          "fn": 24,
+          "precision": 0.9969230769230769,
+          "recall": 0.9642857142857143,
+          "f1": 0.9803328290468987
+        },
+        "per_type": {
+          "name": {
+            "strict": {
+              "gold": 96,
+              "predicted": 96,
+              "tp": 96,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "overlap": {
+              "gold": 96,
+              "predicted": 96,
+              "tp": 96,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 1,
+            "documents_with_type": 32,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          },
+          "phone": {
+            "strict": {
+              "gold": 96,
+              "predicted": 96,
+              "tp": 96,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "overlap": {
+              "gold": 96,
+              "predicted": 96,
+              "tp": 96,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 1,
+            "documents_with_type": 32,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          },
+          "national_id": {
+            "strict": {
+              "gold": 96,
+              "predicted": 98,
+              "tp": 96,
+              "fp": 2,
+              "fn": 0,
+              "precision": 0.9795918367346939,
+              "recall": 1,
+              "f1": 0.9896907216494846
+            },
+            "overlap": {
+              "gold": 96,
+              "predicted": 98,
+              "tp": 96,
+              "fp": 2,
+              "fn": 0,
+              "precision": 0.9795918367346939,
+              "recall": 1,
+              "f1": 0.9896907216494846
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 1,
+            "documents_with_type": 32,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          },
+          "social_security": {
+            "strict": {
+              "gold": 96,
+              "predicted": 94,
+              "tp": 94,
+              "fp": 0,
+              "fn": 2,
+              "precision": 1,
+              "recall": 0.9791666666666666,
+              "f1": 0.9894736842105263
+            },
+            "overlap": {
+              "gold": 96,
+              "predicted": 94,
+              "tp": 94,
+              "fp": 0,
+              "fn": 2,
+              "precision": 1,
+              "recall": 0.9791666666666666,
+              "f1": 0.9894736842105263
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 0.9791666666666666,
+            "documents_with_type": 32,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          },
+          "bank_card": {
+            "strict": {
+              "gold": 96,
+              "predicted": 96,
+              "tp": 96,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "overlap": {
+              "gold": 96,
+              "predicted": 96,
+              "tp": 96,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 1,
+            "documents_with_type": 32,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          },
+          "email": {
+            "strict": {
+              "gold": 96,
+              "predicted": 96,
+              "tp": 96,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "overlap": {
+              "gold": 96,
+              "predicted": 96,
+              "tp": 96,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 1,
+            "documents_with_type": 32,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          },
+          "address": {
+            "strict": {
+              "gold": 96,
+              "predicted": 74,
+              "tp": 74,
+              "fp": 0,
+              "fn": 22,
+              "precision": 1,
+              "recall": 0.7708333333333334,
+              "f1": 0.8705882352941177
+            },
+            "overlap": {
+              "gold": 96,
+              "predicted": 74,
+              "tp": 74,
+              "fp": 0,
+              "fn": 22,
+              "precision": 1,
+              "recall": 0.7708333333333334,
+              "f1": 0.8705882352941177
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 0.7708333333333334,
+            "documents_with_type": 32,
+            "residual_documents": 22,
+            "residual_rate_in_type_documents": 0.6875
+          }
+        },
+        "residual_documents": 22,
+        "residual_document_rate": 0.55,
+        "structured_identifier_residual_documents": 0,
+        "structured_identifier_residual_document_rate": 0,
+        "strict_incomplete_documents": 22,
+        "strict_incomplete_document_rate": 0.55,
+        "negative_documents": 8,
+        "negative_documents_with_false_positives": 0,
+        "negative_document_false_positive_rate": 0,
+        "confusable_spans": 360,
+        "confusable_false_positives": 0,
+        "confusable_false_positive_rate": 0,
+        "candidate_documents": 40,
+        "candidate_exact_recall": 1,
+        "candidate_coverage_recall": 1,
+        "candidate_conditioned_strict_recall": 0.9642857142857143,
+        "decision_items": 1039,
+        "review_items": 1039,
+        "review_per_document": 25.975,
+        "automatic_decisions": 0,
+        "automatic_share": 0,
+        "automatic_errors": 0,
+        "automatic_error_rate": null,
+        "high_confidence_auto_threshold": 0.95,
+        "high_confidence_automatic_decisions": 0,
+        "high_confidence_automatic_share": 0,
+        "high_confidence_automatic_errors": 0,
+        "high_confidence_automatic_error_rate": null
+      },
+      "free_text": {
+        "documents": 40,
+        "strict": {
+          "gold": 224,
+          "predicted": 191,
+          "tp": 191,
+          "fp": 0,
+          "fn": 33,
+          "precision": 1,
+          "recall": 0.8526785714285714,
+          "f1": 0.9204819277108434
+        },
+        "overlap": {
+          "gold": 224,
+          "predicted": 191,
+          "tp": 191,
+          "fp": 0,
+          "fn": 33,
+          "precision": 1,
+          "recall": 0.8526785714285714,
+          "f1": 0.9204819277108434
+        },
+        "per_type": {
+          "name": {
+            "strict": {
+              "gold": 32,
+              "predicted": 32,
+              "tp": 32,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "overlap": {
+              "gold": 32,
+              "predicted": 32,
+              "tp": 32,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 1,
+            "documents_with_type": 32,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          },
+          "phone": {
+            "strict": {
+              "gold": 32,
+              "predicted": 32,
+              "tp": 32,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "overlap": {
+              "gold": 32,
+              "predicted": 32,
+              "tp": 32,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 1,
+            "documents_with_type": 32,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          },
+          "national_id": {
+            "strict": {
+              "gold": 32,
+              "predicted": 31,
+              "tp": 31,
+              "fp": 0,
+              "fn": 1,
+              "precision": 1,
+              "recall": 0.96875,
+              "f1": 0.9841269841269841
+            },
+            "overlap": {
+              "gold": 32,
+              "predicted": 31,
+              "tp": 31,
+              "fp": 0,
+              "fn": 1,
+              "precision": 1,
+              "recall": 0.96875,
+              "f1": 0.9841269841269841
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 0.96875,
+            "documents_with_type": 32,
+            "residual_documents": 1,
+            "residual_rate_in_type_documents": 0.03125
+          },
+          "social_security": {
+            "strict": {
+              "gold": 32,
+              "predicted": 32,
+              "tp": 32,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "overlap": {
+              "gold": 32,
+              "predicted": 32,
+              "tp": 32,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 1,
+            "documents_with_type": 32,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          },
+          "bank_card": {
+            "strict": {
+              "gold": 32,
+              "predicted": 32,
+              "tp": 32,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "overlap": {
+              "gold": 32,
+              "predicted": 32,
+              "tp": 32,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 1,
+            "documents_with_type": 32,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          },
+          "email": {
+            "strict": {
+              "gold": 32,
+              "predicted": 32,
+              "tp": 32,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "overlap": {
+              "gold": 32,
+              "predicted": 32,
+              "tp": 32,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1,
+              "recall": 1,
+              "f1": 1
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 1,
+            "documents_with_type": 32,
+            "residual_documents": 0,
+            "residual_rate_in_type_documents": 0
+          },
+          "address": {
+            "strict": {
+              "gold": 32,
+              "predicted": 0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 32,
+              "precision": null,
+              "recall": 0,
+              "f1": 0
+            },
+            "overlap": {
+              "gold": 32,
+              "predicted": 0,
+              "tp": 0,
+              "fp": 0,
+              "fn": 32,
+              "precision": null,
+              "recall": 0,
+              "f1": 0
+            },
+            "candidate_exact_recall": 1,
+            "candidate_coverage_recall": 1,
+            "candidate_conditioned_strict_recall": 0,
+            "documents_with_type": 32,
+            "residual_documents": 32,
+            "residual_rate_in_type_documents": 1
+          }
+        },
+        "residual_documents": 32,
+        "residual_document_rate": 0.8,
+        "structured_identifier_residual_documents": 1,
+        "structured_identifier_residual_document_rate": 0.025,
+        "strict_incomplete_documents": 32,
+        "strict_incomplete_document_rate": 0.8,
+        "negative_documents": 8,
+        "negative_documents_with_false_positives": 0,
+        "negative_document_false_positive_rate": 0,
+        "confusable_spans": 360,
+        "confusable_false_positives": 0,
+        "confusable_false_positive_rate": 0,
+        "candidate_documents": 40,
+        "candidate_exact_recall": 1,
+        "candidate_coverage_recall": 1,
+        "candidate_conditioned_strict_recall": 0.8526785714285714,
+        "decision_items": 586,
+        "review_items": 586,
+        "review_per_document": 14.65,
+        "automatic_decisions": 0,
+        "automatic_share": 0,
+        "automatic_errors": 0,
+        "automatic_error_rate": null,
+        "high_confidence_auto_threshold": 0.95,
+        "high_confidence_automatic_decisions": 0,
+        "high_confidence_automatic_share": 0,
+        "high_confidence_automatic_errors": 0,
+        "high_confidence_automatic_error_rate": null
+      }
+    }
+  },
+  "threshold_grid": [
+    {
+      "threshold": 0.5,
+      "strict": {
+        "gold": 1120,
+        "predicted": 1034,
+        "tp": 1031,
+        "fp": 3,
+        "fn": 89,
+        "precision": 0.9970986460348162,
+        "recall": 0.9205357142857142,
+        "f1": 0.957288765088208
+      }
+    },
+    {
+      "threshold": 0.7,
+      "strict": {
+        "gold": 1120,
+        "predicted": 1024,
+        "tp": 1021,
+        "fp": 3,
+        "fn": 99,
+        "precision": 0.9970703125,
+        "recall": 0.9116071428571428,
+        "f1": 0.9524253731343284
+      }
+    },
+    {
+      "threshold": 0.85,
+      "strict": {
+        "gold": 1120,
+        "predicted": 988,
+        "tp": 986,
+        "fp": 2,
+        "fn": 134,
+        "precision": 0.9979757085020243,
+        "recall": 0.8803571428571428,
+        "f1": 0.9354838709677419
+      }
+    },
+    {
+      "threshold": 0.95,
+      "strict": {
+        "gold": 1120,
+        "predicted": 930,
+        "tp": 928,
+        "fp": 2,
+        "fn": 192,
+        "precision": 0.9978494623655914,
+        "recall": 0.8285714285714286,
+        "f1": 0.9053658536585366
+      }
+    }
+  ]
+}

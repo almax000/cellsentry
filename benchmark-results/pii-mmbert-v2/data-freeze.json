@@ -1,0 +1,16 @@
+{
+  "policy": "Frozen before regression evaluation; independent generator does not open ARK holdout",
+  "files": {
+    "dev-documents.inputs.jsonl": "2a836307a854eb1a69c0f057d025820adb154f0eab6d375f377be625b23b224b",
+    "dev-documents.jsonl": "6c76aeec2fc2135ccc38ad3a3c24f82fd40587ebe38d36aedd81b7989108f4d4",
+    "dev.inputs.jsonl": "d70f68e214de8955e880e6101d43cbe9a60cbf91045975ee46c6cfe4723e536c",
+    "dev.jsonl": "0ee1c1d9a892fb8c5747e468ea7a51f309eb0302b92e1cf1d209868ec480a1d2",
+    "manifest.json": "f6aad5fc487a5e73bc1cc27163e571c85b7509bb5a6e9845781a87044c3a7e3a",
+    "test.inputs.jsonl": "bfe4aca1e77062dc813b02b7862c1f38fa2596cbeb2faa9542286045ca05a613",
+    "test.jsonl": "260eaa0d81eeea48ed99b3e68b5e44d6bc2c2871a15c30adfe7ccd728880fb71",
+    "train-documents.inputs.jsonl": "66d68ada0d53e03bf74354d02afc0cb57704f8b4b854f5ab0ae1db15fbdbcb4e",
+    "train-documents.jsonl": "31fbfe852ad20cf31b1afc4d74524f39651d3c470c815855bde7b62ab917ea68",
+    "train.inputs.jsonl": "7f2202d3e629648cba2471af844d3fa208c83e9db106748f315f00a6bc0ce3f1",
+    "train.jsonl": "fec179bc49787b7213a568297526bc82970580c7fcff9f4a1a036ca9d3a0755c"
+  }
+}

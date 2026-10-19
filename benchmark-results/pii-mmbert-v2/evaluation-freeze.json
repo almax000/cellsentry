@@ -1,0 +1,23 @@
+{
+  "created_at": "2026-10-19T12:30:35.252Z",
+  "selected_step": 400,
+  "threshold": 0.95,
+  "pipeline": "v2",
+  "checkpoint": {
+    "model.safetensors": "928fa7ec980654f6f2e71e770cba9359325cbaf465a5d123e64511ea0bcc43b4",
+    "pii_head.safetensors": "d356f257ca3ab47529752493ee05e4e3c8e45ded4c89b401e9a3f25f975af037",
+    "config.json": "980fd75fbd201a23a022a59ac872c01108672e6fcf828b1daa66ca510a7a0350"
+  },
+  "training_contract_sha256": "f6aad5fc487a5e73bc1cc27163e571c85b7509bb5a6e9845781a87044c3a7e3a",
+  "blind_gold_sha256": "70b0ba27f8c0cfee87f04a0319fd2510f1bcc1b986e01afb12c252033e74b8f5",
+  "selection": "160 independently generated dev docs only; 64 cases are previously audited regression, never training or selection",
+  "sources": {
+    "pii-decision-v2.mjs": "8f5fadad1d3eb772fe708609b06a91f458eafcd4ef84dbe14f342d9f4556d132",
+    "prepare-pii-mmbert-v2.mjs": "57147ea197f49c2b1ce13050ec5e3c3121d534262a1e0e61741adbcdc87a8563",
+    "train_pii_mmbert.py": "626d1aaaab2c6ef5056083dbd3245d9dc46d2b35740a7b737f7028320f926cee",
+    "predict_pii_mmbert.py": "d229e7f19ee955f46b5496a3c09b33be7a812acc0f7c7a828b24a90e32cdd0ac",
+    "evaluate-pii-mmbert.mjs": "45623259ab7bae1c4a715cabb846dc05fe868cfd7e42de19be195c5220b884d5",
+    "pii-candidate-rules.mjs": "eef518461f488401155b2d43586e12758cf2c46c67f3f0f14da0befc46ed2e9c",
+    "benchmark-pii-v2.mjs": "884aace1f7835a9e27a7ec002410864d77b4a0879aec344edddbfd68ae14706f"
+  }
+}

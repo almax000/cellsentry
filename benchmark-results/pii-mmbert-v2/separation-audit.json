@@ -1,0 +1,8 @@
+{
+  "checked_after_freeze": true,
+  "training_documents": 1840,
+  "regression_documents": 64,
+  "identical_document_texts": 0,
+  "equal_positive_values": 0,
+  "note": "Overlap audit does not select weights, labels, thresholds or candidates; equal values alone would not prove document reuse"
+}

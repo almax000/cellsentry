@@ -1,0 +1,47 @@
+{
+  "task": "PII patient/family 8-class decision, separate from formula",
+  "base": "jhu-clsp/mmBERT-base",
+  "base_license": "MIT",
+  "pipeline": "scripts/pii-decision-v2.mjs",
+  "checkpoint": "benchmark-results/pii-mmbert-v2/best",
+  "selected_step": 400,
+  "threshold": 0.95,
+  "classes": [
+    "background",
+    "name",
+    "phone",
+    "national_id",
+    "social_security",
+    "bank_card",
+    "email",
+    "address"
+  ],
+  "files": [
+    {
+      "file": "model.safetensors",
+      "sha256": "928fa7ec980654f6f2e71e770cba9359325cbaf465a5d123e64511ea0bcc43b4",
+      "size": 1227771776
+    },
+    {
+      "file": "pii_head.safetensors",
+      "sha256": "d356f257ca3ab47529752493ee05e4e3c8e45ded4c89b401e9a3f25f975af037",
+      "size": 24744
+    },
+    {
+      "file": "config.json",
+      "sha256": "980fd75fbd201a23a022a59ac872c01108672e6fcf828b1daa66ca510a7a0350",
+      "size": 2197
+    }
+  ],
+  "deployment": "Local safetensors experiment; not GGUF, not packaged, not deployed",
+  "validation": "Independent synthetic dev plus known synthetic regressions; no automatic-redaction approval",
+  "regression64_gold_sha256": "70b0ba27f8c0cfee87f04a0319fd2510f1bcc1b986e01afb12c252033e74b8f5",
+  "separation": {
+    "checked_after_freeze": true,
+    "training_documents": 1840,
+    "regression_documents": 64,
+    "identical_document_texts": 0,
+    "equal_positive_values": 0,
+    "note": "Overlap audit does not select weights, labels, thresholds or candidates; equal values alone would not prove document reuse"
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "seed": 730113,
+  "classes": [
+    "background",
+    "name",
+    "phone",
+    "national_id",
+    "social_security",
+    "bank_card",
+    "email",
+    "address"
+  ],
+  "question": "Which category does this candidate belong to for protecting patient and family identity?",
+  "options": [
+    "Keep background information",
+    "Redact patient/family name",
+    "Redact phone",
+    "Redact national ID",
+    "Redact social-security card",
+    "Redact bank card",
+    "Redact email",
+    "Redact home address"
+  ],
+  "initialization": "original jhu-clsp/mmBERT-base, not formula checkpoint",
+  "selection": "development strict span F1 then precision; no test/challenge selection",
+  "limitations": "Finite synthetic medical templates. Shared domain vocabulary with benchmark; no independent real-world generalization claim.",
+  "positive_value_overlap_with_frozen_dev_test": 0,
+  "splits": {
+    "train": {
+      "documents": 720,
+      "candidates": 15767,
+      "sha256": "0ec416342ab35c187673cbda9993b015ce9417cfa5a19aaa5bace51f1f57ae9e",
+      "inputs_sha256": "41622e4c61554b137175623bb1752d01fdee85e98ae857c8baf5bb3982901500",
+      "labels": {
+        "background": 7367,
+        "name": 1200,
+        "phone": 1200,
+        "national_id": 1200,
+        "social_security": 1200,
+        "bank_card": 1200,
+        "email": 1200,
+        "address": 1200
+      },
+      "document_source_sha256": "27d24cb67d48faa3f3e5405128f3da513e5bcdd614b6d771fabb31b980360b35"
+    },
+    "dev": {
+      "documents": 120,
+      "candidates": 2214,
+      "sha256": "17b15aef019860e05cb5a5a01dcebb2fe78aea21e7346a40b57901bcb9b848e5",
+      "inputs_sha256": "e07127eab3524c6b3c754aa13b7cb6cf27b66aedb7c752bcfab4ad5097aa5d7d",
+      "labels": {
+        "background": 1094,
+        "name": 160,
+        "phone": 160,
+        "national_id": 160,
+        "social_security": 160,
+        "bank_card": 160,
+        "email": 160,
+        "address": 160
+      },
+      "document_source_sha256": "42506bd3353355029f06486a34973b2d6aab040ffb94223f232acde0a11ee536"
+    },
+    "test": {
+      "documents": 360,
+      "candidates": 6634,
+      "sha256": "ca2ee5babd563be9cf85602e5fd98eb30d6199f71d2292894b6435b50c3bb4de",
+      "inputs_sha256": "aa47b91a8c6ea151c9b1754c80ea9da913723095035245e18d49cea8170b3e7f",
+      "labels": {
+        "background": 3274,
+        "name": 480,
+        "phone": 480,
+        "national_id": 480,
+        "social_security": 480,
+        "bank_card": 480,
+        "email": 480,
+        "address": 480
+      },
+      "document_source_sha256": "147ef25c179aa6b2d61df9aae40c92660207167de309d323e9f677b68663fa6d"
+    }
+  },
+  "source_hashes": {
+    "prepare-pii-mmbert.mjs": "95507f949f1e5819d3467009385521c3fb91644f09f09bd640cb3e66f4ecd798",
+    "pii-decision-common.mjs": "b3287c9a0ca871404adfb8e0ff80bcf03459334eaf84944a340fcbddefd149b2"
+  }
+}
