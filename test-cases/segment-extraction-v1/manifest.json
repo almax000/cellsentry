@@ -1,0 +1,7 @@
+{
+  "rows": 192,
+  "groups": 32,
+  "source": "Locally authored synthetic diagnostic; not independently blinded",
+  "policy": "Never train, tune thresholds or select checkpoints with this challenge",
+  "sha256": "52daf461115dc36f67466c7ce204e79825c4a0c4eaa4bdc2771289a1eb5c902e"
+}

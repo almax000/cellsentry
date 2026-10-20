@@ -1,0 +1,7 @@
+{
+  "rows": 19200,
+  "batch": 8,
+  "device": "cuda",
+  "seconds": 53.21469309995882,
+  "threshold": 0.95
+}

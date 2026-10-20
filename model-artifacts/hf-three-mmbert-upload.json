@@ -1,0 +1,35 @@
+{
+  "repo": "cellsentry-team/cellsentry-minicpm5-2b-formula-v3-GGUF",
+  "private": true,
+  "commit": "ebf243356da082e057b3ff04753e6faf3ffeb991",
+  "url": "https://huggingface.co/cellsentry-team/cellsentry-minicpm5-2b-formula-v3-GGUF/commit/ebf243356da082e057b3ff04753e6faf3ffeb991",
+  "folder": "segment-extraction-mmbert-v4",
+  "verified_existing": {
+    "pure-jev-mmbert/model.safetensors": "b91ae2a17cb2861ea4443fa7b6b54313f70da7162bdc9146fdd7eb26f15d316f",
+    "pure-jev-mmbert/decision_head.safetensors": "f43d719299a784b53cb524d612fb4138675ae4a56daa6aa2408f1b442abfcfe1",
+    "pii-mmbert-v2/model.safetensors": "928fa7ec980654f6f2e71e770cba9359325cbaf465a5d123e64511ea0bcc43b4",
+    "pii-mmbert-v2/pii_head.safetensors": "d356f257ca3ab47529752493ee05e4e3c8e45ded4c89b401e9a3f25f975af037"
+  },
+  "verified_new": {
+    "segment-extraction-mmbert-v4/config.json": "21c948f7f9931454a521f8a7e99495dcbc3cde3045ac4b640b73094b6a3435ca",
+    "segment-extraction-mmbert-v4/deployment.json": "c37d6bdd05d9a41ef1cc5cccbfb816c2d99fc7db2ebde0894e45a98debfe9fdb",
+    "segment-extraction-mmbert-v4/evaluation-report.md": "ac780388e745daf9fa4ccf70be82922678b8ebbcaac99456161ab245802bd20f",
+    "segment-extraction-mmbert-v4/evaluation.json": "2d33467dd43485d13ebbf4e186dde24512a4535615cba1bf5134d56c1e47b943",
+    "segment-extraction-mmbert-v4/extraction-meta.json": "32579d9fb22ba8b0d9650c84a67abe1e4b8f6b5b4ad720c6384c3fe4c9b446b0",
+    "segment-extraction-mmbert-v4/extraction_head.safetensors": "10865cf1a0311f3ddd0fa95fecef360da6c8217bb8a3e7dfdc01df2871966ea7",
+    "segment-extraction-mmbert-v4/infer.py": "8a7f9efc300ac18608a05a561136214f93bf206bcd5756dde752637d330e20b3",
+    "segment-extraction-mmbert-v4/LICENSE": "7102273c922b839e7dd0806f7266dd08b19fb844d32c25809739ef375a2718d7",
+    "segment-extraction-mmbert-v4/model-manifest.json": "d0c87609f15b8a1ffa17fea025ad39ba133bf6b1d38a82ec88e3c3a77924fde7",
+    "segment-extraction-mmbert-v4/model.safetensors": "cc55ea12cdbe5ae782748e3e6b2a0b2f9353867236078a108ee990a1fa56ee9b",
+    "segment-extraction-mmbert-v4/README.md": "bbc26e16c56e12bb8847590938c0ebde060eb3bf6b9d7472a7b1974fda88817e",
+    "segment-extraction-mmbert-v4/requirements.txt": "521e3d54b26708cac501eba48f3087913e6ee57ef9f61e12f5d42a4b5863dada",
+    "segment-extraction-mmbert-v4/tokenizer.json": "609d8f4c067cd3950f88594c5a802616cea245823836ef5848ee4fc40aab5b6f",
+    "segment-extraction-mmbert-v4/tokenizer_config.json": "0ecce0a99a35cdc3056614cebcba251c18944299ae2870412f707577a0292b87",
+    "segment-extraction-mmbert-v4/upload-manifest.json": "a0fc4949963e2a9c66343253048876fa2e7481a47518839c2bd06d391869a3ba",
+    "segment-extraction-mmbert-v4/upstream-model-card.md": "35724415037ee3159aa733c16050620cc19a76219112a6ceeb3949572e0b37e9",
+    "README.md": "7b845705d9e2fc1003c02c7aba941d51ca06ed51686647b303cf4d7ea5edb6e3",
+    "model-index.json": "37b05a3fc6a61a0a7a558483db57b6a22a2b256f2f2eff95f4499ebd3be52dd2"
+  },
+  "no_deletions": true,
+  "note": "Formula and PII checkpoints already existed and were verified; extraction v4 and shared index added atomically"
+}

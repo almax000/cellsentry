@@ -1,0 +1,325 @@
+{
+  "task": "target-conditioned whole-segment extraction",
+  "pipeline": "segment-v3",
+  "state": "trained-and-benchmarked",
+  "independent_encoder": true,
+  "warm_start": "D:\\git\\cellsentry-dev\\benchmark-results\\segment-extraction-mmbert-v2\\best",
+  "input_format": "提取目标：{target}\n当前段：{segment}",
+  "max_tokens": 512,
+  "threshold": 0.3,
+  "step": 1200,
+  "checkpoint": "benchmark-results/segment-extraction-mmbert-v3/best",
+  "files": {
+    "model.safetensors": {
+      "sha256": "498c1161562d9c911b17f353181bee4aac692d3e50974f04a8f34ee1c2375d89",
+      "bytes": 1227771776
+    },
+    "extraction_head.safetensors": {
+      "sha256": "2f7ad266e2b86e7d44bb46eb71c7b4aa6b76363b8cdb09b607bbb26f45d6ad74",
+      "bytes": 6288
+    },
+    "config.json": {
+      "sha256": "4034e7f58e0aad4be27d3eb8b0853617ee0a5812ac1a72fc671f0bf6df5b69e2",
+      "bytes": 2117
+    }
+  },
+  "splits": {
+    "train": {
+      "documents": 2423,
+      "count": 10400,
+      "positive": 2118,
+      "natural_pairs": 2400,
+      "scopes": {
+        "replay_legacy_current": 4000,
+        "natural_numeric_filter": 572,
+        "replay_current": 402,
+        "replay_historical": 403,
+        "replay_planned": 390,
+        "natural_all_periods": 72,
+        "replay_numeric_lt": 362,
+        "replay_all_periods": 403,
+        "natural_historical": 652,
+        "replay_numeric_ge": 399,
+        "natural_planned": 296,
+        "natural_current": 384,
+        "replay_numeric_le": 394,
+        "replay_revoked": 432,
+        "replay_numeric_gt": 391,
+        "replay_numeric_range": 424,
+        "natural_compound": 128,
+        "natural_topic": 108,
+        "natural_revoked": 100,
+        "natural_role": 88
+      },
+      "sha256": "937b5cb32777d9501204dcb093d850e2fbd63c21c6b8f4427da040781d0741e5",
+      "inputs_sha256": "ca677e9b1dfa26593f49b142307996a2ed0dc5e3678c62edf077161eac4c0869"
+    },
+    "dev": {
+      "documents": 277,
+      "count": 2592,
+      "positive": 524,
+      "natural_pairs": 592,
+      "scopes": {
+        "replay_legacy_current": 1000,
+        "replay_numeric_le": 109,
+        "replay_numeric_range": 87,
+        "natural_numeric_filter": 128,
+        "natural_current": 84,
+        "replay_numeric_lt": 99,
+        "replay_planned": 99,
+        "replay_all_periods": 91,
+        "replay_historical": 95,
+        "natural_topic": 52,
+        "natural_planned": 92,
+        "replay_current": 107,
+        "natural_historical": 148,
+        "replay_numeric_gt": 106,
+        "replay_numeric_ge": 100,
+        "replay_revoked": 107,
+        "natural_revoked": 40,
+        "natural_compound": 28,
+        "natural_role": 20
+      },
+      "sha256": "e92e24a0f17a30940db7b3d2d04852fcbee108c2edc6b6615d92577598af423a",
+      "inputs_sha256": "86a67efb3068cd29d9106158f7dd2fd5c8c48bf920be87416257d4aec1da37a5"
+    },
+    "test": {
+      "documents": 53,
+      "count": 848,
+      "positive": 224,
+      "natural_pairs": 848,
+      "scopes": {
+        "natural_historical": 188,
+        "natural_current": 144,
+        "natural_numeric_filter": 180,
+        "natural_all_periods": 8,
+        "natural_role": 20,
+        "natural_revoked": 60,
+        "natural_planned": 132,
+        "natural_topic": 88,
+        "natural_compound": 28
+      },
+      "sha256": "4c06fff306ccf30f23803067f87b6b750e54dedb88ebe6acff02ef3a9ffe71dc",
+      "inputs_sha256": "21c7c4a8a5576cc34877688eabfb74eb6439c9f293d6712201604a89a668e59e"
+    }
+  },
+  "training_script_sha256": "2241e2a92ba8f6b5d2a03d803f852238a1206f6f7b9ad9f7b82ba8c4f92c4895",
+  "source": {
+    "models": [
+      "doubao-seed-2.1-lite",
+      "deepseek-v4.1-flash",
+      "glm-5.3"
+    ],
+    "heldout_author": "glm-5.3",
+    "policy": "No repository or existing holdout content sent; label disagreements excluded as whole documents",
+    "splits": {
+      "train": {
+        "count": 2400,
+        "documents": 150,
+        "positive": 658,
+        "sha256": "b2235c74ec044ece63d462bda1775a282fc8540041f689742b431a7e7ee7674d"
+      },
+      "dev": {
+        "count": 592,
+        "documents": 37,
+        "positive": 164,
+        "sha256": "341576cc7c9d112fb9950dbcf46c943007326a0132ea6c8d16cee1cad23461ef"
+      },
+      "test": {
+        "count": 848,
+        "documents": 53,
+        "positive": 224,
+        "sha256": "4a42fd22bee8ea41dafff92ada004b1ec64661f24702e910dbc9eb779737552d"
+      }
+    },
+    "quarantined_documents": 92,
+    "calls": 129,
+    "tokens": 255635
+  },
+  "metrics": {
+    "author_heldout": {
+      "v1": {
+        "tp": 5,
+        "fp": 0,
+        "fn": 219,
+        "tn": 624,
+        "precision": 1.0,
+        "recall": 0.022321428571428572,
+        "f1": 0.043668122270742356,
+        "false_positive_rate": 0.0,
+        "groups": 212,
+        "exact_set_accuracy": 0.02358490566037736,
+        "empty_target_groups": 0,
+        "empty_target_accuracy": 0.0
+      },
+      "v2": {
+        "tp": 38,
+        "fp": 1,
+        "fn": 186,
+        "tn": 623,
+        "precision": 0.9743589743589743,
+        "recall": 0.16964285714285715,
+        "f1": 0.2889733840304183,
+        "false_positive_rate": 0.0016025641025641025,
+        "groups": 212,
+        "exact_set_accuracy": 0.1792452830188679,
+        "empty_target_groups": 0,
+        "empty_target_accuracy": 0.0
+      },
+      "v3": {
+        "tp": 202,
+        "fp": 22,
+        "fn": 22,
+        "tn": 602,
+        "precision": 0.9017857142857143,
+        "recall": 0.9017857142857143,
+        "f1": 0.9017857142857143,
+        "false_positive_rate": 0.035256410256410256,
+        "groups": 212,
+        "exact_set_accuracy": 0.8018867924528302,
+        "empty_target_groups": 0,
+        "empty_target_accuracy": 0.0
+      }
+    },
+    "v1_test_regression": {
+      "v1": {
+        "tp": 960,
+        "fp": 37,
+        "fn": 0,
+        "tn": 7323,
+        "precision": 0.9628886659979939,
+        "recall": 1.0,
+        "f1": 0.9810935104752171,
+        "false_positive_rate": 0.005027173913043478,
+        "groups": 1040,
+        "exact_set_accuracy": 0.9644230769230769,
+        "empty_target_groups": 80,
+        "empty_target_accuracy": 1.0
+      },
+      "v2": {
+        "tp": 960,
+        "fp": 305,
+        "fn": 0,
+        "tn": 7055,
+        "precision": 0.758893280632411,
+        "recall": 1.0,
+        "f1": 0.8629213483146067,
+        "false_positive_rate": 0.041440217391304345,
+        "groups": 1040,
+        "exact_set_accuracy": 0.7067307692307693,
+        "empty_target_groups": 80,
+        "empty_target_accuracy": 1.0
+      },
+      "v3": {
+        "tp": 960,
+        "fp": 426,
+        "fn": 0,
+        "tn": 6934,
+        "precision": 0.6926406926406926,
+        "recall": 1.0,
+        "f1": 0.8184143222506393,
+        "false_positive_rate": 0.057880434782608695,
+        "groups": 1040,
+        "exact_set_accuracy": 0.5903846153846154,
+        "empty_target_groups": 80,
+        "empty_target_accuracy": 1.0
+      }
+    },
+    "manual_regression": {
+      "v1": {
+        "tp": 18,
+        "fp": 0,
+        "fn": 38,
+        "tn": 136,
+        "precision": 1.0,
+        "recall": 0.32142857142857145,
+        "f1": 0.4864864864864865,
+        "false_positive_rate": 0.0,
+        "groups": 32,
+        "exact_set_accuracy": 0.15625,
+        "empty_target_groups": 0,
+        "empty_target_accuracy": 0.0
+      },
+      "v2": {
+        "tp": 13,
+        "fp": 0,
+        "fn": 43,
+        "tn": 136,
+        "precision": 1.0,
+        "recall": 0.23214285714285715,
+        "f1": 0.37681159420289856,
+        "false_positive_rate": 0.0,
+        "groups": 32,
+        "exact_set_accuracy": 0.1875,
+        "empty_target_groups": 0,
+        "empty_target_accuracy": 0.0
+      },
+      "v3": {
+        "tp": 49,
+        "fp": 26,
+        "fn": 7,
+        "tn": 110,
+        "precision": 0.6533333333333333,
+        "recall": 0.875,
+        "f1": 0.7480916030534351,
+        "false_positive_rate": 0.19117647058823528,
+        "groups": 32,
+        "exact_set_accuracy": 0.25,
+        "empty_target_groups": 0,
+        "empty_target_accuracy": 0.0
+      }
+    },
+    "v2_test_regression": {
+      "v1": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 4640,
+        "tn": 14560,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "false_positive_rate": 0.0,
+        "groups": 1600,
+        "exact_set_accuracy": 0.0,
+        "empty_target_groups": 0,
+        "empty_target_accuracy": 0.0
+      },
+      "v2": {
+        "tp": 4628,
+        "fp": 79,
+        "fn": 12,
+        "tn": 14481,
+        "precision": 0.9832164860845549,
+        "recall": 0.9974137931034482,
+        "f1": 0.9902642559109875,
+        "false_positive_rate": 0.005425824175824176,
+        "groups": 1600,
+        "exact_set_accuracy": 0.944375,
+        "empty_target_groups": 0,
+        "empty_target_accuracy": 0.0
+      },
+      "v3": {
+        "tp": 4517,
+        "fp": 405,
+        "fn": 123,
+        "tn": 14155,
+        "precision": 0.9177163754571313,
+        "recall": 0.9734913793103448,
+        "f1": 0.9447814264798159,
+        "false_positive_rate": 0.027815934065934064,
+        "groups": 1600,
+        "exact_set_accuracy": 0.80375,
+        "empty_target_groups": 0,
+        "empty_target_accuracy": 0.0
+      }
+    }
+  },
+  "promotion_decision": "do not promote: cross-author improvement accompanied by increased false retention on known template regressions",
+  "limitations": [
+    "Synthetic multi-author agreement labels, not independently human-audited gold.",
+    "Agreement filtering may favor easier cases and retain shared model biases.",
+    "GLM generator excluded from accepted training/development authors and reviewers; earlier unused probe/review responses are not training data.",
+    "Known prior tests remain regressions only; none are training or development examples.",
+    "No GGUF conversion, app integration or device performance measurement."
+  ]
+}

@@ -1,0 +1,246 @@
+{
+  "task": "whole-segment extraction",
+  "pipeline": "segment-v4",
+  "state": "trained-and-benchmarked",
+  "warm_start": "D:\\git\\cellsentry-dev\\benchmark-results\\segment-extraction-mmbert-v3\\best",
+  "checkpoint": "benchmark-results/segment-extraction-mmbert-v4/best",
+  "step": 1200,
+  "threshold": 0.7,
+  "max_tokens": 512,
+  "files": {
+    "model.safetensors": {
+      "sha256": "cc55ea12cdbe5ae782748e3e6b2a0b2f9353867236078a108ee990a1fa56ee9b",
+      "bytes": 1227771776
+    },
+    "extraction_head.safetensors": {
+      "sha256": "10865cf1a0311f3ddd0fa95fecef360da6c8217bb8a3e7dfdc01df2871966ea7",
+      "bytes": 6288
+    },
+    "config.json": {
+      "sha256": "21c948f7f9931454a521f8a7e99495dcbc3cde3045ac4b640b73094b6a3435ca",
+      "bytes": 2117
+    }
+  },
+  "source": {
+    "models": [
+      "doubao-seed-2.1-lite",
+      "deepseek-v4.1-flash",
+      "glm-5.3"
+    ],
+    "heldout_author": "glm-5.3",
+    "policy": "Independent negation/exclusion corpus; equivalent target pairs and disjoint counterfactuals; no existing test content sent",
+    "splits": {
+      "train": {
+        "count": 1584,
+        "documents": 99,
+        "positive": 492,
+        "sha256": "27351cd6e09adcbea516268f936da68c664f76f2a82977724fd86807a9150782"
+      },
+      "dev": {
+        "count": 432,
+        "documents": 27,
+        "positive": 142,
+        "sha256": "7708e714044197fc8a0f2ab5c76baf2b89413c4f3fa135c2cefa8710500e99e5"
+      },
+      "test": {
+        "count": 768,
+        "documents": 48,
+        "positive": 296,
+        "sha256": "1a6e32231f25079eacde759795b0f8b6caeb5091e79595d87f816a21ca6a1a68"
+      }
+    },
+    "quarantined_documents": 65,
+    "calls": 103,
+    "tokens": 208880
+  },
+  "splits": {
+    "train": {
+      "count": 11984,
+      "documents": 2522,
+      "positive": 2610,
+      "origins": {
+        "replay": 8000,
+        "focus": 1584,
+        "general": 2400
+      },
+      "sha256": "c1f5d528437e78204f88a7db3e600ae21475eee9993f4f305cb41e1f59275f8a",
+      "inputs_sha256": "86f008da575dd4fc71c1251aa162b838c3f8a8034341c7d4ad9a897fb8c1c5e6"
+    },
+    "dev": {
+      "count": 3024,
+      "documents": 304,
+      "positive": 666,
+      "origins": {
+        "replay": 2000,
+        "focus": 432,
+        "general": 592
+      },
+      "sha256": "1609f8c275dae388ec4454c2152e3612b6ad0f039c3cf4240b07e5b754e8947d",
+      "inputs_sha256": "fc28cf8f5df146bcf653b112bdba22ee36e0d90beefeb53c48b2d8dbb8bb760f"
+    },
+    "test": {
+      "count": 768,
+      "documents": 48,
+      "positive": 296,
+      "origins": {
+        "focus": 768
+      },
+      "sha256": "425473ac089aaf7e55ceb4ec9427373f051859df075fe9dd414cb22d061e7708",
+      "inputs_sha256": "cd24675eb8e97dfe4f87be0f8152c944f8384656d677653ad74f4ebbbfb00196"
+    }
+  },
+  "training_script_sha256": "e194c70008bbefca3b9315a77d5cd8c6a31d2af823cd4cf4d8d4c4d21c08a9fd",
+  "metrics": {
+    "fresh_focus": {
+      "v3": {
+        "tp": 80,
+        "fp": 25,
+        "fn": 216,
+        "tn": 447,
+        "precision": 0.7619047619047619,
+        "recall": 0.2702702702702703,
+        "f1": 0.39900249376558605,
+        "false_positive_rate": 0.05296610169491525,
+        "groups": 192,
+        "exact_set_accuracy": 0.22916666666666666,
+        "empty_target_groups": 0,
+        "empty_target_accuracy": 0.0
+      },
+      "v4": {
+        "tp": 238,
+        "fp": 18,
+        "fn": 58,
+        "tn": 454,
+        "precision": 0.9296875,
+        "recall": 0.8040540540540541,
+        "f1": 0.8623188405797102,
+        "false_positive_rate": 0.038135593220338986,
+        "groups": 192,
+        "exact_set_accuracy": 0.6770833333333334,
+        "empty_target_groups": 0,
+        "empty_target_accuracy": 0.0
+      }
+    },
+    "general_author_regression": {
+      "v3": {
+        "tp": 202,
+        "fp": 22,
+        "fn": 22,
+        "tn": 602,
+        "precision": 0.9017857142857143,
+        "recall": 0.9017857142857143,
+        "f1": 0.9017857142857143,
+        "false_positive_rate": 0.035256410256410256,
+        "groups": 212,
+        "exact_set_accuracy": 0.8018867924528302,
+        "empty_target_groups": 0,
+        "empty_target_accuracy": 0.0
+      },
+      "v4": {
+        "tp": 192,
+        "fp": 14,
+        "fn": 32,
+        "tn": 610,
+        "precision": 0.9320388349514563,
+        "recall": 0.8571428571428571,
+        "f1": 0.8930232558139534,
+        "false_positive_rate": 0.022435897435897436,
+        "groups": 212,
+        "exact_set_accuracy": 0.7971698113207547,
+        "empty_target_groups": 0,
+        "empty_target_accuracy": 0.0
+      }
+    },
+    "v1_template_regression": {
+      "v3": {
+        "tp": 960,
+        "fp": 426,
+        "fn": 0,
+        "tn": 6934,
+        "precision": 0.6926406926406926,
+        "recall": 1.0,
+        "f1": 0.8184143222506393,
+        "false_positive_rate": 0.057880434782608695,
+        "groups": 1040,
+        "exact_set_accuracy": 0.5903846153846154,
+        "empty_target_groups": 80,
+        "empty_target_accuracy": 1.0
+      },
+      "v4": {
+        "tp": 960,
+        "fp": 333,
+        "fn": 0,
+        "tn": 7027,
+        "precision": 0.7424593967517401,
+        "recall": 1.0,
+        "f1": 0.8521970705725699,
+        "false_positive_rate": 0.04524456521739131,
+        "groups": 1040,
+        "exact_set_accuracy": 0.6798076923076923,
+        "empty_target_groups": 80,
+        "empty_target_accuracy": 1.0
+      }
+    },
+    "manual_regression": {
+      "v3": {
+        "tp": 49,
+        "fp": 26,
+        "fn": 7,
+        "tn": 110,
+        "precision": 0.6533333333333333,
+        "recall": 0.875,
+        "f1": 0.7480916030534351,
+        "false_positive_rate": 0.19117647058823528,
+        "groups": 32,
+        "exact_set_accuracy": 0.25,
+        "empty_target_groups": 0,
+        "empty_target_accuracy": 0.0
+      },
+      "v4": {
+        "tp": 49,
+        "fp": 22,
+        "fn": 7,
+        "tn": 114,
+        "precision": 0.6901408450704225,
+        "recall": 0.875,
+        "f1": 0.7716535433070867,
+        "false_positive_rate": 0.16176470588235295,
+        "groups": 32,
+        "exact_set_accuracy": 0.34375,
+        "empty_target_groups": 0,
+        "empty_target_accuracy": 0.0
+      }
+    },
+    "v2_template_regression": {
+      "v3": {
+        "tp": 4517,
+        "fp": 405,
+        "fn": 123,
+        "tn": 14155,
+        "precision": 0.9177163754571313,
+        "recall": 0.9734913793103448,
+        "f1": 0.9447814264798159,
+        "false_positive_rate": 0.027815934065934064,
+        "groups": 1600,
+        "exact_set_accuracy": 0.80375,
+        "empty_target_groups": 0,
+        "empty_target_accuracy": 0.0
+      },
+      "v4": {
+        "tp": 4386,
+        "fp": 288,
+        "fn": 254,
+        "tn": 14272,
+        "precision": 0.938382541720154,
+        "recall": 0.9452586206896552,
+        "f1": 0.941808030921194,
+        "false_positive_rate": 0.01978021978021978,
+        "groups": 1600,
+        "exact_set_accuracy": 0.81,
+        "empty_target_groups": 0,
+        "empty_target_accuracy": 0.0
+      }
+    }
+  },
+  "promotion_decision": "do not promote: selected checkpoint failed development recall guard"
+}

@@ -1,0 +1,2 @@
+# Frozen compressed copies and manifests are tracked; restore plaintext for training.
+*.jsonl

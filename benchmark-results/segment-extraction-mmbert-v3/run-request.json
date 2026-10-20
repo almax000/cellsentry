@@ -1,0 +1,96 @@
+{
+  "base": {
+    "repo": "jhu-clsp/mmBERT-base",
+    "revision": "c5955035435e2bf121cde7f3c8863ef52ff35d82",
+    "files": [
+      {
+        "rfilename": "config.json",
+        "blobId": "3702d5b491de759f4e8a6c35012745b1c313a418",
+        "size": 1188,
+        "verified_sha256": "47b40fd2e1df8299426dd5f4bb18c28f028cfafcb51b73645f83e596d187eb37"
+      },
+      {
+        "rfilename": "tokenizer_config.json",
+        "blobId": "de9f252583194a9d4fe1e4f95e8cdb61df7bbb1e",
+        "size": 46440,
+        "verified_sha256": "1d2f82c1341a79748e00efe82e67690f99d00b3c2a894f2b23128fd9d3519da3"
+      },
+      {
+        "rfilename": "special_tokens_map.json",
+        "blobId": "8d6368f7e735fbe4781bf6e956b7c6ad0586df80",
+        "size": 636,
+        "verified_sha256": "baec30ea10906f16adb8c18af7a34023002c1746542612b8b41c9f09e1351351"
+      },
+      {
+        "rfilename": "tokenizer.json",
+        "blobId": "0583d4773a52f0137fac67368fb92aefbe7816c8",
+        "size": 17525329,
+        "lfs": {
+          "sha256": "197d4cc5406ee12cc50c8b5511f2393cc32d9db321545979ce041c1199178356",
+          "size": 17525329,
+          "pointerSize": 133
+        },
+        "verified_sha256": "197d4cc5406ee12cc50c8b5511f2393cc32d9db321545979ce041c1199178356"
+      },
+      {
+        "rfilename": "pytorch_model.bin",
+        "blobId": "1498581e30b1d32517eedab5f4d0ac2f9b0f3ff1",
+        "size": 1231188142,
+        "lfs": {
+          "sha256": "8ea64ec1ea4eb8fca0fc14b69a2ae571de6bfbc25fd214bb932dd4aba6a3a04e",
+          "size": 1231188142,
+          "pointerSize": 135
+        },
+        "verified_sha256": "8ea64ec1ea4eb8fca0fc14b69a2ae571de6bfbc25fd214bb932dd4aba6a3a04e"
+      },
+      {
+        "rfilename": "README.md",
+        "blobId": "29d50f7aa2c43c82c408fdc1877d3e9fa325618f",
+        "size": 29650,
+        "verified_sha256": "35724415037ee3159aa733c16050620cc19a76219112a6ceeb3949572e0b37e9"
+      }
+    ]
+  },
+  "seed": 42,
+  "classes": [
+    "discard",
+    "keep"
+  ],
+  "pipeline": "segment-v3",
+  "warm_start_checkpoint": "D:\\git\\cellsentry-dev\\benchmark-results\\segment-extraction-mmbert-v2\\best",
+  "warm_start_hashes": {
+    "model.safetensors": "be1a92905157e45d0d054078e9788f1d542550ead4623fb273370b45f5c30fba",
+    "extraction_head.safetensors": "5f5a3f225a98d591b18f57b061d450cf52dbba985ce2a05165531d2a6cda05be",
+    "config.json": "84ee78ba012c357ba155bf69f9979ce7ae1514b0be95148101ab28778c039944"
+  },
+  "sampling": "80% natural / 20% replay with replacement",
+  "steps": 1500,
+  "micro_batch": 4,
+  "accumulation": 4,
+  "lr": 5e-06,
+  "warmup": 30,
+  "optimizer": "Adafactor",
+  "precision": "BF16 autocast, FP32 parameters/head",
+  "input": "extraction target + current segment only; no gold or whole-document context",
+  "contract_sha256": "c5b95a8e8f81985a8d32df27932a812d3c00b82a1f62c5132fbac54af490ef6a",
+  "script_sha256": "2241e2a92ba8f6b5d2a03d803f852238a1206f6f7b9ad9f7b82ba8c4f92c4895",
+  "max_train_tokens": 93,
+  "max_dev_tokens": 101,
+  "transformers": "5.19.0",
+  "selection": "development 80% natural-scope macro F1 + 20% replay-scope macro F1; then precision",
+  "torch": "2.14.1+cu130",
+  "formula_models": "not loaded or modified",
+  "gpu": "NVIDIA GeForce RTX 5060 Ti",
+  "train_count": 10400,
+  "state": "running",
+  "threshold_grid": [
+    0.3,
+    0.5,
+    0.7,
+    0.85,
+    0.95
+  ],
+  "selection_code_sha256": "3444039d70c3d22d196e04f01ba84d5b2faff60bab7ca5d498d185ffbdf04099",
+  "inference_contract_sha256": "dc9c3bef1736c9aaf7b0196d92b27208adff42909e9e8479218a4d42d0db6054",
+  "test_policy": "test inputs only after selected checkpoint; gold only final scoring"
+}

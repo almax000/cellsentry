@@ -1,0 +1,17 @@
+{
+  "threshold": 0.95,
+  "metrics": {
+    "tp": 480,
+    "fp": 239,
+    "fn": 0,
+    "tn": 3441,
+    "precision": 0.6675938803894298,
+    "recall": 1.0,
+    "f1": 0.8006672226855713,
+    "false_positive_rate": 0.06494565217391304,
+    "groups": 520,
+    "exact_set_accuracy": 0.5403846153846154,
+    "empty_target_groups": 40,
+    "empty_target_accuracy": 1.0
+  }
+}

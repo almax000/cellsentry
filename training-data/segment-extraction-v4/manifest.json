@@ -1,0 +1,80 @@
+{
+  "task": "negation-aware whole-segment extraction",
+  "pipeline": "segment-v4",
+  "classes": [
+    "discard",
+    "keep"
+  ],
+  "selection": "DEV weighted F0.5 (40% focus / 40% general / 20% replay); focus and general recall >= 0.85 guard",
+  "sampling": "40% focus / 40% general / 20% replay",
+  "provenance": {
+    "models": [
+      "doubao-seed-2.1-lite",
+      "deepseek-v4.1-flash",
+      "glm-5.3"
+    ],
+    "heldout_author": "glm-5.3",
+    "policy": "Independent negation/exclusion corpus; equivalent target pairs and disjoint counterfactuals; no existing test content sent",
+    "splits": {
+      "train": {
+        "count": 1584,
+        "documents": 99,
+        "positive": 492,
+        "sha256": "27351cd6e09adcbea516268f936da68c664f76f2a82977724fd86807a9150782"
+      },
+      "dev": {
+        "count": 432,
+        "documents": 27,
+        "positive": 142,
+        "sha256": "7708e714044197fc8a0f2ab5c76baf2b89413c4f3fa135c2cefa8710500e99e5"
+      },
+      "test": {
+        "count": 768,
+        "documents": 48,
+        "positive": 296,
+        "sha256": "1a6e32231f25079eacde759795b0f8b6caeb5091e79595d87f816a21ca6a1a68"
+      }
+    },
+    "quarantined_documents": 65,
+    "calls": 103,
+    "tokens": 208880
+  },
+  "splits": {
+    "train": {
+      "count": 11984,
+      "documents": 2522,
+      "positive": 2610,
+      "origins": {
+        "replay": 8000,
+        "focus": 1584,
+        "general": 2400
+      },
+      "sha256": "c1f5d528437e78204f88a7db3e600ae21475eee9993f4f305cb41e1f59275f8a",
+      "inputs_sha256": "86f008da575dd4fc71c1251aa162b838c3f8a8034341c7d4ad9a897fb8c1c5e6"
+    },
+    "dev": {
+      "count": 3024,
+      "documents": 304,
+      "positive": 666,
+      "origins": {
+        "replay": 2000,
+        "focus": 432,
+        "general": 592
+      },
+      "sha256": "1609f8c275dae388ec4454c2152e3612b6ad0f039c3cf4240b07e5b754e8947d",
+      "inputs_sha256": "fc28cf8f5df146bcf653b112bdba22ee36e0d90beefeb53c48b2d8dbb8bb760f"
+    },
+    "test": {
+      "count": 768,
+      "documents": 48,
+      "positive": 296,
+      "origins": {
+        "focus": 768
+      },
+      "sha256": "425473ac089aaf7e55ceb4ec9427373f051859df075fe9dd414cb22d061e7708",
+      "inputs_sha256": "cd24675eb8e97dfe4f87be0f8152c944f8384656d677653ad74f4ebbbfb00196"
+    }
+  },
+  "policy": "No existing test/challenge content in train/dev or generation prompts; fresh author-heldout focused test",
+  "limitations": "Synthetic cross-model agreement, not independently human-audited gold"
+}

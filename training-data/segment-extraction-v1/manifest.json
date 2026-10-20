@@ -1,0 +1,32 @@
+{
+  "task": "target-conditioned-whole-segment-extraction-v1",
+  "pipeline": "segment-v1",
+  "classes": [
+    "discard",
+    "keep"
+  ],
+  "seed": 78421,
+  "selection": "development F1, then precision; test once after checkpoint selection",
+  "provenance": "New deterministic synthetic data; old garbled field extraction and all PII holdouts excluded",
+  "limitations": "Shared business concepts and synthetic grammar; template-disjoint is not independent real-world validation",
+  "splits": {
+    "train": {
+      "documents": 1600,
+      "count": 41600,
+      "positives": 4800,
+      "sha256": "6b862be20b60cfb6659cdc9efdbe02fe606d4140759cb499e88a49879888a7a9"
+    },
+    "dev": {
+      "documents": 160,
+      "count": 4160,
+      "positives": 480,
+      "sha256": "9b364d5e7eed0d10287c469ca091b936a8f385097551f184f3700ba85e6c3f9c"
+    },
+    "test": {
+      "documents": 320,
+      "count": 8320,
+      "positives": 960,
+      "sha256": "daa3091e4754f220cfe3b50e2180f7968074545689892023352b89a65df12d0f"
+    }
+  }
+}

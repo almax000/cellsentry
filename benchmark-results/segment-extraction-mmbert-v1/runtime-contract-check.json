@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "cases": [
+    "verbatim text, whitespace and source retained",
+    "overlength returns error without truncation",
+    "missing target returns error"
+  ],
+  "prediction_statuses": [
+    "keep",
+    "error",
+    "error"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "best_step": 1200,
+  "development_macro_scope_f1": 0.8934250999197642,
+  "development_precision": 0.774885145482389,
+  "threshold": 0.3,
+  "max_test_tokens": 82,
+  "seconds": 897.1368637001142,
+  "peak_cuda_allocated_bytes": 4138181120,
+  "checkpoint_hashes": {
+    "model.safetensors": "498c1161562d9c911b17f353181bee4aac692d3e50974f04a8f34ee1c2375d89",
+    "extraction_head.safetensors": "2f7ad266e2b86e7d44bb46eb71c7b4aa6b76363b8cdb09b607bbb26f45d6ad74",
+    "config.json": "4034e7f58e0aad4be27d3eb8b0853617ee0a5812ac1a72fc671f0bf6df5b69e2"
+  },
+  "note": "Local experimental checkpoint, not yet converted to GGUF or validated on iPhone; test not used for selection"
+}

@@ -1,0 +1,209 @@
+{
+  "task": "target-conditioned whole-segment extraction",
+  "pipeline": "segment-v2",
+  "state": "trained-and-benchmarked",
+  "base_source": {
+    "repo": "jhu-clsp/mmBERT-base",
+    "revision": "c5955035435e2bf121cde7f3c8863ef52ff35d82",
+    "files": [
+      {
+        "rfilename": "config.json",
+        "blobId": "3702d5b491de759f4e8a6c35012745b1c313a418",
+        "size": 1188,
+        "verified_sha256": "47b40fd2e1df8299426dd5f4bb18c28f028cfafcb51b73645f83e596d187eb37"
+      },
+      {
+        "rfilename": "tokenizer_config.json",
+        "blobId": "de9f252583194a9d4fe1e4f95e8cdb61df7bbb1e",
+        "size": 46440,
+        "verified_sha256": "1d2f82c1341a79748e00efe82e67690f99d00b3c2a894f2b23128fd9d3519da3"
+      },
+      {
+        "rfilename": "special_tokens_map.json",
+        "blobId": "8d6368f7e735fbe4781bf6e956b7c6ad0586df80",
+        "size": 636,
+        "verified_sha256": "baec30ea10906f16adb8c18af7a34023002c1746542612b8b41c9f09e1351351"
+      },
+      {
+        "rfilename": "tokenizer.json",
+        "blobId": "0583d4773a52f0137fac67368fb92aefbe7816c8",
+        "size": 17525329,
+        "lfs": {
+          "sha256": "197d4cc5406ee12cc50c8b5511f2393cc32d9db321545979ce041c1199178356",
+          "size": 17525329,
+          "pointerSize": 133
+        },
+        "verified_sha256": "197d4cc5406ee12cc50c8b5511f2393cc32d9db321545979ce041c1199178356"
+      },
+      {
+        "rfilename": "pytorch_model.bin",
+        "blobId": "1498581e30b1d32517eedab5f4d0ac2f9b0f3ff1",
+        "size": 1231188142,
+        "lfs": {
+          "sha256": "8ea64ec1ea4eb8fca0fc14b69a2ae571de6bfbc25fd214bb932dd4aba6a3a04e",
+          "size": 1231188142,
+          "pointerSize": 135
+        },
+        "verified_sha256": "8ea64ec1ea4eb8fca0fc14b69a2ae571de6bfbc25fd214bb932dd4aba6a3a04e"
+      },
+      {
+        "rfilename": "README.md",
+        "blobId": "29d50f7aa2c43c82c408fdc1877d3e9fa325618f",
+        "size": 29650,
+        "verified_sha256": "35724415037ee3159aa733c16050620cc19a76219112a6ceeb3949572e0b37e9"
+      }
+    ]
+  },
+  "independent_encoder": true,
+  "classes": [
+    "discard",
+    "keep"
+  ],
+  "pooling": "masked_mean",
+  "head": "FP32 linear",
+  "input_format": "提取目标：{target}\n当前段：{segment}",
+  "max_tokens": 512,
+  "threshold": 0.3,
+  "checkpoint_step": 2000,
+  "checkpoint": "benchmark-results/segment-extraction-mmbert-v2/best",
+  "files": {
+    "model.safetensors": {
+      "sha256": "be1a92905157e45d0d054078e9788f1d542550ead4623fb273370b45f5c30fba",
+      "bytes": 1227771776
+    },
+    "extraction_head.safetensors": {
+      "sha256": "5f5a3f225a98d591b18f57b061d450cf52dbba985ce2a05165531d2a6cda05be",
+      "bytes": 6288
+    },
+    "config.json": {
+      "sha256": "84ee78ba012c357ba155bf69f9979ce7ae1514b0be95148101ab28778c039944",
+      "bytes": 2117
+    }
+  },
+  "training_script_sha256": "cd7c719f5e563341ceb5af1a07e07a5ef2c40fa58eeb099f7132321f23f6e759",
+  "contract_sha256": "ab878397397396d2475efdc6b87c25af1827622da4a77911f0239ec5d8e5ce36",
+  "splits": {
+    "train": {
+      "documents": 1200,
+      "count": 106456,
+      "positives": 24400,
+      "sha256": "6f3b39bf43de76f2fb69a58faec6265336c67fbb6194acdfa763c43ca3501849",
+      "inputs_sha256": "ad989a594b2575a3e05d431e15c3f2f99b0c45dd501096819e333dc59bd698b9"
+    },
+    "dev": {
+      "documents": 160,
+      "count": 11624,
+      "positives": 2560,
+      "sha256": "a983715cad7f27a7b1c6a55900ff5613be62d82676d3867ccaea3b4e616b05f1",
+      "inputs_sha256": "ad1ecbf6296e7242b323eed075542f578e5c3e015454d98a73b959cbde03d535"
+    },
+    "test": {
+      "documents": 160,
+      "count": 19200,
+      "positives": 4640,
+      "sha256": "1103eab369f9b73cee45054ef4b68c9efb1c97a9591843dd54c3409ba344c23f",
+      "inputs_sha256": "190fa10499bf1fd67f38b7888721f8538366d546a8802051de37dba149f16bd9"
+    }
+  },
+  "tests": {
+    "new_test": {
+      "v1": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 4640,
+        "tn": 14560,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "false_positive_rate": 0.0,
+        "groups": 1600,
+        "exact_set_accuracy": 0.0,
+        "empty_target_groups": 0,
+        "empty_target_accuracy": 0.0
+      },
+      "v2": {
+        "tp": 4628,
+        "fp": 79,
+        "fn": 12,
+        "tn": 14481,
+        "precision": 0.9832164860845549,
+        "recall": 0.9974137931034482,
+        "f1": 0.9902642559109875,
+        "false_positive_rate": 0.005425824175824176,
+        "groups": 1600,
+        "exact_set_accuracy": 0.944375,
+        "empty_target_groups": 0,
+        "empty_target_accuracy": 0.0
+      }
+    },
+    "v1_test_regression": {
+      "v1": {
+        "tp": 960,
+        "fp": 37,
+        "fn": 0,
+        "tn": 7323,
+        "precision": 0.9628886659979939,
+        "recall": 1.0,
+        "f1": 0.9810935104752171,
+        "false_positive_rate": 0.005027173913043478,
+        "groups": 1040,
+        "exact_set_accuracy": 0.9644230769230769,
+        "empty_target_groups": 80,
+        "empty_target_accuracy": 1.0
+      },
+      "v2": {
+        "tp": 960,
+        "fp": 305,
+        "fn": 0,
+        "tn": 7055,
+        "precision": 0.758893280632411,
+        "recall": 1.0,
+        "f1": 0.8629213483146067,
+        "false_positive_rate": 0.041440217391304345,
+        "groups": 1040,
+        "exact_set_accuracy": 0.7067307692307693,
+        "empty_target_groups": 80,
+        "empty_target_accuracy": 1.0
+      }
+    },
+    "manual_regression": {
+      "v1": {
+        "tp": 18,
+        "fp": 0,
+        "fn": 38,
+        "tn": 136,
+        "precision": 1.0,
+        "recall": 0.32142857142857145,
+        "f1": 0.4864864864864865,
+        "false_positive_rate": 0.0,
+        "groups": 32,
+        "exact_set_accuracy": 0.15625,
+        "empty_target_groups": 0,
+        "empty_target_accuracy": 0.0
+      },
+      "v2": {
+        "tp": 13,
+        "fp": 0,
+        "fn": 43,
+        "tn": 136,
+        "precision": 1.0,
+        "recall": 0.23214285714285715,
+        "f1": 0.37681159420289856,
+        "false_positive_rate": 0.0,
+        "groups": 32,
+        "exact_set_accuracy": 0.1875,
+        "empty_target_groups": 0,
+        "empty_target_accuracy": 0.0
+      }
+    }
+  },
+  "deployment": "local FP32 only; not quantized or integrated",
+  "limitations": [
+    "Synthetic eight-domain corpus; shared condition grammar, not independent real-world accuracy.",
+    "Old test and diagnostic are known regression tests; neither entered train/dev.",
+    "New test documents, fact phrasing and outer rendering templates are split from train/dev; numeric values share a sampling distribution and can overlap.",
+    "No GGUF conversion, app deployment or iPhone performance measurement."
+  ],
+  "promotion_decision": "retain v1; v2 is experimental because known regression tests deteriorated",
+  "readiness": "not suitable for general target-conditioned extraction; template overfitting"
+}
