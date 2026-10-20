@@ -15,7 +15,9 @@
 [首次签名上传 CI](https://github.com/almax000/cellsentry-dev/actions/runs/39369118716) 已通过，
 使用 Xcode 26.6 构建 `0.1.0 (1.1)`。Apple 上传返回无错误，Delivery UUID：
 `aa13f291-2acb-4110-9d0a-ed230bf2f71e`。签名 IPA 为 8,269,237 字节，不含模型。
-内部测试组为“iPhone 16e 离线测试”；已添加账号持有人，构建仍需等待 Apple 处理并加入组后才能安装。
+Apple 构建处理状态已为 `VALID`；已按测试 App 实际实现完成加密问卷（无非豁免加密）。
+构建已加入“iPhone 16e 离线测试”内部测试组，账号持有人已授权接收 TestFlight 邀请。
+手机安装和断网推理尚待实测，不能将签名上传成功视为真机性能验证。
 
 仓库 Variables：`APPLE_TEAM_ID`、`ASC_KEY_ID`、`ASC_ISSUER_ID`。
 仓库 Secrets：
