@@ -2,6 +2,42 @@
 
 最小工程已通过 GitHub macOS CI 的 iPhone 设备与模拟器测试编译。本 Windows 开发机不执行 Apple 编译；尚未签名或进行真机测试，没有生成可安装 IPA。
 
+## Windows 开发机通过 TestFlight 安装
+
+2026-10-20 已在 Apple Team `922LFX6FZ8` 注册测试应用：
+
+- Bundle ID：`com.cellsentry.phone.test`。
+- App Store Connect：[CellSentry Phone Test](https://appstoreconnect.apple.com/apps/6824777154/distribution)，Apple ID `6824777154`。
+- 专用 App Store 描述文件：`cellsentry-phone-appstore`，绑定本次新增的 Apple Distribution 证书。
+
+`.github/workflows/testflight-ios.yml` 为手动签名发布流程，使用 GitHub 托管的 macOS 26 构建 Release。
+不勾选 `upload` 时只导出签名 IPA；勾选时先验证 IPA，再上传 App Store Connect。
+流程尚未在 macOS 运行验证；Apple 后台创建完成不代表已有可安装版本。
+
+仓库 Variables：`APPLE_TEAM_ID`、`ASC_KEY_ID`、`ASC_ISSUER_ID`。
+仓库 Secrets：
+
+| 名称 | 内容 |
+| --- | --- |
+| `APPLE_DISTRIBUTION_P12_BASE64` | 含私钥的 Distribution P12 的 Base64 |
+| `APPLE_DISTRIBUTION_P12_PASSWORD` | P12 密码 |
+| `APPLE_APPSTORE_PROFILE_BASE64` | 此 Bundle ID 的 App Store 描述文件的 Base64 |
+| `ASC_API_KEY_BASE64` | App Store Connect 上传 P8 的 Base64，仅上传步骤使用 |
+
+签名资料不进入 Git。CI 使用临时钥匙串，校验描述文件的 Team、显式 Bundle ID、分发类型和有效期，
+运行结束清理证书及密钥；只保留签名 IPA，下载有效期 7 天。App 图标从现有桌面图标在 macOS 构建时生成。
+
+上传成功后，等待 Apple 处理，再在此 App 的 TestFlight 页面添加内部测试组和自己的测试账号。
+用 iPhone 上的 TestFlight 安装。模型需要另行放到手机“文件”App 并导入；安装和模型准备好后再断网运行，
+将测试界面的 JSON 记录分享回 Windows 分析。TestFlight 安装分发本身需要联网。
+
+当前手机测试程序仅接入指定的 MiniCPM 公式 GGUF；不包含 PII mmBERT 原生推理。
+自定义 Q8 safetensors 不能直接作为 GGUF 导入，PII 的真机测试仍需先完成模型导出与原生运行时接入。
+
+本地可验证签名配置检查：`node --test scripts/test-ios-signing.mjs`。
+参考：[GitHub CI 证书管理](https://docs.github.com/en/actions/how-tos/deploy/deploy-to-third-party-platforms/sign-xcode-applications)、
+[Apple 上传构建](https://developer.apple.com/help/app-store-connect/manage-builds/upload-builds/)。
+
 ## 在 Mac 上准备
 
 1. 安装可支持目标手机系统的 Xcode，以及 Node.js 20+；Xcode 工程部署目标为 iOS 17.0。
