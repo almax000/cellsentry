@@ -15,5 +15,16 @@
     "classFlips": 0,
     "maxProbabilityDifference": 0.00004798173904418945,
     "device": "Windows CPU only; iPhone unmeasured"
+  },
+  "iosRelease": {
+    "version": "0.1.0",
+    "build": "2.1",
+    "sourceCommit": "7dc98e2d00f0264716e83709033ad2f8e5590766",
+    "ci": "https://github.com/almax000/cellsentry-dev/actions/runs/39381507796",
+    "deliveryUUID": "2b81c586-4643-4cdc-9c6e-13bc73564e26",
+    "appleProcessingState": "VALID",
+    "internalGroupAssigned": true,
+    "externalBetaReview": "WAITING_FOR_REVIEW",
+    "phonePerformance": "not yet measured"
   }
 }

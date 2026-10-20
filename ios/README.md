@@ -36,7 +36,11 @@ Apple 构建处理状态已为 `VALID`；已按测试 App 实际实现完成加�
 用 iPhone 上的 TestFlight 安装。模型需要另行放到手机“文件”App 并导入；安装和模型准备好后再断网运行，
 将测试界面的 JSON 记录分享回 Windows 分析。TestFlight 安装分发本身需要联网。
 
-新增 PII mmBERT 内置版正在构建：默认页面加载包内 `pii-mmbert-v2-q8_0.gguf`，无需单独下载模型。
+PII mmBERT 内置版 `0.1.0 (2.1)` 已完成签名上传，Apple 处理状态为 `VALID`，
+已分配到原内部测试组；外部测试组已提交 Beta 审核，状态为“正在等待审核”。
+[内置模型构建 CI](https://github.com/almax000/cellsentry-dev/actions/runs/39381507796) 全部通过，
+Delivery UUID：`2b81c586-4643-4cdc-9c6e-13bc73564e26`。
+默认页面加载包内 `pii-mmbert-v2-q8_0.gguf`，无需单独下载模型。
 此模型为原始 step400 编码器重新导出的标准 GGUF Q8_0，341,096,480 字节；不是此前自定义 Q8 safetensors。
 原始 FP32 8 类线性分类头保存在 `Resources/PII/pii-head.json`；运行时使用未归一化的均值池化向量计算分类概率，阈值保持 0.95。
 候选输入超过 512 token 明确报错。所有手机推理使用原生 llama.cpp，不调用 Python。
