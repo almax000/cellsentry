@@ -36,8 +36,29 @@ Apple 构建处理状态已为 `VALID`；已按测试 App 实际实现完成加�
 用 iPhone 上的 TestFlight 安装。模型需要另行放到手机“文件”App 并导入；安装和模型准备好后再断网运行，
 将测试界面的 JSON 记录分享回 Windows 分析。TestFlight 安装分发本身需要联网。
 
-当前手机测试程序仅接入指定的 MiniCPM 公式 GGUF；不包含 PII mmBERT 原生推理。
-自定义 Q8 safetensors 不能直接作为 GGUF 导入，PII 的真机测试仍需先完成模型导出与原生运行时接入。
+新增 PII mmBERT 内置版正在构建：默认页面加载包内 `pii-mmbert-v2-q8_0.gguf`，无需单独下载模型。
+此模型为原始 step400 编码器重新导出的标准 GGUF Q8_0，341,096,480 字节；不是此前自定义 Q8 safetensors。
+原始 FP32 8 类线性分类头保存在 `Resources/PII/pii-head.json`；运行时使用未归一化的均值池化向量计算分类概率，阈值保持 0.95。
+候选输入超过 512 token 明确报错。所有手机推理使用原生 llama.cpp，不调用 Python。
+
+Windows CPU 上对独立 dev 固定选择的 128 条候选检查了分词和分类：分词全部一致，
+Q8 GGUF 与原始 PyTorch 的 top1 类别无变化，最大概率差 `4.7982e-5`。
+这仅验证格式转换和接口对齐，不是新的准确率 benchmark，也不代表 iPhone Metal 的数值或性能已验证。
+没有使用 64 份挑战数据训练、校准或挑选量化参数。
+
+PII 页面是候选分类的最小测试，内置 8 类合成样例，可编辑输入、查看类别/概率/耗时并导出记录。
+它不包含完整候选提取、Excel 解析、自动脱敏；模型已有漏报问题，不能作为自动脱敏验收。
+原来的 MiniCPM 公式测试保留在“公式”页，仍需自行导入指定的 1.56 GB GGUF。
+
+签名 CI 调用 `node scripts/prepare-pii-ios.mjs` 从本私有仓库的 `pii-mmbert-v2-ios-q8` Release 获取模型，
+校验大小和 SHA256 后嵌入 App。下载凭据只在 CI 使用，不进入 App。普通未签名编译无需下载大模型。
+本机已有模型时可设置 `CELLSENTRY_PII_GGUF` 指向它，再运行同一脚本。
+
+离线导出复现：`scripts/export-pii-mobile.py` 准备原始 HF 编码器及 FP32 分类头；
+使用固定 llama.cpp `d81235049384534c167caea52b85a694f6103d14` 的 `convert_hf_to_gguf.py --outtype f32` 导出，
+再用同版本 `llama-quantize ... Q8_0` 量化。`scripts/verify-pii-mobile.py` 对照本机 18767 端口的
+`llama-server --embedding --pooling mean --embd-normalize -1` 检查 128 条 dev 候选。
+Python 仅用于电脑上的离线转换/验证，不是产品运行依赖。
 
 本地可验证签名配置检查：`node --test scripts/test-ios-signing.mjs`。
 参考：[GitHub CI 证书管理](https://docs.github.com/en/actions/how-tos/deploy/deploy-to-third-party-platforms/sign-xcode-applications)、

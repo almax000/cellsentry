@@ -95,8 +95,11 @@ enum PhoneAssets {
     }
     static func verify(_ url: URL, cancelled: () -> Bool) throws {
         let manifest = try manifest()
+        try verify(url, bytes: manifest.bytes, sha256: manifest.sha256, cancelled: cancelled)
+    }
+    static func verify(_ url: URL, bytes: Int64, sha256: String, cancelled: () -> Bool) throws {
         let size = try url.resourceValues(forKeys: [.fileSizeKey]).fileSize ?? 0
-        guard Int64(size) == manifest.bytes else { throw PhoneError.message("模型大小不匹配，请导入指定的 v2 Q4_K_M GGUF") }
+        guard Int64(size) == bytes else { throw PhoneError.message("模型大小与清单不匹配") }
         let file = try FileHandle(forReadingFrom: url)
         defer { try? file.close() }
         var hash = SHA256()
@@ -104,7 +107,7 @@ enum PhoneAssets {
             if cancelled() { throw PhoneError.message("已取消校验") }
             hash.update(data: chunk)
         }
-        guard hash.finalize().map({ String(format: "%02x", $0) }).joined() == manifest.sha256 else {
+        guard hash.finalize().map({ String(format: "%02x", $0) }).joined() == sha256 else {
             throw PhoneError.message("模型 SHA256 不匹配")
         }
     }

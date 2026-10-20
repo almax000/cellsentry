@@ -1,0 +1,42 @@
+[
+  {
+    "id": "dev-0",
+    "text": "Question: Which category does this candidate belong to for protecting patient and family identity?\nOptions: Keep background information / Redact patient/family name / Redact phone / Redact national ID / Redact social-security card / Redact bank card / Redact email / Redact home address\nField: 接诊医生\nCandidate: 顾芷湛\nNormalized: 顾芷湛\nLocal text: 接诊医生：【候选】顾芷湛【/候选】",
+    "expectedClass": 0
+  },
+  {
+    "id": "dev-1",
+    "text": "Question: Which category does this candidate belong to for protecting patient and family identity?\nOptions: Keep background information / Redact patient/family name / Redact phone / Redact national ID / Redact social-security card / Redact bank card / Redact email / Redact home address\nField: 姓名\nCandidate: 陶棠骞\nNormalized: 陶棠骞\nLocal text: 姓名\t【候选】陶棠骞【/候选】",
+    "expectedClass": 1
+  },
+  {
+    "id": "dev-2",
+    "text": "Question: Which category does this candidate belong to for protecting patient and family identity?\nOptions: Keep background information / Redact patient/family name / Redact phone / Redact national ID / Redact social-security card / Redact bank card / Redact email / Redact home address\nField: 联系电话\nCandidate: 154-1082-0001\nNormalized: 154-1082-0001\nLocal text: 联系电话\t【候选】154-1082-0001【/候选】",
+    "expectedClass": 2
+  },
+  {
+    "id": "dev-3",
+    "text": "Question: Which category does this candidate belong to for protecting patient and family identity?\nOptions: Keep background information / Redact patient/family name / Redact phone / Redact national ID / Redact social-security card / Redact bank card / Redact email / Redact home address\nField: 居民身份证\nCandidate: 120101196102021010\nNormalized: 120101196102021010\nLocal text: 居民身份证\t【候选】120101196102021010【/候选】",
+    "expectedClass": 3
+  },
+  {
+    "id": "dev-4",
+    "text": "Question: Which category does this candidate belong to for protecting patient and family identity?\nOptions: Keep background information / Redact patient/family name / Redact phone / Redact national ID / Redact social-security card / Redact bank card / Redact email / Redact home address\nField: 社会保障卡\nCandidate: G82000181\nNormalized: G82000181\nLocal text: 社会保障卡\t【候选】G82000181【/候选】",
+    "expectedClass": 4
+  },
+  {
+    "id": "dev-5",
+    "text": "Question: Which category does this candidate belong to for protecting patient and family identity?\nOptions: Keep background information / Redact patient/family name / Redact phone / Redact national ID / Redact social-security card / Redact bank card / Redact email / Redact home address\nField: 银行卡号\nCandidate: 6222021000008200015\nNormalized: 6222021000008200015\nLocal text: 银行卡号\t【候选】6222021000008200015【/候选】",
+    "expectedClass": 5
+  },
+  {
+    "id": "dev-6",
+    "text": "Question: Which category does this candidate belong to for protecting patient and family identity?\nOptions: Keep background information / Redact patient/family name / Redact phone / Redact national ID / Redact social-security card / Redact bank card / Redact email / Redact home address\nField: 邮箱\nCandidate: record820001@example.org\nNormalized: record820001@example.org\nLocal text: 邮箱\t【候选】record820001@example.org【/候选】",
+    "expectedClass": 6
+  },
+  {
+    "id": "dev-7",
+    "text": "Question: Which category does this candidate belong to for protecting patient and family identity?\nOptions: Keep background information / Redact patient/family name / Redact phone / Redact national ID / Redact social-security card / Redact bank card / Redact email / Redact home address\nField: 居住地址\nCandidate: 演示市映月区测试路820001号2栋2室\nNormalized: 演示市映月区测试路820001号2栋2室\nLocal text: 居住地址\t【候选】演示市映月区测试路820001号2栋2室【/候选】",
+    "expectedClass": 7
+  }
+]

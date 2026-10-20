@@ -1,0 +1,11 @@
+{
+  "filename": "pii-mmbert-v2-q8_0.gguf",
+  "bytes": 341096480,
+  "sha256": "b934c7f9b82b2ee2266a4b95c19b099a3fdbc696e3b510223e1f93650775d7fd",
+  "runtime": "b11429",
+  "context": 512,
+  "format": "GGUF Q8_0",
+  "task": "PII candidate 8-class decision",
+  "sourceCheckpoint": "pii-mmbert-v2-step400",
+  "threshold": 0.95
+}

@@ -3,6 +3,15 @@ import UniformTypeIdentifiers
 import UIKit
 
 struct ContentView: View {
+    var body: some View {
+        TabView {
+            PiiTestView().tabItem { Label("PII mmBERT", systemImage:"eye.slash") }
+            FormulaTestView().tabItem { Label("公式", systemImage:"function") }
+        }
+    }
+}
+
+struct FormulaTestView: View {
     @StateObject private var model = PhoneViewModel()
     @State private var importing = false
     @Environment(\.scenePhase) private var scenePhase
@@ -44,6 +53,7 @@ struct ContentView: View {
                 }
             }
             .navigationTitle("CellSentry 端侧测试")
+            .onDisappear { model.unload() }
             .fileImporter(isPresented: $importing, allowedContentTypes: [.data], allowsMultipleSelection: false) { result in
                 switch result {
                 case .success(let urls): if let url = urls.first { model.importModel(url) }
