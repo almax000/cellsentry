@@ -1,6 +1,6 @@
 # iPhone 16e 最小端侧测试
 
-最小工程已通过 GitHub macOS CI 的 iPhone 设备与模拟器测试编译。本 Windows 开发机不执行 Apple 编译；尚未签名或进行真机测试，没有生成可安装 IPA。
+最小工程已通过 GitHub macOS CI 的 iPhone 设备与模拟器测试编译。2026-10-20 已完成 Release 签名、IPA 导出和 App Store Connect 上传。本 Windows 开发机不执行 Apple 编译；尚未进行真机运行与性能测试。
 
 ## Windows 开发机通过 TestFlight 安装
 
@@ -12,7 +12,10 @@
 
 `.github/workflows/testflight-ios.yml` 为手动签名发布流程，使用 GitHub 托管的 macOS 26 构建 Release。
 不勾选 `upload` 时只导出签名 IPA；勾选时先验证 IPA，再上传 App Store Connect。
-流程尚未在 macOS 运行验证；Apple 后台创建完成不代表已有可安装版本。
+[首次签名上传 CI](https://github.com/almax000/cellsentry-dev/actions/runs/39369118716) 已通过，
+使用 Xcode 26.6 构建 `0.1.0 (1.1)`。Apple 上传返回无错误，Delivery UUID：
+`aa13f291-2acb-4110-9d0a-ed230bf2f71e`。签名 IPA 为 8,269,237 字节，不含模型。
+内部测试组为“iPhone 16e 离线测试”；已添加账号持有人，构建仍需等待 Apple 处理并加入组后才能安装。
 
 仓库 Variables：`APPLE_TEAM_ID`、`ASC_KEY_ID`、`ASC_ISSUER_ID`。
 仓库 Secrets：
