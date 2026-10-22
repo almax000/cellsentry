@@ -1,0 +1,9 @@
+{
+  "role": "diagnostic_smoke",
+  "corpus_sha256": "b43b0caf51f97b161112f512e80bd34f201c2385b3b977736d9738d48fbc258c",
+  "case_ids": [
+    "diagnostic-real-error",
+    "diagnostic-false-alert"
+  ],
+  "label_scope": "Synthetic diagnostic only; not held out, not a replacement for external580."
+}

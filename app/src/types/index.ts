@@ -1,9 +1,9 @@
 // Severity levels map to the sidecar's high/medium/low confidence
 export type SeverityLevel = 'error' | 'warning' | 'info'
 
-export type ScanState = 'idle' | 'loading' | 'scanning' | 'complete' | 'error'
+export type ScanState = 'idle' | 'loading' | 'scanning' | 'cancelling' | 'complete' | 'error'
 
-export type ScanPhase = 'rules' | 'enhance' | 'discover'
+export type ScanPhase = 'rules' | 'ai' | 'enhance' | 'discover'
 
 export type ScanMode = 'audit' | 'pii' | 'extraction'
 
@@ -22,6 +22,7 @@ export interface Issue {
   category: string
   layer: 'rule' | 'ai'
   llmVerified?: boolean
+  llmDisputed?: boolean
   llmReviewRequired?: boolean
   llmConfidence?: number
   llmReasoning?: string
@@ -43,6 +44,8 @@ export interface AnalysisResult {
   scannedAt: string
   duration: number
   error?: string
+  aiWarning?: string
+  auditReview?: import('../../shared/auditReview').AuditReviewSummary
 }
 
 export interface FileInfo {
@@ -64,6 +67,7 @@ export interface ScanProgress {
   phase: ScanPhase
   percent: number
   message: string
+  auditReview?: import('../../shared/auditReview').AuditReviewProgress
 }
 
 export interface CellData {
@@ -79,6 +83,7 @@ export interface FileCellsResult {
   rows: CellData[][]
   sheetName: string
   error?: string
+  aiWarning?: string
 }
 
 // ── Batch Scanning ──
@@ -90,6 +95,7 @@ export interface QueuedFile {
   status: 'pending' | 'scanning' | 'complete' | 'error'
   result?: AnalysisResult
   error?: string
+  aiWarning?: string
 }
 
 export interface BatchResult {
@@ -132,6 +138,7 @@ export interface PiiResult {
   scannedAt: string
   duration: number
   error?: string
+  aiWarning?: string
 }
 
 // ── Data Extraction ──
@@ -166,6 +173,7 @@ export interface ExtractionResult {
   scannedAt: string
   duration: number
   error?: string
+  aiWarning?: string
 }
 
 // ── Discriminated Union ──

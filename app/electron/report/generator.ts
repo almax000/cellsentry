@@ -8,10 +8,24 @@ export interface ReportIssue {
   suggestion?: string
 }
 
+const SEVERITY_ALIASES: Record<string, 'high' | 'medium' | 'low'> = {
+  high: 'high',
+  error: 'high',
+  critical: 'high',
+  medium: 'medium',
+  warning: 'medium',
+  low: 'low',
+  info: 'low',
+}
+
+function normalizeSeverity(severity: string | undefined): 'high' | 'medium' | 'low' {
+  return SEVERITY_ALIASES[severity?.toLowerCase() || ''] || 'low'
+}
+
 export function generateReport(issues: ReportIssue[], fileName: string): string {
-  const errorCount = issues.filter(i => i.severity === 'high').length
-  const warningCount = issues.filter(i => i.severity === 'medium').length
-  const infoCount = issues.filter(i => i.severity === 'low').length
+  const errorCount = issues.filter(i => normalizeSeverity(i.severity) === 'high').length
+  const warningCount = issues.filter(i => normalizeSeverity(i.severity) === 'medium').length
+  const infoCount = issues.filter(i => normalizeSeverity(i.severity) === 'low').length
   const generatedAt = new Date().toISOString().replace('T', ' ').replace(/\.\d+Z$/, ' UTC')
 
   const severityColors: Record<string, string> = {
@@ -27,7 +41,7 @@ export function generateReport(issues: ReportIssue[], fileName: string): string 
 
   let rowsHtml = ''
   for (const i of issues) {
-    const sev = i.severity || 'low'
+    const sev = normalizeSeverity(i.severity)
     const color = severityColors[sev] || '#3498db'
     const label = severityLabels[sev] || 'Info'
     rowsHtml += `<tr>`

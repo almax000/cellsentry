@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Issue } from '../types'
 import { ExternalLinkIcon } from './icons'
@@ -37,16 +37,30 @@ export default function SpreadsheetPreview({
   const [cellData, setCellData] = useState<CellRow[]>([])
   const [columns, setColumns] = useState<string[]>(DEFAULT_COLS)
 
-  // Build issue map for O(1) cell lookup
-  const issueCellMap = useRef(new Map<string, Issue>())
+  const [loadError, setLoadError] = useState('')
+  const [loadedKey, setLoadedKey] = useState('')
+  const sheetKey = JSON.stringify(sheets)
   useEffect(() => {
+    setActiveSheet((current) => selectedIssue?.sheetName && sheets.includes(selectedIssue.sheetName)
+      ? selectedIssue.sheetName
+      : sheets.includes(current) ? current : sheets[0] || 'Sheet1')
+  }, [selectedIssue, filePath, sheetKey])
+  const selectedCell = selectedIssue?.sheetName === activeSheet ? parseCell(selectedIssue.cell) : null
+  const startRow = selectedCell && selectedCell.row > 50 ? Math.max(1, selectedCell.row - 12) : 1
+  const selectedColumn = selectedCell ? columnNumber(selectedCell.col) : 1
+  const startColumn = selectedColumn > 26 ? Math.max(1, selectedColumn - 8) : 1
+  const range = `${columnLetter(startColumn)}${startRow}:${columnLetter(Math.min(16384, startColumn + 25))}${Math.min(1048576, startRow + 49)}`
+  const requestKey = JSON.stringify([filePath, activeSheet, range])
+
+  // Include the sheet in lookup and selection; identical addresses on other sheets are different cells.
+  const issueCellMap = useMemo(() => {
     const map = new Map<string, Issue>()
     for (const issue of issues) {
       if (!issue.sheetName || issue.sheetName === activeSheet) {
         map.set(issue.cell, issue)
       }
     }
-    issueCellMap.current = map
+    return map
   }, [issues, activeSheet])
 
   // Fetch cell data from sidecar
@@ -54,14 +68,24 @@ export default function SpreadsheetPreview({
     if (!filePath || !window.api?.getFileCells) {
       // Use empty grid as fallback
       setCellData([])
+      setLoadError(t('previewFailed'))
+      setLoadedKey(requestKey)
       return
     }
 
     let cancelled = false
+    setLoadError('')
+    setTooltip(null)
     async function loadCells(): Promise<void> {
       try {
-        const result = await window.api.getFileCells(filePath, activeSheet, 'A1:Z50')
-        if (cancelled || !result.success) return
+        const result = await window.api.getFileCells(filePath, activeSheet, range)
+        if (cancelled) return
+        if (!result.success) {
+          setCellData([])
+          setLoadError(t('previewFailed'))
+          setLoadedKey(requestKey)
+          return
+        }
 
         setColumns(result.columns || DEFAULT_COLS)
         const rows: CellRow[] = (result.rows || []).map(
@@ -77,31 +101,35 @@ export default function SpreadsheetPreview({
           }
         )
         setCellData(rows)
+        setLoadedKey(requestKey)
       } catch {
+        if (cancelled) return
         setCellData([])
+        setLoadError(t('previewFailed'))
+        setLoadedKey(requestKey)
       }
     }
 
     loadCells()
     return () => { cancelled = true }
-  }, [filePath, activeSheet])
+  }, [filePath, activeSheet, range, requestKey, t])
 
   // Scroll to selected cell
   useEffect(() => {
-    if (!selectedIssue || !gridRef.current) return
+    if (!selectedIssue || selectedIssue.sheetName !== activeSheet || loadedKey !== requestKey || !gridRef.current) return
     const parsed = parseCell(selectedIssue.cell)
     if (!parsed) return
     const cellEl = gridRef.current.querySelector(`[data-cell="${parsed.col}${parsed.row}"]`)
     if (cellEl) {
       cellEl.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' })
     }
-  }, [selectedIssue])
+  }, [selectedIssue, activeSheet, loadedKey, requestKey])
 
   const handleCellHover = useCallback(
     (e: React.MouseEvent, col: string, rowNum: number) => {
       const cellKey = `${col}${rowNum}`
-      const issue = issueCellMap.current.get(cellKey)
-      const row = cellData[rowNum - 1]
+      const issue = issueCellMap.get(cellKey)
+      const row = cellData[rowNum - startRow]
       const formula = row?.[`_formula_${col}`]
 
       if (formula || issue) {
@@ -109,14 +137,14 @@ export default function SpreadsheetPreview({
         setTooltip({ x: rect.left, y: rect.bottom + 4, formula, issue })
       }
     },
-    [cellData]
+    [cellData, startRow, issueCellMap]
   )
 
   const getCellClass = useCallback(
     (col: string, rowNum: number): string => {
       const classes = ['ss-cell']
       const cellKey = `${col}${rowNum}`
-      const row = cellData[rowNum - 1]
+      const row = cellData[rowNum - startRow]
       const val = row?.[col] || ''
 
       // Numeric detection
@@ -129,46 +157,47 @@ export default function SpreadsheetPreview({
       if (row?.[`_formula_${col}`]) classes.push('formula')
       if (!val) classes.push('empty')
 
-      const issue = issueCellMap.current.get(cellKey)
+      const issue = issueCellMap.get(cellKey)
       if (issue) {
         classes.push('issue-marker')
         const markerClass = issue.severity === 'error' ? 'critical' : issue.severity
         classes.push(`${markerClass}-marker`)
-        if (selectedIssue?.cell === cellKey) {
+        if (selectedIssue?.cell === cellKey && selectedIssue?.sheetName === activeSheet) {
           classes.push('selected-cell')
         }
       }
 
       return classes.join(' ')
     },
-    [cellData, selectedIssue]
+    [cellData, selectedIssue, startRow, activeSheet, issueCellMap]
   )
 
-  const displayRows = cellData.length > 0 ? cellData : Array.from({ length: 25 }, () => {
-    const row: CellRow = {}
-    columns.forEach((col) => { row[col] = '' })
-    return row
-  })
+  const displayRows = loadedKey === requestKey && !loadError ? cellData : []
 
   return (
     <>
       <div className="spreadsheet-toolbar">
         {(sheets.length > 0 ? sheets : ['Sheet1']).map((sheet) => (
-          <span
+          <button
             key={sheet}
+            type="button"
+            aria-pressed={activeSheet === sheet}
             className={`sheet-tab ${activeSheet === sheet ? 'active' : ''}`}
             onClick={() => setActiveSheet(sheet)}
           >
             {sheet}
-          </span>
+          </button>
         ))}
+        <span className="preview-range" data-testid="preview-range">{range}</span>
         <div className="toolbar-spacer" />
         <button className="open-excel-btn" onClick={() => window.api?.openFilePath?.(filePath)}>
           <ExternalLinkIcon size={12} /> {t('openInExcel')}
         </button>
       </div>
 
-      <div className="spreadsheet-grid" ref={gridRef}>
+      <div className="spreadsheet-grid" ref={gridRef} aria-busy={loadedKey !== requestKey}>
+        {loadedKey !== requestKey && <p className="preview-status" role="status">{t('previewLoading')}</p>}
+        {loadedKey === requestKey && loadError && <p className="preview-status" role="alert">{loadError}</p>}
         <table className="ss-table">
           <thead>
             <tr>
@@ -180,7 +209,7 @@ export default function SpreadsheetPreview({
           </thead>
           <tbody>
             {displayRows.map((row, idx) => {
-              const rowNum = idx + 1
+              const rowNum = idx + startRow
               return (
                 <tr key={rowNum}>
                   <td className="ss-row-num">{rowNum}</td>
@@ -205,7 +234,7 @@ export default function SpreadsheetPreview({
       {tooltip && (
         <div className="ss-cell-tooltip" style={{ left: tooltip.x, top: tooltip.y }}>
           {tooltip.formula && <div className="tt-formula">{tooltip.formula}</div>}
-          {tooltip.issue && <div className="tt-issue">⚠ {tooltip.issue.ruleId}</div>}
+          {tooltip.issue && <div className="tt-issue">⚠ {tooltip.issue.message}</div>}
         </div>
       )}
     </>
@@ -216,4 +245,17 @@ function parseCell(ref: string): { col: string; row: number } | null {
   const match = ref.match(/^([A-Z]+)(\d+)$/)
   if (!match) return null
   return { col: match[1], row: parseInt(match[2]) }
+}
+
+function columnNumber(column: string): number {
+  return [...column].reduce((value, letter) => value * 26 + letter.charCodeAt(0) - 64, 0)
+}
+
+function columnLetter(column: number): string {
+  let result = ''
+  while (column > 0) {
+    result = String.fromCharCode(65 + (column - 1) % 26) + result
+    column = Math.floor((column - 1) / 26)
+  }
+  return result
 }

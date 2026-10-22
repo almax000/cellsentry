@@ -1,0 +1,59 @@
+{
+  "title": "今天要处理什么？",
+  "subtitle": "选一件事开始。也可以直接把文件拖进窗口。",
+  "start": "开始",
+  "tasks": {
+    "pii": {
+      "title": "给病历和体检报告脱敏",
+      "desc": "把姓名、证件号、电话换成代号，再交给 ChatGPT 等 AI 解读。拿回答案后，一键换回真名。",
+      "formats": "文字版 PDF · 粘贴文字",
+      "formats_ocr": "PDF · 照片 · 粘贴文字"
+    },
+    "audit": {
+      "title": "检查表格公式",
+      "desc": "找出算错的公式、漏算的格子和写死的数字。"
+    },
+    "extraction": {
+      "title": "从发票表格里提取数据",
+      "desc": "把发票编号、日期和金额整理出来，导出成表格。"
+    }
+  },
+  "localOnly": {
+    "badge": "仅在本机处理",
+    "strip": "文件只在这台电脑上处理，不会上传，也不收集任何使用数据。",
+    "how": "怎么做到的？",
+    "hide": "收起",
+    "title": "你的文件不会离开这台电脑",
+    "p1": "读取、检查和打码都在这台电脑上完成，你的文件不经过任何服务器。",
+    "p2": "CellSentry 不收集使用数据，也不需要账号。",
+    "p3": "只有这几种情况会联网：你主动下载 AI 助手；启动后自动检查一次新版本；你在设置里检查或下载更新。检查新版本只读取版本号，不会发送你的文件。"
+  },
+  "drop": {
+    "spreadsheet": "松手，选择要做的事",
+    "spreadsheetHint": "表格可以检查公式、提取数据，或者找出里面的个人信息",
+    "task": "松手开始：{{task}}",
+    "unknown": "松手，看看能做什么",
+    "unknownHint": "可以处理文字版 PDF 和 .xlsx、.csv 表格",
+    "unknownHint_ocr": "可以处理 PDF、照片和 .xlsx、.csv 表格",
+    "document": "松手，开始脱敏",
+    "documentHint": "PDF 会进入脱敏，在这台电脑上读取。照片和扫描件需要识别文字，这一版先不支持。",
+    "documentHint_ocr": "PDF 和照片会进入脱敏。识别文字在这台电脑上完成。",
+    "unsupported": "这类文件暂时还不能处理",
+    "unsupportedHint": "现在可以处理文字版 PDF 和 .xlsx、.csv 表格。照片和扫描件需要识别文字，这一版先不支持。旧版 .xls 请先在 Excel 里另存为 .xlsx。",
+    "unsupportedHint_ocr": "现在可以处理 PDF、照片（JPG、PNG、HEIC）和 .xlsx、.csv 表格。旧版 .xls 请先在 Excel 里另存为 .xlsx。",
+    "notReady": "本地分析引擎还没准备好，请过几秒再试。",
+    "dismiss": "知道了",
+    "mixed": "表格要单独处理",
+    "mixedHint": "PDF 已经开始脱敏。表格请稍后单独拖进来。",
+    "mixedHint_ocr": "PDF 和照片已经开始脱敏。表格请稍后单独拖进来。",
+    "confirmNew": "开始新的一次？",
+    "confirmNewHint": "这会清掉这一轮的文件和代号对照表，“我的信息”会保留。",
+    "confirmNewYes": "清掉，开始新的一次"
+  },
+  "chooser": {
+    "title": "这个表格要做哪件事？",
+    "titleMany": "这 {{count}} 个表格要做哪件事？",
+    "manyHint": "一次放多个表格时，只能一起检查公式。提取数据和找个人信息每次处理一个文件。",
+    "cancel": "取消"
+  }
+}

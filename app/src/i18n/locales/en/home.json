@@ -1,0 +1,59 @@
+{
+  "title": "What do you want to do today?",
+  "subtitle": "Pick a task to start, or drop a file anywhere in the window.",
+  "start": "Start",
+  "tasks": {
+    "pii": {
+      "title": "Redact medical records and check-up reports",
+      "desc": "Replace names, ID numbers and phone numbers with codes before you ask ChatGPT or another AI. Put the real names back into the answer in one step.",
+      "formats": "Text PDFs · Pasted text",
+      "formats_ocr": "PDF · Photos · Pasted text"
+    },
+    "audit": {
+      "title": "Check spreadsheet formulas",
+      "desc": "Finds wrong formulas, cells left out of totals, and hard-coded numbers."
+    },
+    "extraction": {
+      "title": "Pull data from invoice spreadsheets",
+      "desc": "Collects invoice numbers, dates and amounts into a table you can export."
+    }
+  },
+  "localOnly": {
+    "badge": "On this computer only",
+    "strip": "Files are processed only on this computer. Nothing is uploaded, and no usage data is collected.",
+    "how": "How does this work?",
+    "hide": "Hide",
+    "title": "Your files never leave this computer",
+    "p1": "Reading, checking and masking all run on this computer. Your files never pass through a server.",
+    "p2": "CellSentry collects no usage data and needs no account.",
+    "p3": "It goes online only when you choose to download an AI assistant, for one automatic check for a new version at startup, and when you check for or download an update in Settings. Version checks read a version number and never send your files."
+  },
+  "drop": {
+    "spreadsheet": "Drop to choose what to do",
+    "spreadsheetHint": "A spreadsheet can be checked for formula problems, used for data extraction, or searched for personal info",
+    "task": "Drop to start: {{task}}",
+    "unknown": "Drop to see what you can do",
+    "unknownHint": "Text PDFs and .xlsx or .csv spreadsheets are supported",
+    "unknownHint_ocr": "PDFs, photos and .xlsx or .csv spreadsheets are supported",
+    "document": "Drop to start redacting",
+    "documentHint": "PDFs go to redaction and are read on this computer. Photos and scans need text recognition, which this version does not do yet.",
+    "documentHint_ocr": "PDFs and photos go to redaction. Text recognition runs on this computer.",
+    "unsupported": "This kind of file isn't supported yet",
+    "unsupportedHint": "Text PDFs and .xlsx or .csv spreadsheets are supported. Photos and scans need text recognition, which this version does not do yet. Save old .xls files as .xlsx in Excel first.",
+    "unsupportedHint_ocr": "PDFs, photos (JPG, PNG, HEIC) and .xlsx or .csv spreadsheets are supported. Save old .xls files as .xlsx in Excel first.",
+    "notReady": "The local analysis engine isn't ready yet. Try again in a few seconds.",
+    "dismiss": "Got it",
+    "mixed": "Spreadsheets go separately",
+    "mixedHint": "The PDFs are being redacted. Drop the spreadsheets again afterwards.",
+    "mixedHint_ocr": "The PDFs and photos are being redacted. Drop the spreadsheets again afterwards.",
+    "confirmNew": "Start a new round?",
+    "confirmNewHint": "This clears this round's files and code list. My info is kept.",
+    "confirmNewYes": "Clear and start over"
+  },
+  "chooser": {
+    "title": "What should we do with this spreadsheet?",
+    "titleMany": "What should we do with these {{count}} spreadsheets?",
+    "manyHint": "With several spreadsheets at once, only formula checks run together. Data extraction and personal-info search take one file at a time.",
+    "cancel": "Cancel"
+  }
+}

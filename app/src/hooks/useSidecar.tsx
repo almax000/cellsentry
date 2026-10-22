@@ -6,6 +6,10 @@ interface SidecarContextValue {
   status: ConnectionStatus
   modelLoaded: boolean
   modelName: string
+  modelExists: boolean
+  modelSize: string
+  modelError?: string
+  refreshModelStatus: () => Promise<void>
   version: string
   analyzeFile: (filePath: string) => Promise<AnalysisResult>
   getFileInfo: (filePath: string) => Promise<FileInfo>
@@ -15,9 +19,9 @@ interface SidecarContextValue {
 const SidecarContext = createContext<SidecarContextValue>({
   status: 'connecting',
   modelLoaded: false,
-  modelName: '',
+  modelName: '', modelExists: false, modelSize: '', refreshModelStatus: async () => {},
   version: '',
-  analyzeFile: async () => ({ success: false, issues: [], total_issues: 0 }),
+  analyzeFile: async () => ({ success: false, issues: [] }),
   getFileInfo: async () => ({ exists: false, name: '', size: '', sheets: [], cellCount: 0 }),
   openFileDialog: async () => null
 })
@@ -26,6 +30,18 @@ export function SidecarProvider({ children }: { children: ReactNode }): JSX.Elem
   const [status, setStatus] = useState<ConnectionStatus>('connecting')
   const [modelLoaded, setModelLoaded] = useState(false)
   const [modelName, setModelName] = useState('')
+  const [modelExists, setModelExists] = useState(false)
+  const [modelSize, setModelSize] = useState('')
+  const [modelError, setModelError] = useState<string>()
+  const refreshModelStatus = useCallback(async (): Promise<void> => {
+    const model = await window.api?.getModelStatus()
+    if (!model) return
+    setModelLoaded(model.loaded)
+    setModelName(model.name)
+    setModelSize(model.size)
+    setModelExists(model.exists)
+    setModelError(model.error)
+  }, [])
   const [version, setVersion] = useState('')
 
   useEffect(() => {
@@ -44,11 +60,7 @@ export function SidecarProvider({ children }: { children: ReactNode }): JSX.Elem
           setStatus('connected')
           setVersion(health.version)
           // Check model status
-          const model = await window.api.getModelStatus()
-          if (mounted) {
-            setModelLoaded(model.loaded)
-            setModelName(model.name)
-          }
+          if (mounted) await refreshModelStatus()
         }
       } catch {
         if (mounted) {
@@ -67,9 +79,17 @@ export function SidecarProvider({ children }: { children: ReactNode }): JSX.Elem
     }
   }, [])
 
+  // Startup warms an installed model asynchronously; update the visible status
+  // when that load finishes instead of keeping the initial rules-only snapshot.
+  useEffect(() => {
+    if (status !== 'connected' || !modelExists || modelLoaded || modelError) return
+    const timer = setInterval(() => { void refreshModelStatus().catch(() => {}) }, 2000)
+    return () => clearInterval(timer)
+  }, [status, modelExists, modelLoaded, modelError, refreshModelStatus])
+
   const analyzeFile = useCallback(async (filePath: string): Promise<AnalysisResult> => {
     if (!window.api) throw new Error('Sidecar not available')
-    return window.api.analyzeFile(filePath)
+    return window.api.analyzeFile(filePath, `legacy-${Date.now()}`)
   }, [])
 
   const getFileInfo = useCallback(async (filePath: string): Promise<FileInfo> => {
@@ -84,7 +104,7 @@ export function SidecarProvider({ children }: { children: ReactNode }): JSX.Elem
 
   return (
     <SidecarContext.Provider
-      value={{ status, modelLoaded, modelName, version, analyzeFile, getFileInfo, openFileDialog }}
+      value={{ status, modelLoaded, modelName, modelExists, modelSize, modelError, refreshModelStatus, version, analyzeFile, getFileInfo, openFileDialog }}
     >
       {children}
     </SidecarContext.Provider>

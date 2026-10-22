@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test'
 import { launchApp, teardownApp, type TestContext } from './electron.setup'
 import type { Page } from '@playwright/test'
+import { mkdirSync, readFileSync, writeFileSync } from 'fs'
+import { join } from 'path'
 
 let ctx: TestContext
 let page: Page
@@ -30,22 +32,24 @@ test.describe('Sidebar', () => {
     await homeNav.click()
     await page.waitForTimeout(300)
 
-    const dropZone = page.locator('[data-testid="dropzone-area"]')
-    await expect(dropZone).toBeVisible()
+    await expect(page.locator('[data-testid="home-page"]')).toBeVisible()
   })
 
-  test('engine nav items are disabled before scan', async () => {
+  test('task nav items are labelled and clickable before any scan', async () => {
     const auditNav = page.locator('[data-testid="sidebar-nav-audit"]')
     const piiNav = page.locator('[data-testid="sidebar-nav-pii"]')
     const extractionNav = page.locator('[data-testid="sidebar-nav-extraction"]')
 
-    // All engine items should be disabled (no scan results)
-    await expect(auditNav).toHaveClass(/disabled/)
-    await expect(piiNav).toHaveClass(/disabled/)
-    await expect(extractionNav).toHaveClass(/disabled/)
+    for (const item of [auditNav, piiNav, extractionNav]) {
+      await expect(item).not.toHaveClass(/disabled/)
+      await expect(item.locator('.sidebar-label')).toBeVisible()
+    }
 
-    // Home should still show dropzone
-    await expect(page.locator('[data-testid="dropzone-area"]')).toBeVisible()
+    // Home shows the three task cards
+    await expect(page.locator('[data-testid="home-page"]')).toBeVisible()
+    for (const task of ['pii', 'audit', 'extraction']) {
+      await expect(page.locator(`[data-testid="home-task-${task}"]`)).toBeVisible()
+    }
   })
 
   test('Home button has active indicator on home page', async () => {
@@ -58,10 +62,11 @@ test.describe('Sidebar', () => {
 // ── DropZone ────────────────────────────────────────────────────────────
 
 test.describe('DropZone', () => {
-  test('shows browse, batch, and folder buttons', async () => {
-    // Ensure we're on home
-    await page.locator('[data-testid="sidebar-nav-home"]').click()
-    await page.waitForTimeout(300)
+  test('formula entry shows browse, batch, and folder buttons', async () => {
+    // No results yet, so the sidebar opens the entry page
+    await page.locator('[data-testid="sidebar-nav-audit"]').click()
+    await expect(page.locator('[data-testid="entry-audit"]')).toBeVisible()
+    await expect(page.locator('[data-testid="sidebar-nav-audit"]')).toHaveClass(/active/)
 
     await expect(page.locator('[data-testid="dropzone-browse-btn"]')).toBeVisible()
     await expect(page.locator('[data-testid="dropzone-batch-btn"]')).toBeVisible()
@@ -75,6 +80,16 @@ test.describe('DropZone', () => {
       window.getComputedStyle(el).borderStyle
     )
     expect(border).toBe('dashed')
+  })
+
+  test('redaction entry takes text PDFs and pasted text, with My info beside it', async () => {
+    await page.locator('[data-testid="sidebar-nav-pii"]').click()
+    await expect(page.locator('[data-testid="entry-pii"]')).toBeVisible()
+    await expect(page.locator('[data-testid="myinfo-panel"]')).toBeVisible()
+    await expect(page.locator('[data-testid="redact-choose-files"]')).toBeVisible()
+    await expect(page.locator('[data-testid="redact-paste-toggle"]')).toBeVisible()
+    await expect(page.locator('[data-testid="redact-spreadsheet"]')).toBeVisible()
+    await expect(page.locator('[data-testid="redact-steps"]')).toBeVisible()
   })
 })
 
@@ -106,8 +121,39 @@ test.describe('Settings', () => {
   test('version is displayed', async () => {
     const version = page.locator('[data-testid="settings-version"]')
     await expect(version).toBeVisible()
-    const text = await version.textContent()
-    expect(text).toMatch(/\d+\.\d+\.\d+/)
+    const displayed = await version.evaluate((element) => element.firstChild?.textContent?.trim())
+    // Mirror the app: a packaged build reports app.getVersion(); a source build reads package.json,
+    // because Electron launched on a script path reports its own version.
+    const packagedVersion = await ctx.app.evaluate(({ app }) => (app.isPackaged ? app.getVersion() : null))
+    const actual = packagedVersion ?? JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), 'utf8')).version
+    expect(displayed).toBe(actual)
+  })
+
+  test('model setup is explicit, optional, and rejects an invalid local model', async () => {
+    const before = await page.evaluate(() => window.api.getModelStatus())
+    expect(before.exists).toBe(false)
+    expect(before.loaded).toBe(false)
+    await page.getByTestId('settings-setup-model').click()
+    await expect(page.getByTestId('model-download-start')).toBeVisible()
+    await expect(page.getByTestId('model-import-start')).toBeVisible()
+    await expect(page.getByTestId('model-download-progress')).toHaveCount(0)
+
+    const directory = join(__dirname, '..', 'tmp', 'e2e', 'fixtures')
+    mkdirSync(directory, { recursive: true })
+    const model = join(directory, 'invalid.gguf')
+    writeFileSync(model, 'GGUF invalid test fixture')
+    await ctx.app.evaluate(({ dialog }, file) => {
+      dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [file] })
+    }, model)
+    await page.getByTestId('model-import-start').click()
+    await expect(page.locator('.model-download-card .modal-subtitle')).toContainText(/size/i)
+    const after = await page.evaluate(() => window.api.getModelStatus())
+    expect(after.exists).toBe(false)
+    expect(after.loaded).toBe(false)
+    await page.getByTestId('model-download-close').click()
+    await expect(page.locator('.settings-container')).toBeVisible()
+    await page.getByTestId('sidebar-nav-home').click()
+    await expect(page.getByTestId('home-page')).toBeVisible()
   })
 })
 
@@ -118,15 +164,5 @@ test.describe('Export', () => {
     // Navigate to home first to ensure we can trigger a scan flow later
     await page.locator('[data-testid="sidebar-nav-home"]').click()
     await page.waitForTimeout(300)
-  })
-})
-
-// ── Connection Banner ───────────────────────────────────────────────────
-
-test.describe('ConnectionBanner', () => {
-  test('banner not visible when sidecar is connected', async () => {
-    const banner = page.locator('[data-testid="connection-banner"]')
-    // With mock sidecar running, banner should be hidden or not present
-    await expect(banner).toHaveCount(0)
   })
 })

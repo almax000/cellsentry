@@ -2,13 +2,16 @@
  * Platform-neutral LLM request and result types.
  */
 
+/** A product operation in a local model's declared task scope. */
+export type LlmAnalysisMode = 'audit' | 'pii' | 'extraction'
+
 export interface LlmRequest {
   id: number
   method: 'analyze' | 'status' | 'shutdown'
   params?: {
     issues?: LlmIssueInput[]
     cells?: LlmCellContext[]
-    mode?: 'audit' | 'pii' | 'extraction'
+    mode?: LlmAnalysisMode
   }
 }
 
@@ -30,6 +33,8 @@ export interface LlmCellContext {
 
 export interface LlmJudgment {
   cellAddress: string
+  /** A cell address is only meaningful within this exact worksheet. */
+  sheetName: string
   ruleId: string
   isValid: boolean
   adjustedConfidence: number
@@ -73,4 +78,6 @@ export interface LlmStatus {
   backend: string
   modelLoaded: boolean
   modelName?: string
+  reason?: 'not-started' | 'model-missing' | 'runtime-unavailable' | 'stopped'
+  error?: string
 }

@@ -61,13 +61,14 @@ interface SidecarAPI {
   startLlm: () => Promise<{ available: boolean; backend: string; modelLoaded: boolean }>
   onZoomChange: (callback: (delta: number) => void) => () => void
   // PII
-  analyzePii: (filePath: string) => Promise<unknown>
+  analyzePii: (filePath: string, scanId: string) => Promise<unknown>
   redactPii: (filePath: string, outputPath: string) => Promise<unknown>
   // Extraction
-  analyzeExtraction: (filePath: string) => Promise<unknown>
+  analyzeExtraction: (filePath: string, scanId: string) => Promise<unknown>
   exportExtraction: (filePath: string, format: string, outputPath: string) => Promise<unknown>
   // Unified scan
-  analyzeAll: (filePath: string) => Promise<{ success: boolean; error?: string }>
+  analyzeAll: (filePath: string, scanId: string) => Promise<{ success: boolean; error?: string }>
+  cancelAnalysis: (scanId: string) => Promise<{ success: boolean; error?: string }>
   onEngineDone: (callback: (data: { engine: string; result?: unknown; error?: string }) => void) => () => void
 }
 

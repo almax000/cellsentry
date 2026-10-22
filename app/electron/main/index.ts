@@ -2,12 +2,20 @@ import { app, BrowserWindow, ipcMain, Menu, screen, shell } from 'electron'
 import { join } from 'path'
 import { readFileSync, writeFileSync, appendFileSync, mkdirSync } from 'fs'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import { registerIpcHandlers, getDownloader } from './ipc'
+import { registerIpcHandlers } from './ipc'
 import { setEngineLocale } from '../engine/locale'
 import { initAutoUpdater, registerUpdaterIpc } from './updater'
 import { setupLlmLifecycle, startLlm } from '../llm/lifecycle'
 
-const IS_TEST_MODE = process.env.CELLSENTRY_TEST_MODE === '1'
+import { IS_TEST_MODE } from '../testMode'
+// Automated runs keep the window off screen and never take focus from the person at the desk.
+const IS_HIDDEN_TEST = IS_TEST_MODE && process.env.CELLSENTRY_TEST_HIDDEN === '1'
+
+// Test runs own their application data; never read/write the user's model or settings.
+if (IS_TEST_MODE && process.env.CELLSENTRY_TEST_USER_DATA) {
+  mkdirSync(process.env.CELLSENTRY_TEST_USER_DATA, { recursive: true })
+  app.setPath('userData', process.env.CELLSENTRY_TEST_USER_DATA)
+}
 
 // ---------------------------------------------------------------------------
 // Crash Logging
@@ -212,55 +220,6 @@ function createAppMenu(): void {
 }
 
 // ---------------------------------------------------------------------------
-// Download Window (shown before main window when model is missing)
-// ---------------------------------------------------------------------------
-
-function createDownloadWindow(): BrowserWindow {
-  const IS_MAC = process.platform === 'darwin'
-  const { width, height } = screen.getPrimaryDisplay().workAreaSize
-  const WIN_W = 550, WIN_H = 420
-
-  const win = new BrowserWindow({
-    width: WIN_W,
-    height: WIN_H,
-    x: Math.round((width - WIN_W) / 2),
-    y: Math.round((height - WIN_H) / 2),
-    resizable: false,
-    minimizable: true,
-    maximizable: false,
-    fullscreenable: false,
-    show: false,
-    titleBarStyle: 'hidden',
-    ...(IS_MAC
-      ? { trafficLightPosition: { x: 14, y: 14 } }
-      : {
-          titleBarOverlay: {
-            color: '#ffffff',
-            symbolColor: '#666666',
-            height: 40
-          }
-        }),
-    webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
-      sandbox: false,
-      contextIsolation: true,
-      nodeIntegration: false,
-    },
-  })
-
-  win.on('ready-to-show', () => win.show())
-
-  // Load same renderer but with ?download=1 query param
-  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    win.loadURL(process.env['ELECTRON_RENDERER_URL'] + '?download=1')
-  } else {
-    win.loadFile(join(__dirname, '../renderer/index.html'), { query: { download: '1' } })
-  }
-
-  return win
-}
-
-// ---------------------------------------------------------------------------
 // Main Window
 // ---------------------------------------------------------------------------
 
@@ -295,7 +254,11 @@ function createWindow(): BrowserWindow {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
       contextIsolation: true,
-      nodeIntegration: false
+      nodeIntegration: false,
+      // Chromium's spell checker downloads dictionaries on some platforms; nothing here may go online for text.
+      spellcheck: false,
+      // A never-shown window must still run timers and animation frames at full speed.
+      ...(IS_HIDDEN_TEST ? { backgroundThrottling: false } : {})
     }
   })
 
@@ -307,6 +270,7 @@ function createWindow(): BrowserWindow {
   }
 
   mainWindow.on('ready-to-show', () => {
+    if (IS_HIDDEN_TEST) return
     if (savedState.isMaximized) {
       mainWindow.maximize()
     }
@@ -349,13 +313,16 @@ if (!gotTheLock) {
 } else {
   app.on('second-instance', () => {
     const win = BrowserWindow.getAllWindows()[0]
-    if (win) {
+    // A hidden test run must never take focus.
+    if (win && !IS_HIDDEN_TEST) {
       if (win.isMinimized()) win.restore()
       win.focus()
     }
   })
 
   app.whenReady().then(async () => {
+    // No Dock icon or menu bar, and the app never becomes frontmost.
+    if (IS_HIDDEN_TEST && process.platform === 'darwin') app.setActivationPolicy('accessory')
     setEngineLocale(app.getLocale())
     electronApp.setAppUserModelId('com.cellsentry.app')
 
@@ -394,34 +361,7 @@ if (!gotTheLock) {
     registerUpdaterIpc()
     setupLlmLifecycle()
 
-    // Gate: check model before creating the main window
-    const skipModelCheck = IS_TEST_MODE
-    const downloader = getDownloader()
-    const modelExists = skipModelCheck || downloader.checkModelExists()
-
-    if (!modelExists) {
-      const dlWin = createDownloadWindow()
-
-      await new Promise<void>((resolve) => {
-        let downloadConfirmed = false
-
-        ipcMain.once('model:download-complete', () => {
-          downloadConfirmed = true
-          dlWin.close()
-          resolve()
-        })
-        // If user force-quits the download window, exit the app
-        dlWin.on('closed', () => {
-          if (downloadConfirmed) return
-          if (!downloader.checkModelExists()) {
-            app.quit()
-          } else {
-            resolve()
-          }
-        })
-      })
-    }
-
+    // Core analysis is available immediately; AI setup is optional in Settings.
     const mainWindow = createWindow()
 
     // Register zoom handlers once (not inside createWindow to avoid duplicate registration)
@@ -431,12 +371,12 @@ if (!gotTheLock) {
       mainWindow.webContents.setZoomLevel(clamped)
     })
 
-    if (!is.dev) {
+    if (!is.dev && !IS_TEST_MODE) {
       initAutoUpdater(mainWindow)
     }
 
-    // Start LLM in background (model is guaranteed present now)
-    startLlm().catch(() => {})
+    // Warm up an already installed model without blocking the rule-based tools.
+    if (!IS_TEST_MODE) startLlm().catch(() => {})
 
     app.on('activate', () => {
       if (BrowserWindow.getAllWindows().length === 0) createWindow()

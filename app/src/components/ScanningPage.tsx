@@ -5,25 +5,28 @@ import { useScan } from '../context/ScanContext'
 import { ShieldIcon, CheckIcon, AlertIcon } from './icons'
 import { formatFileSize } from '../utils/format'
 import './ScanningPage.css'
+import { AuditReviewProgressNotice } from './AuditReviewNotice'
 
 export default function ScanningPage(): JSX.Element {
   const { t } = useTranslation('scanning')
   const navigate = useNavigate()
   const {
-    scanState, fileInfo, progress, error,
-    isBatch, batchFiles, batchIndex, batchResults,
+    scanState, fileInfo, progress, error, stopRetryRequired,
+    scanMode, isBatch, batchFiles, batchIndex, batchResults,
     results, piiResults, extractionResults,
     auditError, piiError, extractionError,
     enginesComplete,
+    cancelScan,
   } = useScan()
   const [elapsed, setElapsed] = useState(0)
   const startTimeRef = useRef(Date.now())
 
+  // The redaction and extraction tasks run one engine; the formula check runs all three.
   const scanLayers = [
     { label: t('ruleEngineScan'), engine: 'audit' as const },
-    { label: t('piiDetection', { defaultValue: 'PII Detection' }), engine: 'pii' as const },
-    { label: t('dataExtraction', { defaultValue: 'Data Extraction' }), engine: 'extraction' as const },
-  ]
+    { label: t('piiDetection'), engine: 'pii' as const },
+    { label: t('dataExtraction'), engine: 'extraction' as const },
+  ].filter((layer) => isBatch || scanMode === 'audit' || layer.engine === scanMode)
 
   useEffect(() => {
     startTimeRef.current = Date.now()
@@ -39,11 +42,12 @@ export default function ScanningPage(): JSX.Element {
       const timer = setTimeout(() => navigate('/results'), 400)
       return () => clearTimeout(timer)
     }
-    if (scanState === 'error') {
+    if (scanState === 'error' && !stopRetryRequired) {
       const timer = setTimeout(() => navigate('/'), 8000)
       return () => clearTimeout(timer)
     }
-  }, [scanState, navigate])
+    if (scanState === 'idle') navigate('/')
+  }, [scanState, stopRetryRequired, navigate])
 
   function getEngineState(engine: 'audit' | 'pii' | 'extraction'): 'done' | 'error' | 'active' {
     if (engine === 'audit') {
@@ -132,6 +136,9 @@ export default function ScanningPage(): JSX.Element {
           <div className="scan-elapsed">
             {t('elapsed', { time: (elapsed / 1000).toFixed(1) })}
           </div>
+          {progress.auditReview && <AuditReviewProgressNotice review={progress.auditReview} />}
+          <button className="btn btn-ghost" type="button" onClick={() => void cancelScan()} disabled={scanState === 'cancelling'}>{scanState === 'cancelling' ? t('cancelling') : stopRetryRequired ? t('retryStop') : t('cancel')}</button>
+          {stopRetryRequired && <p role="alert">{error}</p>}
         </div>
       </div>
     )
@@ -178,7 +185,8 @@ export default function ScanningPage(): JSX.Element {
                   <div
                     className="scan-layer-fill"
                     style={{
-                      width: state === 'done' || state === 'error' ? '100%' : '50%',
+                      width: state === 'done' || state === 'error' ? '100%' : layer.engine === 'audit' && progress.auditReview
+                        ? `${progress.auditReview.selected === 0 ? 100 : progress.auditReview.attempted / progress.auditReview.selected * 100}%` : '50%',
                     }}
                   />
                 </div>
@@ -186,15 +194,17 @@ export default function ScanningPage(): JSX.Element {
             )
           })}
         </div>
+        {progress.auditReview && <AuditReviewProgressNotice review={progress.auditReview} />}
 
         <div className="scan-elapsed" data-testid="scanning-percent">
           {enginesComplete > 0 && enginesComplete < 3
-            ? t('enginesProgress', { done: enginesComplete, total: 3, defaultValue: `${enginesComplete}/3 complete` })
+            ? t('enginesProgress', { done: enginesComplete, total: 3 })
             : t('elapsed', { time: (elapsed / 1000).toFixed(1) })}
         </div>
+        <button className="btn btn-ghost" type="button" onClick={() => void cancelScan()} disabled={scanState === 'cancelling'} data-testid="scan-cancel">{scanState === 'cancelling' ? t('cancelling') : stopRetryRequired ? t('retryStop') : t('cancel')}</button>
 
         {scanState === 'error' && (error || auditError || piiError || extractionError) && (
-          <div style={{ marginTop: 16, padding: '8px 12px', background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 6, color: '#991b1b', fontSize: 12, maxWidth: 400, wordBreak: 'break-all' }}>
+          <div style={{ marginTop: 16, padding: '8px 12px', background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 6, color: '#991b1b', fontSize: 12, maxWidth: 400, overflowWrap: 'anywhere' }}>
             {error || [auditError, piiError, extractionError].filter(Boolean).join(' | ')}
           </div>
         )}

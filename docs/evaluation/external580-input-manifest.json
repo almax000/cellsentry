@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "dataset": "cancel2-external580",
+  "purpose": "Manifest the missing input needed to replay the persisted v2 external580 evaluation without inventing or reconstructing examples.",
+  "recorded_contract": {
+    "case_count": 580,
+    "sha256": "6bbb9aeb9f8c79a70169060af1c4d844d7cc7251c58663e254a2b14ceed0bf44",
+    "recorded_path": ".runtime/cancel2-external580.jsonl (collaborator machine, not tracked)",
+    "tracked_in_this_repository": false
+  },
+  "minimum_recovery_package": [
+    "The immutable JSONL case inputs, including issue context and gold label, with the recorded SHA-256.",
+    "A provenance and rights note for each source or a documented aggregation policy.",
+    "A versioned scoring schema that defines real error, false alert, cancellation and protocol retention.",
+    "A separate reviewer rationale for unsafe withdrawals when the original workbook cannot be retained."
+  ],
+  "do_not_do": [
+    "Do not synthesize a replacement corpus and call it external580.",
+    "Do not infer missing inputs from model responses or withdrawal scores.",
+    "Do not overwrite the historical response, score or unsafe-withdrawal artifacts."
+  ]
+}

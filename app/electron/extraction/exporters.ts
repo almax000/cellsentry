@@ -15,7 +15,14 @@ export function exportToJson(
 }
 
 function escapeCsvValue(value: string): string {
-  if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+  const trimmed = value.trimStart()
+  const isNegativeNumber = /^-\d+(?:\.\d+)?(?:e[+-]?\d+)?$/i.test(trimmed)
+  // Spreadsheet programs interpret these prefixes as a formula even in CSV.
+  // Keep ordinary negative numbers usable as numbers, but make other values text.
+  if (/^[=+@]/.test(trimmed) || (trimmed.startsWith('-') && !isNegativeNumber)) {
+    value = `'${value}`
+  }
+  if (value.includes(',') || value.includes('"') || value.includes('\n') || value.includes('\r')) {
     return `"${value.replace(/"/g, '""')}"`
   }
   return value
@@ -44,7 +51,7 @@ export function exportToCsv(
   // Tables section
   for (const table of tables) {
     lines.push('')
-    lines.push(`Table: ${escapeCsvValue(table.sheet_name)} (${table.start_cell}:${table.end_cell})`)
+    lines.push(escapeCsvValue(`Table: ${table.sheet_name} (${table.start_cell}:${table.end_cell})`))
     lines.push(table.headers.map(escapeCsvValue).join(','))
     for (const row of table.rows) {
       lines.push(row.map(escapeCsvValue).join(','))

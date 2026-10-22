@@ -1,5 +1,7 @@
 import { useLocation } from 'react-router-dom'
+import { useScan } from '../context/ScanContext'
 import ExportButton from './ExportButton'
+import { LocalOnlyBadge } from './LocalOnly'
 import './Header.css'
 
 interface HeaderProps {
@@ -9,8 +11,9 @@ interface HeaderProps {
 
 export default function Header({ title, icon }: HeaderProps): JSX.Element {
   const location = useLocation()
+  const { activeView } = useScan()
 
-  const showExport = location.pathname === '/results'
+  const showExport = location.pathname === '/results' && activeView === 'audit'
 
   return (
     <header className="main-header">
@@ -20,6 +23,7 @@ export default function Header({ title, icon }: HeaderProps): JSX.Element {
       </div>
       <div className="header-actions">
         {showExport && <span data-testid="header-export-btn"><ExportButton /></span>}
+        <LocalOnlyBadge />
       </div>
     </header>
   )

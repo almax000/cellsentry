@@ -1,189 +1,148 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
+import type { ModelDownloadFailureReason } from '../../../shared/modelDownload'
 import { DownloadIcon, CheckIcon, AlertIcon } from '../icons'
+import { formatByteSize, formatExactBytes } from '../../utils/byteSize'
+import { FORMULA_ASSISTANT_MODEL } from '../../utils/formulaAssistant'
 import './ModelDownloadModal.css'
 
-interface ModelDownloadModalProps {
-  onClose: () => void
-}
+const MODEL_SIZE = formatByteSize(FORMULA_ASSISTANT_MODEL.sizeBytes)
+// Main-process import errors are technical English; show a plain sentence and
+// keep the raw message in the technical details.
+const IMPORT_MISMATCH = /size mismatch|sha256 mismatch/i
 
-type DownloadPhase = 'checking' | 'ready' | 'downloading' | 'verifying' | 'done' | 'error'
+interface ModelDownloadModalProps { onClose: () => void; forceDownload?: boolean }
+type DownloadPhase = 'ready' | 'downloading' | 'importing' | 'loading' | 'done' | 'error'
 
-export default function ModelDownloadModal({ onClose }: ModelDownloadModalProps): JSX.Element {
+export default function ModelDownloadModal({ onClose, forceDownload = false }: ModelDownloadModalProps): JSX.Element {
   const { t } = useTranslation('modals')
   const [progress, setProgress] = useState(0)
-  const [phase, setPhase] = useState<DownloadPhase>('checking')
-  const [message, setMessage] = useState('')
+  const [phase, setPhase] = useState<DownloadPhase>('ready')
+  const [installed, setInstalled] = useState(false)
   const [error, setError] = useState('')
-
-  const startDownload = useCallback(async () => {
-    if (!window.api?.downloadModel) {
-      setPhase('error')
-      setError(t('modelDownload.downloadFailed'))
-      return
-    }
-
-    setPhase('downloading')
-    setMessage(t('modelDownload.startingDownload'))
-
-    try {
-      const result = await window.api.downloadModel()
-      if (result.success) {
-        setPhase('done')
-        setMessage(t('modelDownload.modelIsReady'))
-      } else {
-        setPhase('error')
-        setError(t('modelDownload.downloadFailed'))
-      }
-    } catch (err) {
-      setPhase('error')
-      setError(err instanceof Error ? err.message : t('modelDownload.downloadFailed'))
-    }
-  }, [t])
+  const [failureReason, setFailureReason] = useState<ModelDownloadFailureReason | null>(null)
+  const [modelName, setModelName] = useState('')
+  const active = useRef(true)
+  const operation = useRef(0)
+  const busy = useRef(false)
 
   useEffect(() => {
-    const checkModel = async (): Promise<void> => {
-      if (!window.api?.checkModelExists) {
-        startDownload()
-        return
+    active.current = true
+    let disposed = false
+    void window.api.getModelStatus().then(status => {
+      if (!disposed) setModelName(status.name)
+      if (!disposed && !busy.current) {
+        setInstalled(status.exists)
+        if (status.loaded && !forceDownload) setPhase('done')
       }
-
-      try {
-        const result = await window.api.checkModelExists()
-        if (result.exists) {
-          setPhase('done')
-          setMessage(t('modelDownload.modelIsReady'))
-        } else {
-          setPhase('ready')
-        }
-      } catch {
-        setPhase('ready')
-      }
+    }).catch(() => { /* explicit setup actions remain available */ })
+    const unsubscribe = window.api.onModelDownloadProgress(event => {
+      if (!disposed && active.current && event.percent !== undefined) setProgress(event.percent)
+    })
+    return () => {
+      disposed = true
+      active.current = false
+      operation.current += 1
+      unsubscribe()
+      void window.api.cancelModelDownload()
     }
+  }, [forceDownload])
 
-    checkModel()
-  }, [startDownload, t])
-
-  // Escape key: only allow closing when done (proceed to app)
+  const close = (): void => {
+    active.current = false
+    operation.current += 1
+    void window.api.cancelModelDownload()
+    onClose()
+  }
   useEffect(() => {
-    const handler = (e: KeyboardEvent): void => {
-      if (e.key === 'Escape' && phase === 'done') onClose()
-    }
+    const handler = (event: KeyboardEvent): void => { if (event.key === 'Escape') close() }
     document.addEventListener('keydown', handler)
     return () => document.removeEventListener('keydown', handler)
-  }, [onClose, phase])
+  })
 
-  // Listen for model_download completion events
-  useEffect(() => {
-    if (!window.api?.onModelDownloadProgress) return
-
-    const unsubscribe = window.api.onModelDownloadProgress((msg) => {
-      if (msg.percent !== undefined) {
-        setProgress(msg.percent)
-        if (msg.message) setMessage(msg.message)
-      }
-    })
-
-    return unsubscribe
-  }, [t])
-
-  const sizeDownloaded = Math.round(progress * 15.61314592)
-
-  const importModel = async (): Promise<void> => {
-    setPhase('verifying')
+  async function prepare(source: 'download' | 'import' | 'installed'): Promise<void> {
+    if (busy.current) return
+    busy.current = true
+    const id = ++operation.current
+    const current = (): boolean => active.current && operation.current === id
     setError('')
+    setFailureReason(null)
+    setProgress(0)
+    setPhase(source === 'download' ? 'downloading' : source === 'import' ? 'importing' : 'loading')
     try {
-      const result = await window.api.importModel()
-      if (result.cancelled) { setPhase('ready'); return }
-      if (!result.success) throw new Error(result.error || t('modelDownload.importFailed'))
+      if (source === 'import') {
+        const result = await window.api.importModel()
+        if (!current()) return
+        if (result.cancelled) { setPhase('ready'); return }
+        if (!result.success) throw new Error(result.error || t('modelDownload.importFailed'))
+      } else if (source === 'download') {
+        const result = await window.api.downloadModel()
+        if (!current()) return
+        if (!result.success) {
+          setFailureReason(result.failureReason || 'other')
+          throw new Error(t('modelDownload.downloadFailed'))
+        }
+      }
+      if (!current()) return
+      setInstalled(true)
+      setPhase('loading')
+      const status = await window.api.startLlm()
+      if (!current()) return
+      if (!status.modelLoaded) throw new Error(status.error || t('modelDownload.loadFailed'))
       setPhase('done')
-    } catch (error) {
-      setPhase('error')
-      setError(error instanceof Error ? error.message : String(error))
-    }
+    } catch (err) {
+      if (current()) {
+        setPhase('error')
+        setError(err instanceof Error ? err.message : String(err))
+      }
+    } finally { if (current()) busy.current = false }
   }
 
-  const title =
-    phase === 'ready' ? t('modelDownload.prepareModel') : phase === 'done'
-      ? t('modelDownload.modelReady')
-      : phase === 'error'
-        ? t('modelDownload.setupFailed')
-        : phase === 'verifying'
-          ? t('modelDownload.verifying')
-          : phase === 'checking'
-            ? t('modelDownload.checking')
-            : t('modelDownload.downloading')
-
-  const subtitle =
-    phase === 'done'
-      ? t('modelDownload.readySubtitle')
-      : phase === 'error'
-        ? error || t('modelDownload.errorSubtitle')
-        : t('modelDownload.oneTimeSubtitle')
-
-  return (
-    <div className="model-download-page">
-      <div className="drag-region" />
-      <div className="model-download-card" data-testid="model-download-modal">
-        <div className="modal-icon">
-          {phase === 'done' ? (
-            <CheckIcon size={24} />
-          ) : phase === 'error' ? (
-            <AlertIcon size={24} />
-          ) : (
-            <DownloadIcon size={24} />
-          )}
+  const titleKey = phase === 'done' ? 'modelReady' : phase === 'error' ? 'setupFailed'
+    : phase === 'loading' ? 'loadingModel' : phase === 'importing' ? 'verifying'
+      : phase === 'downloading' ? 'downloading' : 'prepareModel'
+  const title = t(`modelDownload.${titleKey}`)
+  const displayError = IMPORT_MISMATCH.test(error) ? t('modelDownload.importWrongFile') : error
+  const guidanceKey = failureReason ? `modelDownload.failureGuidance.${failureReason}` : null
+  const preferImport = phase === 'error' && (failureReason === 'access_denied' || failureReason === 'source_unavailable')
+  const downloadButton = <button className={`btn ${preferImport ? 'btn-secondary' : 'btn-primary'}`} data-testid="model-download-start" onClick={() => void prepare('download')}>{t(phase === 'error' ? 'modelDownload.retryDownload' : 'modelDownload.downloadNow', { size: MODEL_SIZE })}</button>
+  const importButton = <button className={`btn ${preferImport ? 'btn-primary' : 'btn-secondary'}`} data-testid="model-import-start" onClick={() => void prepare('import')}>{t('modelDownload.importLocal')}</button>
+  return <div className="model-download-page">
+    <div className="model-download-card" data-testid="model-download-modal" role="region" aria-label={title}>
+      <div className="modal-icon">{phase === 'done' ? <CheckIcon size={24} /> : phase === 'error' ? <AlertIcon size={24} /> : <DownloadIcon size={24} />}</div>
+      <div className="modal-title">{title}</div>
+      <div className="modal-subtitle" role="status">{phase === 'error' ? displayError : t(`modelDownload.${phase === 'done' ? 'readySubtitle' : 'optionalSubtitle'}`, { size: MODEL_SIZE })}</div>
+      {phase === 'error' && guidanceKey && <div className="model-download-guidance" data-testid="model-download-guidance" role="status">
+        <strong>{t(`${guidanceKey}.title`)}</strong>
+        <p>{t(`${guidanceKey}.body`)}</p>
+        <p className="model-import-requirement">{t('modelDownload.importRequirement', {
+          filename: FORMULA_ASSISTANT_MODEL.fileName,
+          size: MODEL_SIZE,
+        })}</p>
+      </div>}
+      {phase === 'downloading' && <div className="download-progress" data-testid="model-download-progress">
+        <div className="progress-bar-track" role="progressbar" aria-label={title} aria-valuenow={Math.min(progress, 100)} aria-valuemin={0} aria-valuemax={100}>
+          <div className="progress-bar-fill" style={{ width: `${Math.min(progress, 100)}%` }} />
         </div>
-        <div className="modal-title">{title}</div>
-        <div className="modal-subtitle">{subtitle}</div>
-
-        {(phase === 'downloading' || phase === 'verifying') && (
-          <div className="download-progress" data-testid="model-download-progress">
-            <div className="progress-bar-track">
-              <div
-                className="progress-bar-fill"
-                style={{ width: `${Math.min(progress, 100)}%` }}
-              />
-            </div>
-            <div className="progress-stats">
-              <span>
-                {phase === 'verifying'
-                  ? t('modelDownload.sha256Check')
-                  : message || `${sizeDownloaded} MB / 1561 MB`}
-              </span>
-              <span className="progress-percent">
-                {Math.min(Math.round(progress), 100)}%
-              </span>
-            </div>
-          </div>
-        )}
-
-        {phase === 'done' && (
-          <button
-            className="btn btn-primary"
-            onClick={onClose}
-            style={{ width: '100%', justifyContent: 'center', padding: '10px' }}
-          >
-            {t('modelDownload.getStarted')}
-          </button>
-        )}
-
-        {(phase === 'ready' || phase === 'error') && (
-          <button
-            className="btn btn-primary"
-            onClick={() => { setError(''); startDownload() }}
-            style={{ width: '100%', justifyContent: 'center', padding: '10px' }}
-          >
-            {t(phase === 'ready' ? 'modelDownload.downloadNow' : 'modelDownload.retryDownload')}
-          </button>
-        )}
-        {(phase === 'ready' || phase === 'error') && (
-          <button className="btn" onClick={importModel}
-            style={{ width: '100%', justifyContent: 'center', padding: '10px', marginTop: '8px' }}>
-            {t('modelDownload.importLocal')}
-          </button>
-        )}
-      </div>
+        <div className="progress-stats"><span>{t('modelDownload.downloading')}</span><span>{Math.min(Math.round(progress), 100)}%</span></div>
+      </div>}
+      {(phase === 'loading' || phase === 'importing') && <p role="status">{t(`modelDownload.${phase === 'loading' ? 'loadingModel' : 'sha256Check'}`)}</p>}
+      {(phase === 'ready' || phase === 'error') && <>
+        {installed && !forceDownload && <button className="btn btn-primary" onClick={() => void prepare('installed')}>{t('modelDownload.loadExisting')}</button>}
+        {preferImport ? <>{importButton}{downloadButton}</> : <>{downloadButton}{importButton}</>}
+      </>}
+      <button className={`btn ${phase === 'done' ? 'btn-primary' : 'btn-secondary'}`} data-testid="model-download-close" onClick={close}>{t(phase === 'done' ? 'modelDownload.returnToSettings' : 'modelDownload.cancelAndContinue')}</button>
+      {/* Technical name, file and exact size stay out of the primary text. */}
+      <details className="model-tech-details">
+        <summary>{t('modelDownload.technicalInfo')}</summary>
+        <dl>
+          <dt>{t('modelDownload.techModel')}</dt><dd>{modelName || '—'}</dd>
+          <dt>{t('modelDownload.techFile')}</dt><dd>{FORMULA_ASSISTANT_MODEL.fileName}</dd>
+          <dt>{t('modelDownload.techSize')}</dt>
+          <dd>{MODEL_SIZE} · {t('modelDownload.techSizeBytes', { bytes: formatExactBytes(FORMULA_ASSISTANT_MODEL.sizeBytes) })}</dd>
+          {phase === 'error' && error && <><dt>{t('modelDownload.techError')}</dt><dd>{error}</dd></>}
+        </dl>
+      </details>
     </div>
-  )
+  </div>
 }

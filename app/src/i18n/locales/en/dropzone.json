@@ -4,8 +4,25 @@
   "browse": "or browse files",
   "selectMultiple": "Select multiple files",
   "scanFolder": "Scan folder",
-  "errorNotConnected": "Analysis engine is not connected",
-  "errorNoFiles": "No supported files found. Use .xlsx, .xls, or .csv",
+  "errorNotConnected": "The local analysis engine is unavailable",
+  "errorNoFiles": "No supported files found. Use .xlsx or .csv. Convert legacy .xls files to .xlsx first.",
   "errorNoFilesInFolder": "No spreadsheet files found in folder",
-  "errorFolderScan": "Failed to scan folder"
+  "errorFolderScan": "Failed to scan folder",
+  "tasks": {
+    "audit": {
+      "title": "Drop a spreadsheet here",
+      "subtitle": "Find wrong formulas, cells left out of totals,\nand hard-coded numbers"
+    },
+    "pii": {
+      "title": "Drop the spreadsheet to mask here",
+      "subtitle": "Find phone numbers, ID numbers, bank cards, emails and more,\nthen save a masked copy. Your original stays unchanged",
+      "soon": "Medical records and checkup reports (PDF, photos): coming in the next version"
+    },
+    "extraction": {
+      "title": "Drop an invoice spreadsheet here",
+      "subtitle": "Collect invoice numbers, dates and amounts\ninto a table you can export"
+    }
+  },
+  "assistantHint": "Want a second check? You can install the Formula assistant (optional).",
+  "assistantLink": "Open Settings"
 }

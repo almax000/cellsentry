@@ -1,0 +1,131 @@
+{
+  "version": 1,
+  "fixture": "golden-three-workflows.xlsx",
+  "sourceSha256": "34578166728fc9ce4873ac5d1b15de4bbf9a651f167e41b1eec28e4d8152fd3d",
+  "rulesOnly": true,
+  "modelAccuracyVerified": false,
+  "audit": {
+    "requiredIssues": [
+      {
+        "sheet": "Invoice Audit",
+        "cell": "G3",
+        "ruleId": "CIRCULAR_REFERENCE",
+        "severity": "error"
+      },
+      {
+        "sheet": "Invoice Audit",
+        "cell": "E11",
+        "ruleId": "INCONSISTENT_FORMULA",
+        "severity": "warning"
+      },
+      {
+        "sheet": "Invoice Audit",
+        "cell": "E12",
+        "ruleId": "SUM_RANGE_INCOMPLETE",
+        "severity": "error"
+      },
+      {
+        "sheet": "Invoice Audit",
+        "cell": "E13",
+        "ruleId": "HARDCODED_SUMMARY",
+        "severity": "warning"
+      }
+    ]
+  },
+  "pii": {
+    "expectedFindings": [
+      {
+        "sheet": "PII Review",
+        "cell": "A2",
+        "type": "email",
+        "masked": "j***@example.com"
+      },
+      {
+        "sheet": "PII Review",
+        "cell": "B2",
+        "type": "phone",
+        "masked": "141****2671"
+      },
+      {
+        "sheet": "PII Review",
+        "cell": "C2",
+        "type": "ssn",
+        "masked": "***-**-6789"
+      },
+      {
+        "sheet": "PII Review",
+        "cell": "D2",
+        "type": "phone",
+        "masked": "139****5678"
+      },
+      {
+        "sheet": "PII Review",
+        "cell": "E2",
+        "type": "email",
+        "masked": "f***@example.com and s***@example.com"
+      }
+    ]
+  },
+  "extraction": {
+    "documentType": "invoice",
+    "fields": [
+      {
+        "key": "invoice_number",
+        "value": "INV-GOLD-001",
+        "cell": "B3",
+        "sheet": "Invoice Audit"
+      },
+      {
+        "key": "date",
+        "value": "2026-10-16",
+        "cell": "B4",
+        "sheet": "Invoice Audit"
+      },
+      {
+        "key": "vendor",
+        "value": "Golden Widgets LLC",
+        "cell": "B5",
+        "sheet": "Invoice Audit"
+      },
+      {
+        "key": "subtotal",
+        "value": "300",
+        "cell": "E12",
+        "sheet": "Invoice Audit"
+      },
+      {
+        "key": "total",
+        "value": "601",
+        "cell": "E13",
+        "sheet": "Invoice Audit"
+      }
+    ],
+    "table": {
+      "sheet": "Invoice Audit",
+      "headerRow": 8,
+      "startCell": "A8",
+      "endCell": "E13",
+      "headers": [
+        "Item",
+        "Description",
+        "Quantity",
+        "Unit Price",
+        "Amount"
+      ],
+      "rows": [
+        ["Widget A", "=1+1", "2", "50", "100"],
+        ["Widget B", "@SUM(A1:A2)", "2", "100", "200"],
+        ["Widget C", "-12", "1", "300", "301"],
+        ["Subtotal", "", "", "", "300"],
+        ["Total", "", "", "", "601"]
+      ]
+    },
+    "csvRows": [
+      "Widget A,'=1+1,2,50,100",
+      "Widget B,'@SUM(A1:A2),2,100,200",
+      "Widget C,-12,1,300,301",
+      "Subtotal,,,,300",
+      "Total,,,,601"
+    ]
+  }
+}

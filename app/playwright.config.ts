@@ -1,16 +1,17 @@
 import { defineConfig } from '@playwright/test'
 import { join } from 'path'
 
-const reportDir = join(__dirname, '..', 'test_evidence', 'e2e-report')
+const e2eTmpDir = join(__dirname, 'tmp', 'e2e')
 
 export default defineConfig({
   testDir: './e2e',
   timeout: 60000,
   retries: 0,
   workers: 1,
+  outputDir: join(e2eTmpDir, 'artifacts'),
   reporter: [
     ['list'],
-    ['html', { outputFolder: reportDir, open: 'never' }]
+    ['html', { outputFolder: join(e2eTmpDir, 'report'), open: 'never' }]
   ],
   use: {
     trace: 'off',
@@ -41,6 +42,18 @@ export default defineConfig({
     {
       name: 'sidebar-ux',
       testMatch: /sidebar-ux\.spec\.ts/
+    },
+    {
+      name: 'exports',
+      testMatch: /export-roundtrip\.spec\.ts/
+    },
+    {
+      name: 'cancellation',
+      testMatch: /cancellation\.spec\.ts/
+    },
+    {
+      name: 'redact',
+      testMatch: /redact\.spec\.ts/
     }
   ]
 })

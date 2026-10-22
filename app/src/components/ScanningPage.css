@@ -49,6 +49,16 @@
   text-align: center;
 }
 
+.audit-review-progress {
+  max-width: 400px;
+  margin: 14px auto 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.audit-review-detail { color: var(--text-muted); }
+
 .scan-title {
   font-size: 18px;
   font-weight: 700;

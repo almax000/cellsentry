@@ -1,6 +1,7 @@
 import ExcelJS from 'exceljs'
 import { copyFileSync, existsSync } from 'fs'
 import { join, parse as parsePath } from 'path'
+import { loadWorkbook } from '../engine/excelReader'
 
 export enum MarkerSeverity {
   CRITICAL = 'critical',
@@ -78,8 +79,7 @@ export class ExcelMarker {
     try {
       if (backup) this.createBackup(filePath)
 
-      const wb = new ExcelJS.Workbook()
-      await wb.xlsx.readFile(filePath)
+      const wb = await loadWorkbook(filePath)
 
       // Group markers by sheet
       const bySheet = new Map<string, CellMarker[]>()
@@ -131,8 +131,7 @@ export class ExcelMarker {
     try {
       if (backup) this.createBackup(filePath)
 
-      const wb = new ExcelJS.Workbook()
-      await wb.xlsx.readFile(filePath)
+      const wb = await loadWorkbook(filePath)
 
       let clearedCount = 0
       wb.eachSheet((ws) => {

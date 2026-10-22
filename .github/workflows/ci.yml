@@ -3,24 +3,37 @@ name: CI
 on:
   pull_request:
     branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: app
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
           cache-dependency-path: app/package-lock.json
-
       - name: Install dependencies
-        run: cd app && npm ci
-
-      - name: Type check
-        run: cd app && npm run typecheck
-
-      - name: Build
-        run: cd app && npx electron-vite build
+        run: npm ci
+      - name: Type check, unit tests, build and Electron E2E
+        run: npm run test:ci
+      - name: Preserve test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: electron-evidence-${{ matrix.os }}
+          path: app/tmp/e2e/
+          if-no-files-found: ignore
+          retention-days: 7

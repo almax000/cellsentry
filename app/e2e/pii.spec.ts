@@ -63,10 +63,10 @@ test.describe('PII Scan', () => {
     await expect(firstCard.locator('.pii-finding-value')).toBeVisible()
   })
 
-  test('PII rescan navigates back to DropZone', async () => {
+  test('PII rescan navigates back to the redaction entry page', async () => {
     await page.locator('[data-testid="pii-results-rescan-btn"]').click()
     await page.waitForTimeout(300)
 
-    await expect(page.locator('[data-testid="dropzone-area"]')).toBeVisible()
+    await expect(page.locator('[data-testid="entry-pii"]')).toBeVisible()
   })
 })

@@ -3,7 +3,7 @@ import { launchApp, teardownApp, type TestContext } from './electron.setup'
 import type { Page } from '@playwright/test'
 import { join } from 'path'
 
-const screenshotDir = join(__dirname, '..', '..', 'test_evidence', 'screenshots')
+const COMBINED_FIXTURE = join(__dirname, 'fixtures', 'combined-test-data.xlsx')
 
 let ctx: TestContext
 let page: Page
@@ -20,32 +20,16 @@ test.afterAll(async () => {
 // ── Flow 1: Single File Scan ────────────────────────────────────────────
 
 test.describe('Flow: Single file scan', () => {
-  test('complete scan flow from DropZone to Results', async () => {
-    // Step 1: Verify DropZone is visible
-    await expect(page.locator('[data-testid="dropzone-area"]')).toBeVisible()
-    await page.screenshot({ path: join(screenshotDir, 'flow1-01-dropzone.png') })
-
-    // Step 2: Trigger file analysis via IPC (simulating browse → file selected)
-    // The mock sidecar will return canned results
-    await page.evaluate(async () => {
-      // Simulate the scan flow by directly calling the scan context
-      // We'll navigate by dispatching the file path through the API
-      const filePath = '/tmp/test/mixed_errors.xlsx'
-      const fileInfo = await window.api.getFileInfo(filePath)
-      if (fileInfo) {
-        // Trigger navigation to scanning by setting hash
-        window.location.hash = '#/scanning'
-      }
-    })
-    await page.waitForTimeout(500)
-    await page.screenshot({ path: join(screenshotDir, 'flow1-02-scanning.png') })
-
-    // Step 3: Navigate to results (mock scan completes instantly)
-    await page.evaluate(() => {
-      window.location.hash = '#/results'
-    })
-    await page.waitForTimeout(500)
-    await page.screenshot({ path: join(screenshotDir, 'flow1-03-results.png') })
+  test('complete scan flow from the home page to Results', async () => {
+    // Step 1: Verify the task home page is visible
+    await expect(page.locator('[data-testid="home-page"]')).toBeVisible()
+    // Test-mode IPC follows the same ScanContext entry point as a selected file.
+    await page.evaluate(async (filePath) => {
+      await window.__TEST_API__?.triggerFileAnalysis(filePath)
+    }, COMBINED_FIXTURE)
+    await expect(page.locator('[data-testid="scanning-phase"]')).toBeVisible()
+    await page.waitForFunction(() => window.location.hash === '#/results', { timeout: 30000 })
+    await expect(page.locator('[data-testid="results-panel-left"]')).toBeVisible()
   })
 })
 
@@ -57,48 +41,42 @@ test.describe('Flow: Full navigation', () => {
     await page.evaluate(() => { window.location.hash = '#/' })
     await page.waitForTimeout(300)
 
-    // Home (DropZone)
+    // Home (task cards)
     await page.locator('[data-testid="sidebar-nav-home"]').click()
     await page.waitForTimeout(300)
-    await expect(page.locator('[data-testid="dropzone-area"]')).toBeVisible()
-    await page.screenshot({ path: join(screenshotDir, 'flow4-01-home.png') })
+    await expect(page.locator('[data-testid="home-page"]')).toBeVisible()
+
+    // Each task card opens its own entry page
+    for (const [task, route] of [['pii', 'pii'], ['audit', 'audit'], ['extraction', 'extract']]) {
+      await page.locator('[data-testid="sidebar-nav-home"]').click()
+      await page.locator(`[data-testid="home-task-${task}"]`).click()
+      await expect(page).toHaveURL(new RegExp(`#/${route}$`))
+      await expect(page.locator(`[data-testid="entry-${task}"]`)).toBeVisible()
+    }
 
     // Settings
     await page.locator('[data-testid="sidebar-nav-settings"]').click()
     await page.waitForTimeout(300)
     await expect(page.locator('.settings-container')).toBeVisible()
-    await page.screenshot({ path: join(screenshotDir, 'flow4-02-settings.png') })
 
     // Back to home
     await page.locator('[data-testid="sidebar-nav-home"]').click()
     await page.waitForTimeout(300)
-    await expect(page.locator('[data-testid="dropzone-area"]')).toBeVisible()
-    await page.screenshot({ path: join(screenshotDir, 'flow4-03-back-home.png') })
+    await expect(page.locator('[data-testid="home-page"]')).toBeVisible()
   })
 })
 
 // ── Flow 5: Export dropdown ─────────────────────────────────────────────
 
 test.describe('Flow: Export options', () => {
-  test('export button shows dropdown with HTML and PDF options', async () => {
-    // Navigate to results page directly
-    await page.evaluate(() => {
-      window.location.hash = '#/results'
-    })
-    await page.waitForTimeout(500)
-
-    // Check if export button exists on results page
-    const exportBtn = page.locator('[data-testid="export-btn"]')
-    const exportVisible = await exportBtn.isVisible().catch(() => false)
-
-    if (exportVisible) {
-      await exportBtn.click()
-      await page.waitForTimeout(200)
-      await page.screenshot({ path: join(screenshotDir, 'flow5-01-export-dropdown.png') })
-
-      await expect(page.locator('[data-testid="export-html"]')).toBeVisible()
-      await expect(page.locator('[data-testid="export-pdf"]')).toBeVisible()
-    }
+  test('export menu offers HTML, PDF, and marked workbook', async () => {
+    await page.evaluate((filePath) => window.__TEST_API__?.triggerFileAnalysis(filePath), COMBINED_FIXTURE)
+    await page.waitForFunction(() => window.location.hash === '#/results', { timeout: 30000 })
+    await expect(page.locator('[data-testid="export-btn"]')).toBeVisible()
+    await page.locator('[data-testid="export-btn"]').click()
+    await expect(page.locator('[data-testid="export-html"]')).toBeVisible()
+    await expect(page.locator('[data-testid="export-pdf"]')).toBeVisible()
+    await expect(page.locator('[data-testid="export-xlsx"]')).toBeVisible()
 
     // Navigate back home
     await page.locator('[data-testid="sidebar-nav-home"]').click()

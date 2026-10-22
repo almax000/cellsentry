@@ -21,3 +21,8 @@ models/
 adapters/
 *.gguf
 *.safetensors
+
+# Local task artifacts
+/tmp/
+
+/app/tmp/

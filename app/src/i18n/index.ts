@@ -10,6 +10,8 @@ import enSettings from './locales/en/settings.json'
 import enModals from './locales/en/modals.json'
 import enPii from './locales/en/pii.json'
 import enExtraction from './locales/en/extraction.json'
+import enHome from './locales/en/home.json'
+import enRedact from './locales/en/redact.json'
 
 import zhCommon from './locales/zh/common.json'
 import zhDropzone from './locales/zh/dropzone.json'
@@ -19,6 +21,8 @@ import zhSettings from './locales/zh/settings.json'
 import zhModals from './locales/zh/modals.json'
 import zhPii from './locales/zh/pii.json'
 import zhExtraction from './locales/zh/extraction.json'
+import zhHome from './locales/zh/home.json'
+import zhRedact from './locales/zh/redact.json'
 
 i18n
   .use(LanguageDetector)
@@ -34,6 +38,8 @@ i18n
         modals: enModals,
         pii: enPii,
         extraction: enExtraction,
+        home: enHome,
+        redact: enRedact,
       },
       zh: {
         common: zhCommon,
@@ -44,9 +50,11 @@ i18n
         modals: zhModals,
         pii: zhPii,
         extraction: zhExtraction,
+        home: zhHome,
+        redact: zhRedact,
       }
     },
-    ns: ['common', 'dropzone', 'scanning', 'results', 'settings', 'modals', 'pii', 'extraction'],
+    ns: ['common', 'dropzone', 'scanning', 'results', 'settings', 'modals', 'pii', 'extraction', 'home', 'redact'],
     defaultNS: 'common',
     fallbackLng: 'en',
     detection: {

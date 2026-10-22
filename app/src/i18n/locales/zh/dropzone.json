@@ -4,8 +4,25 @@
   "browse": "或浏览文件",
   "selectMultiple": "选择多个文件",
   "scanFolder": "扫描文件夹",
-  "errorNotConnected": "分析引擎未连接",
-  "errorNoFiles": "未找到支持的文件。请使用 .xlsx、.xls 或 .csv",
+  "errorNotConnected": "本地分析引擎暂不可用",
+  "errorNoFiles": "未找到支持的文件。请使用 .xlsx 或 .csv；旧版 .xls 请先另存为 .xlsx。",
   "errorNoFilesInFolder": "文件夹中未找到表格文件",
-  "errorFolderScan": "扫描文件夹失败"
+  "errorFolderScan": "扫描文件夹失败",
+  "tasks": {
+    "audit": {
+      "title": "把表格拖到这里",
+      "subtitle": "找出算错的公式、漏算的格子\n和写死的数字"
+    },
+    "pii": {
+      "title": "把要打码的表格拖到这里",
+      "subtitle": "找出手机号、身份证号、银行卡号和邮箱等\n另存一份遮住后的副本，原文件不变",
+      "soon": "病历和体检报告（PDF、照片）：下一版支持"
+    },
+    "extraction": {
+      "title": "把发票表格拖到这里",
+      "subtitle": "把发票编号、日期和金额\n整理成可以导出的表格"
+    }
+  },
+  "assistantHint": "想再多一层把关？可以装上“公式助手”（可选）。",
+  "assistantLink": "去设置"
 }

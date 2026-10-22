@@ -2,9 +2,11 @@ import { useState, useCallback, useRef, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useScan } from '../context/ScanContext'
-import type { Issue, ExtractionField, DocumentType } from '../types'
+import type { Issue, ExtractionField, ExtractedTable, DocumentType } from '../types'
 import { FileSpreadsheetIcon, ShieldCheckIcon } from './icons'
-import { formatDuration, formatConfidence } from '../utils/format'
+import { formatDuration } from '../utils/format'
+import { TASKS } from '../tasks'
+import { cellLabel } from '../utils/cellLabel'
 import SpreadsheetPreview from './SpreadsheetPreview'
 import './ExtractionResultsPage.css'
 
@@ -18,7 +20,7 @@ const DOC_TYPE_COLORS: Record<DocumentType, string> = {
 }
 
 export default function ExtractionResultsPage(): JSX.Element {
-  const { t } = useTranslation('extraction')
+  const { t, i18n } = useTranslation('extraction')
   const { t: tc } = useTranslation('common')
   const navigate = useNavigate()
   const { extractionResults, fileInfo, reset } = useScan()
@@ -28,9 +30,19 @@ export default function ExtractionResultsPage(): JSX.Element {
   const docType = extractionResults?.documentType || 'unknown'
 
   const [selectedField, setSelectedField] = useState<ExtractionField | null>(fields[0] || null)
+  const [selectedTable, setSelectedTable] = useState<ExtractedTable | null>(null)
+  const [exportFeedback, setExportFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
+  const [exporting, setExporting] = useState(false)
   const [panelWidth, setPanelWidth] = useState(340)
   const [isDragging, setIsDragging] = useState(false)
   const dividerRef = useRef<HTMLDivElement>(null)
+
+  // Known template keys get a translated label; unknown keys (e.g. from AI)
+  // keep the label the extractor reported.
+  const fieldLabel = useCallback((field: ExtractionField): string => {
+    const key = `fieldLabels.${field.key}`
+    return /^[a-z][a-z0-9_]*$/.test(field.key) && i18n.exists(key, { ns: 'extraction' }) ? t(key) : field.label
+  }, [t, i18n])
 
   // Convert extraction fields to Issue-like objects for SpreadsheetPreview
   const previewIssues: Issue[] = useMemo(() => fields.map((f, i) => ({
@@ -41,17 +53,36 @@ export default function ExtractionResultsPage(): JSX.Element {
     ruleId: f.key,
     severity: 'info' as const,
     confidence: f.confidence,
-    message: `${f.label}: ${f.value}`,
+    message: `${fieldLabel(f)}: ${f.value}`,
     suggestion: '',
     category: 'extraction',
     layer: 'rule' as const,
-  })), [fields])
+  })), [fields, fieldLabel])
 
   const selectedPreviewIssue: Issue | null = useMemo(() => {
-    if (!selectedField) return null
-    const idx = fields.indexOf(selectedField)
-    return previewIssues[idx] || null
-  }, [selectedField, fields, previewIssues])
+    if (selectedField) {
+      const idx = fields.findIndex((field) => (
+        field.key === selectedField.key
+        && field.sheetName === selectedField.sheetName
+        && field.cell === selectedField.cell
+      ))
+      return previewIssues[idx] ? { ...previewIssues[idx] } : null
+    }
+    if (!selectedTable) return null
+    return {
+      id: `table-${selectedTable.sheetName}-${selectedTable.startCell}`,
+      sheetName: selectedTable.sheetName,
+      cell: selectedTable.startCell,
+      formula: '',
+      ruleId: 'table_range',
+      severity: 'info',
+      confidence: 0,
+      message: t('continuousRangeNotice', { range: `${selectedTable.startCell}:${selectedTable.endCell}` }),
+      suggestion: '',
+      category: 'extraction',
+      layer: 'rule',
+    }
+  }, [selectedField, selectedTable, fields, previewIssues, t])
 
   const sheets = useMemo(() => {
     const names: string[] = []
@@ -65,23 +96,43 @@ export default function ExtractionResultsPage(): JSX.Element {
   }, [fields, tables, fileInfo])
 
   const handleFieldClick = useCallback((field: ExtractionField) => {
-    setSelectedField(field)
+    setSelectedField({ ...field })
+    setSelectedTable(null)
   }, [])
 
+  const handleTableClick = useCallback((table: ExtractedTable) => {
+    setSelectedTable({ ...table })
+    setSelectedField(null)
+  }, [])
+
+  // Back to this task's entry page, not the home page.
   const handleRescan = useCallback(() => {
     reset()
-    navigate('/')
+    navigate(TASKS.extraction.route)
   }, [reset, navigate])
 
-  const handleExportJson = useCallback(() => {
-    if (!extractionResults) return
-    window.api?.exportExtraction?.(extractionResults.filePath, 'json')
-  }, [extractionResults])
-
-  const handleExportCsv = useCallback(() => {
-    if (!extractionResults) return
-    window.api?.exportExtraction?.(extractionResults.filePath, 'csv')
-  }, [extractionResults])
+  const handleExport = useCallback(async (format: 'json' | 'csv') => {
+    if (!extractionResults || !window.api?.exportExtraction) return
+    setExporting(true)
+    setExportFeedback(null)
+    try {
+      const result = await window.api.exportExtraction({
+        filePath: extractionResults.filePath,
+        fileName: extractionResults.fileName,
+        format,
+        fields,
+        tables,
+      })
+      if (result.cancelled) return
+      setExportFeedback(result.success
+        ? { type: 'success', message: t('exportSavedTo', { path: result.outputPath }) }
+        : { type: 'error', message: result.error || t('exportFailed') })
+    } catch {
+      setExportFeedback({ type: 'error', message: t('exportFailed') })
+    } finally {
+      setExporting(false)
+    }
+  }, [extractionResults, fields, tables, t])
 
   // Resizable divider
   const handleMouseDown = useCallback(
@@ -116,7 +167,7 @@ export default function ExtractionResultsPage(): JSX.Element {
         <div className="no-issues-title">{t('noFields')}</div>
         <div className="no-issues-file">{fileInfo?.fileName || tc('file')}</div>
         <div className="no-issues-detail">
-          {fileInfo?.sheets?.length || 0} sheets &middot; {fileInfo?.totalCells?.toLocaleString() || 0} cells
+          {t('sheetsAndCells', { sheets: fileInfo?.sheets?.length || 0, cells: fileInfo?.totalCells?.toLocaleString() || 0 })}
           {extractionResults?.duration ? ` · ${formatDuration(extractionResults.duration)}` : ''}
         </div>
         <div className="no-issues-msg">
@@ -186,20 +237,21 @@ export default function ExtractionResultsPage(): JSX.Element {
           {fields.map((field, index) => (
             <div
               key={`${field.key}-${index}`}
-              className={`ext-field-card ${selectedField?.key === field.key && selectedField?.cell === field.cell ? 'selected' : ''}`}
+              className={`ext-field-card ${selectedField?.key === field.key && selectedField?.sheetName === field.sheetName && selectedField?.cell === field.cell ? 'selected' : ''}`}
               data-testid={`extraction-field-card-${index}`}
+              data-field-key={field.key}
+              data-sheet-name={field.sheetName}
+              data-cell-address={field.cell}
               onClick={() => handleFieldClick(field)}
+              title={t('inspectSourceCell', { place: cellLabel(field.cell, i18n.language, field.sheetName) })}
             >
               <div className="ext-field-header">
-                <span className="ext-field-label">{field.label}</span>
-                <span className="ext-field-cell">{field.cell}</span>
+                <span className="ext-field-label">{fieldLabel(field)}</span>
               </div>
               <div className="ext-field-value">{field.value}</div>
-              <div className="ext-field-meta">
-                <span className="ext-confidence-bar">
-                  <span className="ext-confidence-fill" style={{ width: `${field.confidence * 100}%` }} />
-                </span>
-                <span className="ext-confidence-text">{formatConfidence(field.confidence)}</span>
+              <div className="ext-field-source">
+                <span>{t('sourceCell')}</span>
+                <span className="ext-field-place">{cellLabel(field.cell, i18n.language, field.sheetName)}</span>
               </div>
             </div>
           ))}
@@ -211,14 +263,26 @@ export default function ExtractionResultsPage(): JSX.Element {
             <div className="ext-section-label">{t('tables')}</div>
             <div className="ext-table-list">
               {tables.map((table, index) => (
-                <div key={index} className="ext-table-card" data-testid={`extraction-table-card-${index}`}>
+                <div
+                  key={index}
+                  className={`ext-table-card ${selectedTable?.sheetName === table.sheetName && selectedTable?.startCell === table.startCell && selectedTable?.endCell === table.endCell ? 'selected' : ''}`}
+                  data-testid={`extraction-table-card-${index}`}
+                  onClick={() => handleTableClick(table)}
+                  title={t('inspectRange', { range: `${table.startCell}:${table.endCell}` })}
+                >
                   <div className="ext-table-header">
                     <span className="ext-table-sheet">{table.sheetName}</span>
-                    <span className="ext-table-range">{table.startCell}:{table.endCell}</span>
+                    <span className="ext-table-range" title={t('exportedRange', { range: `${table.startCell}:${table.endCell}` })}>{table.startCell}:{table.endCell}</span>
                   </div>
                   <div className="ext-table-detail">
-                    {table.headers.length} columns &middot; {table.rows.length} rows
+                    {t('tableShape', { columns: table.headers.length, rows: table.rows.length })}
                   </div>
+                  <div className="ext-table-headers" title={table.headers.join(', ')}>
+                    {table.headers.join(' · ')}
+                  </div>
+                  <p className="ext-table-caution">
+                    {t('continuousRangeNotice', { range: `${table.startCell}:${table.endCell}` })}
+                  </p>
                 </div>
               ))}
             </div>
@@ -230,17 +294,24 @@ export default function ExtractionResultsPage(): JSX.Element {
           <button
             className="btn btn-primary ext-export-btn"
             data-testid="extraction-export-json-btn"
-            onClick={handleExportJson}
+            onClick={() => handleExport('json')}
+            disabled={exporting}
           >
             {t('exportJson')}
           </button>
           <button
             className="btn btn-ghost ext-export-btn"
             data-testid="extraction-export-csv-btn"
-            onClick={handleExportCsv}
+            onClick={() => handleExport('csv')}
+            disabled={exporting}
           >
             {t('exportCsv')}
           </button>
+          {exportFeedback && (
+            <div className={`ext-export-feedback ${exportFeedback.type}`} role="status">
+              {exportFeedback.message}
+            </div>
+          )}
         </div>
       </div>
 

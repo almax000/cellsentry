@@ -6,7 +6,12 @@ directories:
 files:
   - '!**/.vscode/*'
   - '!src/*'
-  - '!e2e/*'
+  - '!e2e/**'
+  - '!tests/**'
+  - '!tmp/**'
+  - '!shared/**'
+  - '!electron/**'
+  - '!vitest.config.*'
   - '!electron.vite.config.*'
   - '!playwright.config.*'
   - '!{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'

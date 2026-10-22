@@ -40,15 +40,15 @@ CellSentry is a desktop app that explores using local small language models (SLM
 
 ### Formula Audit
 
-- **23 audit rules** in 7 categories: consistency, references, logic, hardcoding, structure, style, complexity
+- **19 audit rules** in 7 categories: consistency, references, logic, hardcoding, structure, style, complexity
 - **Batch scanning** — drag & drop multiple files or folders
 - **Confidence scoring** — each issue rated High / Medium / Low
-- **AI verification** — optional local LLM confirms or dismisses findings (graceful degradation when unavailable)
+- **AI verification** — optional local LLM annotates findings; disputed findings remain visible and retain their rule confidence
 - **Export reports** — HTML, PDF, or marked Excel files
 
 ### PII Detection
 
-- **12 regex patterns** across 2 locales (US, CN)
+- **10 regex patterns** across 2 locales (US, CN)
 - Detects: SSN, phone numbers, email, national IDs, credit cards, IBAN, passport numbers
 - **Validators**: Luhn algorithm (credit cards), CN ID checksum
 - **Masking preview** — see redacted values before exporting
@@ -61,6 +61,15 @@ CellSentry is a desktop app that explores using local small language models (SLM
 - Field extraction: invoice number, date, vendor, totals, line items
 - **Table detection** — automatic header/row identification
 - **Export**: JSON or CSV structured output
+
+### File support and result limits
+
+- Input: `.xlsx` and `.csv`. Convert legacy `.xls` files before opening them.
+- CSV imports preserve leading-zero IDs and long integer identifiers as text.
+- Formula auditing reads formulas and cached values; CellSentry does not recalculate Excel formulas.
+- Audit reports: HTML, actual PDF, and marked copies of `.xlsx` workbooks.
+- PII exports create a separate `.xlsx` copy of the selected findings. Verify the preview before sharing any redacted file.
+- Extraction exports save structured JSON or CSV; CSV text is escaped against spreadsheet formula injection.
 
 ## Download
 
@@ -78,22 +87,18 @@ CellSentry uses a fine-tuned local SLM for AI-enhanced analysis. The model:
 - **[almax000/cellsentry-model](https://huggingface.co/almax000/cellsentry-model)** on HuggingFace (~940 MB, GGUF)
 - Fine-tuned from [Qwen2.5-1.5B](https://huggingface.co/Qwen/Qwen2.5-1.5B) with LoRA
 - Multi-task: formula audit verification, PII classification, data extraction
-- Runs entirely on your machine (MLX on Mac, llama.cpp on Windows)
-- Downloads automatically on first launch
+- Runs entirely on your machine with bundled node-llama-cpp (Metal on supported Macs; native backend on Windows)
+- Optional download from Settings; the application opens and analyzes spreadsheets without a model
 - **Gracefully degrades** — all three features work without the model
 
-Manual download:
-
-```bash
-huggingface-cli download almax000/cellsentry-model cellsentry-1.5b-v3-q4km.gguf --local-dir ./models
-```
+Use **Settings → Download AI model** to download and verify the model into the application data directory. A file existing on disk is not evidence that AI loaded: Settings reports the actual native runtime state.
 
 ### Current Limitations
 
 - Model trained on English and Chinese data only
 - PII patterns cover US and CN formats (no EU/JP/KR patterns yet)
 - Extraction templates for 5 document types
-- 1024 token context — large spreadsheets need chunking
+- 1024 token context — AI receives bounded samples; it does not inspect every cell in a large workbook
 
 ## Build from Source
 
@@ -104,7 +109,7 @@ npm install
 npm run dev
 ```
 
-**Requirements:** Node.js 20+, npm
+**Requirements:** Node.js 20.19+ (CI uses Node.js 22), npm. Build each installer on its target platform so the native AI runtime matches the operating system and CPU.
 
 ### Build Installers
 
@@ -119,8 +124,8 @@ cd app && npm run build:win
 ### Run Tests
 
 ```bash
-cd app && npm run typecheck     # Type checking
-cd app && npx playwright test   # E2E tests (requires build first)
+cd app
+npm run test:ci  # Type checking, unit tests, build, real Electron E2E
 ```
 
 ## Tech Stack
@@ -137,8 +142,8 @@ cd app && npx playwright test   # E2E tests (requires build first)
 ```
 app/
 ├── electron/           # Main process
-│   ├── engine/         # Rule engine (23 rules, 7 categories)
-│   ├── pii/            # PII scanner (12 patterns, 2 locales)
+│   ├── engine/         # Rule engine (19 rules, 7 categories)
+│   ├── pii/            # PII scanner (10 patterns, 2 locales)
 │   ├── extraction/     # Document extractor (5 doc types)
 │   ├── llm/            # Local LLM bridge (graceful degradation)
 │   ├── model/          # Model downloader (HuggingFace)

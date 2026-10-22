@@ -17,7 +17,10 @@
     "spreadsheetAudit": "表格审计",
     "piiRedaction": "隐私脱敏",
     "dataExtraction": "数据提取",
-    "settings": "设置"
+    "settings": "设置",
+    "pii": "脱敏",
+    "audit": "公式",
+    "extraction": "提取"
   },
   "header": {
     "spreadsheetAudit": "表格审计",
@@ -27,6 +30,10 @@
     "extractionResults": "提取结果",
     "scanning": "扫描中...",
     "scanResults": "扫描结果",
-    "settings": "设置"
+    "settings": "设置",
+    "home": "CellSentry",
+    "auditEntry": "检查表格公式",
+    "piiEntry": "给病历和体检报告脱敏",
+    "extractionEntry": "从发票表格里提取数据"
   }
 }

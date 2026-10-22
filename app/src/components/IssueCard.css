@@ -5,7 +5,6 @@
   padding: 10px 12px;
   box-shadow: var(--shadow-card);
   cursor: pointer;
-  border-left: 3px solid transparent;
   transition: all var(--transition);
 }
 
@@ -14,9 +13,6 @@
   transform: translateX(1px);
 }
 
-.issue-card.critical { border-left-color: var(--danger); }
-.issue-card.warning { border-left-color: var(--warning); }
-.issue-card.info { border-left-color: var(--info); }
 
 .issue-card.selected {
   box-shadow: var(--shadow-md);
@@ -46,19 +42,12 @@
 .issue-severity-dot.info { background: var(--info); }
 
 .issue-cell {
-  font-family: var(--font-mono);
   font-size: 11.5px;
   font-weight: 600;
   color: var(--text-primary);
   background: var(--bg-tertiary);
-  padding: 1px 5px;
+  padding: 1px 6px;
   border-radius: 3px;
-}
-
-.issue-rule {
-  font-size: 10.5px;
-  color: var(--text-muted);
-  font-weight: 500;
 }
 
 .issue-message {
@@ -76,29 +65,7 @@
   align-items: center;
   gap: 8px;
   margin-top: 6px;
-}
-
-.issue-confidence {
-  font-size: 10.5px;
-  font-weight: 600;
-  color: var(--text-muted);
-  display: flex;
-  align-items: center;
-  gap: 3px;
-}
-
-.confidence-bar {
-  width: 32px;
-  height: 3px;
-  background: var(--bg-tertiary);
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.confidence-fill {
-  height: 100%;
-  border-radius: 2px;
-  transition: width 0.5s ease;
+  flex-wrap: wrap;
 }
 
 .issue-layer {
@@ -155,14 +122,37 @@
 }
 
 .issue-detail-suggested {
-  font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 11.5px;
+  line-height: 1.5;
   background: var(--success-bg);
   padding: 4px 8px;
   border-radius: 4px;
   color: var(--success);
-  word-break: break-all;
+  overflow-wrap: anywhere;
+  white-space: pre-line;
 }
+
+.issue-detail-place {
+  font-size: 11.5px;
+  color: var(--text-primary);
+  overflow-wrap: anywhere;
+}
+
+/* ── Technical details (rule ID, raw reference, formula) ── */
+.issue-tech {
+  margin: 4px 0 2px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.issue-tech > summary {
+  cursor: pointer;
+  width: fit-content;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.issue-tech > summary:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; border-radius: 3px; }
 
 .issue-detail-actions {
   display: flex;
@@ -202,3 +192,8 @@
   font-style: italic;
   line-height: 1.4;
 }
+
+.issue-review-note { font-size: 11px; color: var(--text-secondary); }
+.issue-review-note { margin-bottom: 8px; line-height: 1.5; }
+.issue-card:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.issue-detail-actions { align-items: center; flex-wrap: wrap; font-size: 11px; }

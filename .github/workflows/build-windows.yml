@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 env:
-  NODE_VERSION: '20'
+  NODE_VERSION: '22'
 
 jobs:
   # ── Stage 1: Test ─────────────────────────────────────────────────────
@@ -35,9 +35,9 @@ jobs:
         working-directory: app
         run: npx electron-vite build
 
-      - name: TypeScript type check
+      - name: TypeScript and regression tests
         working-directory: app
-        run: npm run typecheck:node
+        run: npm run typecheck && npm run test:unit && npm run test:e2e
 
   # ── Stage 2: Build Windows ───────────────────────────────────────────
   build-windows:

@@ -7,11 +7,39 @@
 import { Workbook, Cell as ExcelCell, CellValue, CellFormulaValue, CellRichTextValue } from 'exceljs'
 import { CellInfo, SheetContext } from './types'
 import { getColumnLetter, columnToNumber } from './utils'
+import { extname } from 'path'
+
+/** CSV has no type metadata. Preserve identifiers and only coerce safe numbers. */
+export function parseCsvValue(value: string): string | number {
+  if (/^-?(?:0|[1-9]\d*)(?:\.\d+)?$/.test(value) && value.replace(/\D/g, '').length <= 15) {
+    const number = Number(value)
+    if (Number.isFinite(number)) return number
+  }
+  return value
+}
+
+export async function loadWorkbook(filePath: string): Promise<Workbook> {
+  const wb = new Workbook()
+  const extension = extname(filePath).toLowerCase()
+  if (extension === '.csv') {
+    await wb.csv.readFile(filePath, { map: parseCsvValue, sheetName: 'Sheet1' })
+  } else if (extension === '.xlsx') {
+    await wb.xlsx.readFile(filePath)
+  } else {
+    throw new Error('Unsupported spreadsheet format. Save the file as .xlsx or .csv first.')
+  }
+  return wb
+}
 
 function extractPlainText(value: CellValue): string {
   if (value === null || value === undefined) return ''
   if (typeof value === 'object' && 'richText' in (value as CellRichTextValue)) {
     return (value as CellRichTextValue).richText.map((r) => r.text).join('')
+  }
+  if (typeof value === 'object') {
+    if ('text' in value) return String(value.text)
+    if ('formula' in value || 'sharedFormula' in value) return extractPlainText(value.result as CellValue)
+    if ('error' in value) return String(value.error)
   }
   return String(value)
 }
@@ -23,12 +51,18 @@ function buildCellInfo(cell: ExcelCell, row: number, col: number): CellInfo {
   let dataType = 'empty'
 
   // ExcelJS formula cells: { formula: '...', result: ... }
-  if (value && typeof value === 'object' && 'formula' in (value as CellFormulaValue)) {
+  if (value && typeof value === 'object' && ('formula' in value || 'sharedFormula' in value)) {
     const fv = value as CellFormulaValue
-    formula = '=' + fv.formula
-    value = fv.result !== undefined ? fv.result : null
+    formula = cell.formula ? '=' + cell.formula : null
+    // ExcelJS 4.4 omits a cached result of 0 (or false) from cell.value even
+    // though the file stores <v>0</v>; the cell's own result keeps it.
+    const result = fv.result !== undefined ? fv.result : (cell as { result?: unknown }).result
+    value = result !== undefined ? result : null
     dataType = 'formula'
   } else if (value && typeof value === 'object' && 'richText' in (value as CellRichTextValue)) {
+    value = extractPlainText(value as CellValue)
+    dataType = 'text'
+  } else if (value && typeof value === 'object' && 'text' in value) {
     value = extractPlainText(value as CellValue)
     dataType = 'text'
   } else if (value === null || value === undefined) {
@@ -130,8 +164,7 @@ function buildSheetContext(ws: import('exceljs').Worksheet): SheetContext {
 export async function readWorkbook(
   filePath: string,
 ): Promise<{ sheets: SheetContext[] }> {
-  const wb = new Workbook()
-  await wb.xlsx.readFile(filePath)
+  const wb = await loadWorkbook(filePath)
   const sheets: SheetContext[] = []
   for (const ws of wb.worksheets) {
     sheets.push(buildSheetContext(ws))
@@ -149,8 +182,7 @@ export async function getFileInfo(
   error?: string
 }> {
   try {
-    const wb = new Workbook()
-    await wb.xlsx.readFile(filePath)
+    const wb = await loadWorkbook(filePath)
     let totalCells = 0
     const sheets = wb.worksheets.map((ws) => {
       let cellCount = 0
@@ -194,8 +226,7 @@ export async function readFileCells(
   error?: string
 }> {
   try {
-    const wb = new Workbook()
-    await wb.xlsx.readFile(filePath)
+    const wb = await loadWorkbook(filePath)
     const ws = wb.getWorksheet(sheetName)
     if (!ws) {
       return { success: false, error: `Sheet not found: ${sheetName}` }
@@ -217,14 +248,9 @@ export async function readFileCells(
         const cell = ws.getCell(r, c)
         const cellData: { value: string; formula: string } = { value: '', formula: '' }
 
-        const v = cell.value
-        if (v && typeof v === 'object' && 'formula' in (v as CellFormulaValue)) {
-          const fv = v as CellFormulaValue
-          cellData.formula = '=' + fv.formula
-          cellData.value = fv.result !== undefined && fv.result !== null ? String(fv.result) : ''
-        } else if (v !== null && v !== undefined) {
-          cellData.value = extractPlainText(v as CellValue)
-        }
+        const info = buildCellInfo(cell, r, c)
+        cellData.formula = info.formula || ''
+        cellData.value = extractPlainText(info.value as CellValue)
 
         rowData.push(cellData)
       }

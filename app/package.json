@@ -10,6 +10,8 @@
     "runtime:prepare": "node ../scripts/prepare-native.mjs",
     "test:native": "node --test ../scripts/test-native-runtime.cjs ../scripts/test-cancellation-policy.cjs ../scripts/test-formula-benchmark.mjs ../scripts/test-pii-benchmark.mjs ../scripts/test-pii-decision.mjs ../scripts/test-pii-v2.mjs",
     "test:pii-benchmark": "node --test ../scripts/test-pii-benchmark.mjs",
+    "test:docreader": "node --test ../scripts/test-docreader-native.mjs",
+    "check:adr": "node ../scripts/check-adr-index.mjs",
     "build": "electron-vite build",
     "postinstall": "patch-package && electron-builder install-app-deps",
     "preview": "electron-vite preview",
@@ -22,9 +24,11 @@
     "test:flow": "npx playwright test --project=flow",
     "test:pii": "npx playwright test --project=pii",
     "test:extraction": "npx playwright test --project=extraction",
-    "test:ci": "electron-vite build && npm run typecheck:node && npx playwright test",
+    "test:ci": "npm run typecheck && npm run test:unit && npm run test:native && npm run build && npm run test:e2e",
     "build:win": "node ../scripts/prepare-native.mjs win32-x64 && npm run build && npx electron-builder --win --x64",
-    "build:mac": "npm run runtime:prepare && npm run build && npx electron-builder --mac"
+    "build:docreader": "node ../scripts/build-docreader.mjs",
+    "build:mac": "npm run runtime:prepare && npm run build:docreader && npm run build && npx electron-builder --mac",
+    "test:unit": "vitest run"
   },
   "dependencies": {
     "electron-updater": "^6.8.3",
@@ -48,6 +52,10 @@
     "electron-vite": "^5.0.0",
     "patch-package": "^8.0.1",
     "typescript": "^5.7.2",
-    "vite": "^6.0.3"
+    "vite": "^6.0.3",
+    "vitest": "3.2.7"
+  },
+  "engines": {
+    "node": ">=20.19.0"
   }
 }

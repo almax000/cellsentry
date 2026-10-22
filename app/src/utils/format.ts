@@ -45,10 +45,13 @@ export function severityLabel(level: SeverityLevel): string {
 /** Map sidecar severity (high/medium/low) to our SeverityLevel */
 export function mapSeverity(raw: string): SeverityLevel {
   switch (raw) {
+    case 'error':
     case 'high':
       return 'error'
+    case 'warning':
     case 'medium':
       return 'warning'
+    case 'info':
     case 'low':
       return 'info'
     default:

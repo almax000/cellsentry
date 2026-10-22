@@ -12,50 +12,11 @@ import type { SheetContext } from '../engine/types'
 import { PII_PATTERNS } from './patterns'
 import { PiiType } from './types'
 import type { PiiFinding, PiiScanResult } from './types'
-import { analyzeWithLlmPii } from '../llm/lifecycle'
+import { analyzeWithLlmPii, isLocalAiReadyFor } from '../llm/lifecycle'
 import type { LlmCellContext } from '../llm/types'
+import { maskValue, maskPiiText } from './masking'
 
 const LLM_CANDIDATE_LIMIT = 100
-
-/**
- * Mask a matched value, preserving a few characters at each end for
- * human readability while hiding the sensitive middle portion.
- */
-function maskValue(value: string, piiType: string): string {
-  switch (piiType) {
-    case PiiType.EMAIL: {
-      const atIdx = value.indexOf('@')
-      if (atIdx <= 1) return '***' + value.substring(atIdx)
-      return value[0] + '***' + value.substring(atIdx)
-    }
-    case PiiType.PHONE: {
-      const digits = value.replace(/\D/g, '')
-      if (digits.length <= 4) return '****'
-      const prefix = digits.substring(0, 3)
-      const suffix = digits.substring(digits.length - 4)
-      return prefix + '****' + suffix
-    }
-    case PiiType.ID_NUMBER: {
-      const cleaned = value.replace(/\s/g, '')
-      if (cleaned.length <= 6) return '******'
-      return cleaned.substring(0, 4) + '**********' + cleaned.substring(cleaned.length - 4)
-    }
-    case PiiType.CREDIT_CARD:
-    case PiiType.BANK_CARD: {
-      const d = value.replace(/\D/g, '')
-      if (d.length <= 4) return '****'
-      return '****-****-****-' + d.substring(d.length - 4)
-    }
-    case PiiType.SSN: {
-      if (value.includes('-')) return '***-**-' + value.substring(value.length - 4)
-      return '*****' + value.substring(value.length - 4)
-    }
-    default: {
-      if (value.length <= 4) return '****'
-      return value.substring(0, 2) + '***' + value.substring(value.length - 2)
-    }
-  }
-}
 
 /**
  * Scan an Excel file for PII.
@@ -64,7 +25,7 @@ function maskValue(value: string, piiType: string): string {
  * each PII pattern. When a validator is present the confidence is raised to
  * 0.95; regex-only matches get 0.8.
  *
- * If the LLM is available, unflagged text cells are sent for secondary
+ * If the installed model supports PII, unflagged text cells are sent for secondary
  * screening to catch soft PII (names, addresses) that regex cannot detect.
  */
 export async function scanForPiiFromSheets(sheets: SheetContext[]): Promise<PiiScanResult> {
@@ -72,6 +33,7 @@ export async function scanForPiiFromSheets(sheets: SheetContext[]): Promise<PiiS
 
   try {
     const findings: PiiFinding[] = []
+    let aiWarning: string | undefined
     const regexFlaggedCells = new Set<string>() // "Sheet!A1" keys
 
     // Pass 1: regex patterns
@@ -82,30 +44,35 @@ export async function scanForPiiFromSheets(sheets: SheetContext[]): Promise<PiiS
         const text = String(cell.value)
         if (text.length < 3) continue
 
+        const foundTypes = new Set<string>()
         for (const pattern of PII_PATTERNS) {
-          const match = text.match(pattern.regex)
-          if (!match) continue
-          if (pattern.validator && !pattern.validator(match[0])) continue
+          if (foundTypes.has(pattern.type)) continue
+          const flags = pattern.regex.flags.includes('g') ? pattern.regex.flags : `${pattern.regex.flags}g`
+          const matches = text.matchAll(new RegExp(pattern.regex.source, flags))
+          const validMatch = Array.from(matches).some((match) => !pattern.validator || pattern.validator(match[0]))
+          if (!validMatch) continue
 
           findings.push({
             sheet_name: sheet.name,
             cell: cell.address,
             pii_type: pattern.type,
             original_value: text,
-            masked_value: maskValue(match[0], pattern.type),
+            masked_value: maskPiiText(text, pattern.type),
             confidence: pattern.validator ? 0.95 : 0.8,
             pattern: pattern.label,
           })
           regexFlaggedCells.add(`${sheet.name}!${cell.address}`)
-          break // one match per cell
+          foundTypes.add(pattern.type)
         }
       }
     }
 
-    // Pass 2: LLM secondary screening
+    // Pass 2: LLM secondary screening, only when the installed model declares
+    // PII support. Otherwise the regex result is final and carries no AI warning.
     const candidates: LlmCellContext[] = []
+    const screenWithAi = isLocalAiReadyFor('pii')
 
-    for (const sheet of sheets) {
+    for (const sheet of screenWithAi ? sheets : []) {
       for (const cell of Object.values(sheet.cells)) {
         if (candidates.length >= LLM_CANDIDATE_LIMIT) break
         if (cell.dataType === 'empty' || cell.value == null) continue
@@ -124,8 +91,13 @@ export async function scanForPiiFromSheets(sheets: SheetContext[]): Promise<PiiS
     }
 
     if (candidates.length > 0) {
-      const llmFindings = await analyzeWithLlmPii(candidates)
-      for (const f of llmFindings) {
+      try {
+        const llmFindings = await analyzeWithLlmPii(candidates)
+        const candidateAddresses = new Set(candidates.map((candidate) => candidate.address))
+        const validPiiTypes = new Set(Object.values(PiiType))
+        for (const f of llmFindings) {
+          if (!candidateAddresses.has(f.cellAddress) || !validPiiTypes.has(f.piiType as PiiType)) continue
+          if (!Number.isFinite(f.confidence) || f.confidence < 0 || f.confidence > 1) continue
         const alreadyFound = findings.some(
           (existing) => `${existing.sheet_name}!${existing.cell}` === f.cellAddress
         )
@@ -148,6 +120,10 @@ export async function scanForPiiFromSheets(sheets: SheetContext[]): Promise<PiiS
           pattern: 'ai-detected',
         })
       }
+      } catch (error) {
+        // Regex findings remain useful even when the optional model is unavailable.
+        aiWarning = error instanceof Error ? error.message : String(error)
+      }
     }
 
     return {
@@ -155,6 +131,7 @@ export async function scanForPiiFromSheets(sheets: SheetContext[]): Promise<PiiS
       findings,
       duration: Date.now() - start,
       scannedAt: new Date().toISOString(),
+      ...(aiWarning ? { aiWarning } : {}),
     }
   } catch (e) {
     return {

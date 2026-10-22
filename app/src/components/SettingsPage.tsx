@@ -2,6 +2,10 @@ import { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSidecar } from '../hooks/useSidecar'
 import './SettingsPage.css'
+import ModelDownloadModal from './modals/ModelDownloadModal'
+import type { EngineLocale } from '../../shared/locale'
+import { formatByteSize, formatExactBytes } from '../utils/byteSize'
+import { FORMULA_ASSISTANT_MODEL } from '../utils/formulaAssistant'
 
 const ZOOM_STEPS = [-2, -1.5, -0.5, 0, 0.5, 1, 2]
 const ZOOM_LABELS = ['67%', '80%', '90%', '100%', '110%', '125%', '150%']
@@ -9,7 +13,22 @@ const ZOOM_LABELS = ['67%', '80%', '90%', '100%', '110%', '125%', '150%']
 export default function SettingsPage(): JSX.Element {
   const { t } = useTranslation('settings')
   const { i18n } = useTranslation()
-  const { modelLoaded, modelName, version } = useSidecar()
+  const { modelLoaded, modelName, modelExists, modelError, refreshModelStatus, version } = useSidecar()
+  const [forceModelDownload, setForceModelDownload] = useState(false)
+  const [showModelDownload, setShowModelDownload] = useState(false)
+  const [startingModel, setStartingModel] = useState(false)
+  const [startError, setStartError] = useState('')
+  useEffect(() => { void refreshModelStatus() }, [refreshModelStatus])
+  const startModel = async (): Promise<void> => {
+    setStartingModel(true)
+    setStartError('')
+    try {
+      const result = await window.api.startLlm()
+      if (!result.modelLoaded) setStartError(result.error || t('modelUnavailable'))
+      await refreshModelStatus()
+    } catch { setStartError(t('modelUnavailable')) }
+    finally { setStartingModel(false) }
+  }
   const [zoomIndex, setZoomIndex] = useState(3) // default 100%
   const [updateStatus, setUpdateStatus] = useState<UpdateStatus | null>(null)
 
@@ -38,38 +57,63 @@ export default function SettingsPage(): JSX.Element {
     { code: 'zh', label: '中文' },
   ] as const
   const currentLang = SUPPORTED_LANGS.find(l => i18n.language?.startsWith(l.code))?.code ?? 'en'
+  const changeLanguage = async (locale: EngineLocale): Promise<void> => {
+    const result = await window.api.setEngineLocale(locale)
+    if (!result.success) return
+    await i18n.changeLanguage(locale)
+  }
+
+  // Status is derived from the installed file first: never "ready" without a model on disk.
+  const assistantState = !modelExists ? 'notInstalled' : modelLoaded ? 'ready' : 'installed'
+  const rawModelError = startError || modelError
+  const sizeText = formatByteSize(FORMULA_ASSISTANT_MODEL.sizeBytes)
+
+  if (showModelDownload) return <ModelDownloadModal forceDownload={forceModelDownload} onClose={() => { setShowModelDownload(false); void refreshModelStatus() }} />
 
   return (
     <div className="settings-container view-enter">
-      {/* AI Model Section */}
+      {/* On-device AI Section: one row per task assistant (formula only for now) */}
       <div className="settings-section">
         <div className="settings-section-title">{t('aiModel')}</div>
         <div className="settings-group">
           <div className="settings-row">
-            <div>
-              <div className="settings-label">{t('modelStatus')}</div>
-              <div className="settings-desc">
-                {modelName || 'MiniCPM5-2B Cancellation v2'} (1.56 GB)
-              </div>
+            <div className="settings-row-main">
+              <div className="settings-label">{t('formulaAssistant')}</div>
+              <div className="settings-desc">{t('formulaAssistantDesc')}</div>
             </div>
             <div
-              className="settings-value"
-              style={{ color: modelLoaded ? 'var(--success)' : 'var(--text-muted)' }}
+              className="settings-value settings-assistant-status"
+              data-testid="settings-ai-status"
+              style={{ color: assistantState === 'ready' ? 'var(--success)' : 'var(--text-muted)' }}
             >
-              {modelLoaded ? `● ${t('modelLoaded')}` : `○ ${t('modelNotLoaded')}`}
+              {assistantState === 'ready'
+                ? `● ${t('statusReady')}`
+                : `○ ${t(assistantState === 'installed' ? 'statusInstalled' : 'statusNotInstalled')}`}
             </div>
           </div>
-          <div className="settings-row">
-            <div>
-              <div className="settings-label">{t('aiAnalysis')}</div>
-              <div className="settings-desc">
-                {t('aiAnalysisDesc')}
-              </div>
+          {assistantState !== 'ready' && <div className="settings-row">
+            <div className="settings-desc settings-row-main" role="status">
+              {modelExists && rawModelError ? t('modelUnavailable') : t('optionalModel', { size: sizeText })}
             </div>
-            <div className="settings-value" style={{ color: 'var(--success)' }}>
-              {t('enabled')}
+            <div className="settings-actions">
+              <button className="btn btn-primary" data-testid="settings-setup-model" disabled={startingModel}
+                onClick={() => modelExists ? void startModel() : setShowModelDownload(true)}>
+                {startingModel ? t('loadingModel') : t(modelExists ? 'retryModel' : 'downloadModel')}
+              </button>
+              {modelExists && <button className="btn btn-secondary" data-testid="settings-redownload-model" disabled={startingModel}
+                onClick={() => { setForceModelDownload(true); setShowModelDownload(true) }}>{t('redownloadModel')}</button>}
             </div>
-          </div>
+          </div>}
+          <details className="settings-tech">
+            <summary>{t('technicalInfo')}</summary>
+            <dl>
+              <dt>{t('techModel')}</dt><dd>{modelName || '—'}</dd>
+              <dt>{t('techFile')}</dt><dd>{FORMULA_ASSISTANT_MODEL.fileName}</dd>
+              <dt>{t('techSize')}</dt>
+              <dd>{sizeText} · {t('techSizeBytes', { bytes: formatExactBytes(FORMULA_ASSISTANT_MODEL.sizeBytes) })}</dd>
+              {rawModelError && <><dt>{t('techError')}</dt><dd>{rawModelError}</dd></>}
+            </dl>
+          </details>
         </div>
       </div>
 
@@ -105,7 +149,7 @@ export default function SettingsPage(): JSX.Element {
               className="lang-select"
               data-testid="settings-lang-select"
               value={currentLang}
-              onChange={(e) => i18n.changeLanguage(e.target.value)}
+              onChange={(e) => { void changeLanguage(e.target.value as EngineLocale) }}
             >
               {SUPPORTED_LANGS.map(({ code, label }) => (
                 <option key={code} value={code}>{label}</option>
@@ -126,7 +170,7 @@ export default function SettingsPage(): JSX.Element {
               data-testid="settings-version"
               style={{ fontFamily: 'var(--font-mono)', fontSize: '12px' }}
             >
-              {version || '1.0.0-beta.1'}
+              {version || '—'}
               <span className="beta-badge">BETA</span>
             </div>
           </div>

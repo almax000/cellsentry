@@ -1,119 +1,44 @@
-import { useState, useCallback, useEffect, useRef, type DragEvent } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useCallback } from 'react'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useSidecar } from '../hooks/useSidecar'
-import { useScan } from '../context/ScanContext'
+import { useTaskStarter, type PickedFile } from '../hooks/useTaskStarter'
+import { TASKS, SPREADSHEET_EXTENSIONS, type TaskId } from '../tasks'
 import './DropZone.css'
 
-const ALLOWED_EXTENSIONS = ['.xlsx', '.xls', '.csv']
-
-export default function DropZone(): JSX.Element {
+/** Entry page for one task. File drops are handled window-wide by FileDropRouter. */
+export default function DropZone({ task }: { task: TaskId }): JSX.Element {
   const { t } = useTranslation('dropzone')
-  const [dragOver, setDragOver] = useState(false)
   const [error, setError] = useState('')
-  const navigate = useNavigate()
-  const { status, openFileDialog } = useSidecar()
-  const { scanState, startScan, startBatchScan } = useScan()
-  const didStartScan = useRef(false)
+  const { status, modelExists, openFileDialog } = useSidecar()
+  const startTask = useTaskStarter()
+  const { allowsBatch } = TASKS[task]
 
-  useEffect(() => {
-    if (scanState === 'scanning') didStartScan.current = true
-    if (scanState === 'complete' && didStartScan.current) navigate('/results')
-    else if (scanState === 'scanning') navigate('/scanning')
-  }, [scanState, navigate])
-
-  const validateFile = (name: string): boolean => {
-    const ext = name.substring(name.lastIndexOf('.')).toLowerCase()
-    return ALLOWED_EXTENSIONS.includes(ext)
-  }
-
-  const handleSingleFile = useCallback(
-    async (filePath: string) => {
+  const start = useCallback(
+    (files: PickedFile[]) => {
       setError('')
-      if (status !== 'connected') {
-        setError(t('errorNotConnected'))
-        return
-      }
-      navigate('/scanning')
-      startScan(filePath)
-    },
-    [status, navigate, startScan, t]
-  )
-
-  const handleMultipleFiles = useCallback(
-    async (files: Array<{ path: string; name: string; size: number }>) => {
-      setError('')
-      if (status !== 'connected') {
-        setError(t('errorNotConnected'))
-        return
-      }
-      if (files.length === 1) {
-        navigate('/scanning')
-        startScan(files[0].path)
-      } else {
-        navigate('/scanning')
-        startBatchScan(files)
-      }
-    },
-    [status, navigate, startScan, startBatchScan, t]
-  )
-
-  const handleDragOver = useCallback((e: DragEvent) => {
-    e.preventDefault()
-    setDragOver(true)
-  }, [])
-
-  const handleDragLeave = useCallback(() => {
-    setDragOver(false)
-  }, [])
-
-  const handleDrop = useCallback(
-    (e: DragEvent) => {
-      e.preventDefault()
-      setDragOver(false)
-
-      const files = e.dataTransfer.files
       if (files.length === 0) return
-
-      const validFiles: Array<{ path: string; name: string; size: number }> = []
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i]
-        if (!validateFile(file.name)) continue
-        const filePath = window.api?.getFilePathFromDrop?.(file) ?? ''
-        if (filePath) {
-          validFiles.push({ path: filePath, name: file.name, size: file.size })
-        }
-      }
-
-      if (validFiles.length === 0) {
-        setError(t('errorNoFiles'))
+      if (status !== 'connected') {
+        setError(t('errorNotConnected'))
         return
       }
-
-      handleMultipleFiles(validFiles)
+      startTask(task, files)
     },
-    [handleMultipleFiles, t]
+    [status, startTask, task, t]
   )
 
   const handleBrowse = useCallback(async () => {
     const filePath = await openFileDialog()
-    if (filePath) {
-      handleSingleFile(filePath)
-    }
-  }, [openFileDialog, handleSingleFile])
+    if (filePath) start([{ path: filePath, name: filePath.split(/[/\\]/).pop() || filePath, size: 0 }])
+  }, [openFileDialog, start])
 
   const handleBrowseMultiple = useCallback(async () => {
     if (!window.api?.openFilesDialog) return
     const filePaths = await window.api.openFilesDialog()
     if (filePaths && filePaths.length > 0) {
-      const files = filePaths.map((p) => ({
-        path: p,
-        name: p.split(/[/\\]/).pop() || p,
-        size: 0,
-      }))
-      handleMultipleFiles(files)
+      start(filePaths.map((p) => ({ path: p, name: p.split(/[/\\]/).pop() || p, size: 0 })))
     }
-  }, [handleMultipleFiles])
+  }, [start])
 
   const handleBrowseFolder = useCallback(async () => {
     if (!window.api?.openFolderDialog || !window.api?.scanFolder) return
@@ -126,22 +51,15 @@ export default function DropZone(): JSX.Element {
         setError(result.error || t('errorNoFilesInFolder'))
         return
       }
-      handleMultipleFiles(result.files)
+      start(result.files)
     } catch {
       setError(t('errorFolderScan'))
     }
-  }, [handleMultipleFiles, t])
+  }, [start, t])
 
   return (
-    <div className="drop-zone-container view-enter">
-      <div
-        className={`drop-zone ${dragOver ? 'drag-over' : ''}`}
-        data-testid="dropzone-area"
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-        onClick={handleBrowse}
-      >
+    <div className="drop-zone-container view-enter" data-testid={`entry-${task}`}>
+      <div className="drop-zone" data-testid="dropzone-area" onClick={handleBrowse}>
         <div className="drop-zone-icon">
           <svg
             width="36"
@@ -159,30 +77,38 @@ export default function DropZone(): JSX.Element {
           </svg>
           <div className="shield-pulse" />
         </div>
-        <div className="drop-zone-title">{t('title')}</div>
+        <div className="drop-zone-title">{t(`tasks.${task}.title`)}</div>
         <div className="drop-zone-subtitle">
-          {t('subtitle').split('\n').map((line, i) => (
+          {t(`tasks.${task}.subtitle`).split('\n').map((line, i) => (
             <span key={i}>{line}{i === 0 && <br />}</span>
           ))}
         </div>
         <span className="drop-zone-browse" data-testid="dropzone-browse-btn">{t('browse')}</span>
         <div className="drop-zone-formats">
-          {ALLOWED_EXTENSIONS.map((ext) => (
+          {SPREADSHEET_EXTENSIONS.map((ext) => (
             <span key={ext} className="format-badge">
               {ext}
             </span>
           ))}
         </div>
-        <div className="drop-zone-actions" onClick={(e) => e.stopPropagation()}>
-          <button className="btn btn-ghost" data-testid="dropzone-batch-btn" onClick={handleBrowseMultiple}>
-            {t('selectMultiple')}
-          </button>
-          <button className="btn btn-ghost" data-testid="dropzone-folder-btn" onClick={handleBrowseFolder}>
-            {t('scanFolder')}
-          </button>
-        </div>
+        {allowsBatch && (
+          <div className="drop-zone-actions" onClick={(e) => e.stopPropagation()}>
+            <button className="btn btn-ghost" data-testid="dropzone-batch-btn" onClick={handleBrowseMultiple}>
+              {t('selectMultiple')}
+            </button>
+            <button className="btn btn-ghost" data-testid="dropzone-folder-btn" onClick={handleBrowseFolder}>
+              {t('scanFolder')}
+            </button>
+          </div>
+        )}
       </div>
 
+      {task === 'pii' && <div className="drop-zone-note" data-testid="dropzone-soon">{t('tasks.pii.soon')}</div>}
+      {task === 'audit' && !modelExists && (
+        <div className="drop-zone-note" data-testid="dropzone-assistant-hint">
+          {t('assistantHint')} <Link to="/settings">{t('assistantLink')}</Link>
+        </div>
+      )}
       {error && <div className="drop-zone-error" data-testid="dropzone-error">{error}</div>}
     </div>
   )

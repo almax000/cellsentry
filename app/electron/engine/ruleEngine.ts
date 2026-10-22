@@ -8,6 +8,7 @@
 import { readWorkbook } from './excelReader'
 import { RuleRegistry } from './registry'
 import { EngineIssue, SheetContext, IssueType, ConfidenceLevel } from './types'
+import { buildAuditEvidence } from './auditEvidence'
 import './rules' // triggers rule registration
 
 export interface RendererIssue {
@@ -25,6 +26,8 @@ export interface RendererIssue {
   currentValue: unknown
   expectedValue: unknown
   correctFormula: string | null
+  /** Short, source-labelled workbook evidence for optional local-AI review. */
+  context?: string
 }
 
 function issueTypeToCategory(type: IssueType): string {
@@ -74,7 +77,7 @@ function confidenceToSeverity(c: ConfidenceLevel): 'error' | 'warning' | 'info' 
   }
 }
 
-function mapToRendererIssue(issue: EngineIssue, index: number): RendererIssue {
+function mapToRendererIssue(issue: EngineIssue, index: number, context?: SheetContext): RendererIssue {
   return {
     id: `issue-${index}`,
     ruleId: issue.ruleId,
@@ -90,6 +93,7 @@ function mapToRendererIssue(issue: EngineIssue, index: number): RendererIssue {
     currentValue: issue.currentValue,
     expectedValue: issue.expectedValue,
     correctFormula: issue.correctFormula,
+    ...(context ? { context: buildAuditEvidence(issue, context) } : {}),
   }
 }
 
@@ -102,7 +106,7 @@ export async function analyzeExcelFromSheets(
 }> {
   const excelRules = RuleRegistry.getExcelRules()
   const sheetRules = RuleRegistry.getSheetRules()
-  const engineIssues: EngineIssue[] = []
+  const engineIssues: Array<{ issue: EngineIssue; context: SheetContext }> = []
 
   for (const context of sheets) {
     // Per-cell rules
@@ -112,7 +116,7 @@ export async function analyzeExcelFromSheets(
           const issue = rule.checkExcel(cell, context)
           if (issue) {
             if (!issue.sheetName) issue.sheetName = context.name
-            engineIssues.push(issue)
+            engineIssues.push({ issue, context })
           }
         }
       }
@@ -122,12 +126,12 @@ export async function analyzeExcelFromSheets(
     for (const rule of sheetRules) {
       if (rule.checkSheet) {
         const sheetIssues = rule.checkSheet(context)
-        engineIssues.push(...sheetIssues)
+        engineIssues.push(...sheetIssues.map((issue) => ({ issue, context })))
       }
     }
   }
 
-  const rendererIssues = engineIssues.map((issue, i) => mapToRendererIssue(issue, i))
+  const rendererIssues = engineIssues.map(({ issue, context }, i) => mapToRendererIssue(issue, i, context))
 
   const summary = {
     total: rendererIssues.length,

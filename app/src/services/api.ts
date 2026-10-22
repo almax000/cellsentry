@@ -14,7 +14,7 @@ export async function getModelStatus(): Promise<{
 }
 
 export async function analyzeFile(filePath: string): Promise<AnalysisResult> {
-  return window.api.analyzeFile(filePath)
+  return window.api.analyzeFile(filePath, crypto.randomUUID())
 }
 
 export async function getFileInfo(filePath: string): Promise<FileInfo> {

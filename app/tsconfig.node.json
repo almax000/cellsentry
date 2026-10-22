@@ -12,6 +12,7 @@
   },
   "include": [
     "electron.vite.config.*",
-    "electron/**/*.ts"
+    "electron/**/*.ts",
+    "shared/**/*.ts"
   ]
 }

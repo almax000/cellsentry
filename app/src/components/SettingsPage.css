@@ -169,3 +169,48 @@
   border-radius: 2px;
   transition: width 0.3s ease;
 }
+
+/* ── Formula assistant row ── */
+.settings-row-main {
+  flex: 1;
+  min-width: 0;
+  margin-right: 16px;
+}
+
+.settings-assistant-status {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.settings-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.settings-desc[role="status"] { line-height: 1.5; }
+
+/* Technical name, file and exact size stay out of the primary text. */
+.settings-tech {
+  padding: 10px 16px 12px;
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+
+.settings-tech > summary {
+  cursor: pointer;
+  width: fit-content;
+  font-weight: 600;
+}
+
+.settings-tech > summary:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; border-radius: 3px; }
+
+.settings-tech dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px 12px;
+  margin: 8px 0 0;
+}
+
+.settings-tech dt { font-weight: 600; }
+.settings-tech dd { margin: 0; overflow-wrap: anywhere; font-family: var(--font-mono); font-size: 11px; }

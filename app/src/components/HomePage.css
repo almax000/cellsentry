@@ -1,0 +1,146 @@
+.home-page {
+  height: 100%;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+}
+
+.home-inner {
+  width: 100%;
+  max-width: 820px;
+  padding: 40px 8px 24px;
+}
+
+.home-title {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  margin: 0;
+}
+
+.home-subtitle {
+  margin: 6px 0 22px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.home-grid {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.home-task {
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  padding: 18px 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.home-task:hover {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--brand-glow);
+}
+
+.home-task:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.home-task.lead {
+  grid-row: 1 / 3;
+  padding: 24px 24px 20px;
+  border: 1.5px solid var(--brand);
+  background: linear-gradient(180deg, var(--brand-subtle), var(--bg-card) 60%);
+}
+
+.home-task-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.home-task-icon {
+  display: inline-flex;
+  color: var(--text-secondary);
+}
+
+.home-task.lead .home-task-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  align-items: center;
+  justify-content: center;
+  background: var(--brand-glow);
+  color: var(--brand);
+}
+
+.home-task-title {
+  font-size: 15.5px;
+  font-weight: 700;
+}
+
+.home-task.lead .home-task-title {
+  font-size: 19px;
+}
+
+.home-task-desc {
+  display: block;
+  margin: 8px 0 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.home-task.lead .home-task-desc {
+  margin-top: 14px;
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+
+.home-task-foot {
+  margin-top: auto;
+  padding-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.home-task-formats {
+  display: flex;
+  gap: 6px;
+}
+
+.home-task-start {
+  color: var(--brand);
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.home-task-start.btn-primary {
+  color: white;
+  padding: 8px 16px;
+  font-size: 13px;
+}
+
+@media (max-width: 760px) {
+  .home-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .home-task.lead {
+    grid-row: auto;
+  }
+}

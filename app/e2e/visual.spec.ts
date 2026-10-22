@@ -1,12 +1,9 @@
 import { test, expect } from '@playwright/test'
 import { launchApp, teardownApp, type TestContext } from './electron.setup'
 import type { Page } from '@playwright/test'
-import { join } from 'path'
 
 let ctx: TestContext
 let page: Page
-
-const screenshotDir = join(__dirname, '..', '..', 'test_evidence', 'screenshots')
 
 test.beforeAll(async () => {
   ctx = await launchApp()
@@ -28,33 +25,48 @@ test('sidebar is 72px wide with no logo element', async () => {
   await expect(page.locator('[data-testid="sidebar-nav-home"]')).toBeVisible()
 })
 
-test('sidebar items are 48x48 with correct icon sizes', async () => {
-  // Home button has 28px icon
+test('sidebar items are 56px wide with an icon above a text label', async () => {
+  // Home button has a 26px mark
   const home = page.locator('[data-testid="sidebar-nav-home"]')
   await expect(home).toBeVisible()
   const homeSvg = home.locator('svg')
-  await expect(homeSvg).toHaveAttribute('width', '28')
-  await expect(homeSvg).toHaveAttribute('height', '28')
+  await expect(homeSvg).toHaveAttribute('width', '26')
+  await expect(homeSvg).toHaveAttribute('height', '26')
 
-  // Engine items have 24px icons
+  // Task items have 22px icons and a visible label, redaction first
+  const order = await page.locator('.sidebar-nav .sidebar-item').evaluateAll((items) => items.map((item) => item.getAttribute('data-testid')))
+  expect(order).toEqual(['sidebar-nav-home', 'sidebar-nav-pii', 'sidebar-nav-audit', 'sidebar-nav-extraction'])
+
   const auditItem = page.locator('[data-testid="sidebar-nav-audit"]')
   const box = await auditItem.evaluate((el) => {
     const rect = el.getBoundingClientRect()
     return { width: rect.width, height: rect.height }
   })
-  expect(box.width).toBe(48)
-  expect(box.height).toBe(48)
+  expect(box.width).toBe(56)
+  expect(box.height).toBeGreaterThanOrEqual(52)
+  await expect(auditItem.locator('.sidebar-label')).toBeVisible()
 
   const svg = auditItem.locator('svg')
-  await expect(svg).toHaveAttribute('width', '24')
-  await expect(svg).toHaveAttribute('height', '24')
+  await expect(svg).toHaveAttribute('width', '22')
+  await expect(svg).toHaveAttribute('height', '22')
 })
 
-test('header shows feature icon (not app brand)', async () => {
+test('header carries the persistent local-only badge', async () => {
+  const badge = page.locator('[data-testid="local-only-badge"]')
+  await expect(badge).toBeVisible()
+  await badge.click()
+  await expect(page.locator('.local-only-popover')).toBeVisible()
+  await page.keyboard.press('Escape')
+  await expect(page.locator('.local-only-popover')).toHaveCount(0)
+})
+
+test('header shows feature icon (not app brand) on a task entry page', async () => {
+  await page.locator('[data-testid="sidebar-nav-audit"]').click()
+  await expect(page.locator('[data-testid="entry-audit"]')).toBeVisible()
   const icon = page.locator('.header-title svg')
   await expect(icon).toBeVisible()
 
-  // On the home page, should be the grid/spreadsheet icon (has a rect + path)
+  // The formula-check entry uses the grid/spreadsheet icon (has a rect + path)
   const rect = icon.locator('rect')
   await expect(rect).toBeVisible()
 })
@@ -110,9 +122,7 @@ test('drop zone buttons are inside dashed border', async () => {
   await expect(buttons).toHaveCount(2)
 })
 
-test('full app screenshot', async () => {
-  await page.screenshot({
-    path: join(screenshotDir, 'app-full.png'),
-    fullPage: false
-  })
+test('home surface is visible for Playwright failure evidence', async () => {
+  await page.locator('[data-testid="sidebar-nav-home"]').click()
+  await expect(page.locator('[data-testid="home-page"]')).toBeVisible()
 })

@@ -1,10 +1,9 @@
-/**
- * PII redactor — creates a copy of an Excel file with PII values masked.
- */
-
-import ExcelJS from 'exceljs'
+/** Creates a separate workbook with selected PII replaced by plain masked text. */
+import type ExcelJS from 'exceljs'
 import { PII_PATTERNS } from './patterns'
 import type { PiiFinding } from './types'
+import { maskPiiText, maskValue } from './masking'
+import { assertDistinctOutput } from '../exportSafety'
 
 export interface RedactResult {
   success: boolean
@@ -13,88 +12,83 @@ export interface RedactResult {
   error?: string
 }
 
-/**
- * Replace the middle portion of a matched value with asterisks.
- * Keeps a short prefix/suffix so the cell remains recognizable.
- */
-function mask(value: string, matchedText: string): string {
-  if (matchedText.length <= 4) return value.replace(matchedText, '****')
-
-  const first = matchedText.substring(0, 2)
-  const last = matchedText.substring(matchedText.length - 2)
-  const stars = '*'.repeat(Math.min(matchedText.length - 4, 12))
-  return value.replace(matchedText, first + stars + last)
+/** Read displayed values without serializing ExcelJS objects as [object Object]. */
+function cellText(value: ExcelJS.CellValue): string {
+  if (value == null) return ''
+  if (typeof value !== 'object') return String(value)
+  if (value instanceof Date) return value.toISOString()
+  if ('richText' in value) return value.richText.map((part) => part.text).join('')
+  if ('formula' in value || 'sharedFormula' in value) {
+    if (value.result == null || typeof value.result === 'object') {
+      throw new Error('Cannot redact a formula without a supported cached value')
+    }
+    return String(value.result)
+  }
+  if ('hyperlink' in value) return value.text
+  throw new Error('Cannot redact this cell value type')
 }
 
-/**
- * Redact PII from an Excel file and write the result to `outputPath`.
- *
- * When `findings` are supplied only those specific cells are redacted.
- * Otherwise every cell is tested against PII_PATTERNS.
- */
-export async function redactFile(
-  filePath: string,
-  outputPath: string,
-  findings?: PiiFinding[],
-): Promise<RedactResult> {
+/** An explicit empty selection leaves all cells untouched; omitted findings scans all. */
+export async function redactFile(filePath: string, outputPath: string, findings?: PiiFinding[]): Promise<RedactResult> {
   try {
-    const wb = new ExcelJS.Workbook()
-    await wb.xlsx.readFile(filePath)
-
+    await assertDistinctOutput(filePath, outputPath)
+    const { loadWorkbook } = await import('../engine/excelReader')
+    const wb = await loadWorkbook(filePath)
     let redactedCount = 0
-
-    if (findings && findings.length > 0) {
-      // Targeted redaction: only touch cells listed in findings
-      const findingMap = new Map<string, PiiFinding>()
-      for (const f of findings) {
-        findingMap.set(`${f.sheet_name}!${f.cell}`, f)
+    if (findings !== undefined) {
+      const cells = new Map<string, PiiFinding[]>()
+      for (const finding of findings) {
+        const key = `${finding.sheet_name}!${finding.cell}`
+        cells.set(key, [...(cells.get(key) || []), finding])
       }
-
-      for (const ws of wb.worksheets) {
-        for (let row = 1; row <= (ws.rowCount || 0); row++) {
-          for (let col = 1; col <= (ws.columnCount || 0); col++) {
-            const cell = ws.getCell(row, col)
-            if (cell.value == null) continue
-
-            const address = cell.address // e.g. "A1"
-            const key = `${ws.name}!${address}`
-            const finding = findingMap.get(key)
-            if (!finding) continue
-
-            cell.value = finding.masked_value
-            redactedCount++
-          }
-        }
+      for (const cellFindings of cells.values()) {
+        const first = cellFindings[0]
+        const ws = wb.getWorksheet(first.sheet_name)
+        if (!ws || !/^[A-Z]+[1-9]\d*$/i.test(first.cell)) throw new Error('A selected PII cell no longer exists; scan the source again')
+        const cell = ws.getCell(first.cell)
+        const original = cellText(cell.value)
+        const redacted = redactSelectedCell(original, cellFindings)
+        // Flatten formula, hyperlink and rich text values so their original payload cannot leak.
+        cell.value = redacted
+        redactedCount++
       }
     } else {
-      // Full scan: test every cell against all patterns
       for (const ws of wb.worksheets) {
-        for (let row = 1; row <= (ws.rowCount || 0); row++) {
-          for (let col = 1; col <= (ws.columnCount || 0); col++) {
-            const cell = ws.getCell(row, col)
-            if (cell.value == null) continue
-
-            const text = String(cell.value)
-            if (text.length < 3) continue
-
-            for (const pattern of PII_PATTERNS) {
-              const match = text.match(pattern.regex)
-              if (!match) continue
-              if (pattern.validator && !pattern.validator(match[0])) continue
-
-              cell.value = mask(text, match[0])
-              redactedCount++
-              break // one redaction per cell
-            }
+        ws.eachRow((row) => row.eachCell((cell) => {
+          const original = cellText(cell.value)
+          let redacted = original
+          for (const type of new Set(PII_PATTERNS.map((pattern) => pattern.type))) {
+            redacted = maskPiiText(redacted, type)
           }
-        }
+          if (redacted !== original) {
+            cell.value = redacted
+            redactedCount++
+          }
+        }))
       }
     }
-
+    // Check again after reading and transforming, before writing any output bytes.
+    await assertDistinctOutput(filePath, outputPath)
     await wb.xlsx.writeFile(outputPath)
-
     return { success: true, outputPath, redactedCount }
-  } catch (e) {
-    return { success: false, error: String(e) }
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : String(error) }
   }
+}
+
+export function redactSelectedCell(value: string, findings: PiiFinding[]): string {
+  let redacted = value
+  for (const finding of findings) {
+    if (value !== finding.original_value) throw new Error('A selected PII cell changed; scan the source again')
+    if (finding.pattern === 'ai-detected') {
+      const masked = maskValue(redacted, finding.pii_type)
+      if (maskValue(value, finding.pii_type) === value) throw new Error('Unable to redact a selected PII finding')
+      redacted = masked
+    } else {
+      if (maskPiiText(value, finding.pii_type) === value) throw new Error('Unable to redact a selected PII finding; scan the source again')
+      redacted = maskPiiText(redacted, finding.pii_type)
+    }
+  }
+  if (findings.length > 0 && redacted === value) throw new Error('Unable to redact a selected PII finding')
+  return redacted
 }

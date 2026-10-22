@@ -5,6 +5,7 @@ import { useScan } from '../context/ScanContext'
 import type { Issue, SeverityLevel } from '../types'
 import { FileSpreadsheetIcon, ShieldCheckIcon, CheckIcon, AlertIcon } from './icons'
 import { formatDuration } from '../utils/format'
+import { TASKS } from '../tasks'
 import IssueCard from './IssueCard'
 import SpreadsheetPreview from './SpreadsheetPreview'
 import './ResultsPage.css'
@@ -15,7 +16,7 @@ export default function AuditResultsPage(): JSX.Element {
   const { t } = useTranslation('results')
   const { t: tc } = useTranslation('common')
   const navigate = useNavigate()
-  const { results, fileInfo, reset, isBatch, batchFiles, batchResults, selectBatchFile } = useScan()
+  const { results, fileInfo, reset, isBatch, batchFiles, batchResults, batchIndex, scanState, error, selectBatchFile } = useScan()
 
   const [filter, setFilter] = useState<FilterKey>('all')
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(
@@ -24,7 +25,8 @@ export default function AuditResultsPage(): JSX.Element {
   const [expandedIssue, setExpandedIssue] = useState<Issue | null>(null)
   const [panelWidth, setPanelWidth] = useState(340)
   const [isDragging, setIsDragging] = useState(false)
-  const [activeBatchFileIndex, setActiveBatchFileIndex] = useState(0)
+  const activeBatchFileIndex = Math.max(0, batchIndex)
+  const selectedFileError = isBatch && scanState === 'error' ? error : ''
   const dividerRef = useRef<HTMLDivElement>(null)
 
   const issues = results?.issues || []
@@ -35,28 +37,26 @@ export default function AuditResultsPage(): JSX.Element {
     return issues.filter((i) => i.severity === filter)
   }, [issues, filter])
 
-  const avgConfidence = useMemo(() => {
-    const valid = issues.filter((i) => typeof i.confidence === 'number' && !isNaN(i.confidence))
-    if (valid.length === 0) return 0
-    return valid.reduce((sum, i) => sum + i.confidence, 0) / valid.length
-  }, [issues])
+  // `auditReview` is present only when the formula assistant actually ran.
+  const aiReviewed = Boolean(results?.auditReview)
+  const aiReviewedCount = aiReviewed ? issues.filter((issue) => issue.llmVerified !== undefined).length : 0
 
   const handleIssueClick = useCallback(
     (issue: Issue) => {
-      setSelectedIssue(issue)
+      setSelectedIssue({ ...issue })
       setExpandedIssue((prev) => (prev?.id === issue.id ? null : issue))
     },
     []
   )
 
+  // Back to this task's entry page, not the home page.
   const handleRescan = useCallback(() => {
     reset()
-    navigate('/')
+    navigate(TASKS.audit.route)
   }, [reset, navigate])
 
   const handleBatchFileSelect = useCallback(
     (index: number) => {
-      setActiveBatchFileIndex(index)
       selectBatchFile(index)
       setFilter('all')
       setSelectedIssue(null)
@@ -199,7 +199,7 @@ export default function AuditResultsPage(): JSX.Element {
             </button>
           </div>
 
-          <div className="results-summary-row" data-testid="results-summary">
+          {!selectedFileError && <><div className="results-summary-row" data-testid="results-summary">
             <div className="summary-card-mini">
               <div className="label">{t('crit')}</div>
               <div className="value danger">{summary.errors}</div>
@@ -212,10 +212,10 @@ export default function AuditResultsPage(): JSX.Element {
               <div className="label">{t('info')}</div>
               <div className="value info-color">{summary.info}</div>
             </div>
-            <div className="summary-card-mini">
-              <div className="label">{t('conf')}</div>
-              <div className="value brand">{Math.round(avgConfidence * 100)}%</div>
-            </div>
+            {aiReviewed && <div className="summary-card-mini" data-testid="results-ai-reviewed">
+              <div className="label">{t('aiReviewed')}</div>
+              <div className="value brand">{aiReviewedCount}/{issues.length}</div>
+            </div>}
           </div>
 
           <div className="filter-bar">
@@ -232,13 +232,16 @@ export default function AuditResultsPage(): JSX.Element {
             ))}
           </div>
 
+          </>}
           <div className="issue-list">
+            {selectedFileError && <div role="alert" className="analysis-warning">{selectedFileError}</div>}
             {filteredIssues.map((issue, index) => (
               <IssueCard
                 key={issue.id}
                 issue={issue}
                 isSelected={selectedIssue?.id === issue.id}
                 isExpanded={expandedIssue?.id === issue.id}
+                showAiReview={aiReviewed}
                 onClick={() => handleIssueClick(issue)}
                 data-testid={`results-issue-card-${index}`}
               />
@@ -255,12 +258,12 @@ export default function AuditResultsPage(): JSX.Element {
 
         {/* Right: Spreadsheet Preview */}
         <div className="results-panel-right" data-testid="results-panel-right">
-          <SpreadsheetPreview
+          {selectedFileError ? <div className="no-issues-container">{tc('file')}: {batchFiles[activeBatchFileIndex]?.name}</div> : <SpreadsheetPreview
             issues={issues}
             selectedIssue={selectedIssue}
             sheets={sheets}
             filePath={results?.filePath || ''}
-          />
+          />}
         </div>
       </div>
     </>

@@ -1,25 +1,53 @@
 {
   "modelDownload": {
     "checking": "Checking...",
-    "downloading": "Downloading AI Model",
-    "verifying": "Verifying integrity...",
-    "modelReady": "Model Ready",
-    "downloadFailed": "Download Failed",
+    "downloading": "Downloading the Formula assistant",
+    "verifying": "Checking the file…",
+    "modelReady": "Formula assistant is ready",
+    "downloadFailed": "The download didn't finish",
     "checkingMsg": "Checking for AI model...",
     "startingDownload": "Starting download...",
     "verifyingChecksum": "Verifying checksum...",
     "modelIsReady": "Model is ready.",
-    "readySubtitle": "CellSentry Beta is ready to analyze your spreadsheets.",
+    "readySubtitle": "The Formula assistant is ready to use. Your spreadsheets stay on this computer.",
     "errorSubtitle": "An error occurred during download.",
     "oneTimeSubtitle": "This is a one-time download. The AI model runs entirely on your device.",
-    "sha256Check": "SHA-256 check...",
+    "sha256Check": "Checking that the file is complete…",
     "getStarted": "Get Started",
-    "retryDownload": "Retry Download",
-    "prepareModel": "Prepare on-device model",
-    "importLocal": "Import local GGUF model",
-    "importFailed": "Model import failed",
-    "downloadNow": "Download model",
-    "setupFailed": "Model setup failed"
+    "retryDownload": "Download again",
+    "prepareModel": "Install the Formula assistant",
+    "importLocal": "Import a downloaded model file",
+    "importFailed": "Couldn't import this file",
+    "downloadNow": "Download and install ({{size}})",
+    "setupFailed": "The Formula assistant wasn't installed",
+    "loadFailed": "The file is downloaded, but the Formula assistant couldn't start. Built-in checks are not affected and work as usual.",
+    "loadingModel": "Starting the Formula assistant…",
+    "optionalSubtitle": "The Formula assistant double-checks formula findings on this computer to cut down false alarms. It's optional: every built-in check works without it. Size: {{size}}. Download it once; after that it works offline.",
+    "returnToSettings": "Back to settings",
+    "cancelAndContinue": "Not now, go back",
+    "loadExisting": "Start the installed Formula assistant",
+    "importRequirement": "If you already have the model file, you can import it. It must be named {{filename}} and be {{size}}. The app checks that the file is complete.",
+    "technicalInfo": "Technical info",
+    "techModel": "Model",
+    "techFile": "File name",
+    "techSize": "Size",
+    "techSizeBytes": "{{bytes}} bytes",
+    "importWrongFile": "This isn't the right file: its size or content doesn't match the Formula assistant. Make sure the download finished and the file name is right.",
+    "techError": "Error message",
+    "failureGuidance": {
+      "access_denied": {
+        "title": "Automatic download needs authorized access",
+        "body": "The download source refused the request, and retrying won't change that. You can keep using the built-in checks or import a model file you already downloaded."
+      },
+      "source_unavailable": {
+        "title": "Automatic download source is unavailable",
+        "body": "The download source is unavailable right now and may be access-restricted. Try again later, or keep using the built-in checks and import a model file you already downloaded."
+      },
+      "other": {
+        "title": "Automatic download did not finish",
+        "body": "Check your internet connection and free disk space, then try again. You can also keep using the built-in checks or import a model file you already downloaded."
+      }
+    }
   },
   "confirm": {
     "defaultConfirm": "Confirm",

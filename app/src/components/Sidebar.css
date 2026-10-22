@@ -34,40 +34,29 @@
   flex-direction: column;
   gap: 2px;
   width: 100%;
-  padding: 0 12px;
+  padding: 0 8px;
+  align-items: center;
   overflow: visible;
 }
 
 .sidebar-item {
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  min-height: 52px;
+  padding: 6px 0 5px;
+  border: none;
+  background: transparent;
+  font: inherit;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 3px;
   border-radius: var(--radius-md);
   color: var(--chrome-text-secondary);
   cursor: pointer;
   transition: all var(--transition);
   position: relative;
   user-select: none;
-}
-
-/* Discord-style pill indicator */
-.sidebar-item::before {
-  content: '';
-  position: absolute;
-  left: -12px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 4px;
-  height: 0;
-  background: #ffffff;
-  border-radius: 0 4px 4px 0;
-  transition: height 0.2s ease;
-}
-
-.sidebar-item:hover::before {
-  height: 10px;
 }
 
 .sidebar-item:hover {
@@ -80,76 +69,43 @@
   color: var(--chrome-text);
 }
 
-.sidebar-item.active::before {
-  height: 20px;
+.sidebar-item:focus-visible {
+  outline: 2px solid var(--brand-light);
+  outline-offset: 1px;
 }
 
-.sidebar-item.disabled {
-  opacity: 0.3;
-  cursor: default;
-  pointer-events: none;
-}
-
-.sidebar-item.disabled::before {
-  display: none;
-}
-
-/* Home button — slightly larger icon, separator below */
 .sidebar-home {
-  margin-bottom: 8px;
-  padding-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .sidebar-home-icon {
-  width: 28px !important;
-  height: 28px !important;
+  width: 26px !important;
+  height: 26px !important;
 }
 
 .sidebar-item-icon {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.sidebar-tooltip {
-  position: absolute;
-  left: 80px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: var(--bg-elevated);
-  color: var(--text-primary);
-  border: 1px solid var(--border);
-  padding: 5px 10px;
-  border-radius: var(--radius-sm);
-  font-size: 12px;
+.sidebar-label {
+  font-size: 10.5px;
   font-weight: 600;
+  line-height: 1.2;
+  max-width: 60px;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
-  box-shadow: var(--shadow-md);
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.15s;
-  z-index: 50;
-}
-
-.sidebar-item:hover .sidebar-tooltip {
-  opacity: 1;
-}
-
-.sidebar-tooltip .soon-tag {
-  font-size: 9px;
-  font-weight: 700;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-left: 6px;
 }
 
 .sidebar-badge {
   position: absolute;
-  top: 4px;
-  right: 2px;
+  top: 2px;
+  right: 4px;
   min-width: 16px;
   height: 16px;
   padding: 0 4px;
@@ -169,7 +125,9 @@
 
 .sidebar-footer {
   width: 100%;
-  padding: 0 12px;
+  display: flex;
+  justify-content: center;
+  padding: 0 8px;
   border-top: 1px solid var(--chrome-border);
   padding-top: 8px;
 }

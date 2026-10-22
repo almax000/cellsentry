@@ -1,10 +1,13 @@
-import { useState, useCallback, useRef, useMemo } from 'react'
+import { useState, useCallback, useRef, useMemo, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useScan } from '../context/ScanContext'
 import type { Issue, PiiFinding, PiiType } from '../types'
 import { FileSpreadsheetIcon, ShieldCheckIcon } from './icons'
-import { formatDuration, formatConfidence } from '../utils/format'
+import { formatDuration } from '../utils/format'
+import { TASKS } from '../tasks'
+import { cellLabel } from '../utils/cellLabel'
+import { piiLabelKey } from '../utils/piiLabel'
 import SpreadsheetPreview from './SpreadsheetPreview'
 import './PiiResultsPage.css'
 
@@ -22,16 +25,28 @@ const PII_TYPE_COLORS: Record<PiiType, string> = {
 }
 
 export default function PiiResultsPage(): JSX.Element {
-  const { t } = useTranslation('pii')
+  const { t, i18n } = useTranslation('pii')
   const { t: tc } = useTranslation('common')
   const navigate = useNavigate()
   const { piiResults, fileInfo, reset } = useScan()
 
   const findings = piiResults?.findings || []
-  const summary = piiResults?.summary || { total: 0, byType: {} as Record<PiiType, number> }
 
   const [selectedFinding, setSelectedFinding] = useState<PiiFinding | null>(findings[0] || null)
-  const [selectedFindings, setSelectedFindings] = useState<Set<string>>(new Set())
+  const [selectedFindings, setSelectedFindings] = useState<Set<string>>(() => new Set(findings.map((finding) => finding.id)))
+  const [redactionFeedback, setRedactionFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
+  const [reviewOpen, setReviewOpen] = useState(false)
+  const reviewDialog = useRef<HTMLDialogElement>(null)
+  const redactButton = useRef<HTMLButtonElement>(null)
+  const redactionInFlight = useRef(false)
+  const selectedForRedaction = findings.filter((finding) => selectedFindings.has(finding.id))
+  useEffect(() => {
+    const dialog = reviewDialog.current
+    if (!reviewOpen || !dialog) return
+    dialog.showModal()
+    return () => { dialog.close(); redactButton.current?.focus() }
+  }, [reviewOpen])
+  const [isRedacting, setIsRedacting] = useState(false)
   const [panelWidth, setPanelWidth] = useState(340)
   const [isDragging, setIsDragging] = useState(false)
   const dividerRef = useRef<HTMLDivElement>(null)
@@ -45,7 +60,7 @@ export default function PiiResultsPage(): JSX.Element {
     ruleId: f.piiType,
     severity: 'warning' as const,
     confidence: f.confidence,
-    message: `${t(`piiTypes.${f.piiType}`)}: ${f.maskedValue}`,
+    message: `${t(piiLabelKey(f.piiType, f.pattern))}: ${f.maskedValue}`,
     suggestion: '',
     category: 'pii',
     layer: 'rule' as const,
@@ -53,8 +68,8 @@ export default function PiiResultsPage(): JSX.Element {
 
   const selectedPreviewIssue: Issue | null = useMemo(() => {
     if (!selectedFinding) return null
-    const idx = findings.indexOf(selectedFinding)
-    return previewIssues[idx] || null
+    const idx = findings.findIndex((finding) => finding.id === selectedFinding.id)
+    return previewIssues[idx] ? { ...previewIssues[idx] } : null
   }, [selectedFinding, findings, previewIssues])
 
   const sheets = useMemo(() => {
@@ -62,17 +77,23 @@ export default function PiiResultsPage(): JSX.Element {
     return s.size > 0 ? Array.from(s) : fileInfo?.sheets?.map((sh) => sh.name) || ['Sheet1']
   }, [findings, fileInfo])
 
+  // Group by the same label the cards show, so "手机号" and "美国电话号码" are counted separately.
   const typeSummary = useMemo(() => {
-    const entries = Object.entries(summary.byType) as [PiiType, number][]
-    return entries.filter(([, count]) => count > 0).sort((a, b) => b[1] - a[1])
-  }, [summary.byType])
+    const groups = new Map<string, { labelKey: string; piiType: PiiType; count: number }>()
+    for (const finding of findings) {
+      const labelKey = piiLabelKey(finding.piiType, finding.pattern)
+      const group = groups.get(labelKey)
+      if (group) group.count += 1
+      else groups.set(labelKey, { labelKey, piiType: finding.piiType, count: 1 })
+    }
+    return [...groups.values()].sort((a, b) => b.count - a.count)
+  }, [findings])
 
   const handleFindingClick = useCallback((finding: PiiFinding) => {
-    setSelectedFinding(finding)
+    setSelectedFinding({ ...finding })
   }, [])
 
-  const handleToggleSelect = useCallback((e: React.MouseEvent, findingId: string) => {
-    e.stopPropagation()
+  const handleToggleSelect = useCallback((findingId: string) => {
     setSelectedFindings((prev) => {
       const next = new Set(prev)
       if (next.has(findingId)) next.delete(findingId)
@@ -89,16 +110,44 @@ export default function PiiResultsPage(): JSX.Element {
     }
   }, [findings, selectedFindings.size])
 
+  // Back to this task's entry page, not the home page.
   const handleRescan = useCallback(() => {
     reset()
-    navigate('/')
+    navigate(TASKS.pii.route)
   }, [reset, navigate])
 
-  const handleRedactAll = useCallback(() => {
-    // Redaction handled by main process
-    const ids = selectedFindings.size > 0 ? Array.from(selectedFindings) : findings.map((f) => f.id)
-    window.api?.redactPii?.(piiResults?.filePath || '', ids)
-  }, [selectedFindings, findings, piiResults])
+  const handleRedactAll = useCallback(async () => {
+    if (redactionInFlight.current || !piiResults || !window.api?.redactPii) return
+    const selected = findings.filter((finding) => selectedFindings.has(finding.id))
+    if (selected.length === 0) return
+    redactionInFlight.current = true
+    setReviewOpen(false)
+    setIsRedacting(true)
+    setRedactionFeedback(null)
+    try {
+      const result = await window.api.redactPii({
+        filePath: piiResults.filePath,
+        fileName: piiResults.fileName,
+        findings: selected.map((finding) => ({
+          sheetName: finding.sheetName,
+          cell: finding.cell,
+          piiType: finding.piiType,
+          originalValue: finding.originalValue,
+          maskedValue: finding.maskedValue,
+          pattern: finding.pattern,
+        })),
+      })
+      if (result.cancelled) return
+      setRedactionFeedback(result.success
+        ? { type: 'success', message: t('redactSavedTo', { path: result.outputPath }) }
+        : { type: 'error', message: result.error || t('redactFailed') })
+    } catch {
+      setRedactionFeedback({ type: 'error', message: t('redactFailed') })
+    } finally {
+      redactionInFlight.current = false
+      setIsRedacting(false)
+    }
+  }, [selectedFindings, findings, piiResults, t])
 
   // Resizable divider
   const handleMouseDown = useCallback(
@@ -133,7 +182,7 @@ export default function PiiResultsPage(): JSX.Element {
         <div className="no-issues-title">{t('noFindings')}</div>
         <div className="no-issues-file">{fileInfo?.fileName || tc('file')}</div>
         <div className="no-issues-detail">
-          {fileInfo?.sheets?.length || 0} sheets &middot; {fileInfo?.totalCells?.toLocaleString() || 0} cells
+          {t('sheetsAndCells', { sheets: fileInfo?.sheets?.length || 0, cells: fileInfo?.totalCells?.toLocaleString() || 0 })}
           {piiResults?.duration ? ` · ${formatDuration(piiResults.duration)}` : ''}
         </div>
         <div className="no-issues-msg">
@@ -170,20 +219,24 @@ export default function PiiResultsPage(): JSX.Element {
 
         {/* PII type summary row */}
         <div className="pii-type-summary" data-testid="pii-type-summary">
-          {typeSummary.map(([piiType, count]) => (
+          {typeSummary.map(({ labelKey, piiType, count }) => (
             <span
-              key={piiType}
+              key={labelKey}
               className="pii-type-chip"
               style={{ '--chip-color': PII_TYPE_COLORS[piiType] || 'var(--text-muted)' } as React.CSSProperties}
             >
               <span className="pii-type-dot" />
-              {count} {t(`piiTypes.${piiType}`)}
+              {t(labelKey)} <strong className="pii-type-count">{count}</strong>
             </span>
           ))}
         </div>
 
+        {/* One reminder for the whole list instead of on every card */}
+        <p className="pii-list-hint" data-testid="pii-list-hint">{t('listHint')}</p>
+
         {/* Select all / Redact controls */}
         <div className="pii-actions-bar">
+          <span className="pii-selection-count" data-testid="pii-selection-count">{t('selectedCount', { count: selectedForRedaction.length, total: findings.length })}</span>
           <button
             className="pii-select-btn"
             data-testid="pii-select-all-btn"
@@ -200,33 +253,31 @@ export default function PiiResultsPage(): JSX.Element {
               key={finding.id}
               className={`pii-finding-card ${selectedFinding?.id === finding.id ? 'selected' : ''}`}
               data-testid={`pii-finding-card-${index}`}
+              data-sheet-name={finding.sheetName}
+              data-cell-address={finding.cell}
               onClick={() => handleFindingClick(finding)}
             >
-              <div className="pii-finding-check" onClick={(e) => handleToggleSelect(e, finding.id)}>
+              <div className="pii-finding-check" onClick={(event) => event.stopPropagation()}>
                 <input
                   type="checkbox"
                   checked={selectedFindings.has(finding.id)}
-                  readOnly
+                  onChange={() => handleToggleSelect(finding.id)}
+                  aria-label={t('selectFinding', { place: cellLabel(finding.cell, i18n.language, finding.sheetName) })}
                   data-testid={`pii-finding-check-${index}`}
                 />
               </div>
               <div className="pii-finding-body">
                 <div className="pii-finding-header">
-                  <span className="pii-cell-address">{finding.cell}</span>
+                  <span className="pii-cell-address">{cellLabel(finding.cell, i18n.language, finding.sheetName)}</span>
                   <span
                     className="pii-type-badge"
                     style={{ '--badge-color': PII_TYPE_COLORS[finding.piiType] || 'var(--text-muted)' } as React.CSSProperties}
                   >
-                    {t(`piiTypes.${finding.piiType}`)}
+                    {t(piiLabelKey(finding.piiType, finding.pattern))}
                   </span>
                 </div>
                 <div className="pii-finding-value">{finding.maskedValue}</div>
-                <div className="pii-finding-meta">
-                  <span className="pii-confidence-bar">
-                    <span className="pii-confidence-fill" style={{ width: `${finding.confidence * 100}%` }} />
-                  </span>
-                  <span className="pii-confidence-text">{formatConfidence(finding.confidence)}</span>
-                </div>
+                {finding.pattern === 'ai-detected' && <div className="pii-finding-meta">{t('aiCandidate')}</div>}
               </div>
             </div>
           ))}
@@ -234,17 +285,41 @@ export default function PiiResultsPage(): JSX.Element {
 
         {/* Redact button */}
         <div className="pii-redact-footer">
+          <p className="pii-export-note">{t('copyOnly')}</p>
           <button
             className="btn btn-primary pii-redact-btn"
             data-testid="pii-redact-btn"
-            onClick={handleRedactAll}
+            ref={redactButton}
+            onClick={() => setReviewOpen(true)}
+            disabled={isRedacting || selectedForRedaction.length === 0}
           >
-            {selectedFindings.size > 0
-              ? `${t('redactSelected')} (${selectedFindings.size})`
-              : t('redact')}
+            {isRedacting ? t('redacting') : t('reviewRedaction', { count: selectedForRedaction.length })}
           </button>
+          {redactionFeedback && (
+            <div className={`pii-export-feedback ${redactionFeedback.type}`} role="status">
+              {redactionFeedback.message}
+            </div>
+          )}
         </div>
       </div>
+
+      {reviewOpen && <dialog ref={reviewDialog} className="pii-review-dialog" aria-labelledby="pii-review-title" onCancel={() => setReviewOpen(false)}>
+        <h2 id="pii-review-title">{t('reviewTitle')}</h2>
+        <p>{t('reviewScope', { count: selectedForRedaction.length, total: findings.length })}</p>
+        <p>{t('copyOnly')}</p>
+        <div className="pii-review-table-wrap">
+          <table>
+            <thead><tr><th>{t('source')}</th><th>{t('original')}</th><th>{t('masked')}</th></tr></thead>
+            <tbody>{selectedForRedaction.map((finding) => <tr key={finding.id}>
+              <td>{cellLabel(finding.cell, i18n.language, finding.sheetName)}</td><td>{finding.originalValue}</td><td>{finding.maskedValue}</td>
+            </tr>)}</tbody>
+          </table>
+        </div>
+        <div className="pii-review-actions">
+          <button className="btn btn-ghost" onClick={() => setReviewOpen(false)}>{t('backToSelection')}</button>
+          <button className="btn btn-primary" data-testid="pii-confirm-redact-btn" disabled={isRedacting} onClick={handleRedactAll}>{t('saveRedactedCopy')}</button>
+        </div>
+      </dialog>}
 
       {/* Resizable Divider */}
       <div

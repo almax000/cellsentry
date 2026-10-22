@@ -1,5 +1,7 @@
 # 原生端侧接入验证
 
+> 下文保留协作者在 Windows 上的历史验收记录。后续本地 Mac 候选及其独立验证范围见 [Mac 候选验收](../docs/evaluation/2026-10-16-mac-candidate-validation.md)；历史结果不能自动代表新合并版本通过。
+
 日期：2026-10-16。开发主机：Windows x64。本次保留现有 v2 Q4_K_M 模型，不重新训练或重跑完整能力评测。
 
 ## 已完成
@@ -26,6 +28,6 @@
 
 - 首轮 CI：设备 Release 编译通过，模拟器测试编译因官方 b11429 XCFramework 不含 Simulator 库而失败。
 - 修复提交：`aa47256393fd7849aec818146d2cb4b8e7a73ba8`。通过 `prepare-ios.mjs --simulator` 从固定 b11429 源码提交构建模拟器库，并与已校验的官方设备库组合。
-- [第二轮 CI](https://github.com/almax000/cellsentry-dev/actions/runs/38854062092)：2026-10-16 全部通过，总作业用时 2 分 7 秒；包括 iPhone 未签名 Release 构建、模拟器 XCTest 编译和未签名 App 产物上传。
+- 第二轮 CI（不公开的开发仓库）：2026-10-16 全部通过，总作业用时 2 分 7 秒；包括 iPhone 未签名 Release 构建、模拟器 XCTest 编译和未签名 App 产物上传。
 - 仍有非阻塞警告：Swift 非 Sendable 对象捕获、旧 onChange 接口、重复 C++ 链接库以及未使用 AppIntents 元数据提取。
 - 这次验证没有执行 XCTest、没有加载模型进行模拟器推理，也不能代替手机签名安装和真机性能测试。

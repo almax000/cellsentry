@@ -1,25 +1,53 @@
 {
   "modelDownload": {
     "checking": "检查中...",
-    "downloading": "正在下载 AI 模型",
-    "verifying": "正在验证完整性...",
-    "modelReady": "模型就绪",
-    "downloadFailed": "下载失败",
+    "downloading": "正在下载公式助手",
+    "verifying": "正在检查文件…",
+    "modelReady": "公式助手已就绪",
+    "downloadFailed": "下载没有完成",
     "checkingMsg": "正在检查 AI 模型...",
     "startingDownload": "开始下载...",
     "verifyingChecksum": "正在验证校验和...",
     "modelIsReady": "模型已就绪。",
-    "readySubtitle": "CellSentry Beta 已准备好分析您的表格。",
+    "readySubtitle": "公式助手已经可以用了。你的表格不会离开这台电脑。",
     "errorSubtitle": "下载过程中发生错误。",
     "oneTimeSubtitle": "这是一次性下载。AI 模型完全在您的设备上运行。",
-    "sha256Check": "SHA-256 校验中...",
+    "sha256Check": "正在检查文件是否完整…",
     "getStarted": "开始使用",
-    "retryDownload": "重试下载",
-    "prepareModel": "准备端侧模型",
-    "importLocal": "导入本地 GGUF 模型",
-    "importFailed": "模型导入失败",
-    "downloadNow": "下载模型",
-    "setupFailed": "模型准备失败"
+    "retryDownload": "重新下载",
+    "prepareModel": "安装公式助手",
+    "importLocal": "导入已下载的模型文件",
+    "importFailed": "没能导入这个文件",
+    "downloadNow": "下载并安装（{{size}}）",
+    "setupFailed": "公式助手没有装好",
+    "loadFailed": "文件已经下载好了，但公式助手没能启动。内置检查不受影响，可以照常使用。",
+    "loadingModel": "正在启动公式助手…",
+    "optionalSubtitle": "公式助手会在本机帮你再复核一遍公式检查的结果，减少误报。它是可选的：不装也能正常使用全部内置检查。大小 {{size}}，只需下载一次，装好后不联网也能用。",
+    "returnToSettings": "返回设置",
+    "cancelAndContinue": "先不装，返回",
+    "loadExisting": "启动已安装的公式助手",
+    "importRequirement": "如果你已经拿到了模型文件，可以直接导入。文件名必须是 {{filename}}，大小 {{size}}。App 会自动检查文件是否完整。",
+    "technicalInfo": "技术信息",
+    "techModel": "模型",
+    "techFile": "文件名",
+    "techSize": "大小",
+    "techSizeBytes": "{{bytes}} 字节",
+    "importWrongFile": "这不是公式助手需要的文件：大小或内容对不上。请确认文件下载完整、名字正确。",
+    "techError": "错误信息",
+    "failureGuidance": {
+      "access_denied": {
+        "title": "自动下载需要授权访问",
+        "body": "下载来源拒绝了这次请求，重试也不会变。你可以继续使用内置检查，或者导入已下载的模型文件。"
+      },
+      "source_unavailable": {
+        "title": "自动下载来源当前不可用",
+        "body": "下载来源暂时用不了，也可能有访问限制。可以稍后再试，或者先继续使用内置检查、导入已下载的模型文件。"
+      },
+      "other": {
+        "title": "自动下载未能完成",
+        "body": "请检查网络连接和磁盘空间后再试。你也可以继续使用内置检查，或者导入已下载的模型文件。"
+      }
+    }
   },
   "confirm": {
     "defaultConfirm": "确认",

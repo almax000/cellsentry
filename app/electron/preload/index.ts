@@ -1,11 +1,14 @@
 import { contextBridge, ipcRenderer, webUtils } from 'electron'
+import type { EngineDoneEvent, ModelDownloadProgress, ScanProgress, SidecarAPI, TestAPI, UpdateStatus } from '../../shared/api'
+import type { ReadProgressEvent } from '../../shared/redact/ipc'
 
-const IS_TEST_MODE = process.env.CELLSENTRY_TEST_MODE === '1'
+import { IS_TEST_MODE } from '../testMode'
 
 const api: SidecarAPI = {
   getHealth: () => ipcRenderer.invoke('sidecar:health'),
   getModelStatus: () => ipcRenderer.invoke('sidecar:model-status'),
-  analyzeFile: (filePath: string) => ipcRenderer.invoke('sidecar:analyze', filePath),
+  setEngineLocale: (locale) => ipcRenderer.invoke('engine:set-locale', locale),
+  analyzeFile: (filePath: string, scanId: string) => ipcRenderer.invoke('sidecar:analyze', filePath, scanId),
   getFileInfo: (filePath: string) => ipcRenderer.invoke('sidecar:file-info', filePath),
   onScanProgress: (callback) => {
     const handler = (_event: Electron.IpcRendererEvent, progress: ScanProgress): void => {
@@ -27,6 +30,7 @@ const api: SidecarAPI = {
   checkModelExists: () => ipcRenderer.invoke('sidecar:model-check'),
   downloadModel: () => ipcRenderer.invoke('sidecar:model-download'),
   importModel: () => ipcRenderer.invoke('sidecar:model-import'),
+  cancelModelDownload: () => ipcRenderer.invoke('sidecar:model-download-cancel'),
   onModelDownloadProgress: (callback) => {
     const handler = (_event: Electron.IpcRendererEvent, progress: ModelDownloadProgress): void => {
       callback(progress)
@@ -111,22 +115,41 @@ const api: SidecarAPI = {
     }
   },
   // PII
-  analyzePii: (filePath: string) => ipcRenderer.invoke('pii:analyze', filePath),
-  redactPii: (filePath: string, outputPath: string) => ipcRenderer.invoke('pii:redact', filePath, outputPath),
+  analyzePii: (filePath: string, scanId: string) => ipcRenderer.invoke('pii:analyze', filePath, scanId),
+  redactPii: (request) => ipcRenderer.invoke('pii:redact', request),
+  exportAudit: (request) => ipcRenderer.invoke('audit:export', request),
   // Extraction
-  analyzeExtraction: (filePath: string) => ipcRenderer.invoke('extraction:analyze', filePath),
-  exportExtraction: (filePath: string, format: string, outputPath: string) =>
-    ipcRenderer.invoke('extraction:export', filePath, format, outputPath),
+  analyzeExtraction: (filePath: string, scanId: string) => ipcRenderer.invoke('extraction:analyze', filePath, scanId),
+  exportExtraction: (request) => ipcRenderer.invoke('extraction:export', request),
   // Unified scan
-  analyzeAll: (filePath: string) => ipcRenderer.invoke('analyze:all', filePath),
-  onEngineDone: (callback: (data: { engine: string; result?: unknown; error?: string }) => void) => {
-    const handler = (_event: Electron.IpcRendererEvent, data: { engine: string; result?: unknown; error?: string }): void => {
+  analyzeAll: (filePath: string, scanId: string) => ipcRenderer.invoke('analyze:all', filePath, scanId),
+  cancelAnalysis: (scanId: string) => ipcRenderer.invoke('analyze:cancel', scanId),
+  onEngineDone: (callback: (data: EngineDoneEvent) => void) => {
+    const handler = (_event: Electron.IpcRendererEvent, data: EngineDoneEvent): void => {
       callback(data)
     }
     ipcRenderer.on('analyze:engine-done', handler)
     return (): void => {
       ipcRenderer.removeListener('analyze:engine-done', handler)
     }
+  },
+  // Document redaction
+  redact: {
+    loadProfile: () => ipcRenderer.invoke('redact:profile-load'),
+    saveProfile: (profile) => ipcRenderer.invoke('redact:profile-save', profile),
+    clearProfile: () => ipcRenderer.invoke('redact:profile-clear'),
+    openDocuments: () => ipcRenderer.invoke('redact:open-documents'),
+    read: (requestId, paths) => ipcRenderer.invoke('redact:read', requestId, paths),
+    cancelRead: (requestId) => ipcRenderer.invoke('redact:read-cancel', requestId),
+    onReadProgress: (callback) => {
+      const handler = (_event: Electron.IpcRendererEvent, progress: ReadProgressEvent): void => callback(progress)
+      ipcRenderer.on('redact:read-progress', handler)
+      return (): void => {
+        ipcRenderer.removeListener('redact:read-progress', handler)
+      }
+    },
+    saveText: (text) => ipcRenderer.invoke('redact:save-text', text),
+    copyText: (text) => ipcRenderer.invoke('redact:copy-text', text),
   },
 }
 

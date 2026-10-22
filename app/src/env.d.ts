@@ -1,138 +1,16 @@
 /// <reference types="vite/client" />
+export {}
 
-interface UpdateStatus {
-  status: 'checking' | 'available' | 'not-available' | 'downloading' | 'downloaded' | 'error'
-  version?: string
-  percent?: number
-  error?: string
-}
-
-interface SidecarAPI {
-  getHealth: () => Promise<{ status: string; version: string }>
-  getModelStatus: () => Promise<{ loaded: boolean; name: string; size: string }>
-  analyzeFile: (filePath: string) => Promise<AnalysisResult>
-  getFileInfo: (filePath: string) => Promise<FileInfo>
-  onScanProgress: (callback: (progress: ScanProgress) => void) => () => void
-  getFileCells: (filePath: string, sheet: string, range: string) => Promise<FileCellsResult>
-  generateReport: (data: { issues: unknown[]; fileName: string }) => Promise<string>
-  openFileDialog: () => Promise<string | null>
-  openFilesDialog: () => Promise<string[] | null>
-  openFolderDialog: () => Promise<string | null>
-  scanFolder: (folderPath: string) => Promise<FolderScanResult>
-  checkModelExists: () => Promise<{ exists: boolean; type: string }>
-  downloadModel: () => Promise<{ success: boolean; status: string }>
-  importModel: () => Promise<{ success: boolean; cancelled?: boolean; error?: string }>
-  onModelDownloadProgress: (callback: (progress: ModelDownloadProgress) => void) => () => void
-  notifyModelReady: () => void
-  checkForUpdates: () => Promise<void>
-  downloadUpdate: () => Promise<void>
-  installUpdate: () => void
-  onUpdateStatus: (callback: (status: UpdateStatus) => void) => () => void
-  onTestTriggerAnalysis?: (callback: (filePath: string) => void) => () => void
-  onTestTriggerPiiScan?: (callback: (filePath: string) => void) => () => void
-  onTestTriggerExtractionScan?: (callback: (filePath: string) => void) => () => void
-  onTestResetState?: (callback: () => void) => () => void
-  openFilePath: (filePath: string) => Promise<{ success: boolean; error?: string }>
-  getFilePathFromDrop: (file: File) => string
-  platform: string
-  zoom: {
-    get: () => Promise<number>
-    set: (level: number) => Promise<void>
-  }
-  // LLM
-  getLlmStatus: () => Promise<{ available: boolean; backend: string; modelLoaded: boolean }>
-  startLlm: () => Promise<{ available: boolean; backend: string; modelLoaded: boolean }>
-  onZoomChange: (callback: (delta: number) => void) => () => void
-  // PII
-  analyzePii: (filePath: string) => Promise<AnalysisResult>
-  redactPii: (filePath: string, outputPathOrIds: string | string[]) => Promise<{ success: boolean; outputPath?: string; error?: string }>
-  // Extraction
-  analyzeExtraction: (filePath: string) => Promise<AnalysisResult>
-  exportExtraction: (filePath: string, format: string, outputPath?: string) => Promise<{ success: boolean; error?: string }>
-  // Unified scan
-  analyzeAll: (filePath: string) => Promise<{ success: boolean; error?: string }>
-  onEngineDone: (callback: (data: { engine: string; result?: unknown; error?: string }) => void) => () => void
-}
-
-interface FolderScanResult {
-  success: boolean
-  files: Array<{ path: string; name: string; size: number }>
-  total: number
-  error?: string
-}
-
-interface ModelDownloadProgress {
-  type: string
-  phase?: string
-  percent?: number
-  message?: string
-  status?: string
-  error?: string
-}
-
-interface AnalysisResult {
-  success: boolean
-  issues: Issue[]
-  total_issues: number
-  duration?: number
-  scannedAt?: string
-  summary?: {
-    errors: number
-    warnings: number
-    info: number
-    total: number
-  }
-  error?: string
-}
-
-interface FileCellsResult {
-  success: boolean
-  columns?: string[]
-  rows?: { value: string; formula: string }[][]
-  sheetName?: string
-  error?: string
-}
-
-interface Issue {
-  sheet_name: string
-  cell_address: string
-  severity: 'high' | 'medium' | 'low'
-  rule_id: string
-  message: string
-  suggestion: string
-  confidence: number
-}
-
-interface FileInfo {
-  success?: boolean
-  exists?: boolean
-  name?: string
-  fileName?: string
-  size?: string
-  fileSize?: number
-  sheets?: Array<{ name: string; rows: number; columns: number; cells: number }>
-  cellCount?: number
-  totalCells?: number
-}
-
-interface ScanProgress {
-  stage?: string
-  phase?: string
-  progress?: number
-  percent?: number
-  message: string
-}
-
-interface TestAPI {
-  getRouterPath: () => Promise<string>
-  getScanState: () => Promise<string>
-  triggerFileAnalysis: (filePath: string) => Promise<void>
-  triggerPiiScan: (filePath: string) => void
-  triggerExtractionScan: (filePath: string) => void
-  resetState: () => void
-}
-
-interface Window {
-  api: SidecarAPI
-  __TEST_API__?: TestAPI
+declare global {
+  type SidecarAPI = import('../shared/api').SidecarAPI
+  type UpdateStatus = import('../shared/api').UpdateStatus
+  type AnalysisResult = import('../shared/api').AnalysisResult
+  type FileInfo = import('../shared/api').FileInfo
+  type FileCellsResult = import('../shared/api').FileCellsResult
+  type ScanProgress = import('../shared/api').ScanProgress
+  type TestAPI = import('../shared/api').TestAPI
+  type ModelDownloadProgress = import('../shared/api').ModelDownloadProgress
+  type ModelStatus = import('../shared/api').ModelStatus
+  type EngineDoneEvent = import('../shared/api').EngineDoneEvent
+  interface Window { api: SidecarAPI; __TEST_API__?: TestAPI }
 }

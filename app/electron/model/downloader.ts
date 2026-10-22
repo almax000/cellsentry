@@ -1,12 +1,12 @@
 import { net } from 'electron'
-import https from 'https'
-import http from 'http'
 import { createHash } from 'crypto'
 import {
-  createWriteStream,
+  createWriteStream, type WriteStream,
   existsSync, statSync, statfsSync, unlinkSync, renameSync, mkdirSync
 } from 'fs'
 import { join } from 'path'
+import { ModelDownloadHttpError, isUnavailableDownloadSource } from './downloadFailure'
+import type { LlmAnalysisMode } from '../llm/types'
 
 /** Minimal response interface compatible with both Electron net and Node.js http */
 interface DownloadResponse {
@@ -15,6 +15,9 @@ interface DownloadResponse {
   on(event: 'data', listener: (chunk: Buffer) => void): unknown
   on(event: 'end', listener: () => void): unknown
   on(event: 'error', listener: (err: unknown) => void): unknown
+  destroy?: () => void
+  pause?: () => void
+  resume?: () => void
 }
 
 export interface ModelInfo {
@@ -27,6 +30,8 @@ export interface ModelInfo {
   mirrorUrl?: string        // hf-mirror.com (global fallback)
   cnPrimaryUrl?: string     // ModelScope (China primary)
   description: string
+  /** Declared task scope for this model artifact, not a quality guarantee. */
+  supportedTasks?: readonly LlmAnalysisMode[]
 }
 
 export const DEFAULT_MODEL: ModelInfo = {
@@ -36,7 +41,8 @@ export const DEFAULT_MODEL: ModelInfo = {
   size: 1_561_314_592,
   sha256: '61d9c8ab8007dbbde0eb004089d1411fb6ec7167031f9d6fcc5b521fe8ebe49a',
   downloadUrl: 'https://github.com/yourblacksky/cellsentry-formula-review/releases/download/formula-cancellation-v2-20261016/cellsentry-minicpm5-2b-cancel2-q4_k_m.gguf',
-  description: 'MiniCPM5-2B formula review v2 (Q4_K_M, thinking disabled)'
+  description: 'MiniCPM5-2B formula review v2 (Q4_K_M, thinking disabled)',
+  supportedTasks: ['audit'],
 }
 
 export type ProgressCallback = (downloaded: number, total: number, message: string) => void
@@ -48,7 +54,11 @@ export class ModelDownloader {
   private progressCallback: ProgressCallback | null = null
   private cancelled = false
   private _downloadPromise: Promise<boolean> | null = null
-  private _currentRequest: Electron.ClientRequest | http.ClientRequest | null = null
+  private _currentRequest: Electron.ClientRequest | null = null
+  private _currentResponse: DownloadResponse | null = null
+  private _activeStream: WriteStream | null = null
+  private _cancelDownload: (() => void) | null = null
+  private _retryWake: (() => void) | null = null
 
   constructor(targetDir: string, modelInfo?: ModelInfo, locale?: string) {
     this.targetDir = targetDir
@@ -62,10 +72,17 @@ export class ModelDownloader {
 
   cancel(): void {
     this.cancelled = true
+    this._cancelDownload?.()
+    this._activeStream?.destroy()
+    this._activeStream = null
     if (this._currentRequest) {
       this._currentRequest.abort()
       this._currentRequest = null
     }
+    this._currentResponse?.destroy?.()
+    this._currentResponse = null
+    this._retryWake?.()
+    this._retryWake = null
   }
 
   getModelPath(): string {
@@ -82,6 +99,7 @@ export class ModelDownloader {
   async download(): Promise<boolean> {
     // If already downloading, return the same promise (handles React StrictMode double-mount)
     if (this._downloadPromise) return this._downloadPromise
+    this.cancelled = false
     this._downloadPromise = this._downloadWithRetry()
     try {
       return await this._downloadPromise
@@ -114,24 +132,27 @@ export class ModelDownloader {
     let lastError: Error | undefined
 
     for (let i = 0; i < urls.length; i++) {
+      if (this.cancelled) return false
       const url = urls[i]
       const MAX_RETRIES = 2
       for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+        if (this.cancelled) return false
         try {
           return await this.doDownload(url)
         } catch (err) {
           if (this.cancelled) return false
           lastError = err instanceof Error ? err : new Error(String(err))
+          if (isUnavailableDownloadSource(err)) break
           if (attempt === MAX_RETRIES) break
           const delay = Math.pow(2, attempt) * 1000
           this.emitProgress(0, this.modelInfo.size, `Network error. Retrying in ${delay / 1000}s...`)
-          await new Promise(r => setTimeout(r, delay))
+          await this.waitForRetry(delay)
         }
       }
       this.cleanup()
       if (i < urls.length - 1) {
         this.emitProgress(0, this.modelInfo.size, 'Switching to next source...')
-        await new Promise(r => setTimeout(r, 1000))
+        await this.waitForRetry(1000)
       }
     }
     throw lastError || new Error('Download failed')
@@ -157,17 +178,13 @@ export class ModelDownloader {
   }
 
   private async doDownload(url: string): Promise<boolean> {
-    // macOS: use Electron net module (respects system proxy)
-    // Windows: use Node.js https (more compatible with corporate environments)
-    if (process.platform === 'darwin') {
-      return this.doDownloadNet(url)
-    }
-    return this.doDownloadNode(url)
+    // Electron net uses Chromium's proxy configuration on every platform.
+    return this.doDownloadNet(url)
   }
 
   /** Download using Electron's net module (Chromium stack, proxy-aware) */
   private async doDownloadNet(url: string): Promise<boolean> {
-    this.cancelled = false
+    if (this.cancelled) return false
     mkdirSync(this.targetDir, { recursive: true })
 
     const tempPath = this.getTempPath()
@@ -182,7 +199,7 @@ export class ModelDownloader {
 
     this.emitProgress(resumePos, this.modelInfo.size, 'Connecting...')
 
-    return new Promise((resolve, reject) => {
+    return new Promise<boolean>((resolve, reject) => {
       const headers: Record<string, string> = {
         'User-Agent': 'CellSentry/1.0'
       }
@@ -202,104 +219,65 @@ export class ModelDownloader {
 
       this._currentRequest = req
 
+      let bodyTimeout: ReturnType<typeof setTimeout> | undefined
+      const clearTimers = (): void => { clearTimeout(connectTimeout); clearTimeout(bodyTimeout) }
       const connectTimeout = setTimeout(() => {
         req.abort()
         reject(new Error('Connection timed out'))
       }, 15_000)
 
+      this._cancelDownload = () => { clearTimers(); resolve(false) }
+
       req.on('response', (response) => {
         clearTimeout(connectTimeout)
-        this.handleResponse(response, tempPath, finalPath, resumePos, resolve, reject)
+        // Electron IncomingMessage may not expose destroy(). Keep an error
+        // listener even when a status or cancellation settles before streaming.
+        response.on('error', (error: unknown) => {
+          clearTimers()
+          reject(error instanceof Error ? error : new Error('Download response failed'))
+          req.abort()
+        })
+        if (this.cancelled) {
+          ;(response as unknown as DownloadResponse).destroy?.()
+          resolve(false)
+          req.abort()
+          return
+        }
+        this._currentResponse = response
+        const armBodyTimeout = (): void => {
+          clearTimeout(bodyTimeout)
+          bodyTimeout = setTimeout(() => { req.abort(); reject(new Error('Download stalled')) }, 30_000)
+        }
+        armBodyTimeout()
+        response.on('data', armBodyTimeout)
+        response.on('end', clearTimers)
+        response.on('aborted', () => { clearTimers(); reject(new Error('Download interrupted')) })
+        this.handleResponse(response, tempPath, finalPath, resumePos,
+          success => {
+            clearTimers()
+            resolve(success)
+            if (response.statusCode === 416) req.abort()
+          },
+          error => {
+            clearTimers()
+            // Preserve the typed failure before abort can emit another error.
+            reject(error)
+            req.abort()
+          })
       })
 
       req.on('error', (err: Error) => {
-        clearTimeout(connectTimeout)
+        clearTimers()
         reject(new Error(`Request error: ${err.message}`))
       })
 
       req.end()
-    })
-  }
-
-  /** Download using Node.js https (works on Windows with corporate/restrictive networks) */
-  private async doDownloadNode(url: string): Promise<boolean> {
-    this.cancelled = false
-    mkdirSync(this.targetDir, { recursive: true })
-
-    const tempPath = this.getTempPath()
-    const finalPath = this.getModelPath()
-
-    let resumePos = 0
-    try {
-      if (existsSync(tempPath)) {
-        resumePos = statSync(tempPath).size
-      }
-    } catch { /* file may have been renamed between check and stat */ }
-
-    this.emitProgress(resumePos, this.modelInfo.size, 'Connecting...')
-
-    // Follow redirects manually (up to 5)
-    let currentUrl = url
-    for (let redirects = 0; redirects < 5; redirects++) {
-      const result = await this.nodeRequest(currentUrl, resumePos, tempPath, finalPath)
-      if (result.redirect) {
-        currentUrl = result.redirectUrl!
-        continue
-      }
-      return result.success
-    }
-    throw new Error('Too many redirects')
-  }
-
-  private nodeRequest(
-    url: string,
-    resumePos: number,
-    tempPath: string,
-    finalPath: string
-  ): Promise<{ success: boolean; redirect?: boolean; redirectUrl?: string }> {
-    return new Promise((resolve, reject) => {
-      const parsed = new URL(url)
-      const transport = parsed.protocol === 'https:' ? https : http
-
-      const options: https.RequestOptions = {
-        hostname: parsed.hostname,
-        port: parsed.port,
-        path: parsed.pathname + parsed.search,
-        headers: {
-          'User-Agent': 'CellSentry/1.0',
-          ...(resumePos > 0 ? { Range: `bytes=${resumePos}-` } : {}),
-        },
-      }
-
-      const req = transport.get(options, (response) => {
-        clearTimeout(connectTimeout)
-        const statusCode = response.statusCode || 0
-
-        // Handle redirects
-        if ([301, 302, 303, 307, 308].includes(statusCode) && response.headers.location) {
-          response.resume()
-          resolve({ success: false, redirect: true, redirectUrl: response.headers.location })
-          return
-        }
-
-        this.handleResponse(response, tempPath, finalPath, resumePos,
-          (success) => resolve({ success }),
-          reject
-        )
-      })
-
-      this._currentRequest = req
-
-      // Hard connection timeout — GFW may silently drop SYN packets
-      const connectTimeout = setTimeout(() => {
-        req.destroy()
-        reject(new Error('Connection timed out'))
-      }, 15_000)
-
-      req.on('error', (err) => {
-        clearTimeout(connectTimeout)
-        reject(new Error(`Request error: ${err.message}`))
-      })
+    }).finally(() => {
+      this._cancelDownload = null
+      this._currentRequest = null
+      this._currentResponse = null
+      this._activeStream?.destroy()
+      this._activeStream = null
     })
   }
 
@@ -314,24 +292,29 @@ export class ModelDownloader {
   ): void {
     const statusCode = response.statusCode || 0
 
-    // Resume not supported — restart from scratch
-    if (resumePos > 0 && statusCode !== 206) {
-      resumePos = 0
-      try { unlinkSync(tempPath) } catch { /* ignore */ }
-    }
-
     if (statusCode === 416) {
-      if (existsSync(tempPath)) {
+      try {
+        if (!this.isCompleteAndValid(tempPath)) throw new Error('HTTP 416: partial download is not a valid complete model')
         renameSync(tempPath, finalPath)
         resolve(true)
-      } else {
-        reject(new Error('HTTP 416: Range Not Satisfiable'))
+      } catch (error) {
+        // A complete-but-corrupt temporary file would otherwise make every
+        // retry ask for the same invalid final byte range and receive 416.
+        this.cleanup()
+        reject(error instanceof Error ? error : new Error('Failed to finalize model'))
       }
       return
     }
 
+    // A server ignoring Range starts a new, complete response.
+    if (resumePos > 0 && statusCode === 200) {
+      resumePos = 0
+      try { unlinkSync(tempPath) } catch { /* stream will report write failure */ }
+    }
+
     if (statusCode !== 200 && statusCode !== 206) {
-      reject(new Error(`HTTP error ${statusCode}`))
+      reject(new ModelDownloadHttpError(statusCode))
+      response.destroy?.()
       return
     }
 
@@ -345,12 +328,24 @@ export class ModelDownloader {
       flags: resumePos > 0 ? 'a' : 'w'
     })
 
+    this._activeStream = fileStream
+
     response.on('data', (chunk: Buffer) => {
       if (this.cancelled) {
-        fileStream.close()
+        fileStream.destroy()
+        response.destroy?.()
         return
       }
-      fileStream.write(chunk)
+      // Writable streams apply backpressure asynchronously. Ignoring a
+      // false return here lets a fast network queue a large part of the
+      // 1.5 GiB model in memory while a slower disk catches up.
+      const writable = fileStream.write(chunk)
+      if (!writable && response.pause && response.resume) {
+        response.pause()
+        fileStream.once('drain', () => {
+          if (!this.cancelled) response.resume?.()
+        })
+      }
       downloaded += chunk.length
       const downloadedMB = downloaded / (1024 * 1024)
       const totalMB = totalSize / (1024 * 1024)
@@ -363,8 +358,15 @@ export class ModelDownloader {
 
     response.on('end', () => {
       fileStream.end(() => {
+        try {
         if (this.cancelled) {
           resolve(false)
+          return
+        }
+
+        if (!this.hasExpectedSize(tempPath)) {
+          this.cleanup()
+          reject(new Error('Downloaded file size validation failed'))
           return
         }
 
@@ -383,6 +385,7 @@ export class ModelDownloader {
         renameSync(tempPath, finalPath)
         this.emitProgress(totalSize, totalSize, 'Download complete')
         resolve(true)
+        } catch (error) { reject(error instanceof Error ? error : new Error('Failed to finalize model')) }
       })
     })
 
@@ -405,7 +408,7 @@ export class ModelDownloader {
     this.progressCallback?.(downloaded, total, message)
   }
 
-  private verifyChecksumSync(filePath: string): boolean {
+  private verifyChecksumSync(filePath: string, reportProgress: boolean = true): boolean {
     if (!this.modelInfo.sha256) return true
 
     const hash = createHash('sha256')
@@ -416,8 +419,30 @@ export class ModelDownloader {
       hash.update(chunk)
     }
 
-    this.emitProgress(totalSize, totalSize, 'Verified')
+    if (reportProgress) this.emitProgress(totalSize, totalSize, 'Verified')
     return hash.digest('hex').toLowerCase() === this.modelInfo.sha256.toLowerCase()
+  }
+
+  private isCompleteAndValid(filePath: string): boolean {
+    return this.hasExpectedSize(filePath) && this.verifyChecksumSync(filePath, false)
+  }
+
+  private hasExpectedSize(filePath: string): boolean {
+    return existsSync(filePath) && (this.modelInfo.size <= 0 || statSync(filePath).size === this.modelInfo.size)
+  }
+
+  private waitForRetry(delay: number): Promise<void> {
+    if (this.cancelled) return Promise.resolve()
+    return new Promise((resolve) => {
+      const timer = setTimeout(() => {
+        this._retryWake = null
+        resolve()
+      }, delay)
+      this._retryWake = () => {
+        clearTimeout(timer)
+        resolve()
+      }
+    })
   }
 }
 

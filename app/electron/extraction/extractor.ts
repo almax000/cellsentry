@@ -23,7 +23,7 @@ import type {
   FieldPattern,
 } from './types'
 import { DocumentType } from './types'
-import { analyzeWithLlmExtraction } from '../llm/lifecycle'
+import { analyzeWithLlmExtraction, isLocalAiReadyFor } from '../llm/lifecycle'
 import type { LlmCellContext } from '../llm/types'
 
 const HIGH_CONFIDENCE = 0.9
@@ -38,42 +38,52 @@ function cellValueString(cell: { value: unknown }): string {
   return String(cell.value)
 }
 
-function findFieldValue(
+function normalizeLabel(value: string): string {
+  // Spreadsheet labels commonly retain a trailing ASCII or full-width colon.
+  // Keep internal punctuation intact so phrase matching remains conservative.
+  return value.toLowerCase().trim().replace(/[\s:：]+$/u, '').trim()
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+function hasEnglishWordBoundary(text: string, keyword: string): boolean {
+  // Template keywords containing Latin letters must not match inside a longer
+  // identifier (for example, `total` must not match `subtotal`).
+  if (!/[a-z]/i.test(keyword)) return text.includes(keyword)
+
+  const escapedKeyword = escapeRegExp(keyword)
+  return new RegExp(`(?:^|[^a-z0-9])${escapedKeyword}(?=$|[^a-z0-9])`, 'i').test(text)
+}
+
+function findTargetValue(
   sheet: SheetContext,
-  pattern: FieldPattern,
+  position: FieldPattern['position'],
+  predicate: (label: string) => boolean,
 ): { value: string; cell: string; confidence: number } | null {
-  const { keywords, position } = pattern
-
   for (const cell of Object.values(sheet.cells)) {
-    const text = cellValueString(cell).toLowerCase().trim()
-    if (!text) continue
+    if (!predicate(cellValueString(cell))) continue
 
-    const isMatch = keywords.some((kw) => text === kw.toLowerCase() || text.includes(kw.toLowerCase()))
-    if (!isMatch) continue
-
-    let targetRow = cell.row
-    let targetCol = cell.column
-    if (position === 'right') {
-      targetCol = cell.column + 1
-    } else {
-      targetRow = cell.row + 1
-    }
-
+    const targetRow = position === 'right' ? cell.row : cell.row + 1
+    const targetCol = position === 'right' ? cell.column + 1 : cell.column
     const targetAddress = `${getColumnLetter(targetCol)}${targetRow}`
     const targetCell = sheet.cells[targetAddress]
     if (!targetCell) continue
 
     const value = cellValueString(targetCell).trim()
-    if (!value) continue
-
-    return { value, cell: targetAddress, confidence: HIGH_CONFIDENCE }
+    if (value) return { value, cell: targetAddress, confidence: HIGH_CONFIDENCE }
   }
 
-  // Fallback: check row labels for a nearby match (less precise)
+  return null
+}
+
+function findNearbyRowValue(
+  sheet: SheetContext,
+  predicate: (label: string) => boolean,
+): { value: string; cell: string; confidence: number } | null {
   for (const [rowStr, label] of Object.entries(sheet.rowLabels)) {
-    const lowerLabel = label.toLowerCase()
-    const isMatch = keywords.some((kw) => lowerLabel.includes(kw.toLowerCase()))
-    if (!isMatch) continue
+    if (!predicate(label)) continue
 
     const row = Number(rowStr)
     // Try columns 2-10 for a non-empty value
@@ -82,12 +92,37 @@ function findFieldValue(
       const targetCell = sheet.cells[addr]
       if (!targetCell) continue
       const value = cellValueString(targetCell).trim()
-      if (!value) continue
-      return { value, cell: addr, confidence: NEARBY_CONFIDENCE }
+      if (value) return { value, cell: addr, confidence: NEARBY_CONFIDENCE }
     }
   }
 
   return null
+}
+
+function findFieldValue(
+  sheet: SheetContext,
+  pattern: FieldPattern,
+  otherFieldExactLabels: ReadonlySet<string>,
+): { value: string; cell: string; confidence: number } | null {
+  const normalizedKeywords = pattern.keywords.map(normalizeLabel).filter(Boolean)
+  const isExactLabel = (label: string) => {
+    const normalizedLabel = normalizeLabel(label)
+    return normalizedKeywords.includes(normalizedLabel)
+  }
+  const isRelaxedLabel = (label: string) => {
+    const normalizedLabel = normalizeLabel(label)
+    // A label explicitly owned by another field must not be claimed through
+    // substring matching (for example, `Sub-total` is not `total`).
+    if (otherFieldExactLabels.has(normalizedLabel)) return false
+    return normalizedKeywords.some((keyword) => hasEnglishWordBoundary(normalizedLabel, keyword))
+  }
+
+  // Preserve exact labels even when their value is not immediately right of
+  // the label; only then accept a relaxed match elsewhere in the sheet.
+  return findTargetValue(sheet, pattern.position, isExactLabel)
+    ?? findNearbyRowValue(sheet, isExactLabel)
+    ?? findTargetValue(sheet, pattern.position, isRelaxedLabel)
+    ?? findNearbyRowValue(sheet, isRelaxedLabel)
 }
 
 function extractFields(
@@ -97,7 +132,13 @@ function extractFields(
   const fields: ExtractionField[] = []
 
   for (const pattern of template.fieldPatterns) {
-    const result = findFieldValue(sheet, pattern)
+    const otherFieldExactLabels = new Set(
+      template.fieldPatterns
+        .filter((candidate) => candidate.key !== pattern.key)
+        .flatMap((candidate) => candidate.keywords.map(normalizeLabel))
+        .filter(Boolean),
+    )
+    const result = findFieldValue(sheet, pattern, otherFieldExactLabels)
     if (result) {
       fields.push({
         key: pattern.key,
@@ -248,19 +289,33 @@ export async function extractDocumentFromSheets(sheets: SheetContext[]): Promise
     }
 
     let docType = detection.type
+    let aiWarning: string | undefined
 
-    // LLM enrichment: invoke if template extraction is weak
-    if (allFields.length < LLM_TRIGGER_MIN_FIELDS || docType === DocumentType.UNKNOWN) {
+    // LLM enrichment: invoke if template extraction is weak and the installed
+    // model declares extraction. Otherwise the template result carries no AI warning.
+    const weakTemplateResult = allFields.length < LLM_TRIGGER_MIN_FIELDS || docType === DocumentType.UNKNOWN
+    if (weakTemplateResult && isLocalAiReadyFor('extraction')) {
       const cellSamples = collectCellSamples(sheets)
       if (cellSamples.length > 0) {
-        const llmResult = await analyzeWithLlmExtraction(cellSamples)
-        if (llmResult) {
+        try {
+          const llmResult = await analyzeWithLlmExtraction(cellSamples)
+          const sampleAddresses = new Set(cellSamples.map((sample) => sample.address))
+          const validDocumentTypes = new Set(Object.values(DocumentType))
+          if (llmResult) {
+            if (!validDocumentTypes.has(llmResult.documentType as DocumentType)) {
+              throw new Error('LLM returned an unsupported document type')
+            }
           if (docType === DocumentType.UNKNOWN && llmResult.documentType !== 'unknown') {
             docType = llmResult.documentType as DocumentType
           }
 
           const existingKeys = new Set(allFields.map((f) => f.key))
           for (const f of llmResult.fields) {
+            if (
+              !f.key || !f.label || !f.value ||
+              !sampleAddresses.has(f.cellAddress) ||
+              !Number.isFinite(f.confidence) || f.confidence < 0 || f.confidence > 1
+            ) continue
             if (existingKeys.has(f.key)) continue
             const bangIdx = f.cellAddress.indexOf('!')
             const sheetName = bangIdx > 0 ? f.cellAddress.substring(0, bangIdx) : sheets[0]?.name || 'Sheet1'
@@ -274,7 +329,12 @@ export async function extractDocumentFromSheets(sheets: SheetContext[]): Promise
               sheet_name: sheetName,
               confidence: f.confidence,
             })
+            existingKeys.add(f.key)
           }
+        }
+        } catch (error) {
+          // Template fields and tables are deterministic and must survive model failure.
+          aiWarning = error instanceof Error ? error.message : String(error)
         }
       }
     }
@@ -286,6 +346,7 @@ export async function extractDocumentFromSheets(sheets: SheetContext[]): Promise
       tables: allTables,
       duration: Date.now() - start,
       scannedAt: new Date().toISOString(),
+      ...(aiWarning ? { aiWarning } : {}),
     }
   } catch (e) {
     return {

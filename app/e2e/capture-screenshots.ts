@@ -6,38 +6,29 @@
  *
  * Run: cd app && npx tsx e2e/capture-screenshots.ts
  */
-import { _electron as electron } from '@playwright/test'
+import { mkdirSync } from 'fs'
 import { join } from 'path'
-import { startMockSidecar } from './mock-sidecar'
+import { launchApp, teardownApp } from './electron.setup'
 
-const WEBSITE_SCREENSHOTS = join(__dirname, '..', '..', 'website', 'public', 'screenshots')
+const WEBSITE_SCREENSHOTS = join(__dirname, '..', 'tmp', 'e2e', 'screenshots')
 const COMBINED_FIXTURE = join(__dirname, 'fixtures', 'combined-test-data.xlsx')
 
 async function main() {
-  console.log('Starting mock sidecar...')
-  const mockSidecar = await startMockSidecar(0)
-
+  mkdirSync(WEBSITE_SCREENSHOTS, { recursive: true })
   console.log('Launching Electron app...')
-  const app = await electron.launch({
-    args: [join(__dirname, '..', 'out', 'main', 'index.js')],
-    env: {
-      ...process.env,
-      NODE_ENV: 'production',
-      CELLSENTRY_TEST_MODE: '1'
-    }
-  })
-
-  const page = await app.firstWindow()
-  await page.waitForLoadState('domcontentloaded')
-  await page.waitForTimeout(1500)
+  const ctx = await launchApp()
+  const { page } = ctx
 
   await page.setViewportSize({ width: 1200, height: 800 })
   await page.waitForTimeout(500)
 
-  // 1. DropZone (home page = empty state)
-  console.log('Capturing: DropZone...')
-  await page.screenshot({ path: join(WEBSITE_SCREENSHOTS, 'app-dropzone.png') })
-  console.log('  -> app-dropzone.png')
+  // 1. Settings confirms no model has been downloaded in test mode.
+  await page.locator('[data-testid="sidebar-nav-settings"]').click()
+  await page.screenshot({ animations: 'disabled', path: join(WEBSITE_SCREENSHOTS, 'settings-no-model-1200x800.png') })
+  await page.setViewportSize({ width: 800, height: 600 })
+  await page.screenshot({ animations: 'disabled', path: join(WEBSITE_SCREENSHOTS, 'settings-no-model-800x600.png') })
+  await page.setViewportSize({ width: 1200, height: 800 })
+  await page.locator('[data-testid="sidebar-nav-home"]').click()
 
   // 2. Unified scan — triggers all 3 engines
   console.log('Starting unified scan...')
@@ -46,37 +37,30 @@ async function main() {
   }, COMBINED_FIXTURE)
 
   // Wait for audit results (default view after scan)
-  try {
-    await page.waitForSelector('[data-testid="results-panel-left"]', { timeout: 15000 })
-  } catch {
-    await page.evaluate(() => { window.location.hash = '#/results' })
-    await page.waitForTimeout(1000)
-  }
-  await page.waitForTimeout(1000)
+  await page.waitForSelector('[data-testid="results-panel-left"]', { timeout: 30000 })
 
   // 3. Audit results (default active view)
   console.log('Capturing: Audit results...')
-  await page.screenshot({ path: join(WEBSITE_SCREENSHOTS, 'app-audit.png') })
+  await page.screenshot({ animations: 'disabled', path: join(WEBSITE_SCREENSHOTS, 'app-audit.png') })
   console.log('  -> app-audit.png')
 
   // 4. PII results — switch view via sidebar
   console.log('Capturing: PII results...')
-  await page.locator('[data-testid="sidebar-nav-pii"]').click({ force: true })
+  await page.locator('[data-testid="sidebar-nav-pii"]').click()
   await page.waitForTimeout(1000)
-  await page.screenshot({ path: join(WEBSITE_SCREENSHOTS, 'app-pii.png') })
+  await page.screenshot({ animations: 'disabled', path: join(WEBSITE_SCREENSHOTS, 'app-pii.png') })
   console.log('  -> app-pii.png')
 
   // 5. Extraction results — switch view via sidebar
   console.log('Capturing: Extraction results...')
-  await page.locator('[data-testid="sidebar-nav-extraction"]').click({ force: true })
+  await page.locator('[data-testid="sidebar-nav-extraction"]').click()
   await page.waitForTimeout(1000)
-  await page.screenshot({ path: join(WEBSITE_SCREENSHOTS, 'app-extraction.png') })
+  await page.screenshot({ animations: 'disabled', path: join(WEBSITE_SCREENSHOTS, 'app-extraction.png') })
   console.log('  -> app-extraction.png')
 
   console.log('Done! Closing app...')
-  await app.close()
-  await mockSidecar.close()
-  console.log('All screenshots saved to website/public/screenshots/')
+  await teardownApp(ctx)
+  console.log('All screenshots saved to app/tmp/e2e/screenshots/')
 }
 
 main().catch(err => {

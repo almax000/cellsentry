@@ -155,3 +155,17 @@
   font-size: 13px;
   font-weight: 500;
 }
+
+.drop-zone-note {
+  margin-top: 16px;
+  max-width: 520px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.drop-zone-note a {
+  color: var(--brand);
+  font-weight: 600;
+}

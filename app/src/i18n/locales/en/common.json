@@ -17,7 +17,10 @@
     "spreadsheetAudit": "Spreadsheet Audit",
     "piiRedaction": "PII Redaction",
     "dataExtraction": "Data Extraction",
-    "settings": "Settings"
+    "settings": "Settings",
+    "pii": "Redact",
+    "audit": "Formulas",
+    "extraction": "Extract"
   },
   "header": {
     "spreadsheetAudit": "Spreadsheet Audit",
@@ -27,6 +30,10 @@
     "extractionResults": "Extraction Results",
     "scanning": "Scanning...",
     "scanResults": "Scan Results",
-    "settings": "Settings"
+    "settings": "Settings",
+    "home": "CellSentry",
+    "auditEntry": "Check spreadsheet formulas",
+    "piiEntry": "Redact medical records",
+    "extractionEntry": "Pull data from invoice spreadsheets"
   }
 }
