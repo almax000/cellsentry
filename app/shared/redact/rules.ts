@@ -7,8 +7,8 @@
  */
 import type { Detector } from './detect'
 import type { CandidateReason, Certainty, Decision, DraftCandidate, NameRole, PiiCategory, SourceDocument } from './types'
-import { cnIdChecksum, luhnValid } from './text'
-import { dateAndTime, ESTATE_WORD, readsAsDate, readsAsSolidDate } from './values'
+import { ADDRESS_QUOTES, cnIdChecksum, luhnValid } from './text'
+import { dateAndTime, ESTATE_WORD, readsAsDate, readsAsSolidDate, readsAsYearMonth } from './values'
 
 interface Field {
   label: string
@@ -28,6 +28,8 @@ const DOCTOR_NAME = /(?:医生|医师|主检|主治|审核|报告人|检查者|�
 // A bare 签名 or 签字 with no role in front: someone signed, usually the patient or family.
 const SIGNATURE = /^(?:签名|签字|签署人)$/
 const ADDRESS = /^(?:(?:家庭|现|户籍|通讯|联系|居住|常住)?(?:住址|地址|居住地)|户籍)$/
+/** The kind of household a 户籍 field may hold instead of a place (农业户口, 非农业户口, 城镇居民, 集体户口). */
+const HOUSEHOLD_KIND = /^(?:非?农业|城镇|农村|城市|集体|家庭|本地|外地|本市|外市|本省|外省)?(?:户口|户籍|人口|居民|户)$/
 const SOCIAL_SECURITY = /社保|社会保障|社会保险|医保|医疗保险|参保/
 /**
  * Insurance labels that hold a date, a place, a kind, a count or an amount, not a number (参保日期,
@@ -77,14 +79,21 @@ const LANDLINE_86 = /(?:\(\+86\)|(?<![\d+])\+86|(?<![\d+])0086(?=[ \t-]))[ \t-]{
 /** A phone word right before a number, with at most a colon or spaces between (联系电话139\n12345678, 手机：). */
 const PHONE_RIGHT_BEFORE = /(?:电话|手机|联系方式|座机|固话|(?<![A-Za-z])tel|phone|mobile)(?:号码|号)?[ \t:]*$/i
 /** A phone word, then the start of a number (患者本人电话15346 962376, 电话 027-72 550495, 手机：+8 6…). */
-const PHONE_WORD = /(?:电话|手机|联系方式|座机|固话|(?<![A-Za-z])(?:tel|phone|mobile)(?![A-Za-z]))(?:号码|号)?[ \t]*:?[ \t]*(?=[+(\d])/gi
+const PHONE_WORD = /(?:电话|手机|联系方式|座机|固话|(?<![A-Za-z])(?:tel|phone|mobile)(?![A-Za-z]))(?:号码|号)?[为是]?[ \t]*:?[ \t]*(?=[+(\d])/gi
 /**
  * Digit groups as OCR prints a phone number: spaces (two at most), tabs, dashes, middle dots, brackets and
  * a +, and line breaks. Sticky: set lastIndex.
  */
 const PHONE_RUN = /[+(]{0,2}\d(?:(?:[ \t]{1,2}|[ \t]*[-()+\u00b7\u30fb\u2027]{1,2}[ \t]*|[ \t]*\n[ \t]*)?\d)*/y
+/**
+ * Area codes (without the 0) whose local numbers all have eight digits: 10 and 2x, and of the three-digit codes
+ * these (zh.wikipedia 中国大陆固定电话号码, read 2026-10: 0532 青岛, 0755 深圳, 0731 长沙 …). Elsewhere seven or eight.
+ */
+const EIGHT_DIGIT_AREA = '(?:10|2\\d|311|37[179]|411|43[12]|451|51\\d|52[37]|53[12]|551|57[1345679]|59[15]|731|75[457]|760|769|791|851|871|898)'
+/** Seven digits after such an area code: a number cut short, or one whose last digit is apart (0755 8312 345 6). */
+const SEVEN_UNDER_EIGHT = new RegExp(`^(?:0|0086|86)${EIGHT_DIGIT_AREA}\\d{7}$`)
 /** All the digits of a phone number: a mobile, or a landline with its area code (010, 02x, 0xxx), maybe after 86 or 0086. */
-const WHOLE_PHONE = /^(?:(?:0086|86)?1[3-9]\d{9}|(?:0|0086|86)(?:(?:10|2\d)\d{8}|[3-9]\d{2}\d{7,8}))$/
+const WHOLE_PHONE = new RegExp(`^(?:(?:0086|86)?1[3-9]\\d{9}|(?:0|0086|86)(?:${EIGHT_DIGIT_AREA}\\d{8}|(?!${EIGHT_DIGIT_AREA})[3-9]\\d{2}\\d{7,8}))$`)
 const MOBILE_DIGITS = /^(?:0086|86)?1[3-9]\d{9}$/
 /** Words that name an ID a few characters before it (身份证 4403051970\n03012210). */
 const ID_CONTEXT = /身份证|证件|身份号|公民身份|(?<![A-Za-z])ID(?![A-Za-z])/i
@@ -112,6 +121,8 @@ const CARD_RIGHT_BEFORE = /(?:卡号?|账户|帐户|账号|帐号|银行|account
 const CARD_AFTER = /^[\s(]{0,2}[\u4e00-\u9fff]{0,6}(?:银行|卡|账户|信用社)/
 /** A date inside a digit run (2025-08-14  134 …): such a run is a log line, not a card. */
 const DATE_IN_RUN = /(?:19|20)\d{2}[ \t-]{1,2}(?:0?[1-9]|1[0-2])[ \t-]{1,2}(?:0?[1-9]|[12]\d|3[01])(?!\d)/
+/** The same date in a phone's digit groups, from the start of a group: 0731-891948 8 6 holds no 1948-8-6. */
+const DATE_IN_GROUPS = new RegExp(`(?<!\\d)${DATE_IN_RUN.source}`)
 /** Punctuation and spaces left at the end of an address after the cut (住址：…100号，电话…). */
 const ADDRESS_TAIL = /[\s，,。；;、]+$/
 /** A line that starts with a label (住院号：…), so it is never the rest of an address. */
@@ -143,10 +154,10 @@ const ADDRESS_ENDING = /(?:号|栋|幢|楼|单元|室|层|弄|\d|村|组|路|街
 /** A street with no number yet (鼓楼区中山北路): the number may be on the line after. */
 const STREET_END = /(?:路|街|巷|弄|道|村|组|胡同|号院)$/
 /**
- * Words that start an address in running text: 家住江苏省南京市…，因… The 现住 of 现住院 (in hospital
- * now) or 现住址：(a label) is not one; neither is a place with no street or district (家住农村, 住在市区).
+ * Words that start an address in running text: 家住江苏省南京市…，因…, 现住地为…, 居住在地处偏远的… The 现住 of 现住院 (in
+ * hospital now), 现住址：or 现住地址：(labels) is not one; neither is a place with no street or district (家住农村, 住在市区).
  */
-const LIVES_AT = /(?:家住在|家住|现住于|现住在|现住|现居住于|现居住在|现居于|现居在|现居|居住于|居住在|住在|家庭住址为|家庭住址是|住址为|住址是)(?![址院处所否])[ \t]*:?[ \t]*/g
+const LIVES_AT = /(?:(?:现住|现居|居住|家庭)地址[为是]|(?:现住|现居住|现居|家住|居住)地[为是]?(?![址点区方])|家住在|家住|现住于|现住在|现住|现居住于|现居住在|现居于|现居在|现居|居住于|居住在|住在|家庭住址为|家庭住址是|住址为|住址是)(?![址院处所否]|地址)[ \t]*:?[ \t]*/g
 const NAMES_AN_ADDRESS = new RegExp(LIVES_AT.source)
 /** An address in running text is never longer than this. */
 const MAX_TEXT_ADDRESS = 80
@@ -244,7 +255,11 @@ export function parseFields(text: string): Field[] {
     QUOTED.lastIndex = 0
     for (const match of line.matchAll(QUOTED)) {
       const valueStart = lineStart + (match.index ?? 0) + match[0].length - match[2].length - 1
-      fields.push({ label: normalizeLabel(match[1]), valueStart, valueEnd: valueStart + match[2].length })
+      // The patient in front of an address label is no part of it (患者户籍地址为「…」); other labels keep their words, and so
+      // does 患者住址为, which running text reads past its quote marks.
+      const written = normalizeLabel(match[1])
+      const address = written.replace(/^(?:患者|病人|患儿|本人)(?=.)/, '')
+      fields.push({ label: ADDRESS.test(address) && !/住址$/.test(address) ? address : written, valueStart, valueEnd: valueStart + match[2].length })
     }
 
     const labels: Array<{ label: string; start: number; valueStart: number }> = []
@@ -499,7 +514,8 @@ function addressLine(text: string, cursor: number): AddressLine | null {
 function continuesAddress(head: string, words: string): boolean {
   const place = PLACE_START.test(words)
   if (LINE_LABEL.test(words) || (NEW_CLAUSE.test(words) && !place)) return false
-  const lead = words.split(/[,;。]/)[0].replace(/(?<=\d) +(?=\d)/g, '')
+  // Quote marks on the line are read by the caller (…西湖区\n文三路100号”3栋501室, …100号\n“阳光花园”3栋501室).
+  const lead = words.split(/[,;。]/)[0].replace(/(?<=\d) +(?=\d)/g, '').replace(ADDRESS_QUOTES, '')
   if (lead.length > 40 || !/^[\u4e00-\u9fff\d#-]+$/.test(lead) || !ADDRESS_ENDING.test(lead) || reportWords(lead)
     || SENTENCE_START.test(lead) || NAMES_AN_ADDRESS.test(lead)) return false
   const dashes = HOUSE_DASHES.test(lead) || (/\d-$/.test(head) && /^\d{1,5}室?$/.test(lead))
@@ -508,14 +524,30 @@ function continuesAddress(head: string, words: string): boolean {
   return Boolean((marker && (marker.index <= 14 || place)) || dashes || (place && STREET_END.test(lead)))
 }
 
+/** Quote marks that may end an address, and the one that only closes (" may open or close). 「」『』 never end one. */
+const QUOTE_MARK = /[“”"]/
+const CLOSING_QUOTE = /[”]/
+/** A part of an address no finer than a district or a 街道, which its street may follow after a quote mark. */
+const COARSE_END = /(?:省|市|区|县|镇|乡|街道|旗|盟|州)$/
+/** A piece that starts with a place or a street by name (西湖区…, 留下路100号), not a clause with a date (本月3号收住我院). */
+const STREET_START = /^[\u4e00-\u9fff]{1,10}?(?:省|市|区|县|镇|乡|街道|路|街|巷|弄|道|村|胡同|小区|花园|新村)/
+/** A lane, a village group or a courtyard after its street or village, with what follows (…张杨路”1200弄3号401室, …建新村”5组18号). */
+const HOUSE_AFTER_STREET = /^(?:\d+(?:-\d+)*(?:号楼|号院|栋|幢|座|单元|层|楼|室|号|户|房|弄|组))+(?:\d+(?:-\d+)*)?$/
+/** Where the piece after a quote mark ends. */
+const QUOTE_PIECE_END = /[,;。 ()“”"「」『』]/
+/** Shops and markets, whose names end like a city (某某超市旁, 菜市场): never more of a home past a quote mark. */
+const MARKET = /超市|[菜夜集门股]市|市场|商场/
+
 /**
  * Where an address in running text may stop, shortest first: a full stop, a bracket or a quote, a 、, a
  * tab or a wider gap, a label (…12号  职业：退休, …12号性别：男), or a comma or space before words that are
  * not more of the address. A comma or space before more of it (江苏省南京市，鼓楼区…; OCR's 江苏省 南京市)
- * goes on, and so does a bracket of address words with more of the address after it; every such point is
- * also a place to stop, for a caller that finds the longer reading is no address.
+ * goes on, and so does a bracket of address words with more of the address after it, or a quote mark that
+ * closes a quote with more of the home after it or opens one that names a place or an estate (家住“浙江省杭州市”
+ * 西湖区…, 住址为“…12号”3栋501室, …西湖区“阳光花园”3栋501室); every such point is also a place to stop, for a
+ * caller that finds the longer reading is no address. `quoted` is the mark that closes a quote the value starts inside.
  */
-function narrativeClauseEnds(value: string): number[] {
+function narrativeClauseEnds(value: string, quoted?: string): number[] {
   const ends: number[] = []
   let end = value.length
   const colon = value.indexOf(':')
@@ -536,15 +568,60 @@ function narrativeClauseEnds(value: string): number[] {
     return !clause && (ADDRESS_PIECE.test(rest) || estate || DASHED_HOUSE_PIECE.test(piece)) && addressWords(piece)
   }
   let resume = 0
+  // The mark that closes the quote the value starts inside, while it is open.
+  let open = quoted
   // OCR's wider gaps between two digits (中路5  41号) are no gap.
   for (const match of value.slice(0, end).matchAll(/[。;!?()“"”、\t]|(?<!\d) {2,}| {2,}(?!\d)|[, ]/g)) {
     const at = match.index ?? 0
     if (at < resume) continue
     // Past the longest address there is nothing more to look for.
     if (at > MAX_TEXT_ADDRESS) return [...ends, at]
+    if (QUOTE_MARK.test(match[0])) {
+      const mark = match[0]
+      if (open !== undefined ? CLOSING_QUOTE.test(mark) || mark === '"' : CLOSING_QUOTE.test(mark)) {
+        // Right after the closing mark, more of the home: its building and room after a street or an estate (…12号”3栋501室,
+        // …阳光花园”3-2-1102). After a part no finer than a district, also after a comma or a space, the street of the home,
+        // which ends like an address (浙江省杭州市”西湖区文三路100号, …西湖区” 文三路100号3栋501室), never a clause with a place
+        // in it (…”，宁波市鄞州区某服装厂工人, …”10号开始发热, …”，萧山区瓜沥镇卫生院转诊). A home already finer than a district
+        // ends at the mark before a comma (…葛衙庄村”，今晨在村口被狗咬伤).
+        const rest = value.slice(at + 1, end)
+        const apart = /^[ ,]/.test(rest)
+        const after = rest.replace(/^[ ,]+/, '')
+        const piece = after.split(QUOTE_PIECE_END)[0]
+        const coarse = COARSE_END.test(value.slice(0, at)) && !HOUSE_NUMBER.test(value.slice(0, at))
+        const street = STREET_START.test(piece) && STREET_OR_HOUSE.test(piece) && ADDRESS_ENDING.test(piece) && !FACILITY.test(piece)
+        if (!moreAddress(after, piece) || MARKET.test(piece)
+          || !(coarse ? street : !apart && (AFTER_BRACKET.test(piece) || HOUSE_AFTER_STREET.test(piece)))) return [...ends, at]
+        ends.push(at)
+        open = undefined
+        continue
+      }
+      // A quote opened inside the address is more of it where it names a place or an estate, before its building and room
+      // (…西湖区“阳光花园”3栋501室, …顺德区“碧桂园”3栋501室) or at the end (…12号“锦绣华庭”), never a note, a clause, a shop
+      // or a hospital (…100号“近人民医院”, “某某超市旁”, “具体门牌号不详”, …文三路“疫区”).
+      const close = open === undefined ? value.slice(at + 1, end).search(/[”"]/) : -1
+      if (close >= 0) {
+        const inner = value.slice(at + 1, at + 1 + close)
+        const rest = value.slice(at + 2 + close, end)
+        const piece = rest.split(QUOTE_PIECE_END)[0]
+        if (/^[\u4e00-\u9fff\d#-]{2,16}$/.test(inner) && !SENTENCE_START.test(inner) && !FACILITY.test(inner) && !MARKET.test(inner)
+          && !CLAUSE_WORDS.test(inner) && !NAMES_AN_ADDRESS.test(inner) && (!NEW_CLAUSE.test(inner) || CLAUSE_OR_PLACE.test(inner))) {
+          // Before its building and room the name is an estate's, whatever words it holds (「万科城」2幢1单元302室).
+          if (AFTER_BRACKET.test(piece) && moreAddress(rest, piece)) {
+            ends.push(at)
+            resume = at + 2 + close
+            continue
+          }
+          if (addressWords(inner) && (ESTATE_PIECE.test(inner) || (HOUSE_NUMBER.test(inner) && ADDRESS_ENDING.test(inner))) && !/^\d/.test(rest)) {
+            return [...ends, at, at + 2 + close]
+          }
+        }
+      }
+      return [...ends, at]
+    }
     if (match[0] === ',' || match[0] === ' ') {
       const rest = value.slice(at + 1)
-      if (moreAddress(rest, rest.replace(/^\s+/, '').split(/[,;。 ]/)[0])) {
+      if (moreAddress(rest, rest.replace(/^\s+/, '').split(/[,;。 ”]/)[0])) {
         ends.push(at)
         continue
       }
@@ -568,6 +645,19 @@ function narrativeClauseEnds(value: string): number[] {
     return [...ends, at]
   }
   return [...ends, end]
+}
+
+/**
+ * Where a quoted address under its label ends (，住址为“浙江省杭州市”西湖区文三路100号，因…): past the closing mark when more
+ * of the address follows, read on as in running text; otherwise at the mark.
+ */
+function quotedAddressEnd(text: string, field: Field): number {
+  const close = QUOTE_CLOSE[text[field.valueStart - 1]]
+  // 「」 hold the whole value, as they always did.
+  if (!close || text[field.valueEnd] !== close || !QUOTE_MARK.test(close)) return field.valueEnd
+  const line = text.slice(field.valueStart, field.valueStart + 200).split('\n')[0]
+  const ends = narrativeClauseEnds(line, close)
+  return Math.max(field.valueEnd, field.valueStart + line.slice(0, ends[ends.length - 1]).replace(ADDRESS_TAIL, '').length)
 }
 
 function placeLevels(value: string): number {
@@ -606,15 +696,17 @@ function narrativeAddresses(text: string, out: Collector): void {
       const found = text.slice(start + 1, lineEnd + 1).indexOf(close)
       const quoted = found >= 0 ? start + 1 + found : -1
       start += 1
-      if (quoted >= 0 && quoted <= lineEnd && !ADDRESS_PIECE.test(text.slice(quoted + 1, quoted + 30).replace(/^[ \t,，-]+/, ''))) lineEnd = quoted
+      const after = text.slice(quoted + 1, quoted + 30).replace(/^[ \t,，-]+/, '')
+      const house = after.split(QUOTE_PIECE_END)[0]
+      if (quoted >= 0 && quoted <= lineEnd && !ADDRESS_PIECE.test(after) && !(/\d/.test(house) && AFTER_BRACKET.test(house))) lineEnd = quoted
     }
     const { value, at, first } = addressText(text, start, lineEnd)
     const whole = addressWhole(value, first)
     // The longest reading that is a home; where what going on added is not (a clinic, a clause past the longest
     // address), the reading before it, down to where the first line alone stops, so going on never loses an address a
     // stop there would keep. A reading that runs into a value found under a label is no address either.
-    const ends = narrativeClauseEnds(whole)
-    if (first < whole.length) for (const end of narrativeClauseEnds(whole.slice(0, first))) if (!ends.includes(end)) ends.push(end)
+    const ends = narrativeClauseEnds(whole, close)
+    if (first < whole.length) for (const end of narrativeClauseEnds(whole.slice(0, first), close)) if (!ends.includes(end)) ends.push(end)
     for (const end of ends.sort((a, b) => b - a)) {
       const kept = whole.slice(0, end).replace(ADDRESS_TAIL, '')
       const levels = placeLevels(kept)
@@ -643,9 +735,18 @@ function labelledFields(text: string, fields: Field[], out: Collector): void {
       else if (isSignature) out.add(name.start, name.end, 'name', 'unsure', 'name_label', { label, role: 'other' })
       else out.add(name.start, name.end, 'name', 'unsure', 'doctor_label', { label, role: 'doctor', suggestion: 'keep' })
     } else if (ADDRESS.test(label)) {
+      // 户籍 alone may hold the kind of household, not a place (户籍：农业户口, 患者户籍为“城镇居民”).
+      if (label === '户籍' && HOUSEHOLD_KIND.test(text.slice(field.valueStart, field.valueEnd).trim())) continue
       // An address ends where a phone number or a phone label starts (住址：…路88号 电话139…).
-      const { value: full, at, first } = addressText(text, field.valueStart, field.valueEnd)
-      const whole = addressWhole(full, first).replace(ADDRESS_TAIL, '')
+      const close = QUOTE_CLOSE[text[field.valueStart - 1]]
+      const end = quotedAddressEnd(text, field)
+      const { value: full, at, first } = addressText(text, field.valueStart, end)
+      let whole = addressWhole(full, first).replace(ADDRESS_TAIL, '')
+      // Read on past the closing mark as in running text, also on the next lines: the address ends with its clause there too.
+      if (end > field.valueEnd) {
+        const ends = narrativeClauseEnds(whole, close)
+        whole = whole.slice(0, ends[ends.length - 1]).replace(ADDRESS_TAIL, '')
+      }
       const clause = CLAUSE_END.exec(whole)
       let kept = clause ? whole.slice(0, clause.index).replace(ADDRESS_TAIL, '') : whole
       // Never drop an address: if the clause cut leaves too little, keep the whole value and ask.
@@ -657,7 +758,8 @@ function labelledFields(text: string, fields: Field[], out: Collector): void {
       const length = kept.replace(/\s/g, '').length
       // A very long value is still replaced, only marked for a look: dropping it would leak the address.
       if (length > 200) certainty = 'unsure'
-      if (length >= 4) out.add(field.valueStart, at(kept.length - 1) + 1, 'address', certainty, 'address_label', { label })
+      // Read on past a closing mark, it is an address in running text, whose street address is looked for too.
+      if (length >= 4) out.add(field.valueStart, at(kept.length - 1) + 1, 'address', certainty, end > field.valueEnd ? 'address_in_text' : 'address_label', { label })
     } else {
       // A number under its label, maybe cut by line breaks: the longest reading first.
       for (const end of [...labelledTails(text, field), field.valueEnd]) {
@@ -731,6 +833,8 @@ function evidentlyCut(text: string, field: Field, head: string, rest: string): b
   if (GENERIC_NUMBER_LABEL.test(normalizeLabel(written))) return false
   // A date, or a date and a time, is never the rest of a number (样本号：TJ\n20240115 0830, 标本号：A12\n240115).
   if (dateAndTime(rest) || rest.split(/[ \t]+/).some((group) => YYMMDD.test(group) || readsAsSolidDate(group))) return false
+  // Nor a day alone, after a year and month on the label's line (住院号：2024-01-\n15); more digits are the number's rest (…-\n15 001).
+  if (readsAsYearMonth(head) && /^(?:0?[1-9]|[12]\d|3[01])$/.test(rest.trim())) return false
   if (/[0-9A-Za-z][ \t]*-$/.test(head.trimEnd())) return true
   // Letters alone (MZ, EDTA) join only digits that read as the rest of a number, never a row of values (120  80, 1250).
   // A rest over two lines (MZ\n2\n0240116007) is read as one.
@@ -889,22 +993,108 @@ function structuredValues(text: string, fields: Field[], out: Collector): void {
     // With OCR's gap inside the next line, the whole line only when it makes a whole phone, else the line up to the gap
     // (TEL：(021)8\n6865318  7  床号：42).
     const tails: number[] = []
+    // Where a tail ends its line: only such a tail is the rest of a landline read short (0571-8812345\n6, not …\n2  入院诊断：).
+    const alone = new Set<number>()
     numberTails(text, field.valueEnd).forEach((tail, index) => {
       const digitsTo = (end: number): string => text.slice(field.valueStart, end).replace(/\D/g, '')
       const gap = text.slice(tail.start, tail.end).search(/ {2}/)
       if (tail.date) return
+      if (!tail.wrapped) alone.add(tail.end)
       if (gap < 0 ? (index === 0 ? PHONE_DIGITS : MOBILE_DIGITS).test(digitsTo(tail.end)) : WHOLE_PHONE.test(digitsTo(tail.end))) tails.push(tail.end)
       else if (gap > 0 && index === 0 && PHONE_DIGITS.test(digitsTo(tail.start + gap))) tails.push(tail.start + gap)
     })
     for (const end of [...tails.reverse(), field.valueEnd]) {
       const value = text.slice(field.valueStart, end).replace(/[ \t]*\n[ \t]*/g, '')
       if (/^[+()\d][\d ()+-]{6,19}$/.test(value) && value.replace(/\D/g, '').length >= 7) {
-        out.add(field.valueStart, end, 'phone', 'unsure', 'phone_under_label', { label: field.label })
+        // Over a landline read short on the label's line where its area's numbers have eight digits (0571-8812345\n6).
+        const whole = end > field.valueEnd && alone.has(end) && WHOLE_PHONE.test(value.replace(/\D/g, ''))
+        out.addOver(field.valueStart, end, 'phone', 'unsure', 'phone_under_label', { label: field.label },
+          (item) => whole && item.category === 'phone' && !WHOLE_PHONE.test(text.slice(item.start, item.end).replace(/\D/g, '')))
         break
       }
     }
   }
   phonesInOddGroups(text, fields, out)
+  phoneDigitsLeft(text, fields, out)
+}
+
+/** Words after the phone word that make the field a call, a score, a fee or a time, not a number (电话随访评分, 电话咨询费, 电话访视). */
+const PHONE_ACTIVITY = /随访|回访|访视|评估|评分|调查|问卷|次数|频次|费|金额|价|时间|日期|时长/
+/** Words before it that make the number a service line or a desk of the hospital (预约电话, 护士站电话, 检验科电话). */
+const SERVICE_PHONE = /预约|咨询|服务|投诉|急救|热线|值班|总机|传真|分机|总台|前台|护士站|病区|科|住院部|门诊部|办公室|药房|医院|中心/
+/** The label as written right before a value, and its colon. */
+const LABEL_WORDS = /([\u4e00-\u9fffA-Za-z()（）/]{1,20})[ \t]*:?[ \t]*$/
+/** The phone word a label or the words before a number end with, and what comes after it. */
+const LAST_PHONE_WORD = /^.*(?:电话|手机|联系方式|座机|固话|(?<![A-Za-z])(?:tel|phone|mobile)(?![A-Za-z]))(?:号码|号)?/i
+/** Digits of a service line: 400 and 800 numbers, and short numbers such as 95120, 12320 and 10086. */
+const SERVICE_DIGITS = /^(?:[48]00\d{7}|(?:95|96|12|10)\d{3,4})$/
+/**
+ * Digit groups on one line as a phone is printed: spaces, dashes, middle dots, and a bracket closing the area code, but no
+ * bracket opened inside, which starts a note (88123456（3次）). Sticky: set lastIndex.
+ */
+const PHONE_RUN_ON_LINE = /[+(]{0,2}\d(?:(?:[ \t]{1,2}|[ \t]*[-)\u00b7\u30fb\u2027]{1,2}[ \t]*)?\d)*/y
+
+/**
+ * Digits after a phone label or a phone word that no pass took, five or more with the lines of digits right under
+ * them: a number OCR or a line break cut so that no reading makes it whole (联系电话：136-11\n1761\n71 次/分,
+ * 联系方式：13  35 4 39 34  36). What is on the label's line is worth a look and replaced unless the user keeps it;
+ * the leftover check asks about the digits under it. A guess after a phone word, or under a label with fewer than seven
+ * digits, is never looked for elsewhere (detect.ts). Never a count after
+ * the number (… 3次), a date, a year and month, a time or hours, a value with a unit, a bed, a row of small numbers that
+ * makes no phone, a call, a score, a fee, a service line or a desk of the hospital.
+ */
+function phoneDigitsLeft(text: string, fields: Field[], out: Collector): void {
+  const labelled = new Map<number, Field>()
+  for (const field of fields) if (PHONE_LABEL.test(field.label)) labelled.set(field.valueStart, field)
+  const starts = new Set(labelled.keys())
+  PHONE_WORD.lastIndex = 0
+  for (const match of text.matchAll(PHONE_WORD)) starts.add((match.index ?? 0) + match[0].length)
+  for (const start of starts) {
+    const field = labelled.get(start)
+    // The label as written right before the number, without a note in brackets (检验科电话：, a field that keeps only 电话;
+    // 家属电话（科室转告）：), never the words of the field before it (主治医师：王强 联系电话：).
+    const back = text.slice(Math.max(0, start - 24), start)
+    const label = LABEL_WORDS.exec(back)
+    const words = (label?.[1] ?? '').replace(/[（(][^）)]*[）)]/g, '')
+    // And the words before it on its line since an earlier field's colon (杭州市第一人民医院  电话 …, 咨询心内科护士站，电话 …).
+    const clause = back.slice(0, label?.index ?? back.length).slice(-14)
+    const own = clause.slice(Math.max(clause.lastIndexOf('\n'), clause.lastIndexOf(':'), clause.lastIndexOf('。')) + 1).replace(/[（(][^）)]*[）)]/g, '')
+    if (BACKGROUND.test(words + own) || SERVICE_PHONE.test(words + own) || PHONE_ACTIVITY.test(words.replace(LAST_PHONE_WORD, ''))) continue
+    PHONE_RUN_ON_LINE.lastIndex = start
+    const run = PHONE_RUN_ON_LINE.exec(text)
+    if (!run) continue
+    // Up to a number another pass took on the same line (0571 8812 345 13912345678).
+    const groups = [...run[0].matchAll(/\d+/g)].map((group) => start + (group.index ?? 0) + group[0].length)
+    while (groups.length > 0 && out.overlaps(start, groups[groups.length - 1])) groups.pop()
+    if (groups.length === 0) continue
+    let from = start
+    if (text[start] === '(' && !run[0].includes(')')) from = start + 1
+    let written = text.slice(from, groups[groups.length - 1])
+    // A short last group before a word or a list mark counts something (88123456 3次, … 6床, … 2.).
+    const count = /[ \t]+\d{1,2}$/.exec(written)
+    if (count && /^[ \t]*(?:[\u4e00-\u9fff]|[.、])/.test(text.slice(from + written.length, from + written.length + 3))
+      && written.slice(0, count.index).replace(/\D/g, '').length >= 5) written = written.slice(0, count.index)
+    const end = from + written.length
+    const digits = written.replace(/\D/g, '')
+    const under = /^[ \t]*(?:\n|$)/.test(text.slice(end, end + 40)) ? numberTails(text, end) : []
+    const all = digits + under.map((tail) => text.slice(tail.start, tail.end).replace(/\D/g, '')).join('')
+    if (digits.length < (under.length > 0 ? 3 : 5) || all.length < 5 || SERVICE_DIGITS.test(digits)) continue
+    const parts = written.match(/\d+/g) ?? []
+    // A date written solid or with its year apart (电话 20240115, 电话 2024 0115 1234, 电话访视：2024-01); a phone's first group
+    // may read as a year too (19  47 0 52 …), so the month must follow as a group of its own.
+    const year = /^(?:19|20)\d{2}$/.test(parts[0] ?? '') && (readsAsSolidDate(digits.slice(0, 8)) || /^(?:0?[1-9]|1[0-2])$/.test(parts[1] ?? ''))
+    const solid = readsAsSolidDate(digits.slice(0, 8)) && (parts[0] ?? '').length >= 8
+    const hours = parts.length === 2 && parts.every((part) => /^(?:[01]\d|2[0-3])[0-5]\d$/.test(part))
+    // Small groups make a phone only all together or after an area code (13  35 4 39 34  36, 0571 8 8 1 2 3 4 5), never a
+    // row of scores (3 2 1 0 2).
+    const small = parts.filter((part) => part.length <= 2).length >= 3 && !WHOLE_PHONE.test(digits) && !/^0\d{2,3}$/.test(parts[0] ?? '')
+    // After it a unit, a slash of a value (124/70; a slash before another number lists phones: …345/13912345678), a colon,
+    // what to call it for (电话 86021 预约), or a bed or a count (电话 33456 床, 33456 次).
+    const after = text.slice(end, end + 16)
+    const unit = /^[ \t]*(?:[A-Za-z%:℃°]|\.\d|\/(?![ \t]*[+(]?\d(?:[ -]?\d){4})|\)[ \t]*:)/.test(after) || /^[ \t]*(?:预约|咨询|查询|挂号|转|号?床|次|元|天|岁)/.test(after)
+    if (DATE_IN_GROUPS.test(written) || readsAsDate(written) || dateAndTime(written) || year || solid || hours || small || unit || timeThenDate(parts)) continue
+    out.add(from, end, 'phone', 'unsure', 'phone_under_label', { label: field?.label })
+  }
 }
 
 /** Groups of digits that start with a time of day (0830, 08 30) and go on with a date written solid (20240116, 202401 16). */
@@ -923,8 +1113,10 @@ function timeThenDate(groups: string[]): boolean {
  * number takes all the digits on that line, never a date or a value with a unit, a slash, a colon or a
  * bracket after it (124/70, 1  ml, 06:37); over two breaks only a mobile. A time and a date (电话 08 30
  * 20240116) is no phone, nor a row of small numbers that starts small (18 25 52 4 53 40). A last group of one digit, or of
- * two after a gap of two spaces or before a word or a list mark, is a count (… 6床, … 7 次, \n1. 血常规): a
- * shorter whole number wins, and with none it takes over nothing. Eleven digits one to a box make a mobile.
+ * two after a gap of two spaces or before a word or a list mark, is a count (… 6床, … 7 次, \n1. 血常规) where a
+ * shorter number is whole. With none, it is the number's last digit at a line's or a sentence's end (0532-835543 0 1\n:
+ * 青岛 numbers have eight), and the number takes over pieces of itself; before a word it still counts something
+ * (0755 8312 345 6床), and no reading is taken here. Eleven digits one to a box make a mobile.
  */
 function phonesInOddGroups(text: string, fields: Field[], out: Collector): void {
   const labelled = new Map<number, Field>()
@@ -971,23 +1163,27 @@ function phonesInOddGroups(text: string, fields: Field[], out: Collector): void 
       const next = groups[g + 1]
       if (breaks > 0 && ((next && !text.slice(end, next.start).includes('\n')) || /^[ \t]*(?:[A-Za-z%\/:)\].℃°、]|-\d)/.test(text.slice(end, end + 4)))) continue
       const onNextLine = afterBreak >= 0 ? text.slice(afterBreak, end) : ''
-      if (DATE_IN_RUN.test(text.slice(start, end)) || readsAsDate(onNextLine) || readsAsSolidDate(onNextLine.replace(/\D/g, ''))
+      if (DATE_IN_GROUPS.test(text.slice(start, end)) || readsAsDate(onNextLine) || readsAsSolidDate(onNextLine.replace(/\D/g, ''))
         || timeThenDate(groups.slice(0, g + 1).map((group) => text.slice(group.start, group.end)))) continue
       // A short last group that ends its line or sentence and makes a mobile is its end (0086 15561669\n6  90, …042\n1。), not a count.
       // A lone digit on a new line ends a sentence only (…042\n1。), never before a comma, where it may number a list item.
       const mobileEnd = MOBILE_DIGITS.test(digits)
         && (end - groupStart === 1 && gap.includes('\n') ? /^[ \t]*(?:\n|$|[。;；])/ : /^[ \t]*(?:\n|$|[。，,;；])/).test(text.slice(end, end + 3))
-      const count = g > 0 && !mobileEnd && (end - groupStart === 1 || (end - groupStart === 2
+      // So does a short group alone on its line that the number needs to be whole (0571 88 12345\n6: 杭州 numbers have eight).
+      const endsItsLine = gap.includes('\n') && end - groupStart <= 2 && /^[ \t]*(?:\n|$)/.test(text.slice(end, end + 3))
+      const count = g > 0 && !mobileEnd && !endsItsLine && (end - groupStart === 1 || (end - groupStart === 2
         && (/ {2}/.test(gap) || (/\s/.test(gap) && /^[ \t]*(?:[\u4e00-\u9fff]|[.、])/.test(text.slice(end, end + 4))))))
-      // Past a line break a count is never taken (…\n1761\n71 次/分).
-      if (count && breaks > 0) continue
+      // Past a line break a count is never taken (…\n1761\n71 次/分), nor a lone digit before a word after seven digits where
+      // numbers have eight (010-1234567 8次未接通, 0755 8312 345 6床): the seven stay as the other passes read them.
+      if (count && (breaks > 0 || (end - groupStart === 1 && SEVEN_UNDER_EIGHT.test(digits.slice(0, -1))
+        && /^[ \t]*[一-鿿]/.test(text.slice(end, end + 4))))) continue
       ends.push({ end, count })
     }
     const last = ends.length > 1 && ends[ends.length - 1].count ? ends[ends.length - 2] : ends[ends.length - 1]
     if (!last) continue
     const mobile = MOBILE_DIGITS.test(text.slice(start, last.end).replace(/\D/g, ''))
     out.addOver(start, last.end, 'phone', mobile || field ? 'sure' : 'unsure', mobile ? 'mobile_phone' : 'landline_phone', { label: field?.label },
-      (item) => !last.count && partOfIt(item))
+      (item) => (!last.count || ends.length === 1) && partOfIt(item))
   }
 }
 

@@ -16,7 +16,7 @@ import { detectRules } from './rules'
 import type { ShareText } from './share'
 import type { CodeBook, PiiCategory, Profile } from './types'
 import { normalizeText } from './text'
-import { addressBase, EXACT_ONLY, findValue, MIN_LOOSE_NUMBER, numberRuns, NUMERIC, readsAsDate, readsAsSolidDate, valueKey } from './values'
+import { addressBase, EXACT_ONLY, findValue, MIN_LOOSE_NUMBER, numberRuns, NUMERIC, readsAsDate, readsAsDateHead, readsAsSolidDate, readsAsYearMonth, valueKey } from './values'
 
 export type ResidueKind = 'replaced_value' | 'my_info' | 'unreviewed'
 
@@ -106,6 +106,8 @@ export function checkResidue(share: ShareText, book: CodeBook, profile: Profile)
   const targets: Target[] = []
   for (const entry of book.entries) {
     for (const value of entry.values) {
+      // A guess at a few phone digits (联系电话：0571\n8723…) is not looked for: its copies are other numbers.
+      if (entry.category === 'phone' && valueKey('phone', value).length < 7) continue
       targets.push({ kind: 'replaced_value', category: entry.category, value })
       // The street address a longer home starts with (…中山路12号 of …中山路12号（锦绣华庭）): propagation leaves
       // a copy that goes on as a hospital, so it is reported here and the user decides.
@@ -122,7 +124,8 @@ export function checkResidue(share: ShareText, book: CodeBook, profile: Profile)
     // Here a known number also counts inside a longer one: a value cut short by a line break where it was
     // replaced may appear whole elsewhere. Copying stops and the user decides; nothing is replaced unasked.
     const key = valueKey(target.category, target.value)
-    if (!NUMERIC.has(target.category) || key.length < MIN_LOOSE_NUMBER) continue
+    // Never the head of a cut number that is a date (住院号：20240115-\n0021): inside a longer run it is the date itself.
+    if (!NUMERIC.has(target.category) || key.length < MIN_LOOSE_NUMBER || (EXACT_ONLY.has(target.category) && readsAsDateHead(target.value))) continue
     for (const run of runs) {
       for (const span of run.find(key, false, true)) {
         if (EXACT_ONLY.has(target.category) && readsAsDate(text.slice(span.start, span.end))) continue
@@ -146,7 +149,7 @@ export function checkResidue(share: ShareText, book: CodeBook, profile: Profile)
     const category = entry.category
     CUT_TAIL.lastIndex = span.end
     const tail = CUT_TAIL.exec(text)
-    if (!tail || tail[1].replace(/\D/g, '').length < 3 || readsAsDate(tail[1]) || readsAsSolidDate(tail[1])) continue
+    if (!tail || tail[1].replace(/\D/g, '').length < 3 || readsAsDate(tail[1]) || readsAsSolidDate(tail[1]) || readsAsYearMonth(tail[1])) continue
     const start = span.end + tail[0].length - tail[1].length
     // A record or insurance number that may be cut: short, joined over a line break, or ending in a dash and a digit or two.
     const mayBeCut = UNCHECKED.has(category) && !entry.values.some((value) => !value.includes('\n')

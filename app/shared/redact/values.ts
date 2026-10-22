@@ -1,6 +1,6 @@
 /** What makes two spellings "the same value", shared by codes, propagation and the leftover check. */
 import type { PiiCategory } from './types'
-import { compactNumber, compactPhone, compactText, escapeRegExp, looseNumberPattern, looseTextPattern, normalizeText, NUMBER_SEPARATORS } from './text'
+import { compactAddress, compactNumber, compactPhone, compactText, escapeRegExp, looseNumberPattern, looseTextPattern, normalizeText, NUMBER_SEPARATORS } from './text'
 
 export const NUMERIC: ReadonlySet<PiiCategory> = new Set(['phone', 'id_number', 'social_security', 'bank_card', 'record_number'])
 
@@ -57,6 +57,32 @@ export function readsAsSolidDate(written: string): boolean {
   return /^(?:19|20)\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])$/.test(written)
 }
 
+/** 2024-01, 202401, 2024.01, maybe with the dash a line break left after it: the start of a date more than of a number. */
+export function readsAsYearMonth(written: string): boolean {
+  return /^(?:19|20)\d{2}[-/.]?(?:0[1-9]|1[0-2])-?$/.test(written.trim())
+}
+
+/** A year and month, or a date, with the dash a line break left after it (2024-01-, 202401-, 20240115-): the head of a cut number. */
+export function readsAsDateHead(written: string): boolean {
+  const bare = written.trim()
+  if (!bare.endsWith('-')) return false
+  return readsAsYearMonth(bare) || readsAsSolidDate(bare.slice(0, -1)) || readsAsDate(bare.slice(0, -1))
+}
+
+/**
+ * Whether a year and month from `start` to `end` belongs to a date or a period: its day after the same separator
+ * (2024-01-15; a solid 201203 goes on as a number: 201203-12床), another year and month on the other side of a dash
+ * (202401-202403, 202312-202401) or 至今 (2024.01-至今), 月 after it, or a date's label before.
+ */
+function yearMonthOfDate(text: string, start: number, end: number): boolean {
+  const written = /^(?:19|20)\d{2}([-/.]?)(?:0[1-9]|1[0-2])$/.exec(text.slice(start, end))
+  if (!written) return false
+  const after = text.slice(end, end + 12)
+  return (written[1] !== '' && after.startsWith(written[1]) && /^.[ \t]*(?:0?[1-9]|[12]\d|3[01])(?!\d)/.test(after))
+    || /^(?:[ \t]*[-~至到][ \t]*\n?[ \t]*(?:19|20)\d{2}[-/.]?(?:0[1-9]|1[0-2])(?!\d)|[ \t]*-?[ \t]*\n?[ \t]*(?:至今|迄今|以来|今|现在|目前)|[ \t]*月)/.test(after)
+    || /(?:(?:19|20)\d{2}[-/.]?(?:0[1-9]|1[0-2])[ \t]*[-~至到]|日期|时间|期间|年月|月份|年度)[ \t]*:?[ \t]*$/.test(text.slice(Math.max(0, start - 12), start))
+}
+
 /**
  * The identity of a phone number: a mobile without +86, and a landline after +86 with the 0 its area code
  * drops there (+86-21-83134703 is 021-83134703). Area codes are 10, 2x or three digits from 3 up.
@@ -91,14 +117,14 @@ export function streetCopyStands(text: string, end: number): boolean {
 }
 
 /**
- * The street address an address starts with when it goes on after a comma or a bracket (…251号（电力局宿舍）,
- * …112号，金色家园3-2-1102): another copy may stop there, or leave out the comma or the brackets. Null when
- * there is no such part, or it has no house number (a road or a district alone is no home).
+ * The street address an address starts with when it goes on after a comma, a bracket or a quote mark (…251号（电力局宿舍）,
+ * …112号，金色家园3-2-1102, …12号”3栋501室): another copy may stop there, or leave out the comma, the brackets or the
+ * quotes. Null when there is no such part, or it has no house number (a road or a district alone is no home).
  */
 export function addressBase(value: string): string | null {
   const text = normalizeText(value)
   // OCR's gap may stand for the comma (…12号 锦绣华庭3栋501室); a gap inside the places goes on (江苏省 南京市…).
-  for (const match of text.matchAll(/[,(]|[ \t]+(?=[\u4e00-\u9fff\d])/g)) {
+  for (const match of text.matchAll(/[,(“”"「」『』]|[ \t]+(?=[\u4e00-\u9fff\d])/g)) {
     const base = text.slice(0, match.index).trim()
     if (base.replace(/\s/g, '').length >= 8 && HOUSE_NUMBER.test(base)) return base
     if (match[0] === ',' || match[0] === '(') return null
@@ -106,10 +132,11 @@ export function addressBase(value: string): string | null {
   return null
 }
 
-/** The identity of a value: digits and letters for numbers (phones without +86), normalized text otherwise. */
+/** The identity of a value: digits and letters for numbers (phones without +86), normalized text otherwise (an address without its quote marks). */
 export function valueKey(category: PiiCategory, value: string): string {
   if (category === 'phone') return phoneKey(value)
   if (category === 'email') return normalizeText(value).trim().toLowerCase()
+  if (category === 'address') return compactAddress(value)
   return NUMERIC.has(category) ? compactNumber(value) : compactText(value)
 }
 
@@ -238,9 +265,30 @@ export interface ValueSpot {
  * many values in one text.
  */
 export function findValue(text: string, category: PiiCategory, value: string, runs?: NumberRun[]): ValueSpot[] {
+  const ownSpelling = normalizeText(value).trim()
+  // The head of a cut number that is a year and month or a date (住院号：2024-01-\n0015) is found again only as the head of a
+  // number: cut after its dash too (住院号 2024-01-  科室：…), or with the rest of a number after it (门诊号 2023-11-0087),
+  // never with a day, a year and month, a line of digits or 至今 after it: that is a date or a period. Its own spelling is no exception.
+  if (EXACT_ONLY.has(category) && readsAsDateHead(ownSpelling)) {
+    const spots: ValueSpot[] = []
+    for (const spot of findSpots(text, category, ownSpelling.slice(0, -1), runs, '')) {
+      if (HEAD_REST.test(text.slice(spot.end, spot.end + 24))) spots.push({ ...spot, end: spot.end + (/^-\d/.test(text.slice(spot.end, spot.end + 2)) ? 0 : 1) })
+    }
+    return spots
+  }
+  return findSpots(text, category, value, runs, ownSpelling)
+}
+
+/**
+ * After the head of a cut number: its dash, then no digit and no 至今 on that line or the next (the dash is taken too), or
+ * the rest of a number (three digits or more, no year and month), which keeps its own digits as main did (2023-11-0087).
+ */
+const HEAD_REST = /^-(?:(?![ \t]*\n?[ \t]*(?:\d|至今|迄今|以来|今|现在|目前))|(?=(?!(?:19|20)\d{2}(?:0[1-9]|1[0-2])(?!\d))\d{3,}(?!\d)))/
+
+/** findValue, where `ownSpelling` is the spelling that counts even when it reads as a date ('' for none). */
+function findSpots(text: string, category: PiiCategory, value: string, runs: NumberRun[] | undefined, ownSpelling: string): ValueSpot[] {
   const key = valueKey(category, value)
   const spots: ValueSpot[] = []
-  const ownSpelling = normalizeText(value).trim()
   if (NUMERIC.has(category) && allowsSeparators(category, key)) {
     for (const run of runs ?? numberRuns(text)) {
       for (const variant of runKeys(category, key)) {
@@ -272,7 +320,7 @@ export function findValue(text: string, category: PiiCategory, value: string, ru
   for (const match of text.matchAll(regex)) {
     const start = match.index ?? 0
     const end = start + match[0].length
-    if (EXACT_ONLY.has(category) && yearOfDate(text, start, end)) continue
+    if (EXACT_ONLY.has(category) && (yearOfDate(text, start, end) || yearMonthOfDate(text, start, end))) continue
     spots.push({ start, end })
   }
   return spots

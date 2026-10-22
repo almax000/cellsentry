@@ -7,7 +7,24 @@ export function escapeRegExp(value: string): string {
 /** Spaces OCR tends to insert inside a value. Newlines are bridged only for a value that has one itself, or a long one. */
 const INNER_GAP = '[ \\t]*'
 const INNER_GAP_OR_BREAK = '[ \\t]*(?:\\n[ \\t]*)?'
-const INNER_GAP_OR_BREAKS = '[ \\t]*(?:\\n[ \\t]*){0,2}'
+// An address may also have quote marks where a copy has none.
+const INNER_GAP_OR_BREAKS = '[ \\t“”"「」『』]*(?:\\n[ \\t“”"「」『』]*){0,2}'
+
+/** Quote marks, which one copy of an address may have inside it and another leave out (住址为“…12号”3栋501室, 住址：…12号3栋501室). */
+export const ADDRESS_QUOTES = /[“”"「」『』]/g
+/** The mark that closes a quote, by the one that opens it. */
+const QUOTE_PAIRS: Readonly<Record<string, string>> = { '“': '”', '「': '」', '『': '』', '"': '"' }
+
+/** A value without its quote marks, unless one pair holds the whole of it (户籍：“河南”), which copies then hold too. */
+function withoutQuotes(compact: string): string {
+  const wrapped = compact.length > 2 && QUOTE_PAIRS[compact[0]] === compact[compact.length - 1] && !/[“”"「」『』]/.test(compact.slice(1, -1))
+  return wrapped ? compact : compact.replace(ADDRESS_QUOTES, '')
+}
+
+/** An address without its spaces and quote marks (see withoutQuotes). */
+export function compactAddress(value: string): string {
+  return withoutQuotes(compactText(value))
+}
 
 /**
  * Characters people and OCR put between the digits of one number, after
@@ -58,12 +75,16 @@ const MAX_LOOSE_TEXT = 120
 /**
  * A text value with optional spaces between characters (OCR often splits 张伟 into 张 伟). A value
  * that a narrow column broke over two lines (…单元250\n1室) may be broken anywhere where it appears again.
- * With `lines` (an address), any copy may be broken anywhere, by a line break or a blank line.
+ * With `lines` (an address), any copy may be broken anywhere, by a line break or a blank line, and have quote
+ * marks or not (a pair around the whole value is kept).
  */
 export function looseTextPattern(value: string, lines = false): string | null {
-  const chars = [...normalizeText(value).replace(/\s+/g, '')]
+  const compact = normalizeText(value).replace(/\s+/g, '')
+  const chars = [...(lines ? withoutQuotes(compact) : compact)]
   if (chars.length < 2) return null
-  return chars.map(escapeRegExp).join(chars.length > MAX_LOOSE_TEXT ? '' : lines ? INNER_GAP_OR_BREAKS : value.includes('\n') ? INNER_GAP_OR_BREAK : INNER_GAP)
+  const core = chars.map(escapeRegExp).join(chars.length > MAX_LOOSE_TEXT ? '' : lines ? INNER_GAP_OR_BREAKS : value.includes('\n') ? INNER_GAP_OR_BREAK : INNER_GAP)
+  // An address that ends in a quoted name (…100号“锦绣华庭”) takes the closing mark of a copy too.
+  return lines && /[”"」』]$/.test(compact) && /[“"「『]/.test(compact.slice(0, -1)) ? `${core}[”"」』]?` : core
 }
 
 /** Digits and letters only, upper-cased: the identity of a number-like value. Full-width digits count. */

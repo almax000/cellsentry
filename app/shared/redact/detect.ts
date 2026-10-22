@@ -73,7 +73,9 @@ function normalized(doc: SourceDocument): SourceDocument {
  *   a mobile, often an age or a pulse in the cell before) never counts as more.
  *   A longer value found again also takes over a shorter one of its kind found
  *   again on the same spot (MZ20250\n810889 over MZ20250), and an address one
- *   found again inside it (a home over its street address).
+ *   found again inside it (a home over its street address). A phone found
+ *   again takes over a guess at phone digits (phone_under_label) that it goes
+ *   on past, from where the guess's own digits start.
  */
 function place(taken: DraftCandidate[], draft: DraftCandidate, text = ''): boolean {
   const clashes = taken.filter((other) => other.page === draft.page && draft.start < other.end && other.start < draft.end)
@@ -90,15 +92,31 @@ function place(taken: DraftCandidate[], draft: DraftCandidate, text = ''): boole
   // A record or insurance number found again over digits a rule only guessed were a landline (医保号 09735400277, ZJ 02701054770).
   const sameDigits = (other: DraftCandidate): boolean => (draft.category === 'social_security' || draft.category === 'record_number')
     && other.category === 'phone' && other.reason === 'landline_phone' && other.certainty === 'unsure' && draft.start <= other.start && other.end <= draft.end
+  // A guess at digits after a phone label or word gives way to a phone found again over it (+86 10 28\n70 5 819 over 86 10 28).
+  // The phone starts inside the guess, after at most a short group (an index or a country code: (2) 139 1234\n5678, +86 0571 …),
+  // never on a number before it (an age of 86 in the cell before).
+  const guess = (other: DraftCandidate): boolean => draft.category === 'phone' && other.category === 'phone' && other.reason === 'phone_under_label'
+    && other.certainty === 'unsure' && other.start <= draft.start && other.end < draft.end
+    && text.slice(other.start, draft.start).replace(/\D/g, '').length <= 4
+    && valueKey('phone', text.slice(draft.start, draft.end)) !== valueKey('phone', text.slice(other.start, other.end))
   const fragments = draft.category === 'name'
     ? clashes.every((other) => other.category === 'name' && other.certainty === 'unsure' && covers(other))
     : draft.reason === 'same_value' && (NUMERIC.has(draft.category) || draft.category === 'address') && clashes.every((other) =>
       (other.source === 'rule' || other.source === 'label') && (other.reason !== 'same_value' || other.category === draft.category)
-      && (longer(other) || sameDigits(other) || (draft.category === 'address' && other.category === 'address' && other.reason === 'same_value' && covers(other))))
+      && (longer(other) || sameDigits(other) || guess(other) || (draft.category === 'address' && other.category === 'address' && other.reason === 'same_value' && covers(other))))
   if (!fragments) return false
   for (const other of clashes) taken.splice(taken.indexOf(other), 1)
   taken.push(draft)
   return true
+}
+
+/**
+ * An unsure phone after a phone word, or under a phone label with fewer digits than any phone: a guess at a cut number,
+ * not a value to look for.
+ */
+function phoneGuess(candidate: Pick<DraftCandidate, 'category' | 'reason' | 'certainty' | 'label'>, text: string): boolean {
+  return candidate.category === 'phone' && candidate.reason === 'phone_under_label' && candidate.certainty === 'unsure'
+    && (!candidate.label || valueKey('phone', text).length < 7)
 }
 
 /**
@@ -139,6 +157,8 @@ function propagate(docs: SourceDocument[], found: Map<string, DraftCandidate[]>,
     const text = textOf(candidate)
     if (!text) continue
     if (candidate.category === 'phone' && candidate.reason === 'landline_phone' && candidate.certainty === 'unsure' && numbers.has(text.replace(/\D/g, ''))) continue
+    // Nor a guess at phone digits (联系电话：0571\n8723…, 电话 86021 …): its copies are other numbers.
+    if (phoneGuess(candidate, text)) continue
     // A home in running text after a relative's word is the relative's (其母居住于…): its street address is found
     // again, but lends a labelled copy of the street address no code.
     const pageText = texts.get(candidate.docId)?.get(candidate.page) ?? ''
@@ -153,6 +173,7 @@ function propagate(docs: SourceDocument[], found: Map<string, DraftCandidate[]>,
     // there (样本号MZ20 已复核): a first line with a letter in it, long enough to be found as written.
     const firstLine = (candidate.category === 'record_number' || candidate.category === 'social_security') && text.includes('\n')
       ? text.slice(0, text.indexOf('\n')).trim() : ''
+    // A first line that is a year and month or a date (住院号：2024-01-\n0015) is found only where it is cut too (findValue).
     const head = (/[A-Za-z]/.test(firstLine) && valueKey(candidate.category, firstLine).length >= 4)
       || (/-$/.test(firstLine) && valueKey(candidate.category, firstLine).length >= 6) ? firstLine : null
     if (head) {
