@@ -7,7 +7,7 @@
  */
 import type { Detector } from './detect'
 import type { CandidateReason, Certainty, Decision, DraftCandidate, NameRole, PiiCategory, SourceDocument } from './types'
-import { ADDRESS_QUOTES, cnIdChecksum, luhnValid } from './text'
+import { ADDRESS_QUOTES, balancedQuotes, cnIdChecksum, luhnValid, opensStraight } from './text'
 import { dateAndTime, ESTATE_WORD, readsAsDate, readsAsSolidDate, readsAsYearMonth } from './values'
 
 interface Field {
@@ -516,6 +516,9 @@ function continuesAddress(head: string, words: string): boolean {
   if (LINE_LABEL.test(words) || (NEW_CLAUSE.test(words) && !place)) return false
   // Quote marks on the line are read by the caller (…西湖区\n文三路100号”3栋501室, …100号\n“阳光花园”3栋501室).
   const lead = words.split(/[,;。]/)[0].replace(/(?<=\d) +(?=\d)/g, '').replace(ADDRESS_QUOTES, '')
+  // A line with a building's letter only as the building and its room right after a closing quote mark (…100号”\nB座501室); elsewhere
+  // such a line is a place in the hospital (…100号\nB区305\n心内科).
+  if (/[A-Za-z]/.test(lead)) return /[”"]$/.test(head) && BUILDING_AND_ROOM.test(lead)
   if (lead.length > 40 || !/^[\u4e00-\u9fff\d#-]+$/.test(lead) || !ADDRESS_ENDING.test(lead) || reportWords(lead)
     || SENTENCE_START.test(lead) || NAMES_AN_ADDRESS.test(lead)) return false
   const dashes = HOUSE_DASHES.test(lead) || (/\d-$/.test(head) && /^\d{1,5}室?$/.test(lead))
@@ -537,6 +540,48 @@ const HOUSE_AFTER_STREET = /^(?:\d+(?:-\d+)*(?:号楼|号院|栋|幢|座|单元|
 const QUOTE_PIECE_END = /[,;。 ()“”"「」『』]/
 /** Shops and markets, whose names end like a city (某某超市旁, 菜市场): never more of a home past a quote mark. */
 const MARKET = /超市|[菜夜集门股]市|市场|商场/
+/**
+ * A building by its number or letter with its room, maybe with a unit and a floor between, or a room alone (3栋501室, B座501室,
+ * 3号楼2单元501, A区3栋501室, 501室): more of a home also after a comma, a space or a line break. A building with no room
+ * (…”，3栋, B区, A座2楼, a ward or a desk of the hospital) or a number with 号 alone (…”，10号开始发热, 3号床) is not one.
+ */
+const BUILDING_AND_ROOM = /^(?:[A-Za-z]区(?=\d))?(?:\d{1,4}(?:号楼|栋|幢|座|单元)|[A-Za-z]\d?(?:号楼|栋|幢|座|单元))+(?:\d{1,3}(?:层|楼))?\d{2,5}(?:室|房|户|号)?$|^\d{2,5}室$/
+/**
+ * Words that start the name of a place in the hospital, maybe after a floor or a list mark: a department, a ward, a desk, an exam
+ * room or a bed (心内科门诊, 2楼收费处, 发热门诊, 西药房, 12床), not a field's label (科别：, 门诊号：, 检验项目：).
+ */
+const HOSPITAL_START = /^[“"「『(【\[\-\d.、FfL楼层 \t]*(?:[一二三四五六七八九十]楼)?(?:[\u4e00-\u9fff]{1,6}科(?![室别目研号])|[\u4e00-\u9fff]{0,4}?(?:门诊(?!号)|急诊|病区|病房|住院部|住院处|收费|挂号|药房|取药|导诊|护士站|护理站|候诊区|留观|注射室|雾化室|检验(?!项目)|化验|放射|超声|彩超|影像|心电图|内镜|透析|血透|导管室|抢救|监护|手术室|治疗室|诊室|输液|采血|抽血|采样|核酸|接种|康复|体检中心|ICU|PICU|CCU|B超|CT(?!号)|MRI)|\d{1,3}床)/i
+/** A next line that starts with such a place (…”\n5号楼201\n收费处): the line before it is that place's building and room. */
+const HOSPITAL_LINE = new RegExp(`^[ \\t,;]*\\n[ \\t\\n]*${HOSPITAL_START.source.slice(1)}`, 'i')
+/**
+ * What may follow a building and room that comes after a gap: the end of a clause or of the value, not more words (…”，3号楼201
+ * 输液室输液), nor a place of the hospital after a comma or on the next line (…”，2号楼301，护士站).
+ */
+const settles = (after: string): boolean => /^(?:$|[,;。!?\n”"」』])/.test(after) && !hospitalNext(after)
+/** A place of the hospital next: on the line after, or after a comma or a semicolon (…，护士站, …；心内科门诊). */
+const hospitalNext = (after: string): boolean => HOSPITAL_LINE.test(after)
+  || (/^[ \t]*[,;]/.test(after) && HOSPITAL_START.test(after.replace(/^[ \t]*[,;][ \t]*/, '')))
+/**
+ * Whether an address read on past the closing mark at `mark` did so on a path base never took: a building and room after a gap
+ * (with `lineBreak`, a line break counts as one) or by its letter. Only there a place of the hospital after it takes them back.
+ */
+function pastByGap(text: string, mark: number, lineBreak: boolean): boolean {
+  const after = text.slice(mark + 1, mark + 40)
+  const next = after.replace(/^[\s,]+/, '').split(/[,;。 \t\n()“”"「」『』]/)[0]
+  return BUILDING_AND_ROOM.test(next) && ((lineBreak ? /^[\s,]/ : /^[ \t,]/).test(after) || /[A-Za-z]/.test(next))
+}
+/** A home that already has its room (…3栋501室): no more numbers of it after a comma or a space. */
+const HAS_ROOM = /\d[ \t]*室/
+/** A home up to its building, unit or floor, maybe with digits of its room (…3栋, …5单元160). */
+const UP_TO_BUILDING = /\d(?:号楼|栋|幢|座|单元|层|楼)\d{0,5}$/
+/** A building, unit, floor or room word: what a piece starting with digits needs to be more of a home that has its building. */
+const UNIT_WORD = /号楼|栋|幢|座|单元|室|层|楼|户|房/
+/** Digits that OCR's spaces split before their unit or room word (…3栋 5 01室, …2 单元 501室, …3栋，12 01号). */
+const OCR_SPLIT_UNIT = /^\s*\d{1,4}(?:(?: \d{1,4})+ ?| )(?:号楼|栋|幢|座|单元|室|层|楼|户|房|号)/
+/** A street of the home after a part no finer than a district, which ends like an address and is no facility (西湖区文三路100号). */
+const streetOf = (piece: string): boolean => STREET_START.test(piece) && STREET_OR_HOUSE.test(piece) && ADDRESS_ENDING.test(piece) && !FACILITY.test(piece)
+/** Up to a part no finer than a district, with no house number yet (浙江省杭州市, …西湖区留下街道). */
+const coarseHead = (head: string): boolean => COARSE_END.test(head) && !HOUSE_NUMBER.test(head)
 
 /**
  * Where an address in running text may stop, shortest first: a full stop, a bracket or a quote, a 、, a
@@ -545,7 +590,9 @@ const MARKET = /超市|[菜夜集门股]市|市场|商场/
  * goes on, and so does a bracket of address words with more of the address after it, or a quote mark that
  * closes a quote with more of the home after it or opens one that names a place or an estate (家住“浙江省杭州市”
  * 西湖区…, 住址为“…12号”3栋501室, …西湖区“阳光花园”3栋501室); every such point is also a place to stop, for a
- * caller that finds the longer reading is no address. `quoted` is the mark that closes a quote the value starts inside.
+ * caller that finds the longer reading is no address. `quoted` is the mark that closes a quote the value starts inside;
+ * inside it a 、 before more of the address (“…鼓楼区、中山路12号”) or a bracket right before its closing mark
+ * (“…12号（锦绣华庭）”3栋501室) goes on too.
  */
 function narrativeClauseEnds(value: string, quoted?: string): number[] {
   const ends: number[] = []
@@ -580,20 +627,29 @@ function narrativeClauseEnds(value: string, quoted?: string): number[] {
       const mark = match[0]
       if (open !== undefined ? CLOSING_QUOTE.test(mark) || mark === '"' : CLOSING_QUOTE.test(mark)) {
         // Right after the closing mark, more of the home: its building and room after a street or an estate (…12号”3栋501室,
-        // …阳光花园”3-2-1102). After a part no finer than a district, also after a comma or a space, the street of the home,
-        // which ends like an address (浙江省杭州市”西湖区文三路100号, …西湖区” 文三路100号3栋501室), never a clause with a place
-        // in it (…”，宁波市鄞州区某服装厂工人, …”10号开始发热, …”，萧山区瓜沥镇卫生院转诊). A home already finer than a district
-        // ends at the mark before a comma (…葛衙庄村”，今晨在村口被狗咬伤).
+        // …阳光花园”3-2-1102, …12号”B座501室), also after a comma or a space (…12号”，3栋501室). After a part no finer than a
+        // district, also after a comma or a space, the street of the home, which ends like an address (浙江省杭州市”西湖区文三路
+        // 100号, …西湖区” 文三路100号3栋501室), never a clause with a place in it (…”，宁波市鄞州区某服装厂工人, …”10号开始发热,
+        // …”，萧山区瓜沥镇卫生院转诊). A home already finer than a district ends at the mark before anything but its building and
+        // room after a comma (…葛衙庄村”，今晨在村口被狗咬伤).
         const rest = value.slice(at + 1, end)
         const apart = /^[ ,]/.test(rest)
         const after = rest.replace(/^[ ,]+/, '')
         const piece = after.split(QUOTE_PIECE_END)[0]
-        const coarse = COARSE_END.test(value.slice(0, at)) && !HOUSE_NUMBER.test(value.slice(0, at))
-        const street = STREET_START.test(piece) && STREET_OR_HOUSE.test(piece) && ADDRESS_ENDING.test(piece) && !FACILITY.test(piece)
-        if (!moreAddress(after, piece) || MARKET.test(piece)
-          || !(coarse ? street : !apart && (AFTER_BRACKET.test(piece) || HOUSE_AFTER_STREET.test(piece)))) return [...ends, at]
+        // A building and room only after the quote the value starts in, whose opening mark the code then takes too; after a gap or
+        // by a letter, only where its clause ends with it.
+        const building = open !== undefined && BUILDING_AND_ROOM.test(piece)
+          && ((!apart && !/[A-Za-z]/.test(piece)) || settles(after.slice(piece.length)))
+        if ((!building && !moreAddress(after, piece)) || MARKET.test(piece)
+          || !(coarseHead(value.slice(0, at)) ? streetOf(piece) : building || (!apart && (AFTER_BRACKET.test(piece) || HOUSE_AFTER_STREET.test(piece))))) return [...ends, at]
         ends.push(at)
         open = undefined
+        // Right before a mark that closes an outer quote, the home ends with its room (他说「家住“…12号”B座501室」).
+        const pieceEnd = at + 1 + rest.length - after.length + piece.length
+        // A newly accepted room after a gap or by a letter ends this reading. The following clause can name a clinical action or
+        // another place (…”，3栋501室，建立静脉通路 / 今年搬至宁波市), without being more of this home.
+        if (building && (apart || /[A-Za-z]/.test(piece))) return [...ends, pieceEnd]
+        if (/^[”」』]/.test(value.slice(pieceEnd))) return [...ends, pieceEnd]
         continue
       }
       // A quote opened inside the address is more of it where it names a place or an estate, before its building and room
@@ -619,22 +675,46 @@ function narrativeClauseEnds(value: string, quoted?: string): number[] {
       }
       return [...ends, at]
     }
-    if (match[0] === ',' || match[0] === ' ') {
+    // Right after a closing mark the quote branch let through, a building and room goes on, also after OCR's wider gap
+    // (…12号” B座501室, …12号”  3栋501室). Inside the quote the value starts in, a 、 between a district and its street goes on
+    // (“江苏省南京市鼓楼区、中山路12号”).
+    const afterMark = /[”"][ ,]*$/.test(value.slice(Math.max(0, at - 4), at))
+    const gap = / {2}/.test(match[0]) && afterMark
+    const listed = match[0] === '、' && (open === '”' || open === '"')
+    if (match[0] === ',' || match[0] === ' ' || gap || listed) {
       const rest = value.slice(at + 1)
-      if (moreAddress(rest, rest.replace(/^\s+/, '').split(/[,;。 ”]/)[0])) {
+      const head = value.slice(0, at)
+      const piece = rest.replace(/^\s+/, '').split(listed ? /[,;。 ”"、]/ : /[,;。 ”]/)[0]
+      // After a home's building or room, numbers go on only with a building, unit or room word, or as a room by its 号 (…5单元160 2室,
+      // …3栋，501号房, …3栋，1201号), never a date or a count (…3栋501室，10号开始发热, …3栋，2 周前). Places and estates go on as
+      // before (…3栋501室，阳光小区).
+      const digits = /^\d/.test(piece)
+      const more = listed ? coarseHead(head) && streetOf(piece)
+        : afterMark && BUILDING_AND_ROOM.test(piece) && settles(rest.replace(/^\s+/, '').slice(piece.length)) ? true
+        : gap ? false
+        : digits && (HAS_ROOM.test(head) || UP_TO_BUILDING.test(head)) && !UNIT_WORD.test(piece) && !/^\d{1,5}号(?:院|\d{1,5})?$/.test(piece)
+          && !DASHED_HOUSE_PIECE.test(piece) && !OCR_SPLIT_UNIT.test(rest) ? false
+        : moreAddress(rest, piece)
+      if (more) {
         ends.push(at)
         continue
       }
     }
-    // A bracket ends the address unless more of it follows (…12号（电力局宿舍）3栋501室) or it names the estate (…12号（锦绣华庭）),
-    // and then not right before a digit, which would read as part of the code.
+    // A bracket ends the address unless more of it follows (…12号（电力局宿舍）3栋501室, or the closing mark of the quote it is
+    // in, which then decides: “…12号（锦绣华庭）”3栋501室) or it names the estate (…12号（锦绣华庭）), and then not right before
+    // a digit, which would read as part of the code.
     if (match[0] === '(') {
       const close = value.indexOf(')', at + 1)
       const inner = close > 0 && close < end ? value.slice(at + 1, close) : ''
       if (/^[\u4e00-\u9fff\d#-]{2,16}$/.test(inner) && addressWords(inner) && !SENTENCE_START.test(inner)) {
         const rest = value.slice(close + 1)
-        const piece = rest.split(/[,;。 ()]/)[0]
-        if (AFTER_BRACKET.test(piece) && moreAddress(rest, piece)) {
+        const piece = rest.split(QUOTE_PIECE_END)[0]
+        // Before the quote's own closing mark, an estate's name, or a numbered part of one that the home's building and room follow
+        // (（翠苑一区）”，2405室), never a note (（独居）”，3栋501室, （疫区）”，3栋501室, （近人民医院）”).
+        const own = (open === '”' || open === '"') && rest.startsWith(open)
+        const home = own && (ESTATE_PIECE.test(inner)
+          || (/(?:[一二三四五六七八九十\d]区|苑|园|城|里|坊|湾|阁)$/.test(inner) && BUILDING_AND_ROOM.test(rest.slice(1).replace(/^[ ,]+/, '').split(QUOTE_PIECE_END)[0])))
+        if ((AFTER_BRACKET.test(piece) && moreAddress(rest, piece)) || home) {
           ends.push(at)
           resume = close + 1
           continue
@@ -648,16 +728,59 @@ function narrativeClauseEnds(value: string, quoted?: string): number[] {
 }
 
 /**
- * Where a quoted address under its label ends (，住址为“浙江省杭州市”西湖区文三路100号，因…): past the closing mark when more
- * of the address follows, read on as in running text; otherwise at the mark.
+ * A quoted address under its label read on past the closing mark when more of the address follows (，住址为“浙江省杭州市”
+ * 西湖区文三路100号，因…; …12号”，3栋501室; …12号”\n3栋501室), as in running text and also onto the next lines: the address
+ * up to where it ends there, and the page offset of each of its offsets. Null where it ends at the mark.
  */
-function quotedAddressEnd(text: string, field: Field): number {
+function pastQuote(text: string, field: Field): { whole: string; at: (index: number) => number } | null {
   const close = QUOTE_CLOSE[text[field.valueStart - 1]]
   // 「」 hold the whole value, as they always did.
-  if (!close || text[field.valueEnd] !== close || !QUOTE_MARK.test(close)) return field.valueEnd
-  const line = text.slice(field.valueStart, field.valueStart + 200).split('\n')[0]
-  const ends = narrativeClauseEnds(line, close)
-  return Math.max(field.valueEnd, field.valueStart + line.slice(0, ends[ends.length - 1]).replace(ADDRESS_TAIL, '').length)
+  if (!close || text[field.valueEnd] !== close || !QUOTE_MARK.test(close)) return null
+  const near = text.slice(field.valueStart, field.valueStart + 200)
+  const line = near.split('\n')[0]
+  const { value, at, first } = addressText(text, field.valueStart, field.valueStart + line.length)
+  const whole = addressWhole(value, first)
+  const ends = narrativeClauseEnds(whole, close)
+  const kept = whole.slice(0, ends[ends.length - 1]).replace(ADDRESS_TAIL, '')
+  const mark = field.valueEnd - field.valueStart
+  // Onto the line after the mark, only a building and room (…12号”\n3栋501室), or the street after a district (…西湖区”\n文三路100号),
+  // never a lone number or a place in the hospital (…100号”\n12号\n入院日期：…, …100号”\n3号楼\n门诊).
+  const next = kept.slice(first).split(QUOTE_PIECE_END)[0]
+  if (line.slice(mark + 1).trim() === '' && kept.length > first
+    && !(BUILDING_AND_ROOM.test(next) || (coarseHead(line.slice(0, mark)) && streetOf(next)))) return null
+  // More than the closing mark after the quoted words, and never a building and room of a place in the hospital named after it
+  // (…”\n3号楼201\n门诊, …”，5号楼201，收费处).
+  if (pastByGap(text, field.valueEnd, true) && hospitalNext(text.slice(at(kept.length - 1) + 1))) return null
+  return kept.length > mark + 1 ? { whole: kept, at } : null
+}
+
+/**
+ * Where the building and room right after an address from `start` to `end` end (…12号3栋501室, …12号”3栋501室 after its “,
+ * …12号”，3栋501室, …12号\nB座501室); `end` where none follow. A "My info" address that holds only the street takes them too.
+ */
+export function houseAfter(text: string, start: number, end: number): number {
+  // Past a closing mark only when its opening one is right before the address, which the code then takes too; then also after a
+  // comma, a space or a line break. Elsewhere only glued to the address: a room after a gap may be one of the hospital
+  // (…100号 302室 心电图). A straight " before the address opens a quote only after an even number of them (诊断"肺炎"… closes one).
+  const opens = text[start - 1] !== '"' || opensStraight(text, start - 1)
+  const mark = QUOTE_MARK.test(text[end] ?? '') && QUOTE_CLOSE[text[start - 1]] === text[end] && opens ? 1 : 0
+  const gap = (mark ? /^ ?,? ?(?:\n[ \t]*)?/ : /^,?/).exec(text.slice(end + mark, end + mark + 8))?.[0] ?? ''
+  const from = end + mark + gap.length
+  const piece = text.slice(from, from + 30).split(/[,;。 \t\n()“”"「」『』]/)[0]
+  // Glued, a house that ends in its room (digits, a date, a floor or a 号 alone are something after it: …100号120 mmHg, …100号”10号，
+  // 开始发热, …261号3楼); after a gap, a building and its room (…100号，21号楼6单元1402室), a room alone only past the quote's mark.
+  const glued = gap === '' && (BUILDING_AND_ROOM.test(piece) || (/\d[室房户]$/.test(piece) && (AFTER_BRACKET.test(piece) || HOUSE_AFTER_STREET.test(piece))))
+  const head = text.slice(start, end)
+  // A home already naming its building never takes a second building after a gap (…3幢1单元501”\n6号楼302).
+  const secondBuilding = (UP_TO_BUILDING.test(head) || /\d-\d{2,5}$/.test(head))
+    && /^(?:[A-Za-z]区)?(?:\d{1,4}|[A-Za-z]\d?)(?:号楼|栋|幢|座)/.test(piece)
+  const house = glued || (mark === 1 && gap !== '' && BUILDING_AND_ROOM.test(piece) && !secondBuilding)
+  // Only a street address takes one: a home that has its room, or a district alone, is all "My info" holds of it. After a gap the
+  // clause or the line ends with it, and the line after is no place of the hospital.
+  const street = STREET_OR_HOUSE.test(head) && !HAS_ROOM.test(head)
+  const after = text.slice(from + piece.length, from + piece.length + 30)
+  const settled = gap === '' || settles(after)
+  return house && street && settled ? from + piece.length : end
 }
 
 function placeLevels(value: string): number {
@@ -691,14 +814,16 @@ function narrativeAddresses(text: string, out: Collector): void {
     // 住址为“…”: the address is what the quotes hold; with no closing quote on the line, or more of the address right
     // after it (家住「浙江省杭州市」西湖区…), what follows the quote mark.
     const close = QUOTE_CLOSE[text[start]]
+    let quoted = -1
     if (close) {
       // Only up to the line's end (at most 200 characters): an unclosed quote never sends the search to the end of the text.
       const found = text.slice(start + 1, lineEnd + 1).indexOf(close)
-      const quoted = found >= 0 ? start + 1 + found : -1
+      quoted = found >= 0 ? start + 1 + found : -1
       start += 1
-      const after = text.slice(quoted + 1, quoted + 30).replace(/^[ \t,，-]+/, '')
+      const after = text.slice(quoted + 1, quoted + 30).replace(/^[\s,，-]+/, '')
       const house = after.split(QUOTE_PIECE_END)[0]
-      if (quoted >= 0 && quoted <= lineEnd && !ADDRESS_PIECE.test(after) && !(/\d/.test(house) && AFTER_BRACKET.test(house))) lineEnd = quoted
+      if (quoted >= 0 && quoted <= lineEnd && !ADDRESS_PIECE.test(after) && !(/\d/.test(house) && AFTER_BRACKET.test(house))
+        && !BUILDING_AND_ROOM.test(house)) lineEnd = quoted
     }
     const { value, at, first } = addressText(text, start, lineEnd)
     const whole = addressWhole(value, first)
@@ -714,8 +839,14 @@ function narrativeAddresses(text: string, out: Collector): void {
       if (kept.length > MAX_TEXT_ADDRESS || kept.replace(/\s/g, '').length < 4 || FACILITY.test(kept) || !STREET_OR_HOUSE.test(kept)
         || placeLevels(kept.split(/[,;]/)[0]) === 0 || !(levels >= 2 || (levels >= 1 && HOUSE_NUMBER.test(kept)))) continue
       const certainty: Certainty = levels >= 2 && HOUSE_NUMBER.test(kept) && kept.length <= 60 ? 'sure' : 'unsure'
-      if (out.overlaps(start, at(kept.length - 1) + 1)) continue
-      out.add(start, at(kept.length - 1) + 1, 'address', certainty, 'address_in_text', { label: match[0].replace(/[\s:]/g, '') })
+      // Past the closing mark, the opening one too (家住“浙江省杭州市”西湖区… becomes 家住地址1); after a gap never onto a building
+      // and room of a place in the hospital named on the line after (…”，\n5号楼201\n收费处). A line break counts after a bracket
+      // newly allowed inside the quote; without that bracket the baseline already took numeric rooms across line breaks.
+      if ((close === '”' || close === '"') && quoted >= 0 && at(kept.length - 1) > quoted
+        && pastByGap(text, quoted, text[quoted - 1] === ')') && hospitalNext(text.slice(at(kept.length - 1) + 1))) continue
+      const span = balancedQuotes(text, start, at(kept.length - 1) + 1)
+      if (out.overlaps(span.start, span.end)) continue
+      out.add(span.start, span.end, 'address', certainty, 'address_in_text', { label: match[0].replace(/[\s:]/g, '') })
       break
     }
   }
@@ -737,16 +868,11 @@ function labelledFields(text: string, fields: Field[], out: Collector): void {
     } else if (ADDRESS.test(label)) {
       // 户籍 alone may hold the kind of household, not a place (户籍：农业户口, 患者户籍为“城镇居民”).
       if (label === '户籍' && HOUSEHOLD_KIND.test(text.slice(field.valueStart, field.valueEnd).trim())) continue
-      // An address ends where a phone number or a phone label starts (住址：…路88号 电话139…).
-      const close = QUOTE_CLOSE[text[field.valueStart - 1]]
-      const end = quotedAddressEnd(text, field)
-      const { value: full, at, first } = addressText(text, field.valueStart, end)
-      let whole = addressWhole(full, first).replace(ADDRESS_TAIL, '')
-      // Read on past the closing mark as in running text, also on the next lines: the address ends with its clause there too.
-      if (end > field.valueEnd) {
-        const ends = narrativeClauseEnds(whole, close)
-        whole = whole.slice(0, ends[ends.length - 1]).replace(ADDRESS_TAIL, '')
-      }
+      // An address ends where a phone number or a phone label starts (住址：…路88号 电话139…). Read on past a closing mark as in
+      // running text, it ends with its clause there too.
+      const past = pastQuote(text, field)
+      const own = addressText(text, field.valueStart, field.valueEnd)
+      const { whole, at } = past ?? { whole: addressWhole(own.value, own.first).replace(ADDRESS_TAIL, ''), at: own.at }
       const clause = CLAUSE_END.exec(whole)
       let kept = clause ? whole.slice(0, clause.index).replace(ADDRESS_TAIL, '') : whole
       // Never drop an address: if the clause cut leaves too little, keep the whole value and ask.
@@ -758,8 +884,11 @@ function labelledFields(text: string, fields: Field[], out: Collector): void {
       const length = kept.replace(/\s/g, '').length
       // A very long value is still replaced, only marked for a look: dropping it would leak the address.
       if (length > 200) certainty = 'unsure'
-      // Read on past a closing mark, it is an address in running text, whose street address is looked for too.
-      if (length >= 4) out.add(field.valueStart, at(kept.length - 1) + 1, 'address', certainty, end > field.valueEnd ? 'address_in_text' : 'address_label', { label })
+      // Read on past a closing mark, it is an address in running text, whose street address is looked for too; with the closing
+      // mark it takes the opening one (住址为“…12号”3栋501室 becomes 住址为地址1).
+      if (length < 4) continue
+      const span = balancedQuotes(text, field.valueStart, at(kept.length - 1) + 1)
+      out.add(span.start, span.end, 'address', certainty, past ? 'address_in_text' : 'address_label', { label })
     } else {
       // A number under its label, maybe cut by line breaks: the longest reading first.
       for (const end of [...labelledTails(text, field), field.valueEnd]) {

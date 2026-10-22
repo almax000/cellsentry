@@ -7,6 +7,7 @@
  * it is replaced. Keeping one value therefore never renumbers the others, so
  * a code the user already pasted into an AI keeps meaning the same thing.
  */
+import { unsoughtGuess } from './detect'
 import type { Candidate, CodeBook, CodeEntry, CodeLocale, Decision, NameRole, PiiCategory, Profile } from './types'
 import { compactText } from './text'
 import { valueKey } from './values'
@@ -123,6 +124,8 @@ export function assignCodes(candidates: Candidate[], decisions: Record<string, D
   }
 
   const entries = new Map<string, CodeEntry>()
+  /** Spellings of each entry found by something other than a guess at phone digits. */
+  const sought = new Map<string, Set<string>>()
   const codeFor: Record<string, string> = {}
   for (const candidate of candidates) {
     if ((decisions[candidate.id] ?? candidate.suggestion) !== 'replace') continue
@@ -135,7 +138,12 @@ export function assignCodes(candidates: Candidate[], decisions: Record<string, D
       entries.set(key, entry)
     }
     if (!entry.values.includes(candidate.value)) entry.values.push(candidate.value)
+    if (!unsoughtGuess(candidate)) sought.set(key, (sought.get(key) ?? new Set()).add(candidate.value))
     codeFor[candidate.id] = code
+  }
+  for (const [key, entry] of entries) {
+    const guesses = entry.values.filter((value) => !sought.get(key)?.has(value))
+    if (guesses.length > 0) entry.guesses = guesses
   }
   return { book: { entries: [...entries.values()] }, codeFor }
 }
@@ -157,7 +165,18 @@ export function mergeBooks(earlier: CodeBook | null | undefined, current: CodeBo
   const byCode = new Map((earlier?.entries ?? []).map((entry) => [entry.code, entry]))
   for (const entry of current.entries) {
     const before = byCode.get(entry.code)
-    byCode.set(entry.code, before ? { ...entry, values: [...new Set([...before.values, ...entry.values])] } : entry)
+    if (!before) {
+      byCode.set(entry.code, entry)
+      continue
+    }
+    // A spelling stays a guess only where no book saw it found otherwise.
+    const sought = new Set([before, entry].flatMap((one) => one.values.filter((value) => !one.guesses?.includes(value))))
+    const values = [...new Set([...before.values, ...entry.values])]
+    const guesses = values.filter((value) => !sought.has(value))
+    const merged: CodeEntry = { ...entry, values }
+    delete merged.guesses
+    if (guesses.length > 0) merged.guesses = guesses
+    byCode.set(entry.code, merged)
   }
   return { entries: [...byCode.values()] }
 }

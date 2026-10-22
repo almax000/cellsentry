@@ -8,6 +8,8 @@ export default defineConfig({
   timeout: 60000,
   retries: 0,
   workers: 1,
+  // Stop on the first failure: a blocked Electron launch must not queue a series of macOS crash dialogs.
+  maxFailures: 1,
   outputDir: join(e2eTmpDir, 'artifacts'),
   reporter: [
     ['list'],

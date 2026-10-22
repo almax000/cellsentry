@@ -82,10 +82,28 @@ function cutRests(category: PiiCategory, values: string[]): string[] {
   return rests
 }
 
+/** Whether a number from `start` to `end` stands alone in the text: see the short phones in checkResidue. */
+function standsAlone(text: string, start: number, end: number): boolean {
+  const before = text.slice(Math.max(0, start - 12), start).replace(/\s+$/, '')
+  const after = text.slice(end, end + 12).replace(/^\s+/, '')
+  const side = (mark: string, beyond: string): boolean => mark === '' || /[\u4e00-\u9fff]/.test(mark)
+    || (/[,;:()\[\]“”"'、。【】]/.test(mark) && !/[0-9A-Za-z]/.test(beyond))
+  return side(before.slice(-1), before.slice(0, -1).replace(/\s+$/, '').slice(-1))
+    && side(after.slice(0, 1), after.slice(1).replace(/^\s+/, '').slice(0, 1))
+}
+
+/** A labelled short phone's equal digits can also be an explicitly named lab value, amount or count. */
+function otherNumber(text: string, start: number, end: number): boolean {
+  const before = text.slice(Math.max(text.lastIndexOf('\n', start - 1) + 1, start - 40), start)
+  return /(?:检验号|检查号|标本(?:号|量)|样本(?:号|量)|计数|(?:总)?费用|金额)[ \t]*:?[ \t]*$/.test(before)
+    || (/第[ \t]*$/.test(before) && /^[ \t]*(?:次|例|天|周|岁|床|项|页)/.test(text.slice(end)))
+}
+
 interface Target {
   kind: ResidueKind
   category: PiiCategory
   value: string
+  personId?: string
 }
 
 export function checkResidue(share: ShareText, book: CodeBook, profile: Profile): ResidueHit[] {
@@ -106,9 +124,10 @@ export function checkResidue(share: ShareText, book: CodeBook, profile: Profile)
   const targets: Target[] = []
   for (const entry of book.entries) {
     for (const value of entry.values) {
-      // A guess at a few phone digits (联系电话：0571\n8723…) is not looked for: its copies are other numbers.
-      if (entry.category === 'phone' && valueKey('phone', value).length < 7) continue
-      targets.push({ kind: 'replaced_value', category: entry.category, value })
+      // A guess at a few phone digits (联系电话：0571\n8723…, 电话 86021 …) is not looked for: its copies are other numbers. A short
+      // number from "My info" or under a phone label (联系电话：66123) is.
+      if (entry.guesses?.includes(value)) continue
+      targets.push({ kind: 'replaced_value', category: entry.category, value, personId: entry.personId })
       // The street address a longer home starts with (…中山路12号 of …中山路12号（锦绣华庭）): propagation leaves
       // a copy that goes on as a hospital, so it is reported here and the user decides.
       const base = entry.category === 'address' ? addressBase(value) : null
@@ -120,7 +139,16 @@ export function checkResidue(share: ShareText, book: CodeBook, profile: Profile)
   // The same matching as propagation: 139\u00b71234\u00b75678 and TEL13912345678 count, a longer number does not.
   const runs = numberRuns(text)
   for (const target of targets) {
-    for (const spot of findValue(text, target.category, target.value, runs)) push(target.kind, target.category, spot.start, spot.end)
+    // A short phone found under a label is looked for only as itself and only where it stands alone: no country code, and next to it,
+    // across spaces and line breaks, Chinese, nothing, or a punctuation mark with no digit or letter beyond it, never a digit, a
+    // letter or another mark of a number (45612 3, 2023\n45612, CT 45612, No.45612, 66123.50, 45612·00, 1∶45612, 45600~45612).
+    const short = target.kind === 'replaced_value' && target.category === 'phone' && valueKey('phone', target.value).length < MIN_LOOSE_NUMBER
+    for (const spot of findValue(text, target.category, target.value, runs)) {
+      if (short && (valueKey('phone', text.slice(spot.start, spot.end)) !== valueKey('phone', target.value) || !standsAlone(text, spot.start, spot.end))) continue
+      // "My info" remains authoritative; only a phone inferred under a label can instead be an explicit clinical number here.
+      if (short && !target.personId && otherNumber(text, spot.start, spot.end)) continue
+      push(target.kind, target.category, spot.start, spot.end)
+    }
     // Here a known number also counts inside a longer one: a value cut short by a line break where it was
     // replaced may appear whole elsewhere. Copying stops and the user decides; nothing is replaced unasked.
     const key = valueKey(target.category, target.value)

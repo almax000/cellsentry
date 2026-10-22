@@ -118,6 +118,8 @@ export interface CodeEntry {
   display: string
   /** Every spelling seen in the documents, for the leftover check. */
   values: string[]
+  /** Spellings that only a guess at phone digits found (unsoughtGuess in detect.ts): the leftover check does not look for them. */
+  guesses?: string[]
   personId?: string
 }
 

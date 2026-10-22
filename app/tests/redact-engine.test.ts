@@ -783,7 +783,7 @@ describe('line breaks, running text and country codes', () => {
       ['患者家住广东省广州市天河区中山大道100号（电力局宿舍）3栋501房，因胸痛3天入院。', '广东省广州市天河区中山大道100号（电力局宿舍）3栋501房'],
       // An unclosed quote, and a labelled value or a clause on the first line of an address that a next line seems to go on.
       ['患者家住「江苏省南京市鼓楼区中山路12号，因胸痛3天入院。', address],
-      ['患者家住「浙江省杭州市」西湖区文三路100号，因胸痛3天入院。', '浙江省杭州市」西湖区文三路100号'],
+      ['患者家住「浙江省杭州市」西湖区文三路100号，因胸痛3天入院。', '「浙江省杭州市」西湖区文三路100号'],
       ['现病史：患者家住浙江省杭州市西湖区文三路100号  门诊号：MZ0012\n3栋501室，因胸痛3天入院。', '浙江省杭州市西湖区文三路100号'],
       ['患者家住江苏省南京市鼓楼区中山路12号；有高血压病史，于\n5号收入我院。', address],
     ]) {
@@ -1184,10 +1184,10 @@ describe('review of the gap fixes', () => {
 describe('second review of the gap fixes', () => {
   it('reads an address on past a quote mark when more of it follows, from its first character to its last', async () => {
     for (const [text, value, kept] of [
-      ['患者家住“浙江省杭州市”西湖区文三路100号，因胸痛3天入院。', '浙江省杭州市”西湖区文三路100号', '患者家住“地址1，因胸痛3天入院。'],
-      ['患者住址为“江苏省南京市鼓楼区中山路12号”3栋501室。', '江苏省南京市鼓楼区中山路12号”3栋501室', '患者住址为“地址1。'],
-      ['患者家住"浙江省杭州市"，西湖区文三路100号，因胸痛3天入院。', '浙江省杭州市"，西湖区文三路100号', '患者家住"地址1，因胸痛3天入院。'],
-      ['患者李明，男，住址为“浙江省杭州市”西湖区文三路100号，因胸痛3天入院。', '浙江省杭州市”西湖区文三路100号', '患者患者A，男，住址为“地址1，因胸痛3天入院。'],
+      ['患者家住“浙江省杭州市”西湖区文三路100号，因胸痛3天入院。', '“浙江省杭州市”西湖区文三路100号', '患者家住地址1，因胸痛3天入院。'],
+      ['患者住址为“江苏省南京市鼓楼区中山路12号”3栋501室。', '“江苏省南京市鼓楼区中山路12号”3栋501室', '患者住址为地址1。'],
+      ['患者家住"浙江省杭州市"，西湖区文三路100号，因胸痛3天入院。', '"浙江省杭州市"，西湖区文三路100号', '患者家住地址1，因胸痛3天入院。'],
+      ['患者李明，男，住址为“浙江省杭州市”西湖区文三路100号，因胸痛3天入院。', '“浙江省杭州市”西湖区文三路100号', '患者患者A，男，住址为地址1，因胸痛3天入院。'],
       ['患者家住浙江省杭州市西湖区“阳光花园”3栋501室，因胸痛入院。', '浙江省杭州市西湖区“阳光花园”3栋501室', '患者家住地址1，因胸痛入院。'],
       ['患者家住浙江省杭州市西湖区文三路100号「锦绣华庭」，因胸痛入院。', '浙江省杭州市西湖区文三路100号「锦绣华庭」', '患者家住地址1，因胸痛入院。'],
       // A quote of other words, or a closing mark before a clause, still ends the address there.
@@ -1202,7 +1202,7 @@ describe('second review of the gap fixes', () => {
     // Copies with or without the quote marks, or stopping at the street address, keep its code.
     const copies = await run([doc('b', ['现病史：患者住址为“江苏省南京市鼓楼区中山路12号”3栋501室，因胸痛入院。', '事发地点：江苏省南京市鼓楼区中山路12号附近',
       '住址：江苏省南京市鼓楼区中山路12号3栋501室', '家属陪同至江苏省南京市鼓楼区中山路12号3栋501室取物'].join('\n'))], empty)
-    expect(copies.share.text).toBe('【文件 1】\n现病史：患者住址为“地址1，因胸痛入院。\n事发地点：地址1附近\n住址：地址1\n家属陪同至地址1取物')
+    expect(copies.share.text).toBe('【文件 1】\n现病史：患者住址为地址1，因胸痛入院。\n事发地点：地址1附近\n住址：地址1\n家属陪同至地址1取物')
   })
 
   it('never takes a year and month at the head of a number for the number where a date or a period has it', async () => {
@@ -1231,17 +1231,17 @@ describe('second review of the gap fixes', () => {
       ['现病史：患者家住“江苏省南京市鼓楼区中山路12号”，20号开始发热，伴咳嗽。', '现病史：患者家住“地址1”，20号开始发热，伴咳嗽。'],
       ['患者，女，30岁，户籍为“四川省达州市”，宁波市鄞州区某服装厂工人，因发热3天就诊。', '患者，女，30岁，户籍为“地址1”，宁波市鄞州区某服装厂工人，因发热3天就诊。'],
       ['住址为“浙江省杭州市”，萧山区瓜沥镇卫生院转诊。', '住址为“地址1”，萧山区瓜沥镇卫生院转诊。'],
-      ['住址为“浙江省杭州市”，西湖区文三路100号，因胸痛入院。', '住址为“地址1，因胸痛入院。'],
-      ['患者家住“浙江省杭州市西湖区” 文三路100号3栋501室，因胸痛入院。', '患者家住“地址1，因胸痛入院。'],
+      ['住址为“浙江省杭州市”，西湖区文三路100号，因胸痛入院。', '住址为地址1，因胸痛入院。'],
+      ['患者家住“浙江省杭州市西湖区” 文三路100号3栋501室，因胸痛入院。', '患者家住地址1，因胸痛入院。'],
       ['现病史：患者家住广东省佛山市顺德区“碧桂园”3栋501室，因胸痛入院。', '现病史：患者家住地址1，因胸痛入院。'],
       ['患者家住浙江省杭州市西湖区"阳光花园”，因胸痛入院。', '患者家住地址1，因胸痛入院。'],
       ['患者家住浙江省杭州市西湖区文三路100号“近人民医院”，因胸痛入院。', '患者家住地址1“近人民医院”，因胸痛入院。'],
       ['患者长期居住于浙江省杭州市西湖区文三路“疫区”，否认疫水接触史。', '患者长期居住于地址1“疫区”，否认疫水接触史。'],
-      ['患者家住“浙江省杭州市西湖区\n文三路100号”3栋501室，因胸痛入院。', '患者家住“地址1，因胸痛入院。'],
+      ['患者家住“浙江省杭州市西湖区\n文三路100号”3栋501室，因胸痛入院。', '患者家住地址1，因胸痛入院。'],
       ['现病史：患者家住浙江省杭州市西湖区文三路100号\n“阳光花园”3栋501室，因胸痛入院。', '现病史：患者家住地址1，因胸痛入院。'],
-      ['患者家住“浙江省杭州市西湖区阳光花园”3-2-1102，因胸痛3天入院。', '患者家住“地址1，因胸痛3天入院。'],
-      ['患者李某，女，68岁，住址为“浙江省 杭州市”西湖区文三路100号，因胸痛入院。', '患者患者A，女，68岁，住址为“地址1，因胸痛入院。'],
-      ['患者家住“浙江省杭州市”西湖区文三路100号职业：退休', '患者家住“地址1职业：退休'],
+      ['患者家住“浙江省杭州市西湖区阳光花园”3-2-1102，因胸痛3天入院。', '患者家住地址1，因胸痛3天入院。'],
+      ['患者李某，女，68岁，住址为“浙江省 杭州市”西湖区文三路100号，因胸痛入院。', '患者患者A，女，68岁，住址为地址1，因胸痛入院。'],
+      ['患者家住“浙江省杭州市”西湖区文三路100号职业：退休', '患者家住地址1职业：退休'],
       ['患者户籍地址为「浙江省杭州市西湖区文三路100号」，因胸痛3天入院。', '患者户籍地址为「地址1」，因胸痛3天入院。'],
       ['家族史：其父亲为“高血压”患者，母亲体健。', '家族史：其父亲为“高血压”患者，母亲体健。'],
       ['知情同意书：经治医师本人签名为“李明”。', '知情同意书：经治医师本人签名为“李明”。'],
@@ -1251,10 +1251,10 @@ describe('second review of the gap fixes', () => {
       ['户籍：非农业户口\n现住址：浙江省杭州市西湖区文三路100号', '户籍：非农业户口\n现住址：地址1'],
       ['现病史：患者家住“浙江省杭州市”，本月3号收住我院，诉胸痛。', '现病史：患者家住“浙江省杭州市”，本月3号收住我院，诉胸痛。'],
       ['流行病学史：患者长期居住于湖南省岳阳市君山区钱粮湖镇建新村，该地区为“血吸虫病疫区”，有疫水接触史。', '流行病学史：患者长期居住于地址1，该地区为“血吸虫病疫区”，有疫水接触史。'],
-      ['现病史：患者家住“浙江省杭州市西湖区留下街道”留下路100号，因胸痛入院。', '现病史：患者家住“地址1，因胸痛入院。'],
+      ['现病史：患者家住“浙江省杭州市西湖区留下街道”留下路100号，因胸痛入院。', '现病史：患者家住地址1，因胸痛入院。'],
       ['现病史：患者现住地址为“江苏省南京市鼓楼区中山北路100号”，因胸痛入院。', '现病史：患者现住地址为“地址1”，因胸痛入院。'],
       // 「」 read as they always were.
-      ['患者家住「浙江省杭州市西湖区文三路100号」蓝色钱江3栋501室，因胸痛入院。', '患者家住「地址1，因胸痛入院。'],
+      ['患者家住「浙江省杭州市西湖区文三路100号」蓝色钱江3栋501室，因胸痛入院。', '患者家住地址1，因胸痛入院。'],
       ['现病史：患者家住浙江省杭州市余杭区「万科城」2幢1单元302室，因发热3天就诊。', '现病史：患者家住地址1，因发热3天就诊。'],
       // A copy without the quote marks keeps the code.
       ['现病史：患者家住浙江省杭州市西湖区“阳光花园”，因胸痛3天入院。\n出院医嘱：出院后返回浙江省杭州市西湖区阳光花园家中休养。',
@@ -1312,6 +1312,228 @@ describe('second review of the gap fixes', () => {
     ] as Array<[string, string, string[]?]>) {
       expect(await shared(text)).toEqual([kept, asked])
     }
+  })
+})
+
+
+describe('issues left from the second review', () => {
+  const shared = async (text: string, who: Profile = empty): Promise<[string, string[]]> => {
+    const result = await run([doc('q', text)], who)
+    return [result.share.text.replace('【文件 1】\n', ''), checkResidue(result.share, result.book, who).map((hit) => hit.value)]
+  }
+
+  it('replaces the building and room after a closing mark with the address, in any spacing, letters or marks inside', async () => {
+    for (const [text, kept] of [
+      ['患者住址为“江苏省南京市鼓楼区中山路12号”，3栋501室，因胸痛3天入院。', '患者住址为地址1，因胸痛3天入院。'],
+      ['患者住址为“江苏省南京市鼓楼区中山路12号” 3栋501室，因胸痛3天入院。', '患者住址为地址1，因胸痛3天入院。'],
+      ['患者住址为“江苏省南京市鼓楼区中山路12号”  3栋501室，因胸痛3天入院。', '患者住址为地址1，因胸痛3天入院。'],
+      ['患者家住“浙江省杭州市西湖区文三路100号”B座1201室，因发热入院。', '患者家住地址1，因发热入院。'],
+      ['患者家住“浙江省杭州市西湖区文三路100号”\nD区6栋2002室，因发热入院。', '患者家住地址1，因发热入院。'],
+      ['患者住址为“江苏省南京市鼓楼区、中山路12号”3栋501室，因胸痛3天入院。', '患者住址为地址1，因胸痛3天入院。'],
+      ['患者住址为“江苏省南京市鼓楼区中山路12号（锦绣华庭）”3栋501室，因胸痛3天入院。', '患者住址为地址1，因胸痛3天入院。'],
+      // Under a label too, also on the next line.
+      ['现住址为“江苏省南京市鼓楼区中山路12号”，3栋501室，因胸痛入院。', '现住址为地址1，因胸痛入院。'],
+      ['现住址为“江苏省南京市鼓楼区中山路12号”\n3栋501室\n既往史：高血压。', '现住址为地址1\n既往史：高血压。'],
+      ['现住址为“江苏省南京市鼓楼区中山路12号”B座501室，因胸痛入院。', '现住址为地址1，因胸痛入院。'],
+      ['户籍地址为"江苏省南京市鼓楼区、中山路12号"3栋501室。', '户籍地址为地址1。'],
+      // A clause, a bed, a test, a note, a shop or a quoted diagnosis after the closing mark stays.
+      ['患者家住“江苏省南京市鼓楼区中山路12号”，10号开始发热。', '患者家住“地址1”，10号开始发热。'],
+      ['患者家住“江苏省南京市鼓楼区中山路12号”，3号床，因胸痛入院。', '患者家住“地址1”，3号床，因胸痛入院。'],
+      ['患者家住“江苏省南京市鼓楼区中山路12号” B超示肝囊肿。', '患者家住“地址1” B超示肝囊肿。'],
+      ['患者家住“江苏省南京市鼓楼区中山路12号”\n3床  血常规：WBC 6.2', '患者家住“地址1”\n3床  血常规：WBC 6.2'],
+      ['患者家住“江苏省南京市鼓楼区中山路12号（近人民医院）”，因胸痛入院。', '患者家住“地址1（近人民医院）”，因胸痛入院。'],
+      ['患者家住“江苏省南京市鼓楼区中山路12号”，某某超市旁。', '患者家住“地址1”，某某超市旁。'],
+      ['诊断为“高血压、糖尿病”，3天后复查。', '诊断为“高血压、糖尿病”，3天后复查。'],
+      ['流行病学史：患者家住湖南省岳阳市君山区钱粮湖镇建新村，所在小区为“封控区”。', '流行病学史：患者家住地址1，所在小区为“封控区”。'],
+      // A home with its room ends there; a building alone, a ward, a symptom after a 、 or a doubled closing mark change nothing.
+      ['患者家住“浙江省杭州市西湖区文三路100号”，3栋501室，10号开始发热。', '患者家住地址1，10号开始发热。'],
+      // After a gap, a building and room that more words follow on its line may be a place in the hospital: kept as before.
+      ['患者家住“浙江省杭州市西湖区文三路100号” B座501室 5号晚饭后腹痛。', '患者家住“地址1” B座501室 5号晚饭后腹痛。'],
+      ['家住“浙江省杭州市西湖区文三路100号”，3号楼201 输液室输液。', '家住“地址1”，3号楼201 输液室输液。'],
+      ['住址为“浙江省杭州市西湖区文三路100号”3栋501室\n科别：呼吸内科', '住址为地址1\n科别：呼吸内科'],
+      ['家住浙江省杭州市西湖区文三路100号3栋，1201号，3天前开始发热。', '家住地址1，3天前开始发热。'],
+      ['家住浙江省杭州市西湖区文三路100号3栋，2 周前开始咳嗽。', '家住地址1，2 周前开始咳嗽。'],
+      ['家住浙江省杭州市西湖区文三路100号3号楼 0571 8888 6666', '家住地址1 电话1'],
+      ['患者家住“浙江省杭州市西湖区文三路100号”，3栋，今晨在小区门口被狗咬伤。', '患者家住“地址1”，3栋，今晨在小区门口被狗咬伤。'],
+      ['患者家住浙江省杭州市西湖区文三路100号，B区，3床。', '患者家住地址1，B区，3床。'],
+      ['患者家住浙江省杭州市西湖区文三路100号，A栋 3楼 心内科病房', '患者家住地址1，A栋 3楼 心内科病房'],
+      ['住址：浙江省杭州市西湖区文三路100号3栋501室\nA座2楼\n心电图室', '住址：地址1\nA座2楼\n心电图室'],
+      ['户籍地址为“浙江省杭州市西湖区文三路100号”\n3号楼\n门诊', '户籍地址为“地址1”\n3号楼\n门诊'],
+      ['家住“江苏省南京市鼓楼区中山路12号、爬5楼后气促”，因胸闷入院。', '家住“地址1、爬5楼后气促”，因胸闷入院。'],
+      ['家住「江苏省南京市」鼓楼区中山路12号、20号开始发热。', '家住地址1、20号开始发热。'],
+      ['住址为“江苏省南京市鼓楼区中山路12号”3栋501室”，因胸痛入院。', '住址为“地址1”，因胸痛入院。'],
+      // A place or an estate after the room is still the home; a list of other places, a ward or a hospital place is not.
+      ['患者家住杭州市西湖区阳光花园3栋501室，文三路100号。', '患者家住地址1。'],
+      ['患者现住杭州市西湖区翠苑新村12幢301室 文一路18号 3天前出现咳嗽。', '患者现住地址1 3天前出现咳嗽。'],
+      ['家住浙江省杭州市西湖区文三路100号，10号、12号两次发热。', '家住地址1，10号、12号两次发热。'],
+      ['患者家住浙江省杭州市西湖区文三路100号 B区305 心内科', '患者家住地址1 B区305 心内科'],
+      ['患者住址为“浙江省杭州市西湖区文三路100号”，B座201 B超室', '患者住址为“地址1”，B座201 B超室'],
+      ['住址为“浙江省杭州市西湖区文三路100号”\n3号楼201\n门诊', '住址为“地址1”\n3号楼201\n门诊'],
+      ['患者家住“浙江省杭州市西湖区文三路100号（独居）”，10号开始发热。', '患者家住“地址1（独居）”，10号开始发热。'],
+      ['患者自述：“我家住“浙江省杭州市西湖区文三路100号”，3栋501室”。', '患者自述：“我家住地址1”。'],
+      // A street after a district on the next line is the home, also before a department; a room by its number before a hospital
+      // place on the next line, a note in brackets or an outer quote's mark is not.
+      ['家住“浙江省杭州市”\n西湖区文三路100号\n心内科', '家住地址1\n心内科'],
+      ['住址为“浙江省杭州市西湖区文三路100号”，\n5号楼201\n收费处', '住址为“地址1”，\n5号楼201\n收费处'],
+      ['家住“杭州市西湖区文三路100号（疫区）”，3栋501室。', '家住“地址1（疫区）”，3栋501室。'],
+      ['他说「家住“浙江省杭州市西湖区文三路100号”B座501室」，咳嗽。', '他说「家住地址1」，咳嗽。'],
+      ['他说“我住在\n“浙江省杭州市西湖区文三路100号”，3栋501室”。', '他说“我住在\n地址1”。'],
+      ['家住杭州市西湖区文三路100号3栋 5 01室，于2026-04-03入院。', '家住地址1，于2026-04-03入院。'],
+      ['患者家住“浙江省杭州市西湖区”，文三路100号3栋501室\n门诊诊断：上呼吸道感染', '患者家住地址1\n门诊诊断：上呼吸道感染'],
+      ['家住"浙江省杭州市"西湖区文三路"阳光花园"3栋501室，诊断：肺炎。', '家住地址1，诊断：肺炎。'],
+      ['家住"浙江省杭州市西湖区文三路100号"B座501室"独居"。', '家住地址1"独居"。'],
+      ['住址为“浙江省杭州市西湖区文三路100号”，5号楼201\n收费处', '住址为“地址1”，5号楼201\n收费处'],
+      ['家住“浙江省杭州市西湖区文三路100号”，3号楼201，发热门诊。', '家住“地址1”，3号楼201，发热门诊。'],
+      ['家住杭州市西湖区阳光小区3栋，12 01号，独居。', '家住地址1，独居。'],
+      // OCR's space inside a room number is no end (…5单元160 2室).
+      ['患者家住广东省深圳市南山区建国路654号3栋150 3室。平素体健。', '患者家住地址1。平素体健。'],
+      ['患者居住于“浙江省杭州市”拱墅区建国路867号5栋31 03室，务农。', '患者居住于地址1，务农。'],
+    ]) {
+      expect(await shared(text)).toEqual([kept, []])
+    }
+  })
+
+  it('replaces the whole home where "My info" holds only its street', async () => {
+    const street: Profile = { people: [{ id: 'me', role: 'self', name: '赵青嘉', address: '江苏省南京市鼓楼区中山路12号' }] }
+    for (const [text, kept] of [
+      ['患者住址为“江苏省南京市鼓楼区中山路12号”3栋501室，因胸痛入院。', '患者住址为地址1，因胸痛入院。'],
+      ['住址：“江苏省南京市鼓楼区中山路12号”3栋501室', '住址：地址1'],
+      ['住址：江苏省南京市鼓楼区中山路12号3栋501室\n现病史：患者在江苏省南京市鼓楼区中山路12号附近摔倒。', '住址：地址1\n现病史：患者在地址2附近摔倒。'],
+      ['患者家住江苏省南京市鼓楼区中山路12号3栋501室，因胸痛入院。', '患者家住地址1，因胸痛入院。'],
+      // Only the building and room: a clause, a bed or another person's address after it stays as "My info" found it.
+      ['住址：江苏省南京市鼓楼区中山路12号，患者自诉胸痛3天。', '住址：地址1，患者自诉胸痛3天。'],
+      ['住址：江苏省南京市鼓楼区中山路12号 15床', '住址：地址1 15床'],
+    ]) {
+      expect(await shared(text, street)).toEqual([kept, []])
+    }
+    const two: Profile = { people: [
+      { id: 'me', role: 'self', name: '赵青嘉', address: '杭州市西湖区文三路100号' },
+      { id: 'mom', role: 'family', name: '钱丽芳', address: '上海市徐汇区漕溪路200号' },
+    ] }
+    expect(await shared('联系地址：杭州市西湖区文三路100号、上海市徐汇区漕溪路200号', two)).toEqual(['联系地址：地址1、地址2', []])
+  })
+
+  it('replaces both quote marks of a pair or neither, so restoring a code alone gives no stray mark', async () => {
+    for (const [text, value] of [
+      ['患者住址为“江苏省南京市鼓楼区中山路12号”3栋501室，因胸痛入院。', '“江苏省南京市鼓楼区中山路12号”3栋501室'],
+      ['患者家住「浙江省杭州市西湖区文三路100号」蓝色钱江3栋501室，因胸痛入院。', '「浙江省杭州市西湖区文三路100号」蓝色钱江3栋501室'],
+      ['现住址为“江苏省南京市鼓楼区中山路12号”，3栋501室，因胸痛入院。', '“江苏省南京市鼓楼区中山路12号”，3栋501室'],
+      ['患者住址为“江苏省南京市鼓楼区中山路12号”，因胸痛入院。', '江苏省南京市鼓楼区中山路12号'],
+    ]) {
+      const result = await run([doc('b', text)], empty)
+      expect(result.candidates.filter((c) => c.category === 'address').map((c) => c.value)).toEqual([value])
+      const share = result.share.text.replace('【文件 1】\n', '')
+      expect(restoreAnswer(share, result.book, 'zh').text).toBe(text)
+      expect(restoreAnswer('地址1', result.book, 'zh').text).toBe(value)
+    }
+    // A copy found again, or from "My info", takes the mark next to it too.
+    const home: Profile = { people: [{ id: 'me', role: 'self', name: '赵青嘉', address: '江苏省南京市鼓楼区中山路12号3栋501室' }] }
+    const mine = await run([doc('c', '患者自述家在“江苏省南京市鼓楼区中山路12号”3栋501室，因胸痛入院。')], home)
+    expect(mine.share.text).toBe('【文件 1】\n患者自述家在地址1，因胸痛入院。')
+    const copies = await run([doc('d', '住址：江苏省南京市鼓楼区中山路12号3栋501室\n备注：家属送至“江苏省南京市鼓楼区中山路12号”3栋501室取物。')], empty)
+    expect(copies.share.text).toBe('【文件 1】\n住址：地址1\n备注：家属送至地址1取物。')
+  })
+
+  it('keeps separate hospital rooms after a My-info address, and preserves corner-quoted home coverage', async () => {
+    for (const [address, tail] of [
+      ['杭州市西湖区阳光花园3幢1单元501', '，6号楼302，做胃镜'],
+      ['浙江省杭州市西湖区文三路100号3-501', '，5号楼201，取报告'],
+      ['浙江省杭州市西湖区文三路100号3栋', '，5号楼201，取报告'],
+      ['浙江省杭州市西湖区文三路', '，3号楼201，抽血'],
+    ]) {
+      const profile: Profile = { people: [{ id: 'me', role: 'self', name: '赵青嘉', address }] }
+      expect(await shared(address + tail, profile)).toEqual(['地址1' + tail, []])
+    }
+    for (const [text, kept] of [
+      ['患者，男，45岁，家住「浙江省杭州市西湖区文三路100号」，3号楼1201室，急诊入院。', '患者，男，45岁，家住地址1，急诊入院。'],
+      ['家住「浙江省杭州市西湖区文三路100号」，3栋501室，输液治疗3天。', '家住地址1，输液治疗3天。'],
+      ['家住『浙江省杭州市西湖区文三路100号』，3栋501室，急诊入院。', '家住地址1，急诊入院。'],
+      ['家住“浙江省杭州市西湖区文三路100号”，3号楼201，抽血。', '家住“地址1”，3号楼201，抽血。'],
+      ['家住“浙江省杭州市西湖区文三路100号（阳光花园）”\n5号楼201\n收费处', '家住“地址1”\n5号楼201\n收费处'],
+      ['家住“浙江省杭州市西湖区文三路100号”\n3栋501室\n心内科', '家住地址1\n心内科'],
+      ['住址为“浙江省杭州市西湖区文三路100号”，3号楼201；\n【心内科】', '住址为“地址1”，3号楼201；\n【心内科】'],
+      ['住址为“浙江省杭州市西湖区文三路100号”\n3号楼201；\n收费处', '住址为“地址1”\n3号楼201；\n收费处'],
+      ['家住“浙江省杭州市西湖区文三路100号”，2号楼301，候诊区', '家住“地址1”，2号楼301，候诊区'],
+      ['家住“浙江省杭州市西湖区文三路100号”，3栋501室，建立静脉通路', '家住地址1，建立静脉通路'],
+      ['家住“浙江省杭州市西湖区文三路100号”，2号楼301，今年搬至宁波市', '家住地址1，今年搬至宁波市'],
+      ['住址为“浙江省杭州市西湖区文三路100号”\n5号楼201\n雾化室', '住址为“地址1”\n5号楼201\n雾化室'],
+    ]) {
+      const result = await run([doc('round6', text)], empty)
+      expect(result.share.text).toBe('【文件 1】\n' + kept)
+      expect(checkResidue(result.share, result.book, empty)).toEqual([])
+      expect(restoreAnswer(kept, result.book, 'zh').text).toBe(text)
+    }
+    const complete: Profile = { people: [{ id: 'me', role: 'self', name: '赵青嘉', address: '杭州市西湖区阳光花园3幢1单元501' }] }
+    expect(await shared('“杭州市西湖区阳光花园3幢1单元501”\n6号楼302\n诊断：胃炎', complete))
+      .toEqual(['“地址1”\n6号楼302\n诊断：胃炎', []])
+    const street: Profile = { people: [{ id: 'me', role: 'self', name: '赵青嘉', address: '浙江省杭州市西湖区文三路100号' }] }
+    for (const location of ['护理站', '留观', '二楼注射室', 'PICU']) {
+      expect(await shared('“浙江省杭州市西湖区文三路100号”，5号楼201，' + location, street))
+        .toEqual(['“地址1”，5号楼201，' + location, []])
+    }
+  })
+
+  it('looks for a short phone number from "My info" or under a phone label, but not for a guess at a few digits', async () => {
+    // Under a label: a copy is asked about, never replaced unasked.
+    expect(await shared('联系电话：66123\n出院医嘱：如有不适拨打66123咨询。')).toEqual(['联系电话：电话1\n出院医嘱：如有不适拨打66123咨询。', ['66123']])
+    // After a phone word, or the head of a number a line break cut (0571 against the hospital's 0571-…), it is not.
+    expect(await shared('患者本人电话 66123，既往体健。\n备注：66123')).toEqual(['患者本人电话 电话1，既往体健。\n备注：66123', []])
+    expect(await shared('联系电话：0571\n8723\n6666\n就诊医院：杭州市第一人民医院（0571-87065701）'))
+      .toEqual(['联系电话：电话1\n8723\n6666\n就诊医院：杭州市第一人民医院（0571-87065701）', ['8723']])
+    // Nor a head that starts like an area code or a mobile, or comes in groups: its copies are a hospital's number or a blood pressure.
+    expect(await shared('联系电话：0571-8\n杭州市第一人民医院 0571-8  7065701')).toEqual(['联系电话：电话1\n杭州市第一人民医院 0571-8  7065701', []])
+    expect(await shared('联系电话：130 80\n入院查体：BP 130/80 mmHg')).toEqual(['联系电话：电话1\n入院查体：BP 130/80 mmHg', []])
+    // A short number is never the digits of an amount or a code, nor a number after a country code.
+    expect(await shared('联系电话：66123\n总费用：66123.50元\n检查号 CT-66123\n标本条码：8666123'))
+      .toEqual(['联系电话：电话1\n总费用：66123.50元\n检查号 CT-66123\n标本条码：8666123', []])
+    expect(await shared('联系电话：45612\n住院号：ZY2024\n45612 3\n标本 CT 45612\n滴度 1 ： 45612\n床位费  45612・00'))
+      .toEqual(['联系电话：电话1\n住院号：编号1\n45612 3\n标本 CT 45612\n滴度 1 ： 45612\n床位费  45612・00', ['45612 3']])
+    const mine: Profile = { people: [{ id: 'me', role: 'self', name: '赵青嘉', phone: '66123' }] }
+    expect(await shared('备注：Tel:66123，(66123)，电话66123，13912345678/66123，短号66123，3天后复诊。', mine))
+      .toEqual(['备注：Tel:电话1，(电话1)，电话电话1，电话2/电话1，短号电话1，3天后复诊。', []])
+    // A short number from "My info" replaced in an earlier copy still blocks once it is gone from "My info".
+    const short: Profile = { people: [{ id: 'me', role: 'self', name: '赵青嘉', phone: '661234' }] }
+    const first = await run([doc('e', '联系电话：661234')], short)
+    expect(first.book.entries[0]).toMatchObject({ code: '电话1', values: ['661234'], personId: 'me' })
+    const later = await run([doc('f', '出院医嘱：如有不适拨打661234咨询。')], empty)
+    expect(checkResidue(later.share, mergeBooks(first.book, later.book), empty).map((hit) => hit.value)).toEqual(['661234'])
+    // A spelling stays a guess only where no copy of the code list saw it found otherwise.
+    const guess: CodeBook = { entries: [{ code: '电话1', identity: 'phone:66123', category: 'phone', display: '66123', values: ['66123'], guesses: ['66123'] }] }
+    const sure: CodeBook = { entries: [{ code: '电话1', identity: 'phone:66123', category: 'phone', display: '66123', values: ['66123'] }] }
+    expect(mergeBooks(guess, sure).entries[0].guesses).toBeUndefined()
+    expect(mergeBooks(sure, guess).entries[0].guesses).toBeUndefined()
+    expect(mergeBooks(guess, guess).entries[0].guesses).toEqual(['66123'])
+  })
+
+  it('distinguishes an explicitly named clinical number from a labelled short phone copy', async () => {
+    for (const other of ['检验号 66123', '标本量 66123', '计数 66123', '总费用：66123元', '第66123次']) {
+      const text = '联系电话：66123\n' + other + '\n出院医嘱：如有不适拨打66123咨询。'
+      expect(await shared(text)).toEqual(['联系电话：电话1\n' + other + '\n出院医嘱：如有不适拨打66123咨询。', ['66123']])
+    }
+    // An unlabelled same-digits copy is still checked, and My-info numbers retain their existing matching.
+    expect(await shared('联系电话：66123\n备注：66123')).toEqual(['联系电话：电话1\n备注：66123', ['66123']])
+    const profile: Profile = { people: [{ id: 'me', role: 'self', name: '赵青嘉', phone: '66123' }] }
+    const first = await run([doc('known', '联系电话：66123')], profile)
+    const later = await run([doc('clinical', '计数 66123')], empty)
+    expect(checkResidue(later.share, first.book, empty).map((hit) => hit.value)).toEqual(['66123'])
+  })
+
+  it('keeps one address code and restores its canonical spelling, as accepted in ADR-0014', async () => {
+    const street = '浙江省杭州市西湖区文三路100号'
+    const profile: Profile = { people: [{ id: 'me', role: 'self', name: '赵青嘉', address: street }] }
+    for (const [first, second] of [
+      [`“${street}”3栋501室`, `“${street}” 3栋501室`],
+      [`“${street}”3栋501室`, `“${street}”\n3栋501室`],
+      [`${street}B座501室`, `${street}b座501室`],
+    ]) {
+      const result = await run([doc('variants', first + '，复诊' + second)], profile)
+      expect(result.share.text).toBe('【文件 1】\n地址1，复诊地址1')
+      expect(restoreAnswer('地址1', result.book, 'zh').text).toBe(first)
+      expect(restoreAnswer('地址1，复诊地址1', result.book, 'zh').text).toBe(first + '，复诊' + first)
+    }
+    const result = await run([doc('street-copy', `住址为“${street}”，3栋501室。\n邮寄地址：${street}`)], empty)
+    expect(result.share.text).toBe('【文件 1】\n住址为地址1。\n邮寄地址：地址1')
+    expect(restoreAnswer('地址1', result.book, 'zh').text).toBe(`“${street}”，3栋501室`)
   })
 })
 

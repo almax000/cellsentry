@@ -1,6 +1,6 @@
 /** What makes two spellings "the same value", shared by codes, propagation and the leftover check. */
 import type { PiiCategory } from './types'
-import { compactAddress, compactNumber, compactPhone, compactText, escapeRegExp, looseNumberPattern, looseTextPattern, normalizeText, NUMBER_SEPARATORS } from './text'
+import { balancedQuotes, compactAddress, compactNumber, compactPhone, compactText, escapeRegExp, looseNumberPattern, looseTextPattern, normalizeText, NUMBER_SEPARATORS } from './text'
 
 export const NUMERIC: ReadonlySet<PiiCategory> = new Set(['phone', 'id_number', 'social_security', 'bank_card', 'record_number'])
 
@@ -122,7 +122,8 @@ export function streetCopyStands(text: string, end: number): boolean {
  * quotes. Null when there is no such part, or it has no house number (a road or a district alone is no home).
  */
 export function addressBase(value: string): string | null {
-  const text = normalizeText(value)
+  // Without the mark that opens a quote it starts in (“…12号”3栋501室).
+  const text = normalizeText(value).replace(/^[“"「『]/, '')
   // OCR's gap may stand for the comma (…12号 锦绣华庭3栋501室); a gap inside the places goes on (江苏省 南京市…).
   for (const match of text.matchAll(/[,(“”"「」『』]|[ \t]+(?=[\u4e00-\u9fff\d])/g)) {
     const base = text.slice(0, match.index).trim()
@@ -321,7 +322,8 @@ function findSpots(text: string, category: PiiCategory, value: string, runs: Num
     const start = match.index ?? 0
     const end = start + match[0].length
     if (EXACT_ONLY.has(category) && (yearOfDate(text, start, end) || yearMonthOfDate(text, start, end))) continue
-    spots.push({ start, end })
+    // A copy of an address that holds the mark closing a quote takes the opening one right before it (“…12号”3栋501室).
+    spots.push(category === 'address' ? balancedQuotes(text, start, end) : { start, end })
   }
   return spots
 }

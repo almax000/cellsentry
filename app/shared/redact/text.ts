@@ -26,6 +26,40 @@ export function compactAddress(value: string): string {
   return withoutQuotes(compactText(value))
 }
 
+const CLOSING_MARKS: ReadonlySet<string> = new Set(['”', '」', '』'])
+
+/** Whether the straight " at `at` opens a quote: an even number of them come before it on the page. */
+export function opensStraight(text: string, at: number): boolean {
+  return text[at] === '"' && (text.slice(0, at).split('"').length - 1) % 2 === 0
+}
+
+/**
+ * A span of an address widened over the mark right before it that opens a quote it closes (住址为“…12号”3栋501室 takes the “
+ * too), so the code stands for both marks of the pair and restoring it gives both back; not where the quote closes right after
+ * the span too, unless that mark closes an outer quote.
+ */
+export function balancedQuotes(text: string, start: number, end: number): { start: number; end: number } {
+  // The first closing mark with no opening one before it in the span.
+  let open = 0
+  let lone: string | undefined
+  for (let i = start; i < end && lone === undefined; i++) {
+    const char = text[i]
+    if (CLOSING_MARKS.has(char)) {
+      if (open > 0) open--
+      else lone = char
+    } else if (char !== '"' && QUOTE_PAIRS[char]) open++
+  }
+  // Not where the quote closes right after the span too (“…12号”3栋501室”), unless that mark closes an outer quote (“我家住“…”，3栋501室”):
+  // the marks around the code then pair up as they are.
+  if (lone !== undefined) {
+    const before = text.slice(0, start)
+    const depth = before.split(text[start - 1]).length - before.split(lone).length
+    return QUOTE_PAIRS[text[start - 1]] === lone && (text[end] !== lone || depth > 1) ? { start: start - 1, end } : { start, end }
+  }
+  const straight = text.slice(start, end).split('"').length - 1
+  return straight % 2 === 1 && opensStraight(text, start - 1) ? { start: start - 1, end } : { start, end }
+}
+
 /**
  * Characters people and OCR put between the digits of one number, after
  * normalizeText: spaces, dashes, middle dots, slashes, underscores, commas and

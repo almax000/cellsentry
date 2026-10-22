@@ -4,8 +4,9 @@
  */
 import type { Detector } from './detect'
 import { nameEdge } from './names'
+import { houseAfter } from './rules'
 import type { DraftCandidate, PiiCategory, Profile, ProfilePerson, SourceDocument } from './types'
-import { compactPhone, normalizeText } from './text'
+import { balancedQuotes, compactPhone, normalizeText } from './text'
 import { findValue, numberRuns, valuePattern } from './values'
 
 type ProfileField = 'name' | 'idNumber' | 'phone' | 'socialSecurity' | 'address'
@@ -55,7 +56,10 @@ export function profileDetector(): Detector {
       for (const page of doc.pages) {
         const runs = numberRuns(page.text)
         for (const term of terms) {
-          for (const { start, end, localOnly } of findValue(page.text, term.category, term.value, runs)) {
+          for (const spot of findValue(page.text, term.category, term.value, runs)) {
+            // An address that holds only the street takes the building and room right after it (住址：…中山路12号3栋501室).
+            const { start, end } = term.category === 'address' ? balancedQuotes(page.text, spot.start, houseAfter(page.text, spot.start, spot.end)) : spot
+            const { localOnly } = spot
             // A name glued into a longer word (张伟 in 张伟华) is probably someone else: shown, not replaced.
             const glued = term.category === 'name' && nameEdge(page.text, start, end) === 'glued'
             found.push({

@@ -86,7 +86,10 @@ function place(taken: DraftCandidate[], draft: DraftCandidate, text = ''): boole
   const covers = (other: DraftCandidate): boolean =>
     draft.start <= other.start && other.end <= draft.end && draft.end - draft.start > other.end - other.start
   // A number of another kind only takes over a find that a line break cut (参保号：3101041\n98710232464).
-  const longer = (other: DraftCandidate): boolean => draft.start === other.start && draft.end > other.end
+  // An address found again from the mark that opens its quote starts where the rules' find inside the quote does (「浙江省杭州市」西湖区…
+  // over 浙江省杭州市).
+  const inside = draft.category === 'address' && /^[“"「『]$/.test(text[draft.start] ?? '') ? draft.start + 1 : draft.start
+  const longer = (other: DraftCandidate): boolean => (draft.start === other.start || inside === other.start) && draft.end > other.end
     && (other.category === draft.category || (NUMERIC.has(other.category) && /^[ \t]*\n/.test(text.slice(other.end, draft.end))))
     && (draft.category !== 'phone' || valueKey('phone', text.slice(draft.start, draft.end)) !== valueKey('phone', text.slice(other.start, other.end)))
   // A record or insurance number found again over digits a rule only guessed were a landline (医保号 09735400277, ZJ 02701054770).
@@ -117,6 +120,19 @@ function place(taken: DraftCandidate[], draft: DraftCandidate, text = ''): boole
 function phoneGuess(candidate: Pick<DraftCandidate, 'category' | 'reason' | 'certainty' | 'label'>, text: string): boolean {
   return candidate.category === 'phone' && candidate.reason === 'phone_under_label' && candidate.certainty === 'unsure'
     && (!candidate.label || valueKey('phone', text).length < 7)
+}
+
+/**
+ * A guess the leftover check does not look for either (codes.ts): fewer digits than any phone after a phone word (电话 86021 …),
+ * or under a phone label anything but five or six digits written solid that start like no phone: a head that starts like a
+ * mobile or an area code, or comes in groups, is a number a line break or OCR cut (联系电话：0571\n8723…, 0571-8, 130 80), whose
+ * copies are other numbers. A short number under a phone label (联系电话：66123) and one from "My info" are looked for: a copy
+ * is asked about, never replaced unasked.
+ */
+export function unsoughtGuess(candidate: Pick<Candidate, 'category' | 'reason' | 'certainty' | 'label' | 'value'>): boolean {
+  const digits = valueKey('phone', candidate.value)
+  return phoneGuess(candidate, candidate.value) && digits.length < 7
+    && (!candidate.label || !/^\d{5,6}$/.test(normalizeText(candidate.value).trim()) || /^(?:0|1[3-9])/.test(digits))
 }
 
 /**
