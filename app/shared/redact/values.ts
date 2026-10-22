@@ -32,6 +32,26 @@ export function readsAsDate(written: string): boolean {
   return month >= 1 && month <= 12 && day >= 1 && day <= 31
 }
 
+/** A date and a time: two groups (20240115 0830) or twelve digits (202401160856). A number may hold a date (MZ20\n200507236). */
+export function dateAndTime(written: string): boolean {
+  const time = (hhmm: string): boolean => /^(?:[01]\d|2[0-3])[0-5]\d(?:[0-5]\d)?$/.test(hhmm)
+  const parts = written.trim().split(/[ \t]+/)
+  if (parts.length === 2) return readsAsSolidDate(parts[0]) && time(parts[1])
+  return parts.length === 1 && (parts[0].length === 12 || parts[0].length === 14) && readsAsSolidDate(parts[0].slice(0, 8)) && time(parts[0].slice(8))
+}
+
+/**
+ * What follows the year of a date: 年, a month and a day, or a month of two digits, also with OCR's gaps inside them
+ * (年曾行, /02/22, -2-4, .01-, -12-0  8). A number with a suffix is no date (样本号 2019-2).
+ */
+const YEAR_OF_DATE = /^[ \t]*(?:年|[-/.][ \t]*(?:\d(?:[ \t]{0,2}\d)?[ \t]*[-/.][ \t]*\d|(?:0[ \t]{0,2}[1-9]|1[ \t]{0,2}[0-2])(?![ \t]*\d)))/
+
+/** Whether four digits from `start` to `end` are the year of a date: month and day after them, or a date's label before (参保日期：2024). */
+function yearOfDate(text: string, start: number, end: number): boolean {
+  return /^(?:19|20)\d{2}$/.test(text.slice(start, end))
+    && (YEAR_OF_DATE.test(text.slice(end, end + 12)) || /(?:日期|时间|年份|年度)[ \t]*:?[ \t]*$/.test(text.slice(Math.max(0, start - 8), start)))
+}
+
 /** 20240115: a date written solid, as many sample and record lines start. */
 export function readsAsSolidDate(written: string): boolean {
   return /^(?:19|20)\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])$/.test(written)
@@ -45,6 +65,45 @@ function phoneKey(value: string): string {
   const digits = compactPhone(value)
   const landline = /^(?:0086|86)((?:10|2\d|[3-9]\d{2})\d{7,8})$/.exec(digits)
   return landline ? `0${landline[1]}` : digits
+}
+
+/** A house, building or room number: what makes the start of an address a home, not just a road. */
+const HOUSE_NUMBER = /\d[ \t]*(?:号|栋|幢|楼|单元|室)/
+/** Words that end the name of an estate or a block of flats. */
+export const ESTATE_WORD = '(?:小区|花园|新村|家园|嘉园|公寓|宿舍|大院|家属院|大厦|山庄|新城|华庭|华府|苑)'
+/**
+ * What may follow a street address in a copy of the same home: no more words, its estate, building or room, or a
+ * word for a spot at the home (…12号家中摔倒, …88号附近, …号楼下).
+ */
+const MORE_OF_A_HOME = new RegExp(`^[ \\t]*(?:$|[^\u4e00-\u9fff]|[\u4e00-\u9fff]{1,10}?(?:${ESTATE_WORD}|\\d)|的?(?:家中|家里|家门|门口|门前|附近|楼下|楼上|住处|所在|对面|一带|院内|院里|周边|旁边|[东西南北]侧|[东西南北]门|处|旁|内|外|前|后))`)
+
+/**
+ * Words that make what follows a street address another place there: a hospital or a clinic, whose address a record
+ * names on its own. Any other copy (…12号小卖店, …251号某某公司, …233号菜市场) is replaced like the home; a skipped copy is
+ * still reported by the leftover check, which looks for the street address of every replaced address.
+ */
+const ANOTHER_PLACE = /^[ \t]*[\u4e00-\u9fff]{0,6}?(?:医院|卫生院|诊所|门诊部|卫生服务中心)/
+
+/** Whether a copy of a street address that ends at `end` is the home, not the start of another place there (…88号某某医院, …88号单位内). */
+export function streetCopyStands(text: string, end: number): boolean {
+  const after = text.slice(end, end + 14)
+  return MORE_OF_A_HOME.test(after) || !ANOTHER_PLACE.test(after)
+}
+
+/**
+ * The street address an address starts with when it goes on after a comma or a bracket (…251号（电力局宿舍）,
+ * …112号，金色家园3-2-1102): another copy may stop there, or leave out the comma or the brackets. Null when
+ * there is no such part, or it has no house number (a road or a district alone is no home).
+ */
+export function addressBase(value: string): string | null {
+  const text = normalizeText(value)
+  // OCR's gap may stand for the comma (…12号 锦绣华庭3栋501室); a gap inside the places goes on (江苏省 南京市…).
+  for (const match of text.matchAll(/[,(]|[ \t]+(?=[\u4e00-\u9fff\d])/g)) {
+    const base = text.slice(0, match.index).trim()
+    if (base.replace(/\s/g, '').length >= 8 && HOUSE_NUMBER.test(base)) return base
+    if (match[0] === ',' || match[0] === '(') return null
+  }
+  return null
 }
 
 /** The identity of a value: digits and letters for numbers (phones without +86), normalized text otherwise. */
@@ -72,10 +131,10 @@ function exactNumberPattern(value: string, key: string): string {
   return `(?:${groups.map(escapeRegExp).join(`[${NUMBER_SEPARATORS}]{1,3}`)}|${compact})`
 }
 
-/** Finds a value written with or without the spaces and dashes OCR and people add. Run it on normalized text. */
+/** Finds a value written with or without the spaces and dashes OCR and people add (and line breaks, for an address). Run it on normalized text. */
 export function valuePattern(category: PiiCategory, value: string): RegExp | null {
   if (!NUMERIC.has(category)) {
-    const core = looseTextPattern(value)
+    const core = looseTextPattern(value, category === 'address')
     return core ? new RegExp(core, 'gi') : null
   }
   const key = valueKey(category, value)
@@ -186,11 +245,24 @@ export function findValue(text: string, category: PiiCategory, value: string, ru
     for (const run of runs ?? numberRuns(text)) {
       for (const variant of runKeys(category, key)) {
         for (const found of run.find(variant.key, variant.whole)) {
-          // The value's own spelling always counts, even when it looks like a date.
+          // The value's own spelling always counts, even when it looks like a date, except as the year of one
+          // (住院号：2020 against 入院日期：2020/02/22, 2019年7月16日).
           const written = text.slice(found.start, found.end)
           if (EXACT_ONLY.has(category) && written !== ownSpelling && readsAsDate(written)) continue
+          if (EXACT_ONLY.has(category) && yearOfDate(text, found.start, found.end)) continue
           spots.push({ ...withPlus(text, found), ...(variant.whole && variant.key !== key && { localOnly: true }) })
         }
+      }
+    }
+    // A value that a line break cut where it was found is also found cut elsewhere, with an indent, blank lines, a
+    // CR or a dash around the break (门诊号 MZ-2024-\n 0115001, MZ-2025-18069\n\n23), which number runs do not bridge.
+    if (ownSpelling.includes('\n') && key.length >= MIN_LOOSE_NUMBER) {
+      const pattern = [...key].map(escapeRegExp).join('[\\s-]{0,6}')
+      for (const match of text.matchAll(new RegExp(`(?<![0-9A-Za-z])${pattern}(?![0-9A-Za-z])`, 'gi'))) {
+        const start = match.index ?? 0
+        // As above, never a date (2\n0240602 against 2024-06-02).
+        if (EXACT_ONLY.has(category) && (readsAsDate(match[0]) || readsAsDate(match[0].replace(/\s+/g, ' ')))) continue
+        if (!spots.some((spot) => spot.start === start)) spots.push({ start, end: start + match[0].length })
       }
     }
     return spots
@@ -199,7 +271,9 @@ export function findValue(text: string, category: PiiCategory, value: string, ru
   if (!regex) return spots
   for (const match of text.matchAll(regex)) {
     const start = match.index ?? 0
-    spots.push({ start, end: start + match[0].length })
+    const end = start + match[0].length
+    if (EXACT_ONLY.has(category) && yearOfDate(text, start, end)) continue
+    spots.push({ start, end })
   }
   return spots
 }

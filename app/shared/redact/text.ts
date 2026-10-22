@@ -4,9 +4,10 @@ export function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
-/** Spaces OCR tends to insert inside a value. Newlines are bridged only for a value that has one itself. */
+/** Spaces OCR tends to insert inside a value. Newlines are bridged only for a value that has one itself, or a long one. */
 const INNER_GAP = '[ \\t]*'
 const INNER_GAP_OR_BREAK = '[ \\t]*(?:\\n[ \\t]*)?'
+const INNER_GAP_OR_BREAKS = '[ \\t]*(?:\\n[ \\t]*){0,2}'
 
 /**
  * Characters people and OCR put between the digits of one number, after
@@ -57,11 +58,12 @@ const MAX_LOOSE_TEXT = 120
 /**
  * A text value with optional spaces between characters (OCR often splits 张伟 into 张 伟). A value
  * that a narrow column broke over two lines (…单元250\n1室) may be broken anywhere where it appears again.
+ * With `lines` (an address), any copy may be broken anywhere, by a line break or a blank line.
  */
-export function looseTextPattern(value: string): string | null {
+export function looseTextPattern(value: string, lines = false): string | null {
   const chars = [...normalizeText(value).replace(/\s+/g, '')]
   if (chars.length < 2) return null
-  return chars.map(escapeRegExp).join(chars.length > MAX_LOOSE_TEXT ? '' : value.includes('\n') ? INNER_GAP_OR_BREAK : INNER_GAP)
+  return chars.map(escapeRegExp).join(chars.length > MAX_LOOSE_TEXT ? '' : lines ? INNER_GAP_OR_BREAKS : value.includes('\n') ? INNER_GAP_OR_BREAK : INNER_GAP)
 }
 
 /** Digits and letters only, upper-cased: the identity of a number-like value. Full-width digits count. */

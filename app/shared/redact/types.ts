@@ -99,6 +99,8 @@ export interface DraftCandidate {
   role?: NameRole
   /** The field label in front of the value, when there is one. */
   label?: string
+  /** For a shorter copy found again for a longer value (the street address of an address in running text): that value, whose code it shares. */
+  sameAs?: string
 }
 
 export interface Candidate extends DraftCandidate {

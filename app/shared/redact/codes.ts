@@ -49,13 +49,14 @@ function kindOf(candidate: Candidate, roleOfPerson: Map<string, 'self' | 'family
 /**
  * Who or what a candidate is. A name from "My info" is that person; every
  * other value is its normalized spelling, so the same phone number gets one
- * code whether "My info" or a rule found it.
+ * code whether "My info" or a rule found it. A shorter copy found for a
+ * longer value (sameAs) is that value.
  */
 export function identityOf(candidate: Candidate): string {
   if (candidate.category === 'name') {
     return candidate.personId ? `person:${candidate.personId}` : `name:${compactText(candidate.value)}`
   }
-  return `${candidate.category}:${valueKey(candidate.category, candidate.value)}`
+  return `${candidate.category}:${valueKey(candidate.category, candidate.sameAs ?? candidate.value)}`
 }
 
 export interface CodeAssignment {

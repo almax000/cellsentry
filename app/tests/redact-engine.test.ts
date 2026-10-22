@@ -714,8 +714,9 @@ describe('line breaks, running text and country codes', () => {
     expect(kinds(sentence, 'address')).toEqual(['杭州市西湖区文三路100号', '江苏省南京市鼓楼区中山路12号'])
     const table = await findCandidates([doc('c', '姓名\t性别\t住址\n张建国\t男\t3栋2单元501\n李秀英\t女\t5栋1单元302')], { profile: empty })
     expect(kinds(table, 'name', 'address')).toEqual(['张建国', '3栋2单元501', '李秀英', '5栋1单元302'])
-    // Wrapped place names that start like a clause (无锡市, 于洪区) still carry on.
-    for (const [first, second] of [['江苏省', '无锡市梁溪区中山路100号'], ['辽宁省沈阳市', '于洪区黄河北大街56号'], ['江苏省南京市', '鼓楼区中山北路\n100号']]) {
+    // Wrapped place names that start like a clause (无锡市, 于洪区) or with a month (五月花) still carry on.
+    for (const [first, second] of [['江苏省', '无锡市梁溪区中山路100号'], ['辽宁省沈阳市', '于洪区黄河北大街56号'], ['江苏省南京市', '鼓楼区中山北路\n100号'],
+      ['广东省广州市越秀区中山五路219号', '五月花小区3栋501室']]) {
       const candidates = await findCandidates([doc('d', `住址：${first}\n${second}`)], { profile: empty })
       expect(candidates.find((c) => c.category === 'address')?.value.replace(/\s/g, '')).toBe(`${first}${second}`.replace(/\s/g, ''))
     }
@@ -761,8 +762,97 @@ describe('line breaks, running text and country codes', () => {
     }
   })
 
+  it('reads a running-text address in quotes, past a bracket and on to an estate after a comma, but not into a note or a clause', async () => {
+    const address = '江苏省南京市鼓楼区中山路12号'
+    for (const [text, value] of [
+      ['患者住址为“江苏省南京市鼓楼区中山路12号”。', address],
+      ['其家庭住址为“北京市朝阳区建国路8号院3号楼1201室”，因头晕就诊。', '北京市朝阳区建国路8号院3号楼1201室'],
+      [`患者家住${address}（电力局宿舍）3栋501室，因胸痛入院。`, `${address}（电力局宿舍）3栋501室`],
+      [`患者家住${address}（锦绣华庭），退休。`, `${address}（锦绣华庭）`],
+      [`患者家住${address}，锦绣华庭，因胸痛入院。`, `${address}，锦绣华庭`],
+      ['患者家住江苏省南京市鼓楼区，自来水厂宿舍3栋501室，因胸痛入院。', '江苏省南京市鼓楼区，自来水厂宿舍3栋501室'],
+      ['患者住在广东省广州市天河区，金色家园15-4-2003，因咳嗽就诊。', '广东省广州市天河区，金色家园15-4-2003'],
+      ['患者现住广东省广州市，越秀区科技园南路606号，否认药物过敏史。', '广东省广州市，越秀区科技园南路606号'],
+      ['患者居住于广东省广州市，天河区天河北路233号，退休。', '广东省广州市，天河区天河北路233号'],
+      ['患者家住广东省广州市越秀区中山五路219号，五月花小区3栋501室，因胸痛3天入院。', '广东省广州市越秀区中山五路219号，五月花小区3栋501室'],
+      ['患者家住浙江省杭州市西湖区文三路100号，明日星城3栋501室，因胸痛3天入院。', '浙江省杭州市西湖区文三路100号，明日星城3栋501室'],
+      ['患者家住广东省广州市天河区中山大道100号（电力局宿舍）3栋501房，因胸痛3天入院。', '广东省广州市天河区中山大道100号（电力局宿舍）3栋501房'],
+      // An unclosed quote, and a labelled value or a clause on the first line of an address that a next line seems to go on.
+      ['患者家住「江苏省南京市鼓楼区中山路12号，因胸痛3天入院。', address],
+      ['患者家住「浙江省杭州市」西湖区文三路100号，因胸痛3天入院。', '浙江省杭州市」西湖区文三路100号'],
+      ['现病史：患者家住浙江省杭州市西湖区文三路100号  门诊号：MZ0012\n3栋501室，因胸痛3天入院。', '浙江省杭州市西湖区文三路100号'],
+      ['患者家住江苏省南京市鼓楼区中山路12号；有高血压病史，于\n5号收入我院。', address],
+    ]) {
+      expect(kinds(await findCandidates([doc('a', text)], { profile: empty }), 'address')).toEqual([value])
+    }
+    for (const tail of ['（近人民医院），因胸痛入院。', '（具体门牌号不详），因胸痛入院。', '（同上），否认药物过敏史。', '，自诉头痛3天', '，自来水厂退休职工', '，无锡人',
+      '，于本院3号楼行CT检查', '，孩子在幼儿园', '，平时独居', '，近期在3号楼居住', '，3-4天前出现发热']) {
+      expect(kinds(await findCandidates([doc('b', `患者家住${address}${tail}`)], { profile: empty }), 'address')).toEqual([address])
+    }
+    for (const text of ['诊断为“肺炎”，家住农村。', '住址为“同上”。', '现住“杭州市第一人民医院”。']) {
+      expect(kinds(await findCandidates([doc('c', text)], { profile: empty }), 'address')).toEqual([])
+    }
+    // Reading on never loses the address: a clause, a clinic, a family note, a range or a stair count after it stays out.
+    const home = '江苏省南京市鼓楼区中山路12号阳光花园3栋501室'
+    for (const tail of ['，两天前就诊于社区卫生服务中心，予输液治疗。', '，两天前在社区诊所输液后出现皮疹。', '，三天前走路时不慎摔倒致左髋部疼痛。', '，昨天在超市购物时突发头晕。',
+      '，低保家庭，因胸痛3天入院。', '，距我院约三十公里，交通不便。', '，近半月不能上6楼。', '，每日饮酒2-3，未规律治疗。', '（卫生院宿舍），因胸痛3天入院。',
+      '，酒店公寓，因胸痛3天入院。', '（女儿家）在家中2楼跌倒。', '，浙江省科技厅退休。', '，雨天路滑摔倒致右腕部疼痛，遂来我院就诊。', '，冬天在海南省三亚市过冬。',
+      '，周边村民有类似发热症状。', '，平时住单位宿舍，遂来我院就诊。', '，单位在国贸大厦，因胸痛3天入院。', '，夜班后睡宿舍，遂来我院就诊。', '，今年搬进单位宿舍。',
+      '，其女儿亦居此公寓。', '，周边乡镇有类似病例。', '，次日到市区就诊。', '（自建房）6楼卫生间跌倒后急送我院，查体：神清。', '（具体不详）8楼楼道里，因胸痛3天入院。',
+      '，周六去市场购买活禽后出现发热。', '，次年迁至县城居住。', '，独居单位宿舍，平素体健。', '，婚后定居阳光新城。', '，本月12号入院。', '，昨日在小区门口摔倒。']) {
+      expect(kinds(await findCandidates([doc('e', `患者家住${home}${tail}`)], { profile: empty }), 'address')).toEqual([home])
+    }
+    // Copies of a longer address keep its code, also without the brackets, cut by a blank line, or stopping at the street.
+    const copies = await run([doc('f', [
+      '现病史：患者家住浙江省杭州市西湖区文三路251号（电力局宿舍），因胸闷8天入院。',
+      '住址：\n浙江省杭州市西湖区文三路251号电力局宿舍',
+      '住址：浙江省杭州市西湖区文三路251号',
+      '联系地址：浙江省杭州市西湖区文三路62\n\n8号6-5-1102',
+      '通讯地址\n浙江省杭州市西湖区文三路62\n\n8号6-5-1102',
+    ].join('\n'))], empty)
+    expect(copies.share.text).toBe('【文件 1】\n现病史：患者家住地址1，因胸闷8天入院。\n住址：\n地址1电力局宿舍\n住址：地址1\n联系地址：地址2\n通讯地址\n地址2')
+    // Two homes on one road keep their own codes, and a hospital on the patient's road keeps its address.
+    const homes = await run([doc('g', [
+      '户籍地址：江苏省南京市鼓楼区中山路12号，3栋501室',
+      '现住址：江苏省南京市鼓楼区中山路12号，5栋302室',
+      '住址：浙江省杭州市西湖区文三路（东段）251号',
+      '电话：13912345678',
+      '就诊医院：杭州市第一人民医院',
+      '浙江省杭州市西湖区文三路100号',
+    ].join('\n'))], empty)
+    expect(homes.share.text).toBe('【文件 1】\n户籍地址：地址1\n现住址：地址2\n住址：地址3\n电话：电话1\n就诊医院：杭州市第一人民医院\n浙江省杭州市西湖区文三路100号')
+    // A copy of the whole home takes its street address inside it; the street address alone keeps one code when two
+    // spellings of the home start with it, and is never found where an employer's place starts.
+    const spellings = await run([doc('h', [
+      '现病史：患者家住南京市鼓楼区中山路12号，锦绣华庭3栋501室，3天前摔伤。',
+      '住址：江苏省南京市鼓楼区中山路12号锦绣华庭3栋501室',
+      '通讯 江苏省南京市鼓楼区中山路12号锦绣华庭3栋501室',
+      '流行病学史：患者居住于江苏省南京市鼓楼区中山路383号（阳光花园）2栋902室，近14天无外出。',
+      '个人史：现住江苏省南京市鼓楼区中山路383号，阳光花园，无烟酒嗜好。',
+      '住址：江苏省南京市鼓楼区中山路383号',
+      '联系地址 江苏省南京市鼓楼区中山路383号',
+      '个人史：患者家住浙江省杭州市上城区解放路88号，职工宿舍3栋501室。',
+      '工作单位：浙江省杭州市上城区解放路88号某某医院',
+    ].join('\n'))], empty)
+    expect(spellings.share.text).toBe(['【文件 1】', '现病史：患者家住地址1，3天前摔伤。', '住址：地址2', '通讯 地址2', '流行病学史：患者居住于地址3，近14天无外出。',
+      '个人史：现住地址4，无烟酒嗜好。', '住址：地址5', '联系地址 地址5', '个人史：患者家住地址6。', '工作单位：浙江省杭州市上城区解放路88号某某医院'].join('\n'))
+    // A copy of the street address at a spot of the home is the home's; a relative's home lends the street address no code.
+    const spots = await run([doc('k', [
+      '现病史：患者家住浙江省杭州市西湖区文三路100号（电力局宿舍）3栋501室，突发言语不清2小时。',
+      '发病地点：浙江省杭州市西湖区文三路100号家中',
+      '事发地点：浙江省杭州市西湖区文三路100号附近',
+      '流行病学史：其母居住于江苏省南京市鼓楼区中山路12号，7栋201室，近14天无外出。',
+      '住址：江苏省南京市鼓楼区中山路12号',
+    ].join('\n'))], empty)
+    expect(spots.share.text).toBe('【文件 1】\n现病史：患者家住地址1，突发言语不清2小时。\n发病地点：地址1家中\n事发地点：地址1附近\n流行病学史：其母居住于地址2，近14天无外出。\n住址：地址3')
+    // 科 and 天 start road and district names too; a department on the next line still ends the address.
+    const wrapped = await findCandidates([doc('d', '家庭住址：广东省\n深圳市南山区粤海街道科技园南路100号\n住址：杭州市西湖区文三路100号\n科研处2楼')], { profile: empty })
+    expect(kinds(wrapped, 'address').map((value) => value.replace(/\s/g, ''))).toEqual(['广东省深圳市南山区粤海街道科技园南路100号', '杭州市西湖区文三路100号'])
+  })
+
   it('stays fast on long lines of address words', () => {
-    for (const text of ['家住农村，'.repeat(20000), '住在南京市鼓楼区中山路12号 '.repeat(3000), '1\n'.repeat(50000)]) {
+    for (const text of ['家住农村，'.repeat(20000), '住在南京市鼓楼区中山路12号 '.repeat(3000), '1\n'.repeat(50000),
+      `患者家住浙江省杭州市西湖区文三路12号（电力局宿舍）1-${'12345-'.repeat(12)}12345床，因胸痛入院。`]) {
       const started = performance.now()
       detectRules(doc('a', text))
       expect(performance.now() - started).toBeLessThan(1000)
@@ -784,6 +874,40 @@ describe('line breaks, running text and country codes', () => {
     }
     const ages = await run([doc('d', '姓名    性别    年龄    联系电话\n王芳    女    86    13912345678\n联系电话：(+86)13912345678')], empty)
     expect(ages.share.text).toBe('【文件 1】\n姓名    性别    年龄    联系电话\n患者A    女    86    电话1\n联系电话：(+86)电话1')
+  })
+
+  it('finds phones that OCR printed in odd groups after a phone word, but never a count, a date or a code for one', async () => {
+    const { share } = await run([doc('a', [
+      '患者本人电话15346 962376。',
+      '陪诊家属电话 027-72 550495。',
+      '电话 (0731)41421 044',
+      '家属电话 +8 6-10-20796698',
+      '座机：+86-2  7-47072695',
+      '手机 0086 1781548\n0712，因腰痛就诊。',
+      '联系电话：151\n166  53516',
+      '联系电话：(057\n1)45  831356',
+      '患者电话号码 1 3 9 1 2 3 4 5 6 7 8',
+      '家属电话 133 68  76 57\n94。',
+      '联系电话：1  3  9  1  2  3  4  5  6  7  9',
+      '联系电话：1385\u00b71782765\n37\n15:15 查房',
+      '联系电话：0571-88123456 138\n1234\n5678',
+    ].join('\n'))], empty)
+    expect(share.text).toBe(['【文件 1】', '患者本人电话电话1。', '陪诊家属电话 电话2。', '电话 电话3', '家属电话 电话4', '座机：电话5', '手机 电话6，因腰痛就诊。',
+      '联系电话：电话7', '联系电话：电话8', '患者电话号码 电话9', '家属电话 电话10。', '联系电话：电话11', '联系电话：电话12', '37', '15:15 查房', '联系电话：电话13 电话14'].join('\n'))
+    for (const text of ['电话随访3次，血压 145/90', '电话费 120.00 元', '手机号后四位 5678', '电话 2024 0115 1234', '客服电话 400 820 8820', '电话局宿舍3栋501室',
+      '联系电话：139\n2\n3床', 'iPhone 13 482 819 310', '随访方式：电话 0930\n2024-01-15 患者诉无不适', '电话随访 1 2 3 4 5 6 7 8 9 0 1', '电话号码 18 25  52 4  53 40',
+      '联系方式：13  35 4 39 34  36，患者诉无不适。', '手机 132-1834\n441\n8.5 ℃', '联系电话：136-11\n1761\n71 次/分', '电话随访评分：1 3 1 2 2 2 3 4 4 2 5']) {
+      expect(kinds(await findCandidates([doc('b', text)], { profile: empty }), 'phone')).toEqual([])
+    }
+    // A short group before a word or a list mark, or a lone last digit, is a count, not the end of the number, so the
+    // number keeps the code of its copies; numbers from abroad stay phones; a mobile cut over lines takes no more lines.
+    for (const [text, kept] of [['电话 010-1234567 8次未接通', '电话 电话1 8次未接通'], ['家属电话 0755 8312 345 6床', '家属电话 电话1 6床'],
+      ['家属电话 0731-6 682-670  7 次', '家属电话 电话1  7 次'], ['联系电话：138 12 34 567\n1. 血常规', '联系电话：电话1\n1. 血常规'], ['家属电话 0065 7468 2381', '家属电话 电话1'],
+      ['电话 0532-835543 0 1\n其他：(0532)8355430', '电话 电话1 1\n其他：电话1'], ['联系电话：1589-1805938\n11\n15:15 查房', '联系电话：电话1\n11\n15:15 查房'],
+      ['手机：150  20321  169\n6981\n8050', '手机：电话1\n6981\n8050'], ['联系电话：0086 15561669\n6  90', '联系电话：电话1'],
+      ['联系电话：1589     1805938\n11\n15:15 查房', '联系电话：电话1\n11\n15:15 查房'], ['陪诊家属电话 137 122 8 042\n1。', '陪诊家属电话 电话1。']]) {
+      expect((await run([doc('c', text)], empty)).share.text).toBe(`【文件 1】\n${kept}`)
+    }
   })
 
   it('reads 参保号, and a record number before a label with words in front, but never a date or amount for one', async () => {
@@ -834,6 +958,135 @@ describe('line breaks, running text and country codes', () => {
     // A line that goes on after its digits is not the rest of a number.
     const amounts = await run([doc('b', '参保号：SH6112\n1234 5678 9012 3456 7890 1234 5678 9012 3456 元 合计')], empty)
     expect(checkResidue(amounts.share, amounts.book, empty)).toEqual([])
+    // OCR's two spaces inside those digits still make them one group; a row of values with more gaps is not.
+    const gaps = await run([doc('c', '门诊号：MZ2022\n0  412289')], empty)
+    expect(checkResidue(gaps.share, gaps.book, empty).map((hit) => [hit.kind, hit.value])).toEqual([['unreviewed', '0  412289']])
+    for (const text of ['住院号：ZY202441094\n14  172  78', `身份证号：${VALID_ID}\n120  105`, '联系电话：13812345678\n120  80  72  18', '就诊号：ZY2023603174\n82  65',
+      '医保卡号：A22469349\n138  186', '座机：25352685\n86  109', '住院号：ZY202510405\n135  34', '联系电话：19076401231\n3  26', `身份证号：${VALID_ID}\n7  43`,
+      '银行卡号：6222620597787883841\n20  1', '住院号：ZY202029448\n6  40', '联系电话：0571-88426032\n20221209  1709', '医保号：BJ90587954\n20240826  2222']) {
+      const result = await run([doc('d', text)], empty)
+      expect(checkResidue(result.share, result.book, empty)).toEqual([])
+    }
+    // A whole number still asks about a number under it: a second phone, or the last group of a 19-digit card.
+    const under = await run([doc('e', '联系电话：0571-88123456\n88123457\n电话：13812345678\n1391 234 5678\n银行卡号：6212264064429304\n423')], empty)
+    expect(checkResidue(under.share, under.book, empty).map((hit) => hit.value)).toEqual(['88123457', '1391 234 5678', '423'])
+  })
+
+  it('joins a record or insurance number that a line break evidently cut, and asks about digits that may be its rest', async () => {
+    const { share } = await run([doc('a', [
+      '样本号：TJ\n2021069572',
+      '体检编号：TJ-2024-\n0405-2857\u3000体检日期：2022-11-16',
+      '样本号：877\n087615',
+      '医保号：GZ\n9507064826',
+      '病历号：MZ-2024-\n0115001',
+      '门诊号：MZ\n2\n0240116007',
+      '病历号：ZY2\n01902352  床号：12',
+      '住院号：ZY2\n025591  10  床号：28',
+      '参保号：BJ23\n5903071 7',
+      '门诊号：MZ20\n24112 2873',
+      '住院号：MZ20\n200507236',
+    ].join('\n'))], empty)
+    expect(share.text).toBe(['【文件 1】', '样本号：编号1', '体检编号：编号2\u3000体检日期：2022-11-16', '样本号：编号3', '医保号：社保号1', '病历号：编号4',
+      '门诊号：编号5', '病历号：编号6  床号：12', '住院号：编号7  床号：28', '参保号：社保号2', '门诊号：编号8', '住院号：编号9'].join('\n'))
+    // One or two digits under a record or insurance label are cut too; copies of a joined number keep its code where
+    // they are cut elsewhere, over blank lines, or stop at its first line.
+    const shortHeads = await run([doc('g', '住院号：2\n024011501\n社保号：35\n734345945  床号：12')], empty)
+    expect(shortHeads.share.text).toBe('【文件 1】\n住院号：编号1\n社保号：社保号1  床号：12')
+    const cutCopies = await run([doc('h', ['体检编号：TJ-2023-\n3736403', '姓名：张三', '病案首页', '体检编号：TJ-2023-\n\n\n3736403', '住院号：MZ-2025-\n1806923', '附页',
+      '住院号 MZ-2025-18069\n\n23  床号：12', '门诊号：MZ20\n24112 2873', '备注：门诊号MZ20已复核'].join('\n'))], empty)
+    expect(cutCopies.share.text).toBe(['【文件 1】', '体检编号：编号1', '姓名：患者A', '病案首页', '体检编号：编号1', '住院号：编号2', '附页', '住院号 编号2  床号：12',
+      '门诊号：编号3', '备注：门诊号编号3已复核'].join('\n'))
+    // A number of record or insurance shape is one number where a rule only guessed at a landline.
+    const insurance = await run([doc('i', '社保卡 07558284795\n社保卡号：0755\n8284795\n备注 0755  8284795')], empty)
+    expect(insurance.share.text).toBe('【文件 1】\n社保卡 社保号1\n社保卡号：社保号1\n备注 社保号1')
+    // Four or five digits may be whole: the leftover check asks about the next line, and the number is not looked for
+    // in the year of a date.
+    const whole = await run([doc('f', '体检编号：2020\n060483\n体检日期：2020/09/12\n样本号：1023\n240115\n备注：样本1023已复核')], empty)
+    expect(whole.share.text).toBe('【文件 1】\n体检编号：编号1\n060483\n体检日期：2020/09/12\n样本号：编号2\n240115\n备注：样本编号2已复核')
+    expect(checkResidue(whole.share, whole.book, empty).map((hit) => hit.value)).toEqual(['060483', '240115'])
+    const years = await run([doc('j', '住院号：2024\n0115001\n入院日期：2024年3月\n参保年度：2024\n既往史：2024年曾行阑尾切除术。\n费用期间：2024.01-2024.03\n入院日期：2024-12-0  8')], empty)
+    expect(years.share.text).toBe('【文件 1】\n住院号：编号1\n0115001\n入院日期：2024年3月\n参保年度：2024\n既往史：2024年曾行阑尾切除术。\n费用期间：2024.01-2024.03\n入院日期：2024-12-0  8')
+    // A number that may be whole keeps the next line, also one that ends in a dash and a digit (TJ-2024-0); where its
+    // row goes on there, also after OCR split it once (8  147), the leftover check asks, unless the line numbers a row.
+    const wrapped = await run([doc('b', [
+      '住院号：ZY2024\n35246  床号：12',
+      '参保号：0837745\n9408  参保类型：职工医保',
+      '体检编号：TJ-2024-0\n405-2857  体检日期：2022-11-16',
+      '住院号：2019051\n237    床号：40',
+      '门诊号：MZ201912\n0472  4  检查日期：2024-01-15',
+      '社保卡号：7264941-3\n024  科室：内科\n备注：社保卡号7264941-3',
+    ].join('\n'))], empty)
+    expect(wrapped.share.text).toBe(['【文件 1】', '住院号：编号1', '35246  床号：12', '参保号：社保号1', '9408  参保类型：职工医保', '体检编号：编号2', '405-2857  体检日期：2022-11-16',
+      '住院号：编号3', '237    床号：40', '门诊号：编号4', '0472  4  检查日期：2024-01-15', '社保卡号：社保号2', '024  科室：内科', '备注：社保卡号社保号2'].join('\n'))
+    expect(checkResidue(wrapped.share, wrapped.book, empty).map((hit) => hit.value)).toEqual(['35246', '9408', '405-2857', '237', '0472  4', '024'])
+    // Never under a long number or one with a -N suffix, nor a short number over a row of values, a date, a unit or a
+    // table row; copies of the number still get its code.
+    for (const text of ['住院号：ZY2024011501\n001  床位费：360.00\n出院小结：住院号ZY2024011501', '住院号：1002345\n46  床号：12', '住院号：1002345\n20240115  入院日期：2024-01-15',
+      '住院号：1002345\n577  mmol/L', '住院号：1002345\n102  李娜  1002346', '住院号：1002345\n3. 姓名：李娜', '样本号：15\n1250\nU/L', '标本号：13\n104-317', '病历号：-\n955523   床号：12',
+      '住院号：0012345-2\n001  床位费：360.00\n002  西药费：1250.30\n患者住院号0012345-2', '姓名：廖金凤  样本号：14600\n149  67  99  21', '标本号：59137\n60  105',
+      '病案号：30256894\n003  床位费：360.00\n\n004  西药费：12.50', '住院号：34027893\n1002  床位费：360.00\n1003  西药费：12.50',
+      '住院号：69999307\n001  床位费：360.00\n    （自费）\n002西药费：12.50', '样本号：15\n1250  3600', '样本号：A15\n20240115 0830', '病案号：31\n202401160856',
+      '样本号：EDTA\n35\n2022', '检验号：HB\n3\n120', '门诊号：MZ\n1\n13912345678', '样本号：TJ\n20240115 0830', '标本号：A12\n240115', '样本号：056\n20240115 083012',
+      '参保号：35246\n240115 001']) {
+      const result = await run([doc('c', text)], empty)
+      expect(result.candidates.every((c) => !c.value.includes('\n'))).toBe(true)
+      expect(result.share.text).not.toMatch(/ZY2024011501|1002345|0012345-2|14600|59137|30256894|34027893|69999307/)
+      expect(checkResidue(result.share, result.book, empty)).toEqual([])
+    }
+    // A mobile on the next line keeps its own code.
+    const mobile = await run([doc('e', '住院号：0012345-2\n13912345678   联系人：吴超\n联系电话：13912345678')], empty)
+    expect(mobile.share.text).toBe('【文件 1】\n住院号：编号1\n电话1   联系人：家人A\n联系电话：电话1')
+    for (const text of ['编号：77\n2140', '序号：12\n345678', '编号：MZ\n20\n2401150']) {
+      expect(kinds(await findCandidates([doc('d', text)], { profile: empty }), 'record_number')).toEqual([])
+    }
+  })
+
+  it('joins a number or an address that two line breaks cut, but never three lines of separate values', async () => {
+    for (const [text, category, value] of [
+      ['身份证号：110105\n19491231\n002X', 'id_number', VALID_ID],
+      ['复印件上的身份证 110105 1949\n1231\n002X 已核对', 'id_number', VALID_ID],
+      ['联系电话：139\n1234\n5678', 'phone', '13912345678'],
+      ['银行卡号：6222 00\n00 1111\n2223', 'bank_card', '6222000011112223'],
+      ['余款已退至原支付银行卡 6222 0000\n1111\n2223，请查收。', 'bank_card', '6222000011112223'],
+      ['病历号：MZ\n20\n2401150  床号：3', 'record_number', 'MZ202401150'],
+      ['门诊号：MZ\n202\n401150  床号：3', 'record_number', 'MZ202401150'],
+      ['住址：江苏省南京市玄武区建国路244号阳光花园5号楼1单元1\n60\n2室', 'address', '江苏省南京市玄武区建国路244号阳光花园5号楼1单元1602室'],
+      ['患者居住于广东省广州市天河区建国路96\n4\n号16栋2302室，于2天前出现上述症状。', 'address', '广东省广州市天河区建国路964号16栋2302室'],
+      ['住址：浙江省杭州市西湖区文三路62\n\n8号6-5-1102', 'address', '浙江省杭州市西湖区文三路628号6-5-1102'],
+    ]) {
+      expect(kinds(await findCandidates([doc('a', text)], { profile: empty }), category).map((found) => found.replace(/\s/g, ''))).toEqual([value])
+    }
+    // Rows of values after a payment word, lines under a whole number, and report lines under an address stay apart.
+    for (const text of ['付款记录\n1064\n8413 7043\n1031 6564', '账户余额变动 6180\n8598\n5145 6440', '缴费流水 3526 9506\n2428\n3805', '卡号 7135\n20191205\n1320',
+      '银行卡号：84791438373\n624\n021-78084224']) {
+      expect(kinds(await findCandidates([doc('b', text)], { profile: empty }), 'bank_card')).toEqual([])
+    }
+    // Under a patient's name or after an ID word, a sample number, a date and a time are no ID.
+    for (const text of ['姓名：张伟 标本号 100231\n20250815\n0830', '患者姓名：孙丽  检验号 438609\n20240220\n1909', '身份证已核对 标本 314742\n20231224\n1123',
+      'ID 912069\n20251207\n2020', '病人ID 523613\n20191110\n1348', '姓名：孙丽  样本编号 414701\n20220412\n0750']) {
+      expect(kinds(await findCandidates([doc('b', text)], { profile: empty }), 'id_number')).toEqual([])
+    }
+    // A number cut where it was found is found again cut with an indent; an insurance number again where a rule read a landline.
+    const copies = await run([doc('d', '门诊号：MZ-2024-\n0115001\n姓名：张三\n病案首页\n门诊号 MZ-2024-\n 0115001\n医保号 09735400277\n参保号：0973\n5400277')], empty)
+    expect(copies.share.text).toBe('【文件 1】\n门诊号：编号1\n姓名：患者A\n病案首页\n门诊号 编号1\n医保号 社保号1\n参保号：社保号1')
+    for (const [text, category, value] of [
+      [`身份证号：${VALID_ID}\n2\n3`, 'id_number', VALID_ID], ['联系电话：13912345678\n1234\n5678', 'phone', '13912345678'],
+      ['住址：杭州市西湖区文三路100号\n5\n3号窗口取报告', 'address', '杭州市西湖区文三路100号'], ['住址：杭州市西湖区文三路100号\n\n3天后复查', 'address', '杭州市西湖区文三路100号'],
+      // A room number that already ends its address keeps it, and a heading, a name, a range or a date after it stays out.
+      ['住址：浙江省杭州市西湖区文三路100号5栋1003\n\n12号\n请到3楼彩超室候诊', 'address', '浙江省杭州市西湖区文三路100号5栋1003'],
+      ['住址：北京市朝阳区建国路88号3号楼1201\n\n125-350', 'address', '北京市朝阳区建国路88号3号楼1201'],
+      ['地址：北京市朝阳区解放大道292号11栋2602\n5\n2单元', 'address', '北京市朝阳区解放大道292号11栋2602'],
+      ['住址：北京市朝阳区建国路88号\n体检中心\n2楼', 'address', '北京市朝阳区建国路88号'],
+      ['住址：江苏省南京市鼓楼区中山北路200号16-5-603\n\n24-03-15', 'address', '江苏省南京市鼓楼区中山北路200号16-5-603'],
+      ['地址：广东省广州市天河区学院路543号\n朱嘉怡\n77楼', 'address', '广东省广州市天河区学院路543号'],
+      // Nor a desk or a floor of the hospital under a whole place or a street number that stops short.
+      ['住址：河南省周口市太康县王庄乡\n体检中心\n2楼', 'address', '河南省周口市太康县王庄乡'], ['住址：北京市朝阳区建国路62\n体检中心\n2楼', 'address', '北京市朝阳区建国路62'],
+      ['住址：浙江省杭州市西湖区阳光山庄\n导诊台\n1号', 'address', '浙江省杭州市西湖区阳光山庄'],
+      ['住址：浙江省杭州市西湖区文三路100号（锦绣华庭）\n导诊台\n1楼', 'address', '浙江省杭州市西湖区文三路100号（锦绣华庭）'],
+      ['家庭住址：四川省绵阳市三台县芦溪镇白果村3社\n收费处\n3号', 'address', '四川省绵阳市三台县芦溪镇白果村3社'], ['住址：浙江省杭州市\n排队号\n15号', 'address', '浙江省杭州市'],
+    ]) {
+      expect(kinds(await findCandidates([doc('c', text)], { profile: empty }), category)).toEqual([value])
+    }
   })
 
   it('never takes rows of 4-digit lab values with single spaces or tabs for cards', async () => {
@@ -858,6 +1111,51 @@ describe('line breaks, running text and country codes', () => {
       '患者居住于四川省成都市锦江区文三路188号，电力局宿舍2  9号楼2单元602室，否认药物过敏史。',
     ].join('\n'))], empty)
     expect(share.text).toBe('【文件 1】\n住址：地址1\n患者居住于地址1，否认药物过敏史。')
+  })
+})
+
+describe('review of the gap fixes', () => {
+  it('replaces a copy of the street address wherever it is not a hospital, and reports one next to a hospital', async () => {
+    for (const [text, street] of [
+      ['现病史：患者家住江苏省南京市鼓楼区中山路12号（锦绣华庭），因胸痛入院。\n既往史：曾在江苏省南京市鼓楼区中山路12号所在社区卫生站随访。', '中山路12号'],
+      ['现病史：患者家住江苏省南京市鼓楼区中山路12号，锦绣华庭，因胸痛入院。\n个人史：在江苏省南京市鼓楼区中山路12号小卖店经营多年。', '中山路12号'],
+      ['现病史：患者家住浙江省杭州市西湖区文三路251号（电力局宿舍），因胸痛入院。\n工作单位：浙江省杭州市西湖区文三路251号某某公司', '文三路251号'],
+      ['现病史：患者家住广东省广州市天河区天河北路233号（阳光花园），因胸痛入院。\n患者于广东省广州市天河区天河北路233号菜市场摔倒', '天河北路233号'],
+    ]) {
+      const { share } = await run([doc('a', text)], empty)
+      expect(share.text).not.toContain(street)
+    }
+    // Next to a hospital the copy stays, but copying waits until the user decides on it.
+    const hospital = await run([doc('b', '现病史：患者家住浙江省杭州市上城区解放路88号，职工宿舍3栋501室，因胸痛入院。\n就诊：浙江省杭州市上城区解放路88号某某医院')], empty)
+    expect(hospital.share.text).toContain('解放路88号某某医院')
+    expect(checkResidue(hospital.share, hospital.book, empty).map((hit) => hit.category)).toContain('address')
+  })
+
+  it('stays fast on unclosed quotes after an address word', () => {
+    for (const text of ['住址为“'.repeat(20000), '住址为“某\n'.repeat(20000)]) {
+      const started = performance.now()
+      detectRules(doc('a', text))
+      expect(performance.now() - started).toBeLessThan(1500)
+    }
+  })
+
+  it('does not join a row of values to letters alone on the line before', async () => {
+    for (const [text, kept] of [
+      ['门诊号：MZ\n120  80\nmmHg', '120  80'],
+      ['病历号：MZ\n001  床位费：360.00\n002  西药费：12.50', '001  床位费'],
+      ['标本号：EDTA\n1250\nU/L', '1250'],
+    ]) {
+      const { share } = await run([doc('a', text)], empty)
+      expect(share.text).toContain(kept)
+    }
+  })
+
+  it('does not take a date after an address for its building, unit and room', async () => {
+    const { share } = await run([doc('a', '患者家住浙江省杭州市西湖区文三路100号，10-12-2005')], empty)
+    expect(share.text).toContain('，10-12-2005')
+    // With an estate's name in front, the three parts are still the building, unit and room.
+    const estate = await run([doc('b', '患者家住浙江省杭州市西湖区文三路100号，金色家园15-4-2003，因胸痛入院。')], empty)
+    expect(estate.share.text).not.toContain('15-4-2003')
   })
 })
 
