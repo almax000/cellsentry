@@ -27,7 +27,7 @@ import { getFileInfo, readFileCells } from '../engine/excelReader'
 import { generateReport } from '../report/generator'
 import { ModelDownloader, DEFAULT_MODEL } from '../model/downloader'
 import { importModelFile } from '../model/importer'
-import { modelSetupError, setBundledModelError } from '../model/bundled'
+import { getBundledModelSetupStatus, isBundledModelPreparing, markBundledModelReady, modelSetupError, setBundledModelError } from '../model/bundled'
 import { ModelDownloadNotConfiguredError, modelDownloadFailure } from '../model/downloadFailure'
 import { getModelsDir } from '../model/paths'
 export { getModelsDir } from '../model/paths'
@@ -136,6 +136,7 @@ export function registerIpcHandlers(): void {
 
   // ── Model ───────────────────────────────────────────────
   ipcMain.handle('sidecar:model-import', async () => {
+    if (isBundledModelPreparing()) return { success: false, error: 'Offline model preparation is in progress' }
     try {
       return await withModelMaintenance(async () => {
         const chosen = await dialog.showOpenDialog({ properties: ['openFile'],
@@ -144,6 +145,7 @@ export function registerIpcHandlers(): void {
         await cancelLlmAnalysis()
         await importModelFile(chosen.filePaths[0], getDownloader().getModelPath(), DEFAULT_MODEL.size, DEFAULT_MODEL.sha256)
         setBundledModelError()
+        markBundledModelReady()
         return { success: true }
       })
     } catch (error) { return { success: false, error: String(error) } }
@@ -154,6 +156,7 @@ export function registerIpcHandlers(): void {
   })
 
   ipcMain.handle('sidecar:model-download', async (event) => {
+    if (isBundledModelPreparing()) return modelDownloadFailure(new Error('Offline model preparation is in progress'))
     // Reject before model maintenance can interrupt an active local analysis.
     if (!getDownloader().canDownload()) return modelDownloadFailure(new ModelDownloadNotConfiguredError())
     try {
@@ -194,6 +197,7 @@ export function registerIpcHandlers(): void {
       size: `${Math.round(DEFAULT_MODEL.size / 1024 / 1024)} MiB`,
       reason: status.reason,
       error: modelSetupError(status),
+      setup: getBundledModelSetupStatus(),
     }
   })
 
@@ -207,6 +211,7 @@ export function registerIpcHandlers(): void {
   })
 
   ipcMain.handle('llm:analyze', async (_event, issues: unknown[]) => {
+    if (isBundledModelPreparing()) return { error: 'Offline model preparation is in progress', judgments: [] }
     try {
       return await analyzeWithLlm(issues as Parameters<typeof analyzeWithLlm>[0])
     } catch (e) {
@@ -215,6 +220,9 @@ export function registerIpcHandlers(): void {
   })
 
   ipcMain.handle('llm:start', async () => {
+    if (isBundledModelPreparing()) {
+      return { available: false, backend: 'none', modelLoaded: false, reason: 'model-preparing', error: 'Offline model preparation is in progress' }
+    }
     if (hasActiveAnalysis()) return { available: false, backend: 'none', modelLoaded: false, reason: 'busy', error: 'Another analysis or model operation is active' }
     try {
       return await startLlm()

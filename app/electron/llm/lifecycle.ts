@@ -7,6 +7,7 @@
 
 import { app } from 'electron'
 import { llmBridge } from './bridge'
+import { isBundledModelPreparing } from '../model/bundled'
 import type { AuditReviewProgress, AuditReviewSummary } from '../../shared/auditReview'
 import type {
   LlmAnalysisMode,
@@ -243,6 +244,7 @@ export function setupLlmLifecycle(): void {
  * warning. A later start can still fail; that remains a genuine AI failure.
  */
 export function isLocalAiReadyFor(mode: LlmAnalysisMode): boolean {
+  if (isBundledModelPreparing()) return false
   // A test double standing in for the runtime may omit the pre-check; it is
   // installed to answer requests, so treat it as ready.
   if (typeof llmBridge.canAttempt !== 'function') return true
@@ -260,6 +262,9 @@ export async function getLlmStatus(): Promise<LlmStatus> {
  * Called after model download to warm up the bridge.
  */
 export async function startLlm(): Promise<LlmStatus> {
+  if (isBundledModelPreparing()) {
+    return { available: false, backend: 'none', modelLoaded: false, reason: 'model-preparing' }
+  }
   await llmBridge.start()
   return llmBridge.status
 }

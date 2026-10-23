@@ -4,7 +4,7 @@ import { mkdtemp, mkdir, readFile, readdir, rm, stat, symlink, writeFile } from 
 import { statfs } from 'fs/promises'
 import { createReadStream } from 'fs'
 import { join, resolve } from 'node:path'
-import { installBundledModel, modelSetupError, setBundledModelError, type BundledModelSpec } from '../electron/model/bundled'
+import { bootstrapBundledModel, getBundledModelSetupStatus, installBundledModel, isBundledModelPreparing, modelSetupError, setBundledModelError, type BundledModelSpec } from '../electron/model/bundled'
 
 vi.mock('fs/promises', async importOriginal => {
   const actual = await importOriginal<typeof import('fs/promises')>()
@@ -45,6 +45,17 @@ describe('offline model installation', () => {
     expect(await readFile(join(source, 'fixture.gguf'))).toEqual(model)
     expect((await readdir(target)).sort()).toEqual(['fixture.gguf', 'licenses'])
   })
+  it('reports copy progress before committing the model', async () => {
+    const progress: Array<{ copiedBytes: number; totalBytes: number }> = []
+    await installBundledModel({
+      packageDir: source,
+      modelsDir: target,
+      spec,
+      onProgress: (event: { copiedBytes: number; totalBytes: number }) => progress.push(event),
+    })
+    expect(progress.some((event) => event.copiedBytes > 0)).toBe(true)
+    expect(progress.at(-1)).toMatchObject({ phase: 'verifying', copiedBytes: model.length, totalBytes: model.length })
+  })
   it('preserves the installed model when a later lean app has no bundled payload', async () => {
     await install()
     const before = await stat(join(target, 'fixture.gguf'))
@@ -60,6 +71,25 @@ describe('offline model installation', () => {
     await writeFile(join(source, 'fixture.gguf'), 'broken')
     await expect(install()).resolves.toBe('already-installed')
     expect((await stat(join(target, 'fixture.gguf'))).mtimeMs).toBe(before.mtimeMs)
+  })
+  it('reports verification progress while checking an existing model', async () => {
+    await install()
+    const progress: Array<{ phase: string; copiedBytes: number; totalBytes: number }> = []
+    await installBundledModel({
+      packageDir: source,
+      modelsDir: target,
+      spec,
+      onProgress: (event) => progress.push(event),
+    })
+    expect(progress.at(-1)).toEqual({ phase: 'verifying', copiedBytes: model.length, totalBytes: model.length })
+  })
+  it('keeps model setup gated until the bundled copy has committed', async () => {
+    const setup = bootstrapBundledModel({ packageDir: source, modelsDir: target, spec })
+    expect(isBundledModelPreparing()).toBe(true)
+    expect(getBundledModelSetupStatus().phase).toBe('copying')
+    await expect(setup).resolves.toBe('installed')
+    expect(isBundledModelPreparing()).toBe(false)
+    expect(getBundledModelSetupStatus().phase).toBe('ready')
   })
   it.each(['truncated', 'same-size-corruption', 'missing-license', 'bad-license', 'symlink', 'extra-file'])
   ('rejects %s and preserves the previous model until a whole valid copy is ready', async fault => {

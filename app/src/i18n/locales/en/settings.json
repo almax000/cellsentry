@@ -5,6 +5,8 @@
   "statusReady": "Ready",
   "statusInstalled": "Installed, not started",
   "statusNotInstalled": "Not installed",
+  "statusPreparing": "Preparing…",
+  "modelPreparing": "Preparing the included Formula assistant. Built-in checks are ready.",
   "optionalModel": "Optional: every built-in check works without it. Size: {{size}}. Download it once; after that it works offline.",
   "downloadModel": "Install Formula assistant",
   "retryModel": "Start Formula assistant",
@@ -42,5 +44,9 @@
   "reportBug": "Report a Bug",
   "reportBugDesc": "Tell us on GitHub what went wrong",
   "sendFeedback": "Send Feedback",
-  "sendFeedbackDesc": "Reach out on X (Twitter)"
+  "sendFeedbackDesc": "Reach out on X (Twitter)",
+  "statusPreparationFailed": "Preparation failed",
+  "modelPreparationFailed": "The included Formula assistant could not be prepared. Reinstall the full offline app or import a verified model.",
+  "modelPreparationDiskSpace": "The Formula assistant needs more free disk space. Free up disk space, then reopen the app or import a verified model.",
+  "recoverModel": "Install model from file"
 }

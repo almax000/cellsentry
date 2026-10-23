@@ -6,6 +6,7 @@ import Header from './Header'
 import ConnectionBanner from './ConnectionBanner'
 import FileDropRouter from './FileDropRouter'
 import { useScan } from '../context/ScanContext'
+import { useSidecar } from '../hooks/useSidecar'
 import { ShieldCheckIcon, CheckIcon } from './icons'
 import { TaskIcon } from './icons/taskIcons'
 import { taskForRoute } from '../tasks'
@@ -16,6 +17,7 @@ export default function Layout(): JSX.Element {
   const location = useLocation()
   const navigate = useNavigate()
   const { activeView, scanState, runSeq } = useScan()
+  const { modelSetup } = useSidecar()
   const platform = window.api?.platform || 'linux'
 
   const entryTask = taskForRoute(location.pathname)
@@ -58,6 +60,10 @@ export default function Layout(): JSX.Element {
 
   // Results pages use full-bleed split panel (no padding, no overflow)
   const isNoPad = location.pathname.includes('/results')
+  const preparingModel = modelSetup.phase === 'copying' || modelSetup.phase === 'verifying'
+  const progress = modelSetup.totalBytes && modelSetup.copiedBytes !== undefined
+    ? Math.min(100, Math.round(modelSetup.copiedBytes * 100 / modelSetup.totalBytes))
+    : undefined
 
   return (
     <div className={`app-layout platform-${platform}`}>
@@ -65,6 +71,15 @@ export default function Layout(): JSX.Element {
       <div className="main-content">
         <Header title={pageTitle()} icon={pageIcon()} />
         <ConnectionBanner />
+        {preparingModel && <div className="model-setup-status" role="status" data-testid="model-setup-status">
+          <span>{t('modelSetup.preparing')}</span>
+          <span>{modelSetup.phase === 'verifying' ? t('modelSetup.verifying') : `${progress ?? 0}%`}</span>
+          <span>{t('modelSetup.rulesReady')}</span>
+        </div>}
+        {modelSetup.phase === 'failed' && <div className="model-setup-status" role="alert" data-testid="model-setup-failed">
+          <span>{t('modelSetup.failed')}</span>
+          {location.pathname !== '/settings' && <button className="btn btn-secondary" onClick={() => navigate('/settings')}>{t('modelSetup.openSettings')}</button>}
+        </div>}
         <div className={`main-body${isNoPad ? ' no-pad' : ''}`}>
           <Outlet />
         </div>

@@ -7,6 +7,14 @@ import type { EngineLocale } from './locale'
 import type { ModelDownloadResult } from './modelDownload'
 import type { RedactAPI } from './redact/ipc'
 
+export type ModelSetupPhase = 'idle' | 'copying' | 'verifying' | 'ready' | 'not-bundled' | 'failed'
+
+export interface ModelSetupStatus {
+  phase: ModelSetupPhase
+  copiedBytes?: number
+  totalBytes?: number
+}
+
 export interface ModelStatus {
   downloadAvailable: boolean
   exists: boolean
@@ -17,6 +25,7 @@ export interface ModelStatus {
   size: string
   reason?: string
   error?: string
+  setup: ModelSetupStatus
 }
 export interface EngineDoneEvent {
   scanId: string

@@ -21,3 +21,25 @@
   padding: 0;
   overflow: hidden;
 }
+
+.model-setup-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.model-setup-status span:nth-child(2) {
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.model-setup-status[role="status"] span:last-child,
+.model-setup-status button {
+  margin-left: auto;
+}

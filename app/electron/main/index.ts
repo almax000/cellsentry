@@ -6,7 +6,7 @@ import { registerIpcHandlers } from './ipc'
 import { setEngineLocale } from '../engine/locale'
 import { initManualUpdater, registerUpdaterIpc } from './updater'
 import { setupLlmLifecycle, startLlm } from '../llm/lifecycle'
-import { installBundledModel, setBundledModelError } from '../model/bundled'
+import { bootstrapBundledModel } from '../model/bundled'
 import { getBundledModelDir, getModelsDir } from '../model/paths'
 
 import { IS_TEST_MODE } from '../testMode'
@@ -322,7 +322,7 @@ if (!gotTheLock) {
     }
   })
 
-  app.whenReady().then(async () => {
+  app.whenReady().then(() => {
     // No Dock icon or menu bar, and the app never becomes frontmost.
     if (IS_HIDDEN_TEST && process.platform === 'darwin') app.setActivationPolicy('accessory')
     setEngineLocale(app.getLocale())
@@ -357,21 +357,6 @@ if (!gotTheLock) {
       })
     }
 
-    // Finish bootstrap before renderer model maintenance/analysis can race it.
-    if (app.isPackaged && (!IS_TEST_MODE || process.env.CELLSENTRY_TEST_BUNDLED_MODEL === '1')) {
-      const controller = new AbortController()
-      const abort = (): void => controller.abort()
-      app.once('before-quit', abort)
-      try {
-        await installBundledModel({ packageDir: getBundledModelDir(), modelsDir: getModelsDir(), signal: controller.signal })
-      } catch (error) {
-        const message = error instanceof Error ? error.message : 'Offline model installation failed'
-        setBundledModelError(message)
-        console.warn('[offline-model]', message)
-      } finally { app.removeListener('before-quit', abort) }
-      if (controller.signal.aborted) return
-    }
-
     createAppMenu()
     registerIpcHandlers()
     registerTestIpcHandlers()
@@ -390,8 +375,25 @@ if (!gotTheLock) {
 
     initManualUpdater(mainWindow)
 
-    // Warm up an already installed model without blocking the rule-based tools.
-    if (!IS_TEST_MODE) startLlm().catch(() => {})
+    // Open the rules-only workspace first. The offline payload is staged and
+    // verified in the background; LLM IPC stays gated until that is complete.
+    const shouldBootstrap = app.isPackaged && (!IS_TEST_MODE || process.env.CELLSENTRY_TEST_BUNDLED_MODEL === '1')
+    if (shouldBootstrap) {
+      const controller = new AbortController()
+      const abort = (): void => controller.abort()
+      app.once('before-quit', abort)
+      void bootstrapBundledModel({ packageDir: getBundledModelDir(), modelsDir: getModelsDir(), signal: controller.signal })
+        .catch((error) => {
+          if (!controller.signal.aborted) console.warn('[offline-model]', error instanceof Error ? error.message : 'Offline model installation failed')
+        })
+        .finally(() => {
+          app.removeListener('before-quit', abort)
+          if (!controller.signal.aborted && !IS_TEST_MODE) startLlm().catch(() => {})
+        })
+    } else if (!IS_TEST_MODE) {
+      // Lean updates and development builds have no bundled payload to stage.
+      startLlm().catch(() => {})
+    }
 
     app.on('activate', () => {
       if (BrowserWindow.getAllWindows().length === 0) createWindow()

@@ -78,6 +78,6 @@ export interface LlmStatus {
   backend: string
   modelLoaded: boolean
   modelName?: string
-  reason?: 'not-started' | 'model-missing' | 'runtime-unavailable' | 'stopped'
+  reason?: 'not-started' | 'model-missing' | 'runtime-unavailable' | 'stopped' | 'model-preparing'
   error?: string
 }

@@ -12,6 +12,13 @@
   "rule": "Rule",
   "file": "File",
   "connectionLost": "Analysis engine disconnected — reconnecting…",
+  "modelSetup": {
+    "preparing": "Preparing on-device AI",
+    "verifying": "Verifying…",
+    "rulesReady": "Built-in checks are ready",
+    "failed": "Formula assistant preparation failed",
+    "openSettings": "Open settings"
+  },
   "sidebar": {
     "home": "Home",
     "spreadsheetAudit": "Spreadsheet Audit",

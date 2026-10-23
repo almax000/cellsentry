@@ -5,6 +5,8 @@
   "statusReady": "已就绪",
   "statusInstalled": "已安装，未启动",
   "statusNotInstalled": "未安装",
+  "statusPreparing": "正在准备…",
+  "modelPreparing": "正在准备随附的公式助手。内置检查已可用。",
   "optionalModel": "可选功能，不装也能正常使用全部内置检查。大小 {{size}}，只需下载一次，装好后不联网也能用。",
   "downloadModel": "安装公式助手",
   "retryModel": "启动公式助手",
@@ -42,5 +44,9 @@
   "reportBug": "报告问题",
   "reportBugDesc": "在 GitHub 上告诉我们哪里出了问题",
   "sendFeedback": "发送反馈",
-  "sendFeedbackDesc": "通过 X (Twitter) 联系我们"
+  "sendFeedbackDesc": "通过 X (Twitter) 联系我们",
+  "statusPreparationFailed": "准备失败",
+  "modelPreparationFailed": "随附的公式助手未能准备完成。请重新安装完整离线版，或导入已验证的模型。",
+  "modelPreparationDiskSpace": "公式助手需要更多可用磁盘空间。请释放磁盘空间后重新打开应用，或导入已验证的模型。",
+  "recoverModel": "从文件安装模型"
 }

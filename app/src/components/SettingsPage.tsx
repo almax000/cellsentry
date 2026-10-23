@@ -13,7 +13,7 @@ const ZOOM_LABELS = ['67%', '80%', '90%', '100%', '110%', '125%', '150%']
 export default function SettingsPage(): JSX.Element {
   const { t } = useTranslation('settings')
   const { i18n } = useTranslation()
-  const { modelLoaded, modelName, modelExists, modelError, refreshModelStatus, version } = useSidecar()
+  const { modelLoaded, modelName, modelExists, modelError, modelSetup, refreshModelStatus, version } = useSidecar()
   const [forceModelDownload, setForceModelDownload] = useState(false)
   const [showModelDownload, setShowModelDownload] = useState(false)
   const [startingModel, setStartingModel] = useState(false)
@@ -64,8 +64,11 @@ export default function SettingsPage(): JSX.Element {
   }
 
   // Status is derived from the installed file first: never "ready" without a model on disk.
-  const assistantState = !modelExists ? 'notInstalled' : modelLoaded ? 'ready' : 'installed'
+  const preparingModel = modelSetup.phase === 'copying' || modelSetup.phase === 'verifying'
+  const preparationFailed = modelSetup.phase === 'failed' && !modelLoaded
+  const assistantState = preparingModel ? 'preparing' : preparationFailed ? 'failed' : !modelExists ? 'notInstalled' : modelLoaded ? 'ready' : 'installed'
   const rawModelError = startError || modelError
+  const preparationMessage = /disk space/i.test(rawModelError ?? '') ? 'modelPreparationDiskSpace' : 'modelPreparationFailed'
   const sizeText = formatByteSize(FORMULA_ASSISTANT_MODEL.sizeBytes)
 
   if (showModelDownload) return <ModelDownloadModal forceDownload={forceModelDownload} onClose={() => { setShowModelDownload(false); void refreshModelStatus() }} />
@@ -88,19 +91,23 @@ export default function SettingsPage(): JSX.Element {
             >
               {assistantState === 'ready'
                 ? `● ${t('statusReady')}`
-                : `○ ${t(assistantState === 'installed' ? 'statusInstalled' : 'statusNotInstalled')}`}
+                : `○ ${t(assistantState === 'preparing' ? 'statusPreparing' : assistantState === 'failed' ? 'statusPreparationFailed' : assistantState === 'installed' ? 'statusInstalled' : 'statusNotInstalled')}`}
             </div>
           </div>
           {assistantState !== 'ready' && <div className="settings-row">
             <div className="settings-desc settings-row-main" role="status">
-              {modelExists && rawModelError ? t('modelUnavailable') : t('optionalModel', { size: sizeText })}
+              {preparingModel ? t('modelPreparing') : preparationFailed ? t(preparationMessage) : modelExists && rawModelError ? t('modelUnavailable') : t('optionalModel', { size: sizeText })}
             </div>
             <div className="settings-actions">
-              <button className="btn btn-primary" data-testid="settings-setup-model" disabled={startingModel}
-                onClick={() => modelExists ? void startModel() : setShowModelDownload(true)}>
-                {startingModel ? t('loadingModel') : t(modelExists ? 'retryModel' : 'downloadModel')}
+              <button className="btn btn-primary" data-testid="settings-setup-model" disabled={startingModel || preparingModel}
+                onClick={() => {
+                  if (preparationFailed) { setForceModelDownload(true); setShowModelDownload(true) }
+                  else if (modelExists) void startModel()
+                  else setShowModelDownload(true)
+                }}>
+                {preparingModel ? t('statusPreparing') : startingModel ? t('loadingModel') : t(preparationFailed ? 'recoverModel' : modelExists ? 'retryModel' : 'downloadModel')}
               </button>
-              {modelExists && <button className="btn btn-secondary" data-testid="settings-redownload-model" disabled={startingModel}
+              {modelExists && !preparationFailed && <button className="btn btn-secondary" data-testid="settings-redownload-model" disabled={startingModel || preparingModel}
                 onClick={() => { setForceModelDownload(true); setShowModelDownload(true) }}>{t('redownloadModel')}</button>}
             </div>
           </div>}

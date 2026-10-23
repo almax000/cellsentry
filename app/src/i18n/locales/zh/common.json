@@ -12,6 +12,13 @@
   "rule": "规则",
   "file": "文件",
   "connectionLost": "分析引擎已断开 — 正在重新连接…",
+  "modelSetup": {
+    "preparing": "正在准备本机 AI",
+    "verifying": "正在校验…",
+    "rulesReady": "内置检查已可用",
+    "failed": "公式助手准备失败",
+    "openSettings": "打开设置"
+  },
   "sidebar": {
     "home": "首页",
     "spreadsheetAudit": "表格审计",
