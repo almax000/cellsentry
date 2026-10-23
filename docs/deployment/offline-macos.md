@@ -44,7 +44,9 @@ node scripts/prepare-offline-mac-build.mjs \
 
 正式配置对两个构件设置 `forceCodeSigning: true`、`mac.type: distribution`、`mac.hardenedRuntime: true`、`mac.notarize: true`，拒绝 `identity: null` 和临时签名 `identity: '-'`。当前控制流程仍是本机准备两个构件，现有旧 tag 工作流没有自动接入这套完整离线/lean 管线。
 
-这是配置前置检查，不是 Apple 认证或签名完成的证明。运行真正构建时须保持认证环境；builder 25.1.8 在无凭证时可能跳过公证，不能只看构建 exit 0。正式发行还需在实际产物上验证 Developer ID/Team、各原生 Mach-O 签名、hardened runtime、时间戳、Apple Accepted 回执与 stapled ticket，之后独立运行 `spctl`。本版 `gatekeeperAssess` 字段没有接入实际 `spctl`，不当作验收证据。
+这是配置前置检查，不是组织授权、Apple 认证或签名完成的证明。签名前必须先由 jojo 确认 Developer ID 和配套公证凭证属于可用于 CellSentry 的组织，并显式核对所选 identity/Team；有效证书与可登录 profile 不足以证明归属，不能自动选用本机已有身份。当前暂停及恢复条件以 HANDOFF 顶部为准。
+
+运行真正构建时须保持认证环境；builder 25.1.8 在无凭证时可能跳过公证，不能只看构建 exit 0。正式发行还需在实际产物上验证 Developer ID/Team、各原生 Mach-O 签名、hardened runtime、时间戳、Apple Accepted 回执与 stapled ticket，之后独立运行 `spctl`。本版 `gatekeeperAssess` 字段没有接入实际 `spctl`，不当作验收证据。
 
 对 offline App、完整 DMG 和从实际 lean ZIP 解压的 App 分别做签名/票据检查，再按本机前台规则做带隔离属性的安装、启动与模型复用。开发机的命令检查不能代替陌生机器的 Gatekeeper 首次下载体验。Apple 与 Electron 的步骤说明：
 
