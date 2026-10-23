@@ -1,11 +1,11 @@
 # ADR-0012：新脱敏流程的五个默认做法
 
-- **Status**: Accepted
+- **Status**: Superseded by ADR-0018
 - **Date**: 2026-10-21
 - **Deciders**: jojo
 - **Drafted by**: Claude Code · Opus 5.5
 - **Supersedes**: —
-- **Superseded by**: —
+- **Superseded by**: ADR-0018
 - **Legacy ID**: —
 - **Related**: [ADR-0003](0003-input-pdf-and-images-local-ocr.md)、[ADR-0013](0013-pause-ocr.md)、[ADR-0009](0009-redesign-direction-a-task-home.md)、[ADR-0011](0011-on-device-inference-bottom-line.md)、低保真稿 `tmp/agent-output/cellsentry-redesign-a/index.html`（本地文件，不进仓库）
 

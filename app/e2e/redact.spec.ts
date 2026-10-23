@@ -97,9 +97,12 @@ test.describe('Document redaction', () => {
     await pasteAndStart(REPORT)
     await expect(page.locator('[data-testid="redact-review-title"]')).toContainText('处个人信息')
 
-    // The doctor is an uncertain card that keeps the name by default.
+    // Staff names remain reviewable and now start with replacement selected (ADR-0018).
     const doctor = page.locator('[data-testid="redact-unsure"]').filter({ hasText: '李建国' })
-    await expect(doctor.locator('[data-testid="redact-choice-keep"]')).toHaveAttribute('aria-pressed', 'true')
+    await expect(doctor.locator('[data-testid="redact-choice-replace"]')).toHaveAttribute('aria-pressed', 'true')
+    await doctor.locator('[data-testid="redact-choice-keep"]').click()
+    await expect(page.locator('[data-testid="redact-preview-text"]')).toContainText('李建国')
+    await doctor.locator('[data-testid="redact-choice-replace"]').click()
 
     const preview = page.locator('[data-testid="redact-preview-text"]')
     await expect(preview).toContainText('患者A')
@@ -112,12 +115,12 @@ test.describe('Document redaction', () => {
     await expect(page.locator('[data-testid="redact-share"]')).toBeVisible()
     await expect(page.locator('[data-testid="redact-residue"]')).toHaveAttribute('data-count', '0')
     const shared = page.locator('[data-testid="redact-share-text"]')
-    for (const code of ['患者A', '家人B', '电话1', '证件1', '编号1', '地址1']) await expect(shared).toContainText(code)
-    for (const original of ['张伟', '王丽华', '139 1234 5678', '11010519491231002X', 'TJ20250001', '文三路']) {
+    for (const code of ['患者A', '家人B', '电话1', '证件1', '编号1', '地址1', '医生1']) await expect(shared).toContainText(code)
+    for (const original of ['张伟', '王丽华', '李建国', '139 1234 5678', '11010519491231002X', 'TJ20250001', '文三路']) {
       await expect(shared).not.toContainText(original)
     }
     // Medical context stays for the AI.
-    await expect(shared).toContainText('李建国')
+    await expect(shared).toContainText('上海市第一人民医院')
     await expect(shared).toContainText('总胆固醇 6.2 mmol/L')
 
     await page.locator('[data-testid="redact-copy"]').click()

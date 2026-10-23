@@ -30,7 +30,7 @@
     "record_label": "体检、病历编号",
     "name_label": "像是人名",
     "family_label": "像是家属的名字",
-    "doctor_label": "像是医生的名字，一般不用换",
+    "doctor_label": "像是医护人员姓名，建议换成代号",
     "address_label": "填在住址栏里",
     "address_in_text": "写在正文里的住址",
     "model": "脱敏助手的判断",

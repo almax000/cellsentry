@@ -55,7 +55,7 @@ describe('rule detector', () => {
     expect(text('phone')).toEqual(['139 1234 5678'])
     expect(text('address')).toEqual(['杭州市西湖区文三路100号'])
     const doctor = found.find((c) => c.role === 'doctor')
-    expect(doctor).toMatchObject({ suggestion: 'keep', certainty: 'unsure' })
+    expect(doctor).toMatchObject({ suggestion: 'replace', certainty: 'unsure' })
     expect(found.find((c) => c.role === 'family')).toMatchObject({ certainty: 'unsure', suggestion: 'replace' })
     // Hospital, lab values and an order number that looks like a phone stay as they are.
     expect(found.some((c) => report2025.slice(c.start, c.end).includes('医院'))).toBe(false)
@@ -109,8 +109,8 @@ describe('codes, sharing and the leftover check', () => {
     expect(share.text.match(/患者A/g)).toHaveLength(2)
     expect(share.text.match(/电话1/g)).toHaveLength(2)
     expect(share.text).toContain('家属：家人B')
-    // Doctors, hospitals and lab values stay so the AI can still read the report.
-    expect(share.text).toContain('主检医生：李建国')
+    expect(share.text).toContain('主检医生：医生1')
+    // Institutions and lab values stay so the AI can still read the report.
     expect(share.text).toContain('上海市第一人民医院')
     expect(share.text).toContain('总胆固醇 6.2 mmol/L')
     expect(book.entries.find((entry) => entry.code === '电话1')?.values).toEqual(['139 1234 5678', '13912345678'])
@@ -1296,7 +1296,7 @@ describe('second review of the gap fixes', () => {
       ['电话评估：3 2 1 0 2\n2 2 1 0 1', '电话评估：3 2 1 0 2\n2 2 1 0 1'],
       ['出院医嘱：1月后门诊复查，复查前电话 86021 预约。', '出院医嘱：1月后门诊复查，复查前电话 86021 预约。'],
       ['联系电话：0571\n8723\n6666\n就诊医院：杭州市第一人民医院（0571-87065701）', '联系电话：电话1\n8723\n6666\n就诊医院：杭州市第一人民医院（0571-87065701）', ['8723']],
-      ['主治医师：王强 联系电话：136-11\n1761', '主治医师：王强 联系电话：电话1\n1761', ['1761']],
+      ['主治医师：王强 联系电话：136-11\n1761', '主治医师：医生1 联系电话：电话1\n1761', ['1761']],
       ['患者电话 (0571)8723 666，既往体健。', '患者电话 电话1，既往体健。'],
       ['随访电话 0571 88 12345\n6', '随访电话 电话1'],
       ['家属电话：0571-8812345\n6\n与患者关系：女儿', '家属电话：电话1\n与患者关系：女儿'],

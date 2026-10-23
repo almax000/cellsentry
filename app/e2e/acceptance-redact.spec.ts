@@ -19,6 +19,49 @@ async function paste(text: string): Promise<void> {
   await ctx.page.getByTestId('redact-paste-start').click()
   await expect(ctx.page.getByTestId('redact-review')).toBeVisible()
 }
+
+for (const locale of ['zh', 'en'] as const) {
+  test(`staff role names default to codes and allow review overrides (${locale})`, async () => {
+    if (locale === 'en') {
+      await ctx.page.getByTestId('sidebar-nav-settings').click()
+      await ctx.page.getByTestId('settings-lang-select').selectOption('en')
+      await ctx.page.getByTestId('sidebar-nav-pii').click()
+    }
+    await paste('审核者\t评估者\t检查项目\n陈安宁\t赵嘉禾\t血常规\n复核者：陈安宁\n总审医生：杜知远\n检查机构：示例医院\n血钾 4.2 mmol/L')
+    const cards = ctx.page.getByTestId('redact-unsure')
+    await expect(cards).toHaveCount(4)
+    for (const card of await cards.all()) {
+      await expect(card.getByTestId('redact-choice-replace')).toHaveAttribute('aria-pressed', 'true')
+      await expect(card).toContainText(locale === 'zh' ? '医护人员姓名，建议换成代号' : "staff member's name; replace with a code")
+    }
+    const evaluator = cards.filter({ hasText: '评估者：' })
+    await evaluator.getByTestId('redact-choice-keep').click()
+    await expect(ctx.page.getByTestId('redact-preview-text')).toContainText('赵嘉禾')
+    await evaluator.getByTestId('redact-choice-replace').click()
+    const screenshots = join(__dirname, '..', 'tmp', 'e2e', 'staff-roles')
+    mkdirSync(screenshots, { recursive: true })
+    for (const [width, height] of [[1200, 800], [800, 600]]) {
+      await ctx.app.evaluate(({ BrowserWindow }, size) => BrowserWindow.getAllWindows()[0].setSize(size[0], size[1]), [width, height])
+      await cards.first().scrollIntoViewIfNeeded()
+      await ctx.page.screenshot({ path: join(screenshots, `${locale}-${width}x${height}.png`) })
+    }
+    await ctx.page.getByTestId('redact-review-next').click()
+    await expect(ctx.page.getByTestId('redact-residue')).toHaveAttribute('data-count', '0')
+    const prefix = locale === 'zh' ? '医生' : 'Doctor-'
+    const shared = ctx.page.getByTestId('redact-share-text')
+    for (const name of ['陈安宁', '赵嘉禾', '杜知远']) await expect(shared).not.toContainText(name)
+    expect((await shared.innerText()).match(new RegExp(`${prefix}1`, 'g'))).toHaveLength(2)
+    for (const text of [`${prefix}2`, `${prefix}3`, '示例医院', '血钾 4.2 mmol/L']) await expect(shared).toContainText(text)
+    await ctx.page.getByTestId('redact-copy').click()
+    const copied = await ctx.app.evaluate(() => (globalThis as { __cellsentryTestClipboard?: string }).__cellsentryTestClipboard)
+    expect(copied).toContain(`${prefix}1`)
+    expect(copied).not.toMatch(/陈安宁|赵嘉禾|杜知远/)
+    await ctx.page.getByTestId('redact-share-next').click()
+    await ctx.page.getByTestId('redact-answer').fill(`${prefix}1 / ${prefix}2 / ${prefix}3`)
+    await expect(ctx.page.getByTestId('redact-restored-text')).toHaveText('陈安宁 / 赵嘉禾 / 杜知远')
+  })
+}
+
 async function drop(): Promise<void> {
   await ctx.page.evaluate(() => window.dispatchEvent(new CustomEvent('cellsentry:test-drop', {
     detail: { files: [{ path: '/synthetic/fixture.pdf', name: 'fixture.pdf', size: 0 }] },

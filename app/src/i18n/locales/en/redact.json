@@ -30,7 +30,7 @@
     "record_label": "Check-up or medical record number",
     "name_label": "Looks like a name",
     "family_label": "Looks like a family member's name",
-    "doctor_label": "Looks like a doctor's name, usually kept",
+    "doctor_label": "Looks like a staff member's name; replace with a code",
     "address_label": "In an address field",
     "address_in_text": "An address in the text",
     "model": "The redaction assistant's call",

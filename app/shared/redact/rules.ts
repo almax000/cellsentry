@@ -2,8 +2,8 @@
  * Rule detector for Chinese medical records. Most check-up reports are
  * "label：value" forms, so field labels carry most of the signal; number shapes
  * (ID checksum, mobile prefixes, Luhn) cover values outside labelled fields.
- * Doctors, hospitals, drugs and test results are context the AI needs and are
- * never proposed for replacement by default.
+ * Staff names under explicit role labels are reviewable and replaced by
+ * default. Hospitals, drugs and test results remain medical context.
  */
 import type { Detector } from './detect'
 import type { CandidateReason, Certainty, Decision, DraftCandidate, NameRole, PiiCategory, SourceDocument } from './types'
@@ -24,7 +24,9 @@ const GLUED_LABEL = /(姓名|性别|年龄|出生日期|民族|职业|婚姻|电
 const BACKGROUND = /医生|医师|医院|机构|科室|单位|药|参考|项目|指标|结果|设备|仪器|订单|物流|快递|教学|测试|校验|示例|样例|发票|批号|型号|热线|客服|厂家|公司/
 const PATIENT_NAME = /^(?:(?:患者|病人|就诊人|受检人|受检者|体检人|体检者|客户|本人|参保人|参保人员)(?:姓名|签名|签字)?|姓名|名字)$/
 const FAMILY_NAME = /^(?:家属|联系人|紧急联系人|监护人|代理人|委托人|配偶|父亲|母亲|儿子|女儿|子女|丈夫|妻子|亲属|陪同人)(?:姓名|签名|签字)?$/
-const DOCTOR_NAME = /(?:医生|医师|主检|主治|审核|报告人|检查者|操作者|技师|护士)(?:姓名|签名|签字)?$/
+// Bare actions can hold statuses or treatment (审核：通过, 主治：药物治疗).
+// Require a person/title, or an explicit name/signature suffix for those labels.
+const DOCTOR_NAME = /(?:(?:医生|医师|(?:检查|检验|审核|评估|复核|报告|操作)[者人]|技师|护士)(?:姓名|签名|签字)?|(?:主检|主治|审核)(?:姓名|签名|签字))$/
 // A bare 签名 or 签字 with no role in front: someone signed, usually the patient or family.
 const SIGNATURE = /^(?:签名|签字|签署人)$/
 const ADDRESS = /^(?:(?:家庭|现|户籍|通讯|联系|居住|常住)?(?:住址|地址|居住地)|户籍)$/
@@ -224,6 +226,11 @@ function splitCells(line: string): Cell[] {
 }
 
 const HEADER_CELL = /^[\u4e00-\u9fffA-Za-z（）()/ ]{1,16}$/
+const CONTEXT_HEADER = /^(?:性别|年龄|民族|项目|检查项目|检验项目|结果|检查结果|检验结果|参考值|参考范围|参考区间|单位|结论|建议|备注|日期|检查日期|报告日期|科室)$/
+
+function nameHeader(label: string): boolean {
+  return PATIENT_NAME.test(label) || FAMILY_NAME.test(label) || SIGNATURE.test(label) || DOCTOR_NAME.test(label)
+}
 
 // "患者姓名为“赵青嘉”": a label, then 为 or 是, then the value in quotes.
 const QUOTED = /([\u4e00-\u9fff]{1,12})(?:为|是)[“「"]([^”」"\n]{1,80})[”」"]/g
@@ -236,8 +243,13 @@ export function parseFields(text: string): Field[] {
   for (const line of text.split('\n')) {
     const cells = splitCells(line)
     if (cells.length > 0) {
-      if (cells.every((cell) => HEADER_CELL.test(cell.text))) {
-        header = cells.map((cell) => normalizeLabel(cell.text))
+      const cellLabels = cells.map((cell) => normalizeLabel(cell.text))
+      // Names and Chinese clinical values also have a header's shape. After a
+      // person header, keep reading rows until another explicit header appears.
+      const nameRow = header?.length === cells.length && header.some(nameHeader)
+        && !cellLabels.some(nameHeader) && !cellLabels.some((label) => CONTEXT_HEADER.test(label))
+      if (cells.every((cell) => HEADER_CELL.test(cell.text)) && !nameRow) {
+        header = cellLabels
       } else if (header && cells.length === header.length) {
         const labels = header
         cells.forEach((cell, index) => {
@@ -864,7 +876,7 @@ function labelledFields(text: string, fields: Field[], out: Collector): void {
       if (PATIENT_NAME.test(label)) out.add(name.start, name.end, 'name', 'sure', 'name_label', { label, role: 'patient' })
       else if (FAMILY_NAME.test(label)) out.add(name.start, name.end, 'name', 'unsure', 'family_label', { label, role: 'family' })
       else if (isSignature) out.add(name.start, name.end, 'name', 'unsure', 'name_label', { label, role: 'other' })
-      else out.add(name.start, name.end, 'name', 'unsure', 'doctor_label', { label, role: 'doctor', suggestion: 'keep' })
+      else out.add(name.start, name.end, 'name', 'unsure', 'doctor_label', { label, role: 'doctor' })
     } else if (ADDRESS.test(label)) {
       // 户籍 alone may hold the kind of household, not a place (户籍：农业户口, 患者户籍为“城镇居民”).
       if (label === '户籍' && HOUSEHOLD_KIND.test(text.slice(field.valueStart, field.valueEnd).trim())) continue
