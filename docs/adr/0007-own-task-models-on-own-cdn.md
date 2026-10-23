@@ -1,11 +1,11 @@
 # ADR-0007：三个自调模型放在自有 CDN，App 内按需下载
 
-- **Status**: Accepted
+- **Status**: Superseded by ADR-0015
 - **Date**: 2026-10-18
 - **Deciders**: jojo
 - **Drafted by**: Claude Code · Opus 5.5（从 PRD 和当天的问答迁入）
 - **Supersedes**: ROADMAP.md Decision Log 里 2026-03-15「HuggingFace model hosting」、2026-03-16「Download UX: full-screen blocking」、2026-03-17「ModelScope China download」三行（都没有迁成 ADR）
-- **Superseded by**: —
+- **Superseded by**: ADR-0015
 - **Legacy ID**: PRD D6、D3 追问
 - **Related**: [PRD §3、§6、§10](../../.claude/product/PRD-v0-local-pii.md)、[可插拔端侧模型调研](../research/2026-10-18-pluggable-on-device-models.md)、[v2 分发核查](../evaluation/2026-10-17-v2-distribution-review.md)
 
@@ -51,13 +51,13 @@
 
 **风险**：
 
-- v2 的公开分发条款还要和模型作者确认。
-- CDN 的实际上传和部署需要 jojo 另外授权（PRD §10）。
+- jojo 已于本轮确认 v2 模型作者就是本人，不再存在等待第三方作者确认的阻塞；发行时仍须随包保留并核对 `LICENSE`、`NOTICE.txt`。
+- CDN 的实际上传和部署仍需要 jojo 另外授权（PRD §10）；本仓目前只有 R2/Worker 的本地预备配置，未上传、未绑定、未部署。
 - llama.cpp 的 GGUF 解析器出过高危漏洞（可插拔调研 P4）。固定版本、校验 SHA256、只开放可信清单能挡住大部分，但要持续跟踪安全公告。
 
 ## 重新评估的条件
 
-- v2 的分发条款确认不了：v2 不能放上 CDN，要在“用公开的旧版 v3 兜底”和“公式审计先不带 AI 复核”之间选。
+- 发行包的许可证或 NOTICE 核对失败：v2 不能放上 CDN，要在“用公开的旧版 v3 兜底”和“公式审计先不带 AI 复核”之间选。
 - 评估后 CDN 的费用或国内下载速度不可接受。
 - 到 macOS 版公开发布时，第三个模型（数据提取）还没有负责人。
 

@@ -8,9 +8,10 @@ export interface UpdateStatus {
   error?: string
 }
 
-export function initAutoUpdater(mainWindow: BrowserWindow): void {
+/** Attach status listeners only. Checking, downloading and installing need an explicit IPC action. */
+export function initManualUpdater(mainWindow: BrowserWindow): void {
   autoUpdater.autoDownload = false
-  autoUpdater.autoInstallOnAppQuit = true
+  autoUpdater.autoInstallOnAppQuit = false
 
   autoUpdater.logger = {
     info: (msg: string) => console.log('[updater]', msg),
@@ -46,11 +47,6 @@ export function initAutoUpdater(mainWindow: BrowserWindow): void {
   autoUpdater.on('error', (err: Error) => {
     send({ status: 'error', error: err.message })
   })
-
-  // Auto-check 30s after startup (silent, non-intrusive)
-  setTimeout(() => {
-    autoUpdater.checkForUpdates().catch(() => {})
-  }, 30_000)
 }
 
 export function registerUpdaterIpc(): void {
@@ -58,7 +54,7 @@ export function registerUpdaterIpc(): void {
     try {
       return await autoUpdater.checkForUpdates()
     } catch (err) {
-      // If initAutoUpdater wasn't called (dev mode) or no releases exist,
+      // If the updater cannot check (for example no releases exist),
       // fire the error status manually so the UI gets feedback
       const windows = BrowserWindow.getAllWindows()
       if (windows[0]) {

@@ -1,5 +1,12 @@
 import type { ModelDownloadResult } from '../../shared/modelDownload'
 
+export class ModelDownloadNotConfiguredError extends Error {
+  constructor() {
+    super('No approved model download source is configured')
+    this.name = 'ModelDownloadNotConfiguredError'
+  }
+}
+
 export class ModelDownloadHttpError extends Error {
   constructor(readonly statusCode: number) {
     super(`HTTP error ${statusCode}`)
@@ -13,6 +20,9 @@ export function isUnavailableDownloadSource(error: unknown): boolean {
 
 /** Only typed transport status is actionable; never infer authorization from error text. */
 export function modelDownloadFailure(error: unknown): ModelDownloadResult {
+  if (error instanceof ModelDownloadNotConfiguredError) {
+    return { success: false, failureReason: 'not_configured', error: 'No official model download is available' }
+  }
   if (error instanceof ModelDownloadHttpError) {
     if (error.statusCode === 401 || error.statusCode === 403) {
       return { success: false, failureReason: 'access_denied', error: 'Model source access denied' }

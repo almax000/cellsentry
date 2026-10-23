@@ -4,8 +4,10 @@ import { readFileSync, writeFileSync, appendFileSync, mkdirSync } from 'fs'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { registerIpcHandlers } from './ipc'
 import { setEngineLocale } from '../engine/locale'
-import { initAutoUpdater, registerUpdaterIpc } from './updater'
+import { initManualUpdater, registerUpdaterIpc } from './updater'
 import { setupLlmLifecycle, startLlm } from '../llm/lifecycle'
+import { installBundledModel, setBundledModelError } from '../model/bundled'
+import { getBundledModelDir, getModelsDir } from '../model/paths'
 
 import { IS_TEST_MODE } from '../testMode'
 // Automated runs keep the window off screen and never take focus from the person at the desk.
@@ -348,11 +350,26 @@ if (!gotTheLock) {
               + " style-src 'self' 'unsafe-inline';"
               + " img-src 'self' data: blob:;"
               + " font-src 'self' data:;"
-              + " connect-src 'self' https://github.com https://*.github.com;"
+              + " connect-src 'self';"
             ]
           }
         })
       })
+    }
+
+    // Finish bootstrap before renderer model maintenance/analysis can race it.
+    if (app.isPackaged && (!IS_TEST_MODE || process.env.CELLSENTRY_TEST_BUNDLED_MODEL === '1')) {
+      const controller = new AbortController()
+      const abort = (): void => controller.abort()
+      app.once('before-quit', abort)
+      try {
+        await installBundledModel({ packageDir: getBundledModelDir(), modelsDir: getModelsDir(), signal: controller.signal })
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Offline model installation failed'
+        setBundledModelError(message)
+        console.warn('[offline-model]', message)
+      } finally { app.removeListener('before-quit', abort) }
+      if (controller.signal.aborted) return
     }
 
     createAppMenu()
@@ -371,9 +388,7 @@ if (!gotTheLock) {
       mainWindow.webContents.setZoomLevel(clamped)
     })
 
-    if (!is.dev && !IS_TEST_MODE) {
-      initAutoUpdater(mainWindow)
-    }
+    initManualUpdater(mainWindow)
 
     // Warm up an already installed model without blocking the rule-based tools.
     if (!IS_TEST_MODE) startLlm().catch(() => {})

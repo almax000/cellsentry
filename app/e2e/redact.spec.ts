@@ -160,6 +160,7 @@ test.describe('Document redaction', () => {
     await useChinese()
     await openRedaction()
     // Synthetic fixtures made by native/docreader/make-fixtures.swift; 测试甲 is not a real person.
+    expect(await page.evaluate(() => window.api.getModelStatus())).toMatchObject({ exists: false, loaded: false })
     const files = [
       { path: join(__dirname, 'fixtures', 'redact', 'synthetic-report.pdf'), name: 'synthetic-report.pdf' },
       { path: join(__dirname, 'fixtures', 'redact', 'synthetic-report-photo.png'), name: 'synthetic-report-photo.png' },
@@ -197,7 +198,11 @@ test.describe('Document redaction', () => {
       expect(shared).not.toContain('【文件 2】')
       expect(codes).toHaveLength(1)
     }
+    await page.getByTestId('redact-copy').click()
+    expect(await ctx.app.evaluate(() => (globalThis as { __cellsentryTestClipboard?: string }).__cellsentryTestClipboard)).toBe(shared)
     await page.locator('[data-testid="redact-share-next"]').click()
+    await page.getByTestId('redact-answer').fill(`${codes[0]} 的总胆固醇需要复查。`)
+    await expect(page.getByTestId('redact-restored-text')).toContainText('测试甲 的总胆固醇需要复查。')
     await page.locator('[data-testid="redact-start-over"]').click()
     await page.locator('[data-testid="redact-start-over-yes"]').click()
     await expect(page.locator('[data-testid="entry-pii"]')).toBeVisible()

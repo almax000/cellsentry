@@ -42,4 +42,6 @@ python scripts/predict_formula_jev.py --checkpoint <解压目录> --case-id TC00
 
 [私有 Release：formula-cancellation-v2-20261016](https://github.com/yourblacksky/cellsentry-formula-review/releases/tag/formula-cancellation-v2-20261016) 保存独立 Q4_K_M GGUF（约1.56 GB）和完整续训 LoRA ZIP（约49 MB）。精确大小、SHA256与底座版本见 [formula-cancellation-v2-manifest.json](formula-cancellation-v2-manifest.json)。v2 从 v1 继续训练，ZIP 已包含完整选定 LoRA 张量，直接搭配固定官方聊天版底座加载，不要重复叠加 v1。
 
-仅训练公式，隐私与提取只做回归。外部580条原始撤销正确率58.8%→75.6%，误撤49→21；验证门槛后77.3%（58/75），仍误撤17条，未达到95%的可靠撤销目标。模型保留为研究候选，不替换应用默认模型，不自动撤销告警。[完整报告](../benchmark-results/formula-cancellation-v2/report.md) 与 [验收记录](../benchmark-results/formula-cancellation-v2/acceptance.json)。
+仅训练公式，隐私与提取只做回归。外部580条原始撤销正确率58.8%→75.6%，误撤49→21；验证门槛后77.3%（58/75），仍误撤17条，未达到95%的可靠撤销目标。该 GGUF 是桌面公式复核的可选配置候选，但不自动启用、不能替代内置规则，也不能自动撤销告警；用户必须主动完成模型设置后才会参与复核。[完整报告](../benchmark-results/formula-cancellation-v2/report.md) 与 [验收记录](../benchmark-results/formula-cancellation-v2/acceptance.json)。
+
+公开分发方案已改为 GitHub Releases（ADR-0015），目标独立标签 `model-formula-cancellation-v2-20261016`。当前仅准备固定五文件发行包，尚未公开上传或启用 App 下载；具体程序见 [模型发行程序](../docs/deployment/model-cdn.md) 。原私有 Release 链接保留作来源记录。

@@ -1,0 +1,6 @@
+Derived from OpenBMB MiniCPM5-2B, Apache-2.0.
+Base revision: f97400052a43d642bbc6e9975e2397e3ae6a6b52
+New formula-only rank-8 chat LoRA. PII and extraction are regression-only.
+Requires the official BF16 chat base for PEFT; standalone GGUF includes inference weights.
+Saved LoRA tensors are complete; do not stack an earlier adapter on top of this one.
+This is not a CPM-jev decision-head adapter. See comparison.json for limitations.

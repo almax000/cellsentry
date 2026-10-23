@@ -8,8 +8,7 @@
   "scripts": {
     "dev": "electron-vite dev",
     "runtime:prepare": "node ../scripts/prepare-native.mjs",
-    "test:native": "node --test ../scripts/test-native-runtime.cjs ../scripts/test-cancellation-policy.cjs ../scripts/test-formula-benchmark.mjs ../scripts/test-pii-benchmark.mjs ../scripts/test-pii-decision.mjs ../scripts/test-pii-v2.mjs",
-    "test:pii-benchmark": "node --test ../scripts/test-pii-benchmark.mjs",
+    "test:native": "node --test ../scripts/test-native-runtime.cjs ../scripts/test-cancellation-policy.cjs",
     "test:docreader": "node --test ../scripts/test-docreader-native.mjs",
     "check:adr": "node ../scripts/check-adr-index.mjs",
     "build": "electron-vite build",

@@ -230,6 +230,7 @@
     "toOriginal": "Click to restore the original",
     "ambiguous_one": "1 spot reads like an ordinary word, so it was not restored. It has a dashed outline; click it if it is a code.",
     "ambiguous": "{{count}} spots read like ordinary words, so they were not restored. They have a dashed outline; click one if it is a code.",
-    "replaced_one": "1 restored"
+    "replaced_one": "1 restored",
+    "canonical": "Restoring uses the spelling saved in the code list. Differences in spaces or quotes for the same address are not preserved exactly; a street-only mention may become the full address."
   }
 }

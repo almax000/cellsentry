@@ -5,8 +5,7 @@ import {
   existsSync, statSync, statfsSync, unlinkSync, renameSync, mkdirSync
 } from 'fs'
 import { join } from 'path'
-import { ModelDownloadHttpError, isUnavailableDownloadSource } from './downloadFailure'
-import type { LlmAnalysisMode } from '../llm/types'
+import { ModelDownloadHttpError, ModelDownloadNotConfiguredError, isUnavailableDownloadSource } from './downloadFailure'
 
 /** Minimal response interface compatible with both Electron net and Node.js http */
 interface DownloadResponse {
@@ -20,30 +19,8 @@ interface DownloadResponse {
   resume?: () => void
 }
 
-export interface ModelInfo {
-  name: string
-  filename: string
-  version: string
-  size: number
-  sha256: string
-  downloadUrl: string       // HuggingFace (global primary)
-  mirrorUrl?: string        // hf-mirror.com (global fallback)
-  cnPrimaryUrl?: string     // ModelScope (China primary)
-  description: string
-  /** Declared task scope for this model artifact, not a quality guarantee. */
-  supportedTasks?: readonly LlmAnalysisMode[]
-}
-
-export const DEFAULT_MODEL: ModelInfo = {
-  name: 'CellSentry MiniCPM5-2B Cancellation v2',
-  filename: 'cellsentry-minicpm5-2b-cancel2-q4_k_m.gguf',
-  version: 'formula-cancellation-v2-20261016',
-  size: 1_561_314_592,
-  sha256: '61d9c8ab8007dbbde0eb004089d1411fb6ec7167031f9d6fcc5b521fe8ebe49a',
-  downloadUrl: 'https://github.com/yourblacksky/cellsentry-formula-review/releases/download/formula-cancellation-v2-20261016/cellsentry-minicpm5-2b-cancel2-q4_k_m.gguf',
-  description: 'MiniCPM5-2B formula review v2 (Q4_K_M, thinking disabled)',
-  supportedTasks: ['audit'],
-}
+import { DEFAULT_MODEL, type ModelInfo } from './catalog'
+export { DEFAULT_MODEL, type ModelInfo } from './catalog'
 
 export type ProgressCallback = (downloaded: number, total: number, message: string) => void
 
@@ -97,6 +74,7 @@ export class ModelDownloader {
   }
 
   async download(): Promise<boolean> {
+    if (!this.canDownload()) throw new ModelDownloadNotConfiguredError()
     // If already downloading, return the same promise (handles React StrictMode double-mount)
     if (this._downloadPromise) return this._downloadPromise
     this.cancelled = false
@@ -108,16 +86,20 @@ export class ModelDownloader {
     }
   }
 
+  canDownload(): boolean {
+    return this.buildUrlList().length > 0
+  }
+
   private buildUrlList(): string[] {
     const isChinese = this.locale.startsWith('zh')
     if (isChinese) {
       const urls: string[] = []
       if (this.modelInfo.cnPrimaryUrl) urls.push(this.modelInfo.cnPrimaryUrl)
       if (this.modelInfo.mirrorUrl) urls.push(this.modelInfo.mirrorUrl)
-      urls.push(this.modelInfo.downloadUrl)
+      if (this.modelInfo.downloadUrl) urls.push(this.modelInfo.downloadUrl)
       return urls
     }
-    const urls = [this.modelInfo.downloadUrl]
+    const urls: string[] = this.modelInfo.downloadUrl ? [this.modelInfo.downloadUrl] : []
     if (this.modelInfo.mirrorUrl) urls.push(this.modelInfo.mirrorUrl)
     if (this.modelInfo.cnPrimaryUrl) urls.push(this.modelInfo.cnPrimaryUrl)
     return urls
@@ -210,7 +192,8 @@ export class ModelDownloader {
       const req = net.request({
         method: 'GET',
         url,
-        redirect: 'follow',
+        // An approved source must not silently send the user to another host.
+        redirect: 'error',
       })
 
       for (const [key, value] of Object.entries(headers)) {

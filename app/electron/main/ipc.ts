@@ -27,7 +27,8 @@ import { getFileInfo, readFileCells } from '../engine/excelReader'
 import { generateReport } from '../report/generator'
 import { ModelDownloader, DEFAULT_MODEL } from '../model/downloader'
 import { importModelFile } from '../model/importer'
-import { modelDownloadFailure } from '../model/downloadFailure'
+import { modelSetupError, setBundledModelError } from '../model/bundled'
+import { ModelDownloadNotConfiguredError, modelDownloadFailure } from '../model/downloadFailure'
 import { getModelsDir } from '../model/paths'
 export { getModelsDir } from '../model/paths'
 import { getLlmStatus, analyzeWithLlm, startLlm, cancelLlmAnalysis } from '../llm/lifecycle'
@@ -142,6 +143,7 @@ export function registerIpcHandlers(): void {
         if (chosen.canceled || !chosen.filePaths[0]) return { success: false, cancelled: true }
         await cancelLlmAnalysis()
         await importModelFile(chosen.filePaths[0], getDownloader().getModelPath(), DEFAULT_MODEL.size, DEFAULT_MODEL.sha256)
+        setBundledModelError()
         return { success: true }
       })
     } catch (error) { return { success: false, error: String(error) } }
@@ -152,6 +154,8 @@ export function registerIpcHandlers(): void {
   })
 
   ipcMain.handle('sidecar:model-download', async (event) => {
+    // Reject before model maintenance can interrupt an active local analysis.
+    if (!getDownloader().canDownload()) return modelDownloadFailure(new ModelDownloadNotConfiguredError())
     try {
       return await withModelMaintenance(async () => {
         await cancelLlmAnalysis()
@@ -181,6 +185,7 @@ export function registerIpcHandlers(): void {
   ipcMain.handle('sidecar:model-status', async () => {
     const status = await getLlmStatus()
     return {
+      downloadAvailable: getDownloader().canDownload(),
       exists: getDownloader().checkModelExists(),
       loaded: status.modelLoaded,
       available: status.available,
@@ -188,7 +193,7 @@ export function registerIpcHandlers(): void {
       name: DEFAULT_MODEL.name,
       size: `${Math.round(DEFAULT_MODEL.size / 1024 / 1024)} MiB`,
       reason: status.reason,
-      error: status.error,
+      error: modelSetupError(status),
     }
   })
 

@@ -8,6 +8,7 @@ import type { ModelDownloadResult } from './modelDownload'
 import type { RedactAPI } from './redact/ipc'
 
 export interface ModelStatus {
+  downloadAvailable: boolean
   exists: boolean
   loaded: boolean
   available: boolean

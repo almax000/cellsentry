@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - 'v*'
+      # RC assets are built and verified separately; never overwrite them from the legacy pipeline.
+      - '!v*-rc.*'
   workflow_dispatch:
 
 permissions:
@@ -31,6 +33,10 @@ jobs:
         working-directory: app
         run: npm ci
 
+      - name: Build the macOS document reader
+        working-directory: app
+        run: npm run build:docreader
+
       - name: Build (electron-vite)
         working-directory: app
         run: npx electron-vite build
@@ -38,6 +44,10 @@ jobs:
       - name: TypeScript and regression tests
         working-directory: app
         run: npm run typecheck && npm run test:unit && npm run test:e2e
+
+      - name: Native protocol and lifecycle tests
+        working-directory: app
+        run: npm run test:native
 
   # ── Stage 2: Build macOS ──────────────────────────────────────────────
   build-mac:
@@ -59,6 +69,10 @@ jobs:
         working-directory: app
         run: npm ci
 
+      - name: Build the macOS document reader
+        working-directory: app
+        run: npm run build:docreader
+
       - name: Build (electron-vite)
         working-directory: app
         run: npx electron-vite build
@@ -74,14 +88,15 @@ jobs:
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
+          node ../scripts/prepare-native.mjs
           if [ -z "$HAS_CODE_SIGN" ]; then
             echo "No code signing cert — building unsigned"
             unset CSC_LINK CSC_KEY_PASSWORD APPLE_ID APPLE_APP_SPECIFIC_PASSWORD APPLE_TEAM_ID
             export CSC_IDENTITY_AUTO_DISCOVERY=false
-            npx electron-builder --mac -c.mac.notarize=false
+            npx electron-builder --mac -c.mac.notarize=false --publish never
           else
             echo "Code signing cert found — building signed + notarized"
-            npx electron-builder --mac
+            npx electron-builder --mac --publish never
           fi
 
       - name: List build artifacts
@@ -118,6 +133,7 @@ jobs:
           files: |
             app/dist/*.dmg
             app/dist/*.zip
+            app/dist/*.zip.blockmap
             app/dist/latest-mac.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

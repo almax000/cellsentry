@@ -13,6 +13,10 @@ export function getRuntimeDir(): string {
   return join(root, 'native', `${process.platform}-${process.arch}`)
 }
 
+export function getBundledModelDir(): string {
+  return join(process.resourcesPath, 'offline-model')
+}
+
 export function getRuntimeExecutable(): string {
   if (process.env.CELLSENTRY_LLAMA_SERVER) return resolve(process.env.CELLSENTRY_LLAMA_SERVER)
   const root = getRuntimeDir()

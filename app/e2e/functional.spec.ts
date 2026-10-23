@@ -134,9 +134,20 @@ test.describe('Settings', () => {
     expect(before.exists).toBe(false)
     expect(before.loaded).toBe(false)
     await page.getByTestId('settings-setup-model').click()
-    await expect(page.getByTestId('model-download-start')).toBeVisible()
+    // The name and download availability come from the same async status response.
+    await expect(page.locator('.model-tech-details')).toContainText(before.name)
+    expect(before.downloadAvailable).toBe(false)
+    await expect(page.getByTestId('model-download-start')).toHaveCount(0)
+    await expect(page.getByTestId('model-download-unavailable')).toBeVisible()
+    expect(await page.evaluate(() => window.api.downloadModel())).toMatchObject({ success: false, failureReason: 'not_configured' })
     await expect(page.getByTestId('model-import-start')).toBeVisible()
     await expect(page.getByTestId('model-download-progress')).toHaveCount(0)
+    const screenshots = join(__dirname, '..', 'tmp', 'e2e', 'release-acceptance')
+    mkdirSync(screenshots, { recursive: true })
+    for (const [width, height] of [[1200, 800], [800, 600]]) {
+      await ctx.app.evaluate(({ BrowserWindow }, size) => BrowserWindow.getAllWindows()[0].setSize(size[0], size[1]), [width, height])
+      await page.screenshot({ path: join(screenshots, `model-unavailable-${width}x${height}.png`), animations: 'disabled' })
+    }
 
     const directory = join(__dirname, '..', 'tmp', 'e2e', 'fixtures')
     mkdirSync(directory, { recursive: true })

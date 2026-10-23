@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - 'v*'
+      # RC assets are built and verified separately; never overwrite them from the legacy pipeline.
+      - '!v*-rc.*'
   workflow_dispatch:
 
 permissions:
@@ -39,6 +41,10 @@ jobs:
         working-directory: app
         run: npm run typecheck && npm run test:unit && npm run test:e2e
 
+      - name: Native protocol and lifecycle tests
+        working-directory: app
+        run: npm run test:native
+
   # ── Stage 2: Build Windows ───────────────────────────────────────────
   build-windows:
     runs-on: windows-latest
@@ -67,7 +73,9 @@ jobs:
         working-directory: app
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx electron-builder --win --x64
+        run: |
+          node ../scripts/prepare-native.mjs win32-x64
+          npx electron-builder --win --x64 --publish never
 
       - name: Sign executable (optional)
         if: env.CODE_SIGN_CERT != ''

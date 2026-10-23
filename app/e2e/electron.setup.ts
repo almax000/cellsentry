@@ -1,7 +1,16 @@
 import { _electron as electron, type ElectronApplication, type Page } from '@playwright/test'
-import { mkdirSync, writeFileSync } from 'fs'
+import { existsSync, mkdirSync, writeFileSync } from 'fs'
 import { randomUUID } from 'crypto'
-import { join } from 'path'
+import { dirname, join } from 'path'
+
+/** Reject an incomplete macOS bundle before dyld can crash and queue a system dialog. */
+function validateElectronExecutable(executable: string): void {
+  if (!existsSync(executable)) throw new Error('Electron executable is missing; set CELLSENTRY_E2E_ELECTRON to a complete installation')
+  if (process.platform === 'darwin') {
+    const framework = join(dirname(executable), '..', 'Frameworks', 'Electron Framework.framework', 'Electron Framework')
+    if (!existsSync(framework)) throw new Error('Electron Framework is missing; set CELLSENTRY_E2E_ELECTRON to a complete installation')
+  }
+}
 
 function electronExecutablePath(): string {
   // A worktree can share node_modules without a complete Electron bundle; point at one that has it.
@@ -32,8 +41,10 @@ export async function launchApp(options: { xlsxGatePath?: string } = {}): Promis
   if (packagedExecutable && options.xlsxGatePath) {
     throw new Error('The source ExcelJS gate is not a packaged-app verification path')
   }
+  const executable = packagedExecutable || electronExecutablePath()
+  validateElectronExecutable(executable)
   const app = await electron.launch({
-    executablePath: packagedExecutable || electronExecutablePath(),
+    executablePath: executable,
     args: packagedExecutable ? [] : ['--require', join(__dirname, 'exceljs-read-gate.cjs'), join(__dirname, '..', 'out', 'main', 'index.js')],
     env: {
       ...process.env,

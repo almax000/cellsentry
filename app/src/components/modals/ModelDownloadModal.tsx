@@ -19,6 +19,7 @@ export default function ModelDownloadModal({ onClose, forceDownload = false }: M
   const [progress, setProgress] = useState(0)
   const [phase, setPhase] = useState<DownloadPhase>('ready')
   const [installed, setInstalled] = useState(false)
+  const [downloadAvailable, setDownloadAvailable] = useState(false)
   const [error, setError] = useState('')
   const [failureReason, setFailureReason] = useState<ModelDownloadFailureReason | null>(null)
   const [modelName, setModelName] = useState('')
@@ -30,7 +31,10 @@ export default function ModelDownloadModal({ onClose, forceDownload = false }: M
     active.current = true
     let disposed = false
     void window.api.getModelStatus().then(status => {
-      if (!disposed) setModelName(status.name)
+      if (!disposed) {
+        setModelName(status.name)
+        setDownloadAvailable(status.downloadAvailable === true)
+      }
       if (!disposed && !busy.current) {
         setInstalled(status.exists)
         if (status.loaded && !forceDownload) setPhase('done')
@@ -104,14 +108,15 @@ export default function ModelDownloadModal({ onClose, forceDownload = false }: M
   const title = t(`modelDownload.${titleKey}`)
   const displayError = IMPORT_MISMATCH.test(error) ? t('modelDownload.importWrongFile') : error
   const guidanceKey = failureReason ? `modelDownload.failureGuidance.${failureReason}` : null
-  const preferImport = phase === 'error' && (failureReason === 'access_denied' || failureReason === 'source_unavailable')
+  const preferImport = !downloadAvailable || (phase === 'error' && (failureReason === 'access_denied' || failureReason === 'source_unavailable' || failureReason === 'not_configured'))
   const downloadButton = <button className={`btn ${preferImport ? 'btn-secondary' : 'btn-primary'}`} data-testid="model-download-start" onClick={() => void prepare('download')}>{t(phase === 'error' ? 'modelDownload.retryDownload' : 'modelDownload.downloadNow', { size: MODEL_SIZE })}</button>
   const importButton = <button className={`btn ${preferImport ? 'btn-primary' : 'btn-secondary'}`} data-testid="model-import-start" onClick={() => void prepare('import')}>{t('modelDownload.importLocal')}</button>
   return <div className="model-download-page">
     <div className="model-download-card" data-testid="model-download-modal" role="region" aria-label={title}>
       <div className="modal-icon">{phase === 'done' ? <CheckIcon size={24} /> : phase === 'error' ? <AlertIcon size={24} /> : <DownloadIcon size={24} />}</div>
       <div className="modal-title">{title}</div>
-      <div className="modal-subtitle" role="status">{phase === 'error' ? displayError : t(`modelDownload.${phase === 'done' ? 'readySubtitle' : 'optionalSubtitle'}`, { size: MODEL_SIZE })}</div>
+      <div className="modal-subtitle" role="status">{phase === 'error' ? displayError : t(`modelDownload.${phase === 'done' ? 'readySubtitle' : downloadAvailable ? 'optionalSubtitle' : 'localSetupSubtitle'}`, { size: MODEL_SIZE })}</div>
+      {!downloadAvailable && phase !== 'done' && <p className="model-import-requirement" data-testid="model-download-unavailable">{t('modelDownload.notConfigured')}</p>}
       {phase === 'error' && guidanceKey && <div className="model-download-guidance" data-testid="model-download-guidance" role="status">
         <strong>{t(`${guidanceKey}.title`)}</strong>
         <p>{t(`${guidanceKey}.body`)}</p>
@@ -129,7 +134,7 @@ export default function ModelDownloadModal({ onClose, forceDownload = false }: M
       {(phase === 'loading' || phase === 'importing') && <p role="status">{t(`modelDownload.${phase === 'loading' ? 'loadingModel' : 'sha256Check'}`)}</p>}
       {(phase === 'ready' || phase === 'error') && <>
         {installed && !forceDownload && <button className="btn btn-primary" onClick={() => void prepare('installed')}>{t('modelDownload.loadExisting')}</button>}
-        {preferImport ? <>{importButton}{downloadButton}</> : <>{downloadButton}{importButton}</>}
+        {preferImport ? <>{importButton}{downloadAvailable && downloadButton}</> : <>{downloadAvailable && downloadButton}{importButton}</>}
       </>}
       <button className={`btn ${phase === 'done' ? 'btn-primary' : 'btn-secondary'}`} data-testid="model-download-close" onClick={close}>{t(phase === 'done' ? 'modelDownload.returnToSettings' : 'modelDownload.cancelAndContinue')}</button>
       {/* Technical name, file and exact size stay out of the primary text. */}

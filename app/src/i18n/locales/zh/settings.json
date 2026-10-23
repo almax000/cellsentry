@@ -10,7 +10,7 @@
   "retryModel": "启动公式助手",
   "loadingModel": "正在启动…",
   "modelUnavailable": "公式助手没能启动。内置检查不受影响，可以照常使用。",
-  "redownloadModel": "重新下载",
+  "redownloadModel": "更换模型文件",
   "technicalInfo": "技术信息",
   "techModel": "模型",
   "techFile": "文件名",

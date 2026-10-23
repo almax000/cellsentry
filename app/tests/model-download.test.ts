@@ -6,7 +6,7 @@ import { createHash } from 'node:crypto'
 
 const transport = vi.hoisted(() => ({ request: vi.fn() }))
 vi.mock('electron', () => ({ net: transport }))
-import { ModelDownloader, type ModelInfo } from '../electron/model/downloader'
+import { DEFAULT_MODEL, ModelDownloader, type ModelInfo } from '../electron/model/downloader'
 import { modelDownloadFailure } from '../electron/model/downloadFailure'
 
 let directory: string
@@ -29,6 +29,7 @@ const data = Buffer.from('GGUF-test-model')
 const model: ModelInfo = { name: 'fixture', filename: 'fixture.gguf', version: '1', size: data.length,
   sha256: createHash('sha256').update(data).digest('hex'), downloadUrl: 'https://example.invalid/model', description: '' }
 beforeEach(async () => {
+  transport.request.mockClear()
   const base = resolve(__dirname, '../../tmp/tests')
   await mkdir(base, { recursive: true })
   directory = await mkdtemp(join(base, 'download-'))
@@ -38,6 +39,24 @@ beforeEach(async () => {
 afterEach(async () => { vi.useRealTimers(); await rm(directory, { recursive: true, force: true }) })
 
 describe('model download recovery', () => {
+  it.each(['en', 'zh'])('never opens a remote request before an official source is configured (%s)', async (locale) => {
+    const downloader = new ModelDownloader(directory, undefined, locale)
+    expect(downloader.canDownload()).toBe(false)
+    expect(DEFAULT_MODEL.downloadUrl).toBeUndefined()
+    await expect(downloader.download().catch(modelDownloadFailure)).resolves.toMatchObject({
+      success: false, failureReason: 'not_configured',
+    })
+    expect(transport.request).not.toHaveBeenCalled()
+  })
+
+  it('does not follow redirects from a configured source', async () => {
+    const downloader = new ModelDownloader(directory, model)
+    const result = downloader.download()
+    expect(transport.request).toHaveBeenCalledWith(expect.objectContaining({ redirect: 'error' }))
+    downloader.cancel()
+    await expect(result).resolves.toBe(false)
+  })
+
   it.each([401, 403, 404])('does not retry the same unavailable source on HTTP %i', async (statusCode) => {
     const downloader = new ModelDownloader(directory, model)
     const result = downloader.download().catch(modelDownloadFailure)

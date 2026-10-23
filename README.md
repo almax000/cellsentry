@@ -19,7 +19,7 @@
 
 ---
 
-> **Note**: CellSentry is an experimental research project in active development. The AI model is a fine-tuned 1.5B parameter SLM — expect rough edges. Feedback and contributions welcome.
+> **Note**: CellSentry is an experimental research project in active development. The optional formula assistant uses a fine-tuned local model; PII redaction and extraction retain their rule/template paths. Feedback and contributions welcome.
 
 <p align="center">
   <img src="assets/app-dropzone.png" alt="Drop zone — drag and drop spreadsheets" width="700">
@@ -36,7 +36,7 @@
 
 ## What is CellSentry?
 
-CellSentry is a desktop app that explores using local small language models (SLMs) for spreadsheet intelligence tasks. It combines a deterministic rule engine with an optional 1.5B LLM for three analysis modes:
+CellSentry is a desktop app that explores using local small language models (SLMs) for spreadsheet intelligence tasks. It provides three analysis modes, with deterministic rules and an optional local formula-review model:
 
 ### Formula Audit
 
@@ -80,25 +80,21 @@ CellSentry is a desktop app that explores using local small language models (SLM
 | macOS | [CellSentry.dmg](https://github.com/almax000/cellsentry/releases/latest) |
 | Windows | [CellSentry-Setup.exe](https://github.com/almax000/cellsentry/releases/latest) |
 
+## Offline macOS technical preview
+
+The Apple Silicon offline preview contains the pinned MiniCPM5-2B formula-review model (1,561,314,592 bytes). Drag the app into Applications; first launch verifies and copies the model into the app's user-data directory. The separate lean update ZIP contains the program only and reuses an installed model. It is not a complete offline first-install download.
+
+[Offline macOS preview](https://github.com/almax000/cellsentry/releases/tag/v1.1.0-beta.2-rc.20261023.1)
+
+This preview is unsigned and not notarized; Gatekeeper approval and automatic update installation have not been validated. Initial local preparation took about 23 seconds before the window appeared. The stable Latest release remains unchanged.
+
 ## AI Model
 
-CellSentry uses a fine-tuned local SLM for AI-enhanced analysis. The model:
-
-- **[almax000/cellsentry-model](https://huggingface.co/almax000/cellsentry-model)** on HuggingFace (~940 MB, GGUF)
-- Fine-tuned from [Qwen2.5-1.5B](https://huggingface.co/Qwen/Qwen2.5-1.5B) with LoRA
-- Multi-task: formula audit verification, PII classification, data extraction
-- Runs entirely on your machine with bundled node-llama-cpp (Metal on supported Macs; native backend on Windows)
-- Optional download from Settings; the application opens and analyzes spreadsheets without a model
-- **Gracefully degrades** — all three features work without the model
-
-Use **Settings → Download AI model** to download and verify the model into the application data directory. A file existing on disk is not evidence that AI loaded: Settings reports the actual native runtime state.
-
-### Current Limitations
-
-- Model trained on English and Chinese data only
-- PII patterns cover US and CN formats (no EU/JP/KR patterns yet)
-- Extraction templates for 5 document types
-- 1024 token context — AI receives bounded samples; it does not inspect every cell in a large workbook
+- The current optional model is MiniCPM5-2B formula review v2, executed locally by bundled llama.cpp b11429 (Metal on Apple Silicon; CPU on other supported desktop targets).
+- Its declared scope is formula review. PII redaction and data extraction use rules/templates; this model is not a validated PII model.
+- The app opens and supports deterministic tools without a model. Remote model downloading remains disabled while distribution sources are being validated; approved local GGUF import is available in Settings.
+- Import and runtime startup verify the pinned full SHA256. Settings reports the actual native runtime state.
+- The older Qwen-based Hugging Face artifact is a historical release, not the current formula-review model.
 
 ## Build from Source
 

@@ -83,6 +83,7 @@ export default function RedactRestorePage(): JSX.Element {
               })}
             </pre>
           ) : <p className="redact-note">{t('restore.empty')}</p>}
+          <p className="redact-note" data-testid="redact-canonical-restore">{t('restore.canonical')}</p>
           {answer && (restored.replaced > 0 || restored.ambiguous > 0) && <p className="redact-note">{t('restore.toggleHint')}</p>}
           {restored.ambiguous > 0 && (
             <p className="redact-alert" role="status" data-testid="redact-ambiguous">{t('restore.ambiguous', { count: restored.ambiguous })}</p>

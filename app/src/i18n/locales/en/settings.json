@@ -10,7 +10,7 @@
   "retryModel": "Start Formula assistant",
   "loadingModel": "Starting…",
   "modelUnavailable": "The Formula assistant couldn't start. Built-in checks are not affected and work as usual.",
-  "redownloadModel": "Download again",
+  "redownloadModel": "Replace model file",
   "technicalInfo": "Technical info",
   "techModel": "Model",
   "techFile": "File name",

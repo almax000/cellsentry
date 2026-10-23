@@ -46,8 +46,14 @@
       "other": {
         "title": "Automatic download did not finish",
         "body": "Check your internet connection and free disk space, then try again. You can also keep using the built-in checks or import a model file you already downloaded."
+      },
+      "not_configured": {
+        "title": "Official download is not available",
+        "body": "An official download is not available yet. You can import a model file you are authorized to use; built-in checks remain available."
       }
-    }
+    },
+    "notConfigured": "An official download is not available yet.",
+    "localSetupSubtitle": "The Formula assistant reviews formula findings on this computer to reduce false alarms. Every built-in check works without it. Model file: {{size}}; works offline after setup."
   },
   "confirm": {
     "defaultConfirm": "Confirm",

@@ -22,6 +22,11 @@ async function stubDownload(ctx: TestContext, result: ModelDownloadResult): Prom
   await ctx.app.evaluate(({ ipcMain }, response) => {
     ipcMain.removeHandler('sidecar:model-download')
     ipcMain.handle('sidecar:model-download', async () => response)
+    ipcMain.removeHandler('sidecar:model-status')
+    ipcMain.handle('sidecar:model-status', async () => ({
+      downloadAvailable: true, exists: false, loaded: false, available: false,
+      backend: 'none', name: 'Synthetic configured source', size: '1.56 GB',
+    }))
   }, result)
 }
 
