@@ -38,6 +38,19 @@ node scripts/prepare-offline-mac-build.mjs \
 
 全机只运行一个重型验证。开始前检查内存和其他构建进程。默认工作流未接入此原型：自动从新模型源取权重、上传 HF/SourceForge、发布安装包另行决定。
 
+## 正式候选的前置检查
+
+准备正式候选时，在上述命令添加 `--release`。它要求本机 electron-builder 25.1.8 支持的一整组公证认证变量：`APPLE_KEYCHAIN_PROFILE`；或 `APPLE_ID`、`APPLE_APP_SPECIFIC_PASSWORD`、`APPLE_TEAM_ID`；或 `APPLE_API_KEY`、`APPLE_API_KEY_ID`、`APPLE_API_ISSUER`。按打包器顺序检查，部分配置不会静默回退到另一组。凭证只经环境或钥匙串使用，生成的 JSON 不保存凭证；缺配置在复制/哈希大模型前停止。
+
+正式配置对两个构件设置 `forceCodeSigning: true`、`mac.type: distribution`、`mac.hardenedRuntime: true`、`mac.notarize: true`，拒绝 `identity: null` 和临时签名 `identity: '-'`。当前控制流程仍是本机准备两个构件，现有旧 tag 工作流没有自动接入这套完整离线/lean 管线。
+
+这是配置前置检查，不是 Apple 认证或签名完成的证明。运行真正构建时须保持认证环境；builder 25.1.8 在无凭证时可能跳过公证，不能只看构建 exit 0。正式发行还需在实际产物上验证 Developer ID/Team、各原生 Mach-O 签名、hardened runtime、时间戳、Apple Accepted 回执与 stapled ticket，之后独立运行 `spctl`。本版 `gatekeeperAssess` 字段没有接入实际 `spctl`，不当作验收证据。
+
+对 offline App、完整 DMG 和从实际 lean ZIP 解压的 App 分别做签名/票据检查，再按本机前台规则做带隔离属性的安装、启动与模型复用。开发机的命令检查不能代替陌生机器的 Gatekeeper 首次下载体验。Apple 与 Electron 的步骤说明：
+
+- [Apple：自定义公证流程](https://developer.apple.com/documentation/security/customizing-the-notarization-workflow)
+- [Electron：代码签名](https://www.electronjs.org/docs/latest/tutorial/code-signing)
+
 ## 运行时行为
 
 正式目录仍为 `userData/models`；测试可用既有独立目录覆盖。bundle 源只从 `process.resourcesPath/offline-model` 取得。App 先注册 IPC 并创建工作区窗口，再在后台 bootstrap。复制百分比、校验与失败状态经模型状态接口显示；规则脱敏、公式检查和模板提取不等待模型。准备期间禁止模型导入、下载、启动与直接 AI 分析，防止争用；失败后设置页提供空间或重试指导及本地导入恢复。只读源、检查固定清单与普通文件、目标卷容量预检、校验暂存副本 SHA256，许可先提交，模型最后 rename。导入失败不删除旧最终模型。
