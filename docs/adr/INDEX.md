@@ -19,6 +19,7 @@
 | [0012](./0012-redaction-flow-defaults.md) | 新脱敏流程的五个默认做法 | Accepted | 2026-10-21 | — |
 | [0013](./0013-pause-ocr.md) | 先暂停照片和扫描件的文字识别 | Accepted | 2026-10-21 | — |
 | [0014](./0014-consistent-address-codes-and-canonical-restore.md) | 地址保持一致代号，接受统一写法还原 | Accepted | 2026-10-22 | — |
+| [0016](./0016-unify-the-logo-on-cut-corner-c.md) | 统一采用等厚切角 C（方案 A） | Accepted | 2026-10-22 | — |
 
 ## 旧的决策记录
 

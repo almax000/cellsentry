@@ -28,7 +28,9 @@
     "build:win": "node ../scripts/prepare-native.mjs win32-x64 && npm run build && npx electron-builder --win --x64",
     "build:docreader": "node ../scripts/build-docreader.mjs",
     "build:mac": "npm run runtime:prepare && npm run build:docreader && npm run build && npx electron-builder --mac",
-    "test:unit": "vitest run"
+    "test:unit": "vitest run",
+    "brand:generate": "node scripts/generate-brand-assets.mjs",
+    "brand:check": "node scripts/generate-brand-assets.mjs --check"
   },
   "dependencies": {
     "electron-updater": "^6.8.3",
@@ -51,6 +53,7 @@
     "electron-builder": "^25.1.8",
     "electron-vite": "^5.0.0",
     "patch-package": "^8.0.1",
+    "sharp": "^0.34.5",
     "typescript": "^5.7.2",
     "vite": "^6.0.3",
     "vitest": "3.2.7"

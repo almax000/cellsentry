@@ -89,17 +89,7 @@ export function AlertIcon({ size = 16, className }: IconProps): JSX.Element {
   )
 }
 
-export function CellSentryMark({ size = 16, className }: IconProps): JSX.Element {
-  return (
-    <svg width={size} height={size} viewBox="106 106 300 300" fill="currentColor" className={className}>
-      <path d="M331 162.805L406 106V181.838L331 239.229L331 162.805Z" />
-      <path d="M331 322.68L406 265.289L406 343.177L331 405.253L331 322.68Z" />
-      <path d="M181 344.348H331L331 405.253L106 406L181 344.348Z" />
-      <path d="M106 162.805H181V344.348L106 406L106 162.805Z" />
-      <path d="M181 106H406L331 162.805H106L181 106Z" />
-    </svg>
-  )
-}
+export { CellSentryMark } from './brand'
 
 export function GridIcon({ size = 18, className }: IconProps): JSX.Element {
   return (

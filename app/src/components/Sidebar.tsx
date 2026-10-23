@@ -73,7 +73,7 @@ export default function Sidebar(): JSX.Element {
           onClick={() => navigate('/')}
         >
           <span className="sidebar-item-icon sidebar-home-icon" aria-hidden="true">
-            <CellSentryMark size={26} />
+            <CellSentryMark size={32} />
           </span>
           <span className="sidebar-label">{t('sidebar.home')}</span>
         </button>

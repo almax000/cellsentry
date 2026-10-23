@@ -26,12 +26,12 @@ test('sidebar is 72px wide with no logo element', async () => {
 })
 
 test('sidebar items are 56px wide with an icon above a text label', async () => {
-  // Home button has a 26px mark
+  // A uses a 32px SVG canvas: its 192/256 filled area is 24px.
   const home = page.locator('[data-testid="sidebar-nav-home"]')
   await expect(home).toBeVisible()
   const homeSvg = home.locator('svg')
-  await expect(homeSvg).toHaveAttribute('width', '26')
-  await expect(homeSvg).toHaveAttribute('height', '26')
+  await expect(homeSvg).toHaveAttribute('width', '32')
+  await expect(homeSvg).toHaveAttribute('height', '32')
 
   // Task items have 22px icons and a visible label, redaction first
   const order = await page.locator('.sidebar-nav .sidebar-item').evaluateAll((items) => items.map((item) => item.getAttribute('data-testid')))
