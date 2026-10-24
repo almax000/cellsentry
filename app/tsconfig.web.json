@@ -27,5 +27,10 @@
     "src/**/*.tsx",
     "src/**/*.d.ts",
     "shared/**/*.ts"
+  ],
+  "exclude": [
+    "src/redact/**/*",
+    "src/components/redact/**/*",
+    "src/components/ExtractionResultsPage.tsx"
   ]
 }

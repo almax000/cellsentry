@@ -1,5 +1,8 @@
 import { test, expect } from '@playwright/test'
+import { join } from 'path'
 import { launchApp, teardownApp } from './electron.setup'
+
+const WORKBOOK = join(__dirname, 'fixtures', 'combined-test-data.xlsx')
 
 for (const phase of ['copying', 'failed'] as const) {
   test(`offline model ${phase} is visible while deterministic tools remain available`, async ({}, testInfo) => {
@@ -15,18 +18,17 @@ for (const phase of ['copying', 'failed'] as const) {
         }))
       }, phase)
       await ctx.page.reload()
-      await expect(ctx.page.getByTestId('home-task-pii')).toBeEnabled()
+      await expect(ctx.page.getByTestId('home-task-audit')).toBeEnabled()
       if (phase === 'copying') {
         await expect(ctx.page.getByTestId('model-setup-status')).toContainText('52%')
       }
       await ctx.page.setViewportSize({ width: 800, height: 600 })
       await ctx.page.screenshot({ path: testInfo.outputPath(`${phase}-home-800.png`), animations: 'disabled' })
-      await ctx.page.getByTestId('home-task-pii').click()
-      await ctx.page.getByTestId('redact-paste-toggle').click()
-      await ctx.page.getByTestId('redact-paste-input').fill('联系电话：13912345678')
-      await ctx.page.getByTestId('redact-paste-start').click()
-      await expect(ctx.page.getByTestId('redact-review')).toBeVisible()
-      await expect(ctx.page.getByTestId('redact-preview-text')).not.toContainText('13912345678')
+      await ctx.page.getByTestId('home-task-audit').click()
+      await expect(ctx.page).toHaveURL(/#\/audit$/)
+      await ctx.page.evaluate((filePath) => window.__TEST_API__?.triggerFileAnalysis(filePath), WORKBOOK)
+      await expect(ctx.page).toHaveURL(/#\/results$/, { timeout: 30_000 })
+      await expect(ctx.page.getByTestId('results-panel-left')).toBeVisible()
       if (phase === 'failed') {
         await ctx.page.getByTestId('model-setup-failed').getByRole('button').click()
       } else await ctx.page.getByTestId('sidebar-nav-settings').click()

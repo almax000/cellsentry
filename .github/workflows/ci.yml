@@ -27,10 +27,6 @@ jobs:
           cache-dependency-path: app/package-lock.json
       - name: Install dependencies
         run: npm ci
-      # The redaction E2E reads real PDFs with the native macOS reader; it is a build product, not in git.
-      - name: Build the macOS document reader
-        if: runner.os == 'macOS'
-        run: npm run build:docreader
       - name: Type check, unit tests, build and Electron E2E
         run: npm run test:ci
         env:

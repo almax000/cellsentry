@@ -46,13 +46,9 @@ test.describe('Flow: Full navigation', () => {
     await page.waitForTimeout(300)
     await expect(page.locator('[data-testid="home-page"]')).toBeVisible()
 
-    // Each task card opens its own entry page
-    for (const [task, route] of [['pii', 'pii'], ['audit', 'audit'], ['extraction', 'extract']]) {
-      await page.locator('[data-testid="sidebar-nav-home"]').click()
-      await page.locator(`[data-testid="home-task-${task}"]`).click()
-      await expect(page).toHaveURL(new RegExp(`#/${route}$`))
-      await expect(page.locator(`[data-testid="entry-${task}"]`)).toBeVisible()
-    }
+    await page.locator('[data-testid="home-task-audit"]').click()
+    await expect(page).toHaveURL(/#\/audit$/)
+    await expect(page.locator('[data-testid="entry-audit"]')).toBeVisible()
 
     // Settings
     await page.locator('[data-testid="sidebar-nav-settings"]').click()

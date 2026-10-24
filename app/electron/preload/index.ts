@@ -1,6 +1,5 @@
 import { contextBridge, ipcRenderer, webUtils } from 'electron'
 import type { EngineDoneEvent, ModelDownloadProgress, ScanProgress, SidecarAPI, TestAPI, UpdateStatus } from '../../shared/api'
-import type { ReadProgressEvent } from '../../shared/redact/ipc'
 
 import { IS_TEST_MODE } from '../testMode'
 
@@ -63,28 +62,6 @@ const api: SidecarAPI = {
         }
       }
     : undefined,
-  onTestTriggerPiiScan: IS_TEST_MODE
-    ? (callback: (filePath: string) => void) => {
-        const handler = (_event: Electron.IpcRendererEvent, filePath: string): void => {
-          callback(filePath)
-        }
-        ipcRenderer.on('test:trigger-pii-scan', handler)
-        return (): void => {
-          ipcRenderer.removeListener('test:trigger-pii-scan', handler)
-        }
-      }
-    : undefined,
-  onTestTriggerExtractionScan: IS_TEST_MODE
-    ? (callback: (filePath: string) => void) => {
-        const handler = (_event: Electron.IpcRendererEvent, filePath: string): void => {
-          callback(filePath)
-        }
-        ipcRenderer.on('test:trigger-extraction-scan', handler)
-        return (): void => {
-          ipcRenderer.removeListener('test:trigger-extraction-scan', handler)
-        }
-      }
-    : undefined,
   onTestResetState: IS_TEST_MODE
     ? (callback: () => void) => {
         const handler = (): void => { callback() }
@@ -114,13 +91,9 @@ const api: SidecarAPI = {
       ipcRenderer.removeListener('zoom:change', handler)
     }
   },
-  // PII
-  analyzePii: (filePath: string, scanId: string) => ipcRenderer.invoke('pii:analyze', filePath, scanId),
+  // Workbook PII redaction is available from the unified audit flow.
   redactPii: (request) => ipcRenderer.invoke('pii:redact', request),
   exportAudit: (request) => ipcRenderer.invoke('audit:export', request),
-  // Extraction
-  analyzeExtraction: (filePath: string, scanId: string) => ipcRenderer.invoke('extraction:analyze', filePath, scanId),
-  exportExtraction: (request) => ipcRenderer.invoke('extraction:export', request),
   // Unified scan
   analyzeAll: (filePath: string, scanId: string) => ipcRenderer.invoke('analyze:all', filePath, scanId),
   cancelAnalysis: (scanId: string) => ipcRenderer.invoke('analyze:cancel', scanId),
@@ -132,24 +105,6 @@ const api: SidecarAPI = {
     return (): void => {
       ipcRenderer.removeListener('analyze:engine-done', handler)
     }
-  },
-  // Document redaction
-  redact: {
-    loadProfile: () => ipcRenderer.invoke('redact:profile-load'),
-    saveProfile: (profile) => ipcRenderer.invoke('redact:profile-save', profile),
-    clearProfile: () => ipcRenderer.invoke('redact:profile-clear'),
-    openDocuments: () => ipcRenderer.invoke('redact:open-documents'),
-    read: (requestId, paths) => ipcRenderer.invoke('redact:read', requestId, paths),
-    cancelRead: (requestId) => ipcRenderer.invoke('redact:read-cancel', requestId),
-    onReadProgress: (callback) => {
-      const handler = (_event: Electron.IpcRendererEvent, progress: ReadProgressEvent): void => callback(progress)
-      ipcRenderer.on('redact:read-progress', handler)
-      return (): void => {
-        ipcRenderer.removeListener('redact:read-progress', handler)
-      }
-    },
-    saveText: (text) => ipcRenderer.invoke('redact:save-text', text),
-    copyText: (text) => ipcRenderer.invoke('redact:copy-text', text),
   },
 }
 
@@ -165,12 +120,6 @@ if (IS_TEST_MODE) {
     },
     triggerFileAnalysis: (filePath: string) => {
       return ipcRenderer.invoke('test:trigger-analysis', filePath)
-    },
-    triggerPiiScan: (filePath: string) => {
-      ipcRenderer.send('test:trigger-pii-scan', filePath)
-    },
-    triggerExtractionScan: (filePath: string) => {
-      ipcRenderer.send('test:trigger-extraction-scan', filePath)
     },
     resetState: () => {
       ipcRenderer.send('test:reset-state')

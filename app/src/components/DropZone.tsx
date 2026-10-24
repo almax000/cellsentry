@@ -103,8 +103,7 @@ export default function DropZone({ task }: { task: TaskId }): JSX.Element {
         )}
       </div>
 
-      {task === 'pii' && <div className="drop-zone-note" data-testid="dropzone-soon">{t('tasks.pii.soon')}</div>}
-      {task === 'audit' && !modelExists && (
+      {!modelExists && (
         <div className="drop-zone-note" data-testid="dropzone-assistant-hint">
           {t('assistantHint')} <Link to="/settings">{t('assistantLink')}</Link>
         </div>

@@ -34,9 +34,8 @@ export { getModelsDir } from '../model/paths'
 import { getLlmStatus, analyzeWithLlm, startLlm, cancelLlmAnalysis } from '../llm/lifecycle'
 import { hasActiveAnalysis, registerAnalysisHandlers, withModelMaintenance } from './analysisHandlers'
 import { registerLocaleIpc } from './localeIpc'
-import { registerRedactIpc } from '../redact/ipc'
-import { exportAudit, redactPii, exportExtraction } from './exportHandlers'
-import type { AuditExportRequest, PiiRedactionRequest, ExtractionExportRequest } from '../../shared/export'
+import { exportAudit, redactPii } from './exportHandlers'
+import type { AuditExportRequest, PiiRedactionRequest } from '../../shared/export'
 
 function validateFilePath(filePath: unknown): filePath is string {
   if (typeof filePath !== 'string' || filePath.length === 0) return false
@@ -61,10 +60,8 @@ export function getDownloader(): ModelDownloader {
 export function registerIpcHandlers(): void {
   registerAnalysisHandlers()
   registerLocaleIpc()
-  registerRedactIpc()
   ipcMain.handle('audit:export', (_event, request: AuditExportRequest) => exportAudit(request))
   ipcMain.handle('pii:redact', (_event, request: PiiRedactionRequest) => redactPii(request))
-  ipcMain.handle('extraction:export', (_event, request: ExtractionExportRequest) => exportExtraction(request))
 
   // ── File Info ───────────────────────────────────────────
   ipcMain.handle('sidecar:file-info', async (_event, filePath: string) => {

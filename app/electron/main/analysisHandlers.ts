@@ -4,13 +4,12 @@ import { normalize } from 'path'
 import { analyzeExcel, analyzeExcelFromSheets } from '../engine/ruleEngine'
 import { readWorkbook } from '../engine/excelReader'
 import { scanForPiiFromSheets } from '../pii/scanner'
-import { extractDocumentFromSheets } from '../extraction/extractor'
 import { reviewAuditIssues, AuditReviewStopError, cancelLlmAnalysis, isLocalAiReadyFor, mergeJudgments } from '../llm/lifecycle'
 import type { AuditReviewProgress } from '../../shared/auditReview'
 import { AnalysisSessionManager, type AnalysisSession } from './analysisSession'
 import { mapToLlmInput, orderAuditIssuesBySeverity } from './auditInput'
 
-type EngineName = 'audit' | 'pii' | 'extraction'
+type EngineName = 'audit' | 'pii'
 const sessions = new AnalysisSessionManager(cancelLlmAnalysis)
 let modelMaintenance = false
 export async function withModelMaintenance<T>(work: () => Promise<T>): Promise<T> {
@@ -138,46 +137,11 @@ export function registerAnalysisHandlers(): void {
         })
         .catch((error) => { if (isActive(scan)) sendEngineDone(sender, scanId, 'pii', { error: String(error) }) })
 
-      const extraction = extractDocumentFromSheets(sheets)
-        .then((result) => {
-          if (!isActive(scan)) return
-          if (!result.success) throw new Error(result.error || 'Extraction failed')
-          sendEngineDone(sender, scanId, 'extraction', { result })
-        })
-        .catch((error) => { if (isActive(scan)) sendEngineDone(sender, scanId, 'extraction', { error: String(error) }) })
-
-      await Promise.all([audit, pii, extraction])
+      await Promise.all([audit, pii])
       return isActive(scan) ? { success: true } : inactiveResult(scan)
     } catch (error) {
       return { success: false, error: String(error) }
     } finally { await releaseWhenSettled(scan) }
   })
 
-  ipcMain.handle('pii:analyze', async (event, filePath: string, scanId: string) => {
-    if (!validateFilePath(filePath)) return { success: false, error: 'Invalid path' }
-    const scan = startSession(event.sender, scanId)
-    if (!scan) return { success: false, error: hasActiveAnalysis() ? 'Another analysis is active' : 'Missing scan identity' }
-    try {
-      const { sheets } = await readWorkbook(filePath)
-      if (!isActive(scan)) return { success: false, error: 'Analysis cancelled' }
-      const result = await scanForPiiFromSheets(sheets)
-      return isActive(scan) ? result : { success: false, error: 'Analysis cancelled' }
-    } catch (error) {
-      return { success: false, error: String(error) }
-    } finally { await releaseWhenSettled(scan) }
-  })
-
-  ipcMain.handle('extraction:analyze', async (event, filePath: string, scanId: string) => {
-    if (!validateFilePath(filePath)) return { success: false, error: 'Invalid path' }
-    const scan = startSession(event.sender, scanId)
-    if (!scan) return { success: false, error: hasActiveAnalysis() ? 'Another analysis is active' : 'Missing scan identity' }
-    try {
-      const { sheets } = await readWorkbook(filePath)
-      if (!isActive(scan)) return { success: false, error: 'Analysis cancelled' }
-      const result = await extractDocumentFromSheets(sheets)
-      return isActive(scan) ? result : { success: false, error: 'Analysis cancelled' }
-    } catch (error) {
-      return { success: false, error: String(error) }
-    } finally { await releaseWhenSettled(scan) }
-  })
 }

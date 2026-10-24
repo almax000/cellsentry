@@ -5,9 +5,9 @@ export type ScanState = 'idle' | 'loading' | 'scanning' | 'cancelling' | 'comple
 
 export type ScanPhase = 'rules' | 'ai' | 'enhance' | 'discover'
 
-export type ScanMode = 'audit' | 'pii' | 'extraction'
+export type ScanMode = 'audit'
 
-export type ActiveView = 'audit' | 'pii' | 'extraction'
+export type ActiveView = 'audit'
 
 export interface Issue {
   id: string

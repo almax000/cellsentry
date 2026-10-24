@@ -37,7 +37,6 @@ for (const language of ['en', 'zh'] as const) {
               ...(index < 18 ? { llmVerified: true } : {}),
             }))
             event.sender.send('analyze:engine-done', { scanId, engine: 'pii', result: { success: true, findings: [] } })
-            event.sender.send('analyze:engine-done', { scanId, engine: 'extraction', result: { success: true, fields: [], tables: [] } })
             event.sender.send('analyze:engine-done', { scanId, engine: 'audit', result: {
               issues, auditReview: { total: 80, selected: 20, attempted: 20, reviewed: 18, failed: 2, skipped: 60, stopReason: 'candidate-limit' },
             } })

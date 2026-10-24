@@ -35,21 +35,12 @@ test.describe('Sidebar', () => {
     await expect(page.locator('[data-testid="home-page"]')).toBeVisible()
   })
 
-  test('task nav items are labelled and clickable before any scan', async () => {
+  test('the audit task is labelled and clickable before any scan', async () => {
     const auditNav = page.locator('[data-testid="sidebar-nav-audit"]')
-    const piiNav = page.locator('[data-testid="sidebar-nav-pii"]')
-    const extractionNav = page.locator('[data-testid="sidebar-nav-extraction"]')
-
-    for (const item of [auditNav, piiNav, extractionNav]) {
-      await expect(item).not.toHaveClass(/disabled/)
-      await expect(item.locator('.sidebar-label')).toBeVisible()
-    }
-
-    // Home shows the three task cards
+    await expect(auditNav).not.toHaveClass(/disabled/)
+    await expect(auditNav.locator('.sidebar-label')).toBeVisible()
     await expect(page.locator('[data-testid="home-page"]')).toBeVisible()
-    for (const task of ['pii', 'audit', 'extraction']) {
-      await expect(page.locator(`[data-testid="home-task-${task}"]`)).toBeVisible()
-    }
+    await expect(page.locator('[data-testid="home-task-audit"]')).toBeVisible()
   })
 
   test('Home button has active indicator on home page', async () => {
@@ -82,15 +73,6 @@ test.describe('DropZone', () => {
     expect(border).toBe('dashed')
   })
 
-  test('redaction entry takes text PDFs and pasted text, with My info beside it', async () => {
-    await page.locator('[data-testid="sidebar-nav-pii"]').click()
-    await expect(page.locator('[data-testid="entry-pii"]')).toBeVisible()
-    await expect(page.locator('[data-testid="myinfo-panel"]')).toBeVisible()
-    await expect(page.locator('[data-testid="redact-choose-files"]')).toBeVisible()
-    await expect(page.locator('[data-testid="redact-paste-toggle"]')).toBeVisible()
-    await expect(page.locator('[data-testid="redact-spreadsheet"]')).toBeVisible()
-    await expect(page.locator('[data-testid="redact-steps"]')).toBeVisible()
-  })
 })
 
 // ── Settings Page ───────────────────────────────────────────────────────

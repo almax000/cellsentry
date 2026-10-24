@@ -20,6 +20,7 @@ const sender = () => ({ isDestroyed: () => false, send: vi.fn() })
 const invoke = (name: string, ...args: any[]) => dependencies.handlers.get(name)! (...args)
 const emptyAudit = { issues: [], summary: { total: 0, error: 0, warning: 0, info: 0 } }
 beforeEach(() => {
+  dependencies.handlers.clear()
   vi.clearAllMocks()
   registerAnalysisHandlers()
   dependencies.stop.mockResolvedValue(undefined)
@@ -33,6 +34,26 @@ beforeEach(() => {
 })
 
 describe('auditable bounded review integration', () => {
+  it('does not register standalone PII or extraction analysis endpoints', () => {
+    expect(dependencies.handlers.has('pii:analyze')).toBe(false)
+    expect(dependencies.handlers.has('extraction:analyze')).toBe(false)
+  })
+
+  it('runs only the audit and workbook-PII engines for a unified spreadsheet analysis', async () => {
+    const owner = sender()
+
+    expect((await invoke('analyze:all', { sender: owner }, '/fixture.xlsx', 'spreadsheet-only')).success).toBe(true)
+
+    expect(dependencies.auditSheets).toHaveBeenCalledOnce()
+    expect(dependencies.pii).toHaveBeenCalledOnce()
+    expect(dependencies.extract).not.toHaveBeenCalled()
+    const engines = owner.send.mock.calls
+      .filter(([channel]) => channel === 'analyze:engine-done')
+      .map(([, event]) => event.engine)
+      .sort()
+    expect(engines).toEqual(['audit', 'pii'])
+  })
+
   it('passes evidence in stable severity order and preserves reviewed and unreviewed findings', async () => {
     const owner = sender()
     const issues = [
@@ -115,7 +136,7 @@ describe('audit when local AI cannot run', () => {
 })
 
 describe('analysis cancellation through registered IPC handlers', () => {
-  for (const channel of ['analyze:all', 'sidecar:analyze', 'pii:analyze', 'extraction:analyze']) {
+  for (const channel of ['analyze:all', 'sidecar:analyze']) {
     it(`cancels ${channel} during workbook loading without starting late inference`, async () => {
       const owner = sender()
       const input = deferred<any>()
@@ -132,7 +153,6 @@ describe('analysis cancellation through registered IPC handlers', () => {
       expect(hasActiveAnalysis()).toBe(false)
       expect(dependencies.llm).not.toHaveBeenCalled()
       expect(dependencies.pii).not.toHaveBeenCalled()
-      expect(dependencies.extract).not.toHaveBeenCalled()
       expect(owner.send).not.toHaveBeenCalledWith('analyze:engine-done', expect.anything())
     })
   }

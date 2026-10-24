@@ -8,7 +8,7 @@ import type { PiiFinding } from '../electron/pii/types'
 const { saveDialog } = vi.hoisted(() => ({ saveDialog: vi.fn() }))
 vi.mock('../electron/llm/lifecycle', () => ({ isLocalAiReadyFor: () => true, analyzeWithLlmPii: vi.fn(async () => []) }))
 vi.mock('electron', () => ({ app: { getVersion: () => 'test' }, dialog: { showSaveDialog: saveDialog }, BrowserWindow: vi.fn() }))
-import { exportAudit, exportExtraction, redactPii } from '../electron/main/exportHandlers'
+import { exportAudit, redactPii } from '../electron/main/exportHandlers'
 import { redactFile, redactSelectedCell } from '../electron/pii/redactor'
 import { maskPiiText } from '../electron/pii/masking'
 import { exportToCsv } from '../electron/extraction/exporters'
@@ -44,7 +44,7 @@ async function values(path: string): Promise<ExcelJS.CellValue[]> {
 
 describe('source protection across export formats', () => {
   for (const alias of ['same', 'symlink', 'hardlink'] as const) {
-    for (const format of ['html', 'pdf', 'xlsx', 'csv', 'json', 'pii'] as const) {
+    for (const format of ['html', 'pdf', 'xlsx', 'pii'] as const) {
       it(`rejects ${format} output through ${alias} before writing`, async () => {
         const source = await workbook(['jane@example.com'])
         const original = await readFile(source)
@@ -55,9 +55,7 @@ describe('source protection across export formats', () => {
         const base = { filePath: source, fileName: 'source.xlsx' }
         const result = format === 'pii'
           ? await redactPii({ ...base, findings: [] })
-          : format === 'csv' || format === 'json'
-            ? await exportExtraction({ ...base, format, fields: [], tables: [] })
-            : await exportAudit({ ...base, format, issues: [] })
+          : await exportAudit({ ...base, format, issues: [] })
         expect(result).toMatchObject({ success: false, error: 'Refusing to overwrite the source file' })
         expect(await readFile(source)).toEqual(original)
       })
@@ -66,7 +64,6 @@ describe('source protection across export formats', () => {
   it('reports dialog cancellation and rejection consistently', async () => {
     const actions = [
       () => exportAudit({ filePath: 'unused', fileName: 'source', format: 'html', issues: [] }),
-      () => exportExtraction({ filePath: 'unused', fileName: 'source', format: 'csv', fields: [], tables: [] }),
       () => redactPii({ filePath: 'unused.xlsx', fileName: 'source', findings: [] }),
     ]
     for (const action of actions) {

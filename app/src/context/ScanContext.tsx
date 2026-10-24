@@ -1,7 +1,6 @@
 import { createContext, useContext, useReducer, useEffect, useCallback, useRef, type ReactNode } from 'react'
 import type {
   ScanState,
-  ScanMode,
   ScanProgress,
   AnalysisResult,
   AnalysisSummary,
@@ -10,10 +9,6 @@ import type {
   PiiFinding,
   PiiSummary,
   PiiType,
-  ExtractionResult,
-  ExtractionField,
-  ExtractedTable,
-  DocumentType,
   FileInfo,
   Issue,
   ScanPhase,
@@ -30,7 +25,7 @@ import { readAuditReviewProgress, readAuditReviewSummary } from '../../shared/au
 
 interface ScanContextState {
   scanState: ScanState
-  scanMode: ScanMode // kept for backward compat (batch mode)
+  scanMode: 'audit'
   activeView: ActiveView
   filePath: string
   fileInfo: FileInfo | null
@@ -38,16 +33,14 @@ interface ScanContextState {
   // Per-engine results (populated progressively)
   results: AnalysisResult | null
   piiResults: PiiResult | null
-  extractionResults: ExtractionResult | null
   // Per-engine errors
   auditError: string | null
   piiError: string | null
-  extractionError: string | null
   error: string
   stopRetryRequired: boolean
   enginesComplete: number
   activeScanId: string | null
-  completedEngines: Partial<Record<'audit' | 'pii' | 'extraction', true>>
+  completedEngines: Partial<Record<'audit' | 'pii', true>>
   // Batch scan state
   batchState: BatchState
   batchFiles: QueuedFile[]
@@ -69,10 +62,8 @@ const initialState: ScanContextState = {
   progress: { phase: 'rules', percent: 0, message: '' },
   results: null,
   piiResults: null,
-  extractionResults: null,
   auditError: null,
   piiError: null,
-  extractionError: null,
   error: '',
   stopRetryRequired: false,
   enginesComplete: 0,
@@ -90,12 +81,11 @@ const initialState: ScanContextState = {
 // ── Actions ──
 
 type ScanAction =
-  | { type: 'START_SCAN'; filePath: string; fileInfo: FileInfo; scanId: string; mode?: ScanMode }
+  | { type: 'START_SCAN'; filePath: string; fileInfo: FileInfo; scanId: string }
   | { type: 'UPDATE_PROGRESS'; progress: ScanProgress; scanId?: string }
-  | { type: 'ENGINE_DONE'; scanId: string; engine: 'audit' | 'pii' | 'extraction'; result?: unknown; error?: string }
+  | { type: 'ENGINE_DONE'; scanId: string; engine: 'audit' | 'pii'; result?: unknown; error?: string }
   | { type: 'SCAN_COMPLETE'; results: AnalysisResult }
   | { type: 'PII_COMPLETE'; results: PiiResult }
-  | { type: 'EXTRACTION_COMPLETE'; results: ExtractionResult }
   | { type: 'SCAN_ERROR'; error: string; stopRetryRequired?: boolean }
   | { type: 'CANCEL_SCAN' }
   | { type: 'CANCEL_REQUEST' }
@@ -201,44 +191,6 @@ function mapPiiResult(filePath: string, fileName: string, raw: Record<string, un
   }
 }
 
-// ── Map Extraction raw result ──
-
-function mapExtractionResult(filePath: string, fileName: string, raw: Record<string, unknown>): ExtractionResult {
-  const fields: ExtractionField[] = ((raw.fields as Record<string, unknown>[]) || []).map(
-    (rf) => ({
-      key: (rf.key as string) || '',
-      label: (rf.label as string) || '',
-      value: (rf.value as string) || '',
-      cell: (rf.cell as string) || '',
-      sheetName: (rf.sheet_name as string) || 'Sheet1',
-      confidence: (rf.confidence as number) || 0.8,
-    })
-  )
-
-  const tables: ExtractedTable[] = ((raw.tables as Record<string, unknown>[]) || []).map(
-    (rt) => ({
-      sheetName: (rt.sheet_name as string) || 'Sheet1',
-      headerRow: (rt.header_row as number) || 1,
-      headers: (rt.headers as string[]) || [],
-      rows: (rt.rows as string[][]) || [],
-      startCell: (rt.start_cell as string) || 'A1',
-      endCell: (rt.end_cell as string) || 'A1',
-    })
-  )
-
-  return {
-    success: true,
-    filePath,
-    fileName,
-    documentType: (raw.document_type as DocumentType) || 'unknown',
-    fields,
-    tables,
-    scannedAt: (raw.scannedAt as string) || new Date().toISOString(),
-    duration: (raw.duration as number) || 0,
-    aiWarning: typeof raw.aiWarning === 'string' ? raw.aiWarning : undefined,
-  }
-}
-
 // ── Reducer ──
 
 /** Counters survive every reset; only START_* and SCAN_ERROR advance them. */
@@ -254,8 +206,8 @@ export function scanReducer(state: ScanContextState, action: ScanAction): ScanCo
         ...counters(state),
         runSeq: counters(state).runSeq + 1,
         scanState: 'scanning',
-        scanMode: action.mode || 'audit',
-        activeView: (action.mode || 'audit') as ActiveView,
+        scanMode: 'audit',
+        activeView: 'audit',
         filePath: action.filePath,
         fileInfo: action.fileInfo,
         activeScanId: action.scanId,
@@ -272,28 +224,23 @@ export function scanReducer(state: ScanContextState, action: ScanAction): ScanCo
       const completedEngines = { ...state.completedEngines, [action.engine]: true }
       let newResults = state.results
       let newPiiResults = state.piiResults
-      let newExtractionResults = state.extractionResults
       let newAuditError = state.auditError
       let newPiiError = state.piiError
-      let newExtractionError = state.extractionError
 
       if (action.error) {
         if (action.engine === 'audit') newAuditError = action.error
         else if (action.engine === 'pii') newPiiError = action.error
-        else newExtractionError = action.error
       } else if (action.result) {
         const raw = action.result as Record<string, unknown>
         if (action.engine === 'audit') {
           newResults = mapRawResult(state.filePath, state.fileInfo?.fileName || '', raw)
         } else if (action.engine === 'pii') {
           newPiiResults = mapPiiResult(state.filePath, state.fileInfo?.fileName || '', raw)
-        } else {
-          newExtractionResults = mapExtractionResult(state.filePath, state.fileInfo?.fileName || '', raw)
         }
       }
 
-      const hasAnyResult = newResults || newPiiResults || newExtractionResults
-      const allDone = newCount >= 3
+      const hasAnyResult = newResults || newPiiResults
+      const allDone = newCount >= 2
       let newScanState: ScanState = state.scanState
       let newError = state.error
 
@@ -301,7 +248,7 @@ export function scanReducer(state: ScanContextState, action: ScanAction): ScanCo
         newScanState = 'complete'
       } else if (allDone && !hasAnyResult && state.scanState === 'scanning') {
         newScanState = 'error'
-        newError = [newAuditError, newPiiError, newExtractionError].filter(Boolean).join(' | ')
+        newError = [newAuditError, newPiiError].filter(Boolean).join(' | ')
       }
 
       return {
@@ -310,10 +257,8 @@ export function scanReducer(state: ScanContextState, action: ScanAction): ScanCo
         completedEngines,
         results: newResults,
         piiResults: newPiiResults,
-        extractionResults: newExtractionResults,
         auditError: newAuditError,
         piiError: newPiiError,
-        extractionError: newExtractionError,
         scanState: newScanState,
         error: newError,
       }
@@ -324,8 +269,6 @@ export function scanReducer(state: ScanContextState, action: ScanAction): ScanCo
       return { ...state, scanState: 'complete', results: action.results }
     case 'PII_COMPLETE':
       return { ...state, scanState: 'complete', piiResults: action.results }
-    case 'EXTRACTION_COMPLETE':
-      return { ...state, scanState: 'complete', extractionResults: action.results }
 
     case 'SCAN_ERROR':
       return { ...state, scanState: 'error', error: action.error, stopRetryRequired: action.stopRetryRequired ?? false, errorSeq: state.errorSeq + 1 }
@@ -449,7 +392,7 @@ export function scanReducer(state: ScanContextState, action: ScanAction): ScanCo
 // ── Context ──
 
 interface ScanContextValue extends ScanContextState {
-  startScan: (filePath: string, mode?: ScanMode) => Promise<void>
+  startScan: (filePath: string) => Promise<void>
   startBatchScan: (filePaths: Array<{ path: string; name: string; size: number }>) => Promise<void>
   cancelScan: () => Promise<boolean>
   selectBatchFile: (index: number) => void
@@ -545,7 +488,7 @@ export function ScanProvider({ children }: { children: ReactNode }): JSX.Element
       dispatch({
         type: 'ENGINE_DONE',
         scanId: (data as unknown as { scanId: string }).scanId,
-        engine: data.engine as 'audit' | 'pii' | 'extraction',
+        engine: data.engine as 'audit' | 'pii',
         result: data.result,
         error: data.error,
       })
@@ -554,8 +497,8 @@ export function ScanProvider({ children }: { children: ReactNode }): JSX.Element
     return unsubscribe
   }, [])
 
-  // Unified single-file scan (runs all 3 engines)
-  const startScan = useCallback(async (filePath: string, mode?: ScanMode) => {
+  // A workbook scan runs the audit and workbook PII protection engines together.
+  const startScan = useCallback(async (filePath: string) => {
     if (!window.api) {
       dispatch({ type: 'SCAN_ERROR', error: 'Sidecar not available' })
       return
@@ -590,37 +533,14 @@ export function ScanProvider({ children }: { children: ReactNode }): JSX.Element
         totalCells: rawInfo.totalCells ?? rawInfo.cellCount ?? 0,
       }
 
-      dispatch({ type: 'START_SCAN', filePath, fileInfo, scanId, mode })
-
-      // Legacy single-mode scan for batch mode compatibility
-      if (mode === 'pii') {
-        const rawResult = await window.api.analyzePii(filePath, scanId)
-        if (activeScanIdRef.current !== scanId || retainedStopScanIdRef.current === scanId) return
-        if (!rawResult.success) {
-          dispatch({ type: 'SCAN_ERROR', error: rawResult.error || 'PII analysis failed' })
-          return
-        }
-        const result = mapPiiResult(filePath, fileInfo.fileName, rawResult as unknown as Record<string, unknown>)
-        dispatch({ type: 'PII_COMPLETE', results: result })
-      } else if (mode === 'extraction') {
-        const rawResult = await window.api.analyzeExtraction(filePath, scanId)
-        if (activeScanIdRef.current !== scanId || retainedStopScanIdRef.current === scanId) return
-        if (!rawResult.success) {
-          dispatch({ type: 'SCAN_ERROR', error: rawResult.error || 'Extraction failed' })
-          return
-        }
-        const result = mapExtractionResult(filePath, fileInfo.fileName, rawResult as unknown as Record<string, unknown>)
-        dispatch({ type: 'EXTRACTION_COMPLETE', results: result })
-      } else {
-        // Default: unified scan — fire all 3 engines, results arrive via ENGINE_DONE events
-        const response = await window.api.analyzeAll(filePath, scanId)
-        if (activeScanIdRef.current !== scanId || retainedStopScanIdRef.current === scanId) return
-        if (!response.success) {
-          retainForStopRetry = response.errorCode === 'model-stop-failed'
-          dispatch({ type: 'SCAN_ERROR', error: retainForStopRetry ? i18n.t('scanning:aiReviewStopFailed') : response.error || 'Analysis failed', stopRetryRequired: retainForStopRetry })
-        }
-        // Individual results dispatched via onEngineDone listener
+      dispatch({ type: 'START_SCAN', filePath, fileInfo, scanId })
+      const response = await window.api.analyzeAll(filePath, scanId)
+      if (activeScanIdRef.current !== scanId || retainedStopScanIdRef.current === scanId) return
+      if (!response.success) {
+        retainForStopRetry = response.errorCode === 'model-stop-failed'
+        dispatch({ type: 'SCAN_ERROR', error: retainForStopRetry ? i18n.t('scanning:aiReviewStopFailed') : response.error || 'Analysis failed', stopRetryRequired: retainForStopRetry })
       }
+      // Audit and workbook PII results arrive through onEngineDone.
     } catch (err) {
       if (activeScanIdRef.current !== scanId || retainedStopScanIdRef.current === scanId) return
       dispatch({
@@ -632,27 +552,11 @@ export function ScanProvider({ children }: { children: ReactNode }): JSX.Element
     }
   }, [])
 
-  // Test triggers: audit, PII, and extraction scans (test mode only)
+  // Test-mode entry mirrors the sole production workbook flow.
   useEffect(() => {
     if (!window.api?.onTestTriggerAnalysis) return
     const unsubscribe = window.api.onTestTriggerAnalysis((filePath) => {
       startScan(filePath)
-    })
-    return unsubscribe
-  }, [startScan])
-
-  useEffect(() => {
-    if (!window.api?.onTestTriggerPiiScan) return
-    const unsubscribe = window.api.onTestTriggerPiiScan((filePath) => {
-      startScan(filePath, 'pii')
-    })
-    return unsubscribe
-  }, [startScan])
-
-  useEffect(() => {
-    if (!window.api?.onTestTriggerExtractionScan) return
-    const unsubscribe = window.api.onTestTriggerExtractionScan((filePath) => {
-      startScan(filePath, 'extraction')
     })
     return unsubscribe
   }, [startScan])

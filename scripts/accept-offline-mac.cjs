@@ -19,6 +19,7 @@ if (!values['offline-app'] || !values['update-app'] || !out.startsWith(join(root
 }
 if (process.env.CELLSENTRY_LLAMA_SERVER) throw new Error('Acceptance requires the packaged runtime, without CELLSENTRY_LLAMA_SERVER override')
 const fileName = 'cellsentry-minicpm5-2b-cancel2-q4_k_m.gguf'
+const auditFixture = join(root, 'app', 'e2e', 'fixtures', 'combined-test-data.xlsx')
 const expected = { bytes: 1561314592, sha256: '61d9c8ab8007dbbde0eb004089d1411fb6ec7167031f9d6fcc5b521fe8ebe49a' }
 async function hashFile(path) {
   const hash = createHash('sha256')
@@ -54,7 +55,7 @@ async function launch(appPath, userData, loadModel, fresh = false) {
     })
     const page = await application.firstWindow({ timeout: 120_000 })
     await page.waitForLoadState('domcontentloaded')
-    await page.getByTestId('home-task-pii').waitFor({ state: 'visible' })
+    await page.getByTestId('home-task-audit').waitFor({ state: 'visible' })
     const firstWindowMilliseconds = Date.now() - started
     const identity = await application.evaluate(({ app, BrowserWindow }) => ({
       packaged: app.isPackaged, version: app.getVersion(), userData: app.getPath('userData'),
@@ -76,13 +77,12 @@ async function launch(appPath, userData, loadModel, fresh = false) {
       assert.equal(downloaded.success, false)
       await page.getByTestId('model-setup-status').waitFor({ state: 'visible' })
       await page.screenshot({ path: join(out, 'fresh-preparation.png'), animations: 'disabled' })
-      await page.getByTestId('home-task-pii').click()
-      await page.getByTestId('redact-paste-toggle').click()
-      await page.getByTestId('redact-paste-input').fill('联系电话：13912345678')
-      await page.getByTestId('redact-paste-start').click()
-      await page.getByTestId('redact-review').waitFor({ state: 'visible' })
-      assert(!((await page.getByTestId('redact-preview-text').textContent()) || '').includes('13912345678'))
-      report.checks.push('fresh UI and rule redaction work while real model preparation is running; import/download/start are gated')
+      assert(existsSync(auditFixture), 'synthetic audit workbook fixture missing')
+      await page.getByTestId('home-task-audit').click()
+      await page.evaluate((filePath) => window.__TEST_API__?.triggerFileAnalysis(filePath), auditFixture)
+      await page.getByTestId('results-panel-left').waitFor({ state: 'visible', timeout: 30_000 })
+      assert(await page.locator('[data-testid^="results-issue-card-"]').count() > 0, 'synthetic workbook must produce deterministic audit findings')
+      report.checks.push('fresh UI and deterministic workbook audit work while real model preparation is running; import/download/start are gated')
     }
     const deadline = Date.now() + 120_000
     let status = await page.evaluate(() => window.api.getModelStatus())
@@ -109,6 +109,11 @@ async function main() {
   await mkdir(out) // An existing profile or prior evidence is never overwritten.
   const offline = resolve(values['offline-app']), lean = resolve(values['update-app'])
   const source = join(offline, 'Contents/Resources/offline-model')
+  for (const appPath of [offline, lean]) {
+    const runtime = join(appPath, 'Contents/Resources/native', `darwin-${process.arch}`)
+    assert(existsSync(join(runtime, 'llama-server')), 'audit native runtime missing from packaged app')
+    assert(!existsSync(join(runtime, 'cellsentry-docreader')), 'document reader must not be packaged')
+  }
   assert.deepEqual((await readdir(source)).sort(), ['LICENSE', 'NOTICE.txt', 'SHA256SUMS', fileName, 'manifest.json'].sort())
   assert(!existsSync(join(lean, 'Contents/Resources/offline-model')))
   const { canonicalSpec, verifyReleaseDirectory } = await import('./lib/stage-model-package.mjs')

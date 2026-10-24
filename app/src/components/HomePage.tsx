@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { TASKS, SPREADSHEET_EXTENSIONS, type TaskId } from '../tasks'
-import { OCR_ENABLED } from '../../shared/redact'
 import { TaskIcon } from './icons/taskIcons'
 import { LocalOnlyStrip } from './LocalOnly'
 import './HomePage.css'
@@ -24,9 +23,7 @@ function TaskCard({ task, lead = false }: { task: TaskId; lead?: boolean }): JSX
       <span className="home-task-desc">{t(`tasks.${task}.desc`)}</span>
       <span className="home-task-foot">
         <span className="home-task-formats">
-          {task === 'pii'
-            ? <span className="format-badge">{t('tasks.pii.formats', { context: OCR_ENABLED ? 'ocr' : undefined })}</span>
-            : SPREADSHEET_EXTENSIONS.map((ext) => <span key={ext} className="format-badge">{ext}</span>)}
+          {SPREADSHEET_EXTENSIONS.map((ext) => <span key={ext} className="format-badge">{ext}</span>)}
         </span>
         <span className={lead ? 'btn btn-primary home-task-start' : 'home-task-start'}>{t('start')} →</span>
       </span>
@@ -42,9 +39,7 @@ export default function HomePage(): JSX.Element {
         <h1 className="home-title">{t('title')}</h1>
         <p className="home-subtitle">{t('subtitle')}</p>
         <div className="home-grid">
-          <TaskCard task="pii" lead />
-          <TaskCard task="audit" />
-          <TaskCard task="extraction" />
+          <TaskCard task="audit" lead />
         </div>
         <LocalOnlyStrip />
       </div>

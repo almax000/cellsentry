@@ -36,6 +36,6 @@ export function useTaskStarter(): (task: TaskId, files: PickedFile[]) => void {
     if (files.length === 0) return
     pending.current = { ...latest.current }
     if (files.length > 1 && TASKS[task].allowsBatch) startBatchScan(files)
-    else startScan(files[0].path, TASKS[task].scanMode)
+    else startScan(files[0].path)
   }, [startScan, startBatchScan])
 }

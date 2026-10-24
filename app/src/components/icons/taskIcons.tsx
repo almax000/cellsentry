@@ -44,9 +44,6 @@ export function LockIcon({ size = 14, className }: IconProps): JSX.Element {
 }
 
 export function TaskIcon({ task, size }: { task: TaskId; size?: number }): JSX.Element {
-  switch (task) {
-    case 'pii': return <PiiTaskIcon size={size} />
-    case 'extraction': return <ExtractTaskIcon size={size} />
-    default: return <AuditTaskIcon size={size} />
-  }
+  void task
+  return <AuditTaskIcon size={size} />
 }

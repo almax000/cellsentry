@@ -10,7 +10,13 @@ describe('full first install and independent App updates', () => {
     expect(config.offline.mac.target).toEqual(['dmg'])
     expect(config.update.mac.target).toEqual(['zip'])
     expect(config.offline.mac.extraResources).toContainEqual({ from: '/stage/verified-package', to: 'offline-model' })
-    expect(config.update.mac.extraResources).toEqual([{ from: '/root/native/darwin-arm64', to: 'native/darwin-${arch}' }])
+    const auditNativeRuntime = {
+      from: '/root/native/darwin-arm64',
+      to: 'native/darwin-${arch}',
+      filter: ['**/*', '!cellsentry-docreader', '!cellsentry-docreader/**'],
+    }
+    expect(config.offline.mac.extraResources).toContainEqual(auditNativeRuntime)
+    expect(config.update.mac.extraResources).toEqual([auditNativeRuntime])
     expect(config.offline.directories.output).not.toBe(config.update.directories.output)
     expect(config.offline.extends).toBeNull()
     expect(config.update.extends).toBeNull()

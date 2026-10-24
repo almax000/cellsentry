@@ -1,8 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom'
-import { flushSync } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { useScan } from '../context/ScanContext'
-import { useRedact } from '../redact/RedactContext'
 import { CellSentryMark } from './icons'
 import { TaskIcon } from './icons/taskIcons'
 import { TASKS, TASK_ORDER, type TaskId } from '../tasks'
@@ -13,52 +11,31 @@ export default function Sidebar(): JSX.Element {
   const location = useLocation()
   const navigate = useNavigate()
   const {
-    activeView, setActiveView,
-    results, piiResults, extractionResults,
-    auditError, piiError, extractionError,
+    activeView, setActiveView, results, auditError,
   } = useScan()
-
-  const { stage: redactStage } = useRedact()
   const isOnResults = location.pathname === '/results'
 
-  const hasResults = (id: TaskId): boolean => {
-    switch (id) {
-      case 'audit': return !!(results || auditError)
-      case 'pii': return !!(piiResults || piiError)
-      case 'extraction': return !!(extractionResults || extractionError)
-    }
-  }
+  const hasResults = (_id: TaskId): boolean => !!(results || auditError)
 
-  const getBadgeCount = (id: TaskId): number | null => {
+  const getBadgeCount = (_id: TaskId): number | null => {
     if (!isOnResults) return null
-    switch (id) {
-      case 'audit': return results?.summary.total ?? null
-      case 'pii': return piiResults?.findings.length ?? null
-      case 'extraction': {
-        if (!extractionResults) return null
-        return (extractionResults.fields?.length || 0) + (extractionResults.tables?.length || 0)
-      }
-    }
+    return results?.summary.total ?? null
   }
 
-  // Always clickable: show this task's results when there are some, otherwise its entry page.
-  // A document redaction in progress comes first for the redaction task.
+  // The sole audit task always opens its entry page or its latest results.
   const handleTaskClick = (id: TaskId): void => {
-    if (id === 'pii' && redactStage !== 'idle') {
-      navigate(redactStage === 'ready' ? '/redact/review' : '/redact/read')
-    } else if (!hasResults(id)) {
+    if (!hasResults(id)) {
       navigate(TASKS[id].route)
     } else if (isOnResults) {
       setActiveView(id)
     } else {
-      flushSync(() => setActiveView(id))
+      setActiveView(id)
       navigate('/results')
     }
   }
 
   const isActive = (id: TaskId): boolean =>
     (isOnResults && activeView === id) || location.pathname === TASKS[id].route
-    || (id === 'pii' && location.pathname.startsWith('/redact/'))
 
   const isHomeActive = location.pathname === '/'
 

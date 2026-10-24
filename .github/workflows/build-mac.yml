@@ -33,10 +33,6 @@ jobs:
         working-directory: app
         run: npm ci
 
-      - name: Build the macOS document reader
-        working-directory: app
-        run: npm run build:docreader
-
       - name: Build (electron-vite)
         working-directory: app
         run: npx electron-vite build
@@ -68,10 +64,6 @@ jobs:
       - name: Install dependencies
         working-directory: app
         run: npm ci
-
-      - name: Build the macOS document reader
-        working-directory: app
-        run: npm run build:docreader
 
       - name: Build (electron-vite)
         working-directory: app

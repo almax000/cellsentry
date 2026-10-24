@@ -36,6 +36,10 @@ mac:
   extraResources:
     - from: ../native/darwin-${arch}
       to: native/darwin-${arch}
+      filter:
+        - '**/*'
+        - '!cellsentry-docreader'
+        - '!cellsentry-docreader/**'
   category: public.app-category.productivity
   darkModeSupport: false
   target:

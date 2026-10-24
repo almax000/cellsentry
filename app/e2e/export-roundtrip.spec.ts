@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { mkdirSync, readFileSync, existsSync, writeFileSync } from 'fs'
+import { mkdirSync, readFileSync, writeFileSync } from 'fs'
 import { join } from 'path'
 import ExcelJS from 'exceljs'
 import { launchApp, teardownApp, type TestContext } from './electron.setup'
@@ -85,12 +85,13 @@ test.describe.serial('real export round trips', () => {
     await expect(page.locator('.export-feedback.error')).toContainText(/EISDIR|EPERM|EACCES/)
   })
 
-  test('redacts the real workbook from the PII button', async () => {
+  test('writes a reviewed redacted workbook from audit results', async () => {
     const output = join(EXPORT_DIR, 'redacted.xlsx')
-    await page.locator('[data-testid="sidebar-nav-pii"]').click()
-    await expect(page.locator('[data-testid="pii-redact-btn"]')).toBeVisible()
+    await expect(page.getByTestId('results-protection-tab')).toBeVisible()
+    await page.getByTestId('results-protection-tab').click()
+    await expect(page.getByTestId('pii-redact-btn')).toBeVisible()
     await stubSaveDialog({ canceled: false, filePath: output })
-    await page.locator('[data-testid="pii-redact-btn"]').click()
+    await page.getByTestId('pii-redact-btn').click()
     await expect(page.getByRole('dialog')).toBeVisible()
     await page.getByTestId('pii-confirm-redact-btn').click()
     await expect(page.locator('.pii-export-feedback.success')).toContainText(output)
@@ -99,23 +100,6 @@ test.describe.serial('real export round trips', () => {
     expect(String(workbook.getWorksheet('Contacts')?.getCell('B2').value)).not.toContain('alice.johnson@example.com')
   })
 
-  test('exports extraction JSON and CSV through their visible buttons', async () => {
-    await page.locator('[data-testid="sidebar-nav-extraction"]').click()
-    await expect(page.locator('[data-testid="extraction-results-panel-left"]')).toBeVisible()
-
-    const jsonOutput = join(EXPORT_DIR, 'extraction.json')
-    await stubSaveDialog({ canceled: false, filePath: jsonOutput })
-    await page.locator('[data-testid="extraction-export-json-btn"]').click()
-    await expect(page.locator('.ext-export-feedback.success')).toContainText(jsonOutput)
-    expect(JSON.parse(readFileSync(jsonOutput, 'utf8'))).toHaveProperty('tables')
-
-    const csvOutput = join(EXPORT_DIR, 'extraction.csv')
-    await stubSaveDialog({ canceled: false, filePath: csvOutput })
-    await page.locator('[data-testid="extraction-export-csv-btn"]').click()
-    await expect(page.locator('.ext-export-feedback.success')).toContainText(csvOutput)
-    expect(readFileSync(csvOutput, 'utf8')).toContain('Field,Value,Cell,Sheet,Confidence')
-    expect(existsSync(csvOutput)).toBe(true)
-  })
   test('keeps batch source identity and displays failed files without stale results', async () => {
     const broken = join(EXPORT_DIR, 'broken.xlsx')
     writeFileSync(broken, 'This is deliberately not an XLSX archive')

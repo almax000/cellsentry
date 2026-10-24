@@ -13,19 +13,17 @@ export default function ScanningPage(): JSX.Element {
   const {
     scanState, fileInfo, progress, error, stopRetryRequired,
     scanMode, isBatch, batchFiles, batchIndex, batchResults,
-    results, piiResults, extractionResults,
-    auditError, piiError, extractionError,
+    results, piiResults, auditError, piiError,
     enginesComplete,
     cancelScan,
   } = useScan()
   const [elapsed, setElapsed] = useState(0)
   const startTimeRef = useRef(Date.now())
 
-  // The redaction and extraction tasks run one engine; the formula check runs all three.
+  // Every workbook scan runs audit plus workbook PII protection.
   const scanLayers = [
     { label: t('ruleEngineScan'), engine: 'audit' as const },
     { label: t('piiDetection'), engine: 'pii' as const },
-    { label: t('dataExtraction'), engine: 'extraction' as const },
   ].filter((layer) => isBatch || scanMode === 'audit' || layer.engine === scanMode)
 
   useEffect(() => {
@@ -56,9 +54,6 @@ export default function ScanningPage(): JSX.Element {
     } else if (engine === 'pii') {
       if (piiError) return 'error'
       if (piiResults) return 'done'
-    } else {
-      if (extractionError) return 'error'
-      if (extractionResults) return 'done'
     }
     return 'active'
   }
@@ -197,15 +192,15 @@ export default function ScanningPage(): JSX.Element {
         {progress.auditReview && <AuditReviewProgressNotice review={progress.auditReview} />}
 
         <div className="scan-elapsed" data-testid="scanning-percent">
-          {enginesComplete > 0 && enginesComplete < 3
-            ? t('enginesProgress', { done: enginesComplete, total: 3 })
+          {enginesComplete > 0 && enginesComplete < 2
+            ? t('enginesProgress', { done: enginesComplete, total: 2 })
             : t('elapsed', { time: (elapsed / 1000).toFixed(1) })}
         </div>
         <button className="btn btn-ghost" type="button" onClick={() => void cancelScan()} disabled={scanState === 'cancelling'} data-testid="scan-cancel">{scanState === 'cancelling' ? t('cancelling') : stopRetryRequired ? t('retryStop') : t('cancel')}</button>
 
-        {scanState === 'error' && (error || auditError || piiError || extractionError) && (
+        {scanState === 'error' && (error || auditError || piiError) && (
           <div style={{ marginTop: 16, padding: '8px 12px', background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 6, color: '#991b1b', fontSize: 12, maxWidth: 400, overflowWrap: 'anywhere' }}>
-            {error || [auditError, piiError, extractionError].filter(Boolean).join(' | ')}
+            {error || [auditError, piiError].filter(Boolean).join(' | ')}
           </div>
         )}
       </div>

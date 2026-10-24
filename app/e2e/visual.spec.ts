@@ -33,9 +33,9 @@ test('sidebar items are 56px wide with an icon above a text label', async () => 
   await expect(homeSvg).toHaveAttribute('width', '32')
   await expect(homeSvg).toHaveAttribute('height', '32')
 
-  // Task items have 22px icons and a visible label, redaction first
+  // The single audit task has a 22px icon and visible label.
   const order = await page.locator('.sidebar-nav .sidebar-item').evaluateAll((items) => items.map((item) => item.getAttribute('data-testid')))
-  expect(order).toEqual(['sidebar-nav-home', 'sidebar-nav-pii', 'sidebar-nav-audit', 'sidebar-nav-extraction'])
+  expect(order).toEqual(['sidebar-nav-home', 'sidebar-nav-audit'])
 
   const auditItem = page.locator('[data-testid="sidebar-nav-audit"]')
   const box = await auditItem.evaluate((el) => {

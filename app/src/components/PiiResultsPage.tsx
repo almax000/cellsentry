@@ -110,10 +110,10 @@ export default function PiiResultsPage(): JSX.Element {
     }
   }, [findings, selectedFindings.size])
 
-  // Back to this task's entry page, not the home page.
+  // PII protection is part of the workbook audit, so rescans return to audit.
   const handleRescan = useCallback(() => {
     reset()
-    navigate(TASKS.pii.route)
+    navigate(TASKS.audit.route)
   }, [reset, navigate])
 
   const handleRedactAll = useCallback(async () => {

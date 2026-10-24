@@ -36,15 +36,10 @@ export default function Layout(): JSX.Element {
     const path = location.pathname
     if (path === '/') return t('header.home')
     if (entryTask) return t(`header.${entryTask.id}Entry`)
-    if (path.startsWith('/redact/')) return t('header.piiEntry')
     if (path === '/settings') return t('header.settings')
     if (path === '/scanning') return t('header.scanning')
     if (path === '/results') {
-      switch (activeView) {
-        case 'pii': return t('header.piiResults')
-        case 'extraction': return t('header.extractionResults')
-        default: return t('header.scanResults')
-      }
+      return t('header.scanResults')
     }
     return t('header.home')
   }
@@ -52,7 +47,6 @@ export default function Layout(): JSX.Element {
   const pageIcon = (): JSX.Element | null => {
     const path = location.pathname
     if (entryTask) return <TaskIcon task={entryTask.id} size={15} />
-    if (path.startsWith('/redact/')) return <TaskIcon task="pii" size={15} />
     if (path === '/scanning') return <ShieldCheckIcon size={15} />
     if (path === '/results') return <CheckIcon size={15} />
     return null

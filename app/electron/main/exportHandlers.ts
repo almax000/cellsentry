@@ -4,19 +4,16 @@ import { basename, extname, parse } from 'path'
 import { assertDistinctOutput } from '../exportSafety'
 import type {
   AuditExportRequest,
-  ExtractionExportRequest,
   ExportResult,
   PiiRedactionRequest,
 } from '../../shared/export'
 import { generateReport } from '../report/generator'
 import { ExcelMarker, MarkerSeverity, type CellMarker } from '../excel/marker'
 import { redactFile } from '../pii/redactor'
-import { exportToCsv, exportToJson } from '../extraction/exporters'
 
 function stem(fileName: string): string {
   return parse(basename(fileName || 'cellsentry')).name || 'cellsentry'
 }
-
 async function chooseSavePath(defaultPath: string, filters: Electron.FileFilter[]): Promise<string | null> {
   const response = await dialog.showSaveDialog({ defaultPath, filters })
   return response.canceled || !response.filePath ? null : response.filePath
@@ -90,7 +87,6 @@ export async function exportAudit(request: AuditExportRequest): Promise<ExportRe
     return { success: false, error: error instanceof Error ? error.message : String(error) }
   }
 }
-
 export async function redactPii(request: PiiRedactionRequest): Promise<ExportResult> {
   try {
     const outputPath = await chooseSavePath(`${stem(request.fileName)}-redacted.xlsx`, [{ name: 'Excel Workbook', extensions: ['xlsx'] }])
@@ -110,31 +106,6 @@ export async function redactPii(request: PiiRedactionRequest): Promise<ExportRes
     return result.success
       ? { success: true, outputPath: result.outputPath, count: result.redactedCount }
       : { success: false, error: result.error }
-  } catch (error) {
-    return { success: false, error: error instanceof Error ? error.message : String(error) }
-  }
-}
-
-export async function exportExtraction(request: ExtractionExportRequest): Promise<ExportResult> {
-  try {
-    const outputPath = await chooseSavePath(
-      `${stem(request.fileName)}-extraction.${request.format}`,
-      [{ name: request.format.toUpperCase(), extensions: [request.format] }],
-    )
-    if (!outputPath) return { success: false, cancelled: true }
-    await assertDistinctOutput(request.filePath, outputPath)
-    const fields = request.fields.map((field) => ({ ...field, sheet_name: field.sheetName }))
-    const tables = request.tables.map((table) => ({
-      ...table,
-      sheet_name: table.sheetName,
-      header_row: table.headerRow,
-      start_cell: table.startCell,
-      end_cell: table.endCell,
-    }))
-    await writeFile(outputPath, request.format === 'json'
-      ? exportToJson(fields, tables)
-      : exportToCsv(fields, tables), 'utf8')
-    return { success: true, outputPath }
   } catch (error) {
     return { success: false, error: error instanceof Error ? error.message : String(error) }
   }

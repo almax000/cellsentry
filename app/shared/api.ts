@@ -1,11 +1,8 @@
-import type { AuditExportRequest, PiiRedactionRequest, ExtractionExportRequest, ExportResult } from './export'
+import type { AuditExportRequest, PiiRedactionRequest, ExportResult } from './export'
 import type { RendererIssue } from '../electron/engine/ruleEngine'
-import type { PiiScanResult } from '../electron/pii/types'
-import type { ExtractionResult } from '../electron/extraction/types'
 import type { LlmStatus } from '../electron/llm/types'
 import type { EngineLocale } from './locale'
 import type { ModelDownloadResult } from './modelDownload'
-import type { RedactAPI } from './redact/ipc'
 
 export type ModelSetupPhase = 'idle' | 'copying' | 'verifying' | 'ready' | 'not-bundled' | 'failed'
 
@@ -29,7 +26,7 @@ export interface ModelStatus {
 }
 export interface EngineDoneEvent {
   scanId: string
-  engine: 'audit' | 'pii' | 'extraction'
+  engine: 'audit' | 'pii'
   result?: unknown
   error?: string
 }
@@ -66,8 +63,6 @@ export interface SidecarAPI {
   installUpdate: () => void
   onUpdateStatus: (callback: (status: UpdateStatus) => void) => () => void
   onTestTriggerAnalysis?: (callback: (filePath: string) => void) => () => void
-  onTestTriggerPiiScan?: (callback: (filePath: string) => void) => () => void
-  onTestTriggerExtractionScan?: (callback: (filePath: string) => void) => () => void
   onTestResetState?: (callback: () => void) => () => void
   openFilePath: (filePath: string) => Promise<{ success: boolean; error?: string }>
   getFilePathFromDrop: (file: File) => string
@@ -80,19 +75,13 @@ export interface SidecarAPI {
   getLlmStatus: () => Promise<LlmStatus>
   startLlm: () => Promise<LlmStatus>
   onZoomChange: (callback: (delta: number) => void) => () => void
-  // PII
-  analyzePii: (filePath: string, scanId: string) => Promise<PiiScanResult>
+  // Workbook PII redaction
   redactPii: (request: PiiRedactionRequest) => Promise<ExportResult>
   exportAudit: (request: AuditExportRequest) => Promise<ExportResult>
-  // Extraction
-  analyzeExtraction: (filePath: string, scanId: string) => Promise<ExtractionResult>
-  exportExtraction: (request: ExtractionExportRequest) => Promise<ExportResult>
   // Unified scan
   analyzeAll: (filePath: string, scanId: string) => Promise<{ success: boolean; error?: string; errorCode?: 'model-stop-failed' }>
   cancelAnalysis: (scanId: string) => Promise<{ success: boolean; error?: string }>
   onEngineDone: (callback: (data: EngineDoneEvent) => void) => () => void
-  // Document redaction
-  redact: RedactAPI
 }
 
 export interface FolderScanResult {
@@ -158,7 +147,5 @@ export interface TestAPI {
   getRouterPath: () => Promise<string>
   getScanState: () => Promise<string>
   triggerFileAnalysis: (filePath: string) => Promise<void>
-  triggerPiiScan: (filePath: string) => void
-  triggerExtractionScan: (filePath: string) => void
   resetState: () => void
 }

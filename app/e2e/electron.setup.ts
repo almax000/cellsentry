@@ -54,8 +54,6 @@ export async function launchApp(options: { xlsxGatePath?: string } = {}): Promis
       CELLSENTRY_TEST_HIDDEN: process.env.CELLSENTRY_E2E_VISIBLE === '1' ? '0' : '1',
       CELLSENTRY_TEST_USER_DATA: userDataDir,
       CELLSENTRY_MODEL_DIR: join(userDataDir, 'models'),
-      // The source build's app path is out/main, so point it at the reader built into native/.
-      ...(packagedExecutable ? {} : { CELLSENTRY_DOCREADER: join(__dirname, '..', '..', 'native', `${process.platform}-${process.arch}`, 'cellsentry-docreader') }),
       ...(options.xlsxGatePath ? { CELLSENTRY_E2E_XLSX_GATE: options.xlsxGatePath } : {}),
     }
   })
@@ -92,7 +90,8 @@ export async function launchApp(options: { xlsxGatePath?: string } = {}): Promis
 /**
  * Gracefully tear down the test context.
  */
-export async function teardownApp(ctx: TestContext): Promise<void> {
+export async function teardownApp(ctx?: TestContext): Promise<void> {
+  if (!ctx) return // A failed launch already carries its original error.
   try {
     if (ctx.rendererFailures.length > 0) {
       throw new Error(`Unexpected renderer failures:\n${ctx.rendererFailures.join('\n')}`)

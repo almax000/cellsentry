@@ -1,10 +1,10 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useScan } from '../context/ScanContext'
 import { useSidecar } from '../hooks/useSidecar'
 import AuditResultsPage from './ResultsPage'
 import PiiResultsPage from './PiiResultsPage'
-import ExtractionResultsPage from './ExtractionResultsPage'
 import { ShieldIcon } from './icons'
 import { AuditReviewSummaryNotice } from './AuditReviewNotice'
 
@@ -38,36 +38,35 @@ export default function UnifiedResultsPage(): JSX.Element {
   const { t: tr } = useTranslation('results')
   const navigate = useNavigate()
   const { modelExists } = useSidecar()
-  const { activeView, results, piiResults, extractionResults, auditError, piiError, extractionError } = useScan()
+  const { results, piiResults, auditError, piiError, isBatch } = useScan()
+  const [resultPanel, setResultPanel] = useState<'audit' | 'protection'>('audit')
 
   // Contract with the main process: an engine result carries `auditReview` or
   // `aiWarning` only when local AI actually ran for it. Without either, no AI
   // status is shown at all.
-  const warning = activeView === 'pii' ? piiResults?.aiWarning : activeView === 'extraction' ? extractionResults?.aiWarning : results?.aiWarning
+  const warning = results?.aiWarning || piiResults?.aiWarning
   const auditAiRan = Boolean(results?.auditReview || results?.aiWarning)
   // One neutral invitation, audit only (PII and extraction have no assistant yet).
-  const showAiInvite = activeView === 'audit' && !!results && results.issues.length > 0 && !auditAiRan && !modelExists
+  const showAiInvite = !!results && results.issues.length > 0 && !auditAiRan && !modelExists
   const withWarning = (content: JSX.Element): JSX.Element => <div className="unified-results">
-    {activeView === 'audit' && results?.auditReview && <AuditReviewSummaryNotice review={results.auditReview} />}
+    {results?.auditReview && <AuditReviewSummaryNotice review={results.auditReview} />}
     {warning && <div role="status" className="analysis-warning">{t('aiFallback')}</div>}
     {showAiInvite && <div role="note" className="analysis-warning ai-invite" data-testid="audit-ai-invite">
       <span>{tr('aiInvite')}</span>
       <button type="button" className="ai-invite-action" onClick={() => navigate('/settings')}>{tr('aiInviteAction')}</button>
     </div>}
+    {piiResults && <div className="results-panel-switch" role="group" aria-label={t('piiDetection')}>
+      <button type="button" className={resultPanel === 'audit' ? 'active' : ''} onClick={() => setResultPanel('audit')} data-testid="results-audit-tab">{t('ruleEngineScan')}</button>
+      <button type="button" className={resultPanel === 'protection' ? 'active' : ''} onClick={() => setResultPanel('protection')} data-testid="results-protection-tab">{t('piiDetection')}</button>
+    </div>}
     {content}
   </div>
 
-  switch (activeView) {
-    case 'pii':
-      if (!piiResults && !piiError) return <EngineLoading label={t('piiDetection')} />
-      if (!piiResults && piiError) return <EngineFailure label={t('piiDetection')} error={piiError} />
-      return withWarning(<PiiResultsPage />)
-    case 'extraction':
-      if (!extractionResults && !extractionError) return <EngineLoading label={t('dataExtraction')} />
-      if (!extractionResults && extractionError) return <EngineFailure label={t('dataExtraction')} error={extractionError} />
-      return withWarning(<ExtractionResultsPage />)
-    default:
-      if (!results && auditError) return <EngineFailure label={t('ruleEngineScan')} error={auditError} />
-      return withWarning(<AuditResultsPage />)
-  }
+  // Batch results own the file tabs and per-file failures, including files with no result.
+  if (isBatch) return withWarning(<AuditResultsPage />)
+  if (!results && auditError) return <EngineFailure label={t('ruleEngineScan')} error={auditError} />
+  if (!results) return <EngineLoading label={t('ruleEngineScan')} />
+  if (!piiResults && piiError) return withWarning(<><AuditResultsPage /><EngineFailure label={t('piiDetection')} error={piiError} /></>)
+  // Workbook PII protection remains inside the audit result, never a standalone task.
+  return withWarning(piiResults && resultPanel === 'protection' ? <PiiResultsPage /> : <AuditResultsPage />)
 }

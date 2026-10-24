@@ -36,7 +36,11 @@ export function offlineMacConfigs({ baseConfig, appDir, nativeDir, packageDir, o
     directories: { ...baseConfig.directories, app: appDir, buildResources: join(appDir, 'resources') },
     mac: { ...baseConfig.mac,
       ...(release ? { type: 'distribution', hardenedRuntime: true, notarize: true } : {}),
-      extraResources: [{ from: nativeDir, to: 'native/darwin-${arch}' }] },
+      extraResources: [{
+        from: nativeDir,
+        to: 'native/darwin-${arch}',
+        filter: ['**/*', '!cellsentry-docreader', '!cellsentry-docreader/**'],
+      }] },
   }
   return {
     offline: {

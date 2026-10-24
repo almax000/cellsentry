@@ -10,6 +10,37 @@
   flex-shrink: 0;
 }
 
+.results-panel-switch {
+  display: flex;
+  gap: 6px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-tertiary);
+  flex-shrink: 0;
+}
+
+.results-panel-switch button {
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font: inherit;
+  padding: 5px 9px;
+}
+
+.results-panel-switch button:hover {
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+}
+
+.results-panel-switch button.active {
+  border-color: var(--brand);
+  background: var(--brand-subtle);
+  color: var(--brand);
+  font-weight: 600;
+}
+
 .unified-results > .results-split {
   flex: 1;
   height: auto;

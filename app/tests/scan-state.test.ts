@@ -49,7 +49,7 @@ describe('unified scan state identity', () => {
     expect(afterOldEvent).toBe(next)
   })
 
-  it('counts each engine once and only completes after every engine settles', () => {
+  it('counts audit and workbook PII once and only completes after both settle', () => {
     let state = start()
     state = scanReducer(state, {
       type: 'ENGINE_DONE', scanId: 'scan-current', engine: 'audit', result: { issues: [], summary: {} },
@@ -65,11 +65,8 @@ describe('unified scan state identity', () => {
     state = scanReducer(state, {
       type: 'ENGINE_DONE', scanId: 'scan-current', engine: 'pii', error: 'model unavailable',
     })
-    state = scanReducer(state, {
-      type: 'ENGINE_DONE', scanId: 'scan-current', engine: 'extraction', result: { fields: [], tables: [] },
-    })
 
-    expect(state.enginesComplete).toBe(3)
+    expect(state.enginesComplete).toBe(2)
     expect(state.scanState).toBe('complete')
     expect(state.piiError).toBe('model unavailable')
   })
