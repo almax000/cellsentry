@@ -1,11 +1,11 @@
 # ADR-0002：定位：个人医疗档案的一致假名化
 
-- **Status**: Accepted
+- **Status**: Superseded by ADR-0019
 - **Date**: 2026-10-18
 - **Deciders**: jojo
 - **Drafted by**: Claude Code · Opus 5.5（从 PRD 和当天的问答迁入）
 - **Supersedes**: —
-- **Superseded by**: —
+- **Superseded by**: ADR-0019
 - **Legacy ID**: PRD D1
 - **Related**: [PRD §1–§2](../../.claude/product/PRD-v0-local-pii.md)、[守门调研](../research/2026-10-18-pii-landscape-gate.md)、[第二轮调研](../research/2026-10-18-round2-directions.md)
 

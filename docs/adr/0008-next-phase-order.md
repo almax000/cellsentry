@@ -1,11 +1,11 @@
 # ADR-0008：下一阶段顺序：UI/UX → 接入模型 → macOS 版
 
-- **Status**: Accepted
+- **Status**: Superseded by ADR-0019
 - **Date**: 2026-10-18
 - **Deciders**: jojo
 - **Drafted by**: Claude Code · Opus 5.5（从 PRD 和当天的问答迁入）
 - **Supersedes**: —
-- **Superseded by**: —
+- **Superseded by**: ADR-0019
 - **Legacy ID**: PRD D7
 - **Related**: [PRD §7、§9](../../.claude/product/PRD-v0-local-pii.md)
 

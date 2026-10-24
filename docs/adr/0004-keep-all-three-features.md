@@ -1,11 +1,11 @@
 # ADR-0004：三项功能都保留，另两项保持现状
 
-- **Status**: Accepted
+- **Status**: Superseded by ADR-0019
 - **Date**: 2026-10-18
 - **Deciders**: jojo
 - **Drafted by**: Claude Code · Opus 5.5（从 PRD 和当天的问答迁入）
 - **Supersedes**: —
-- **Superseded by**: —
+- **Superseded by**: ADR-0019
 - **Legacy ID**: PRD D3
 - **Related**: [PRD §3](../../.claude/product/PRD-v0-local-pii.md)、[保留集结果](../evaluation/2026-10-17-workbook-holdout-results.md)、[ADR-0007](0007-own-task-models-on-own-cdn.md)
 
