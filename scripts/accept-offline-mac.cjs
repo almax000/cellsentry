@@ -7,6 +7,7 @@ const { mkdir, readFile, readdir, stat, writeFile } = require('node:fs/promises'
 const { basename, join, resolve } = require('node:path')
 const { parseArgs } = require('node:util')
 const { _electron: electron } = require('../app/node_modules/@playwright/test')
+const { verifyPackagedNativeRuntime } = require('./lib/packaged-native-runtime.cjs')
 
 const { values } = parseArgs({ options: {
   'offline-app': { type: 'string' }, 'update-app': { type: 'string' }, out: { type: 'string' },
@@ -111,8 +112,7 @@ async function main() {
   const source = join(offline, 'Contents/Resources/offline-model')
   for (const appPath of [offline, lean]) {
     const runtime = join(appPath, 'Contents/Resources/native', `darwin-${process.arch}`)
-    assert(existsSync(join(runtime, 'llama-server')), 'audit native runtime missing from packaged app')
-    assert(!existsSync(join(runtime, 'cellsentry-docreader')), 'document reader must not be packaged')
+    await verifyPackagedNativeRuntime(runtime)
   }
   assert.deepEqual((await readdir(source)).sort(), ['LICENSE', 'NOTICE.txt', 'SHA256SUMS', fileName, 'manifest.json'].sort())
   assert(!existsSync(join(lean, 'Contents/Resources/offline-model')))
