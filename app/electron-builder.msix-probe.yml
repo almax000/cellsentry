@@ -1,0 +1,22 @@
+# Development probe only. These identities are not assigned by Microsoft Store.
+extends: ./electron-builder.yml
+directories:
+  output: dist-msix-probe
+publish: null
+forceCodeSigning: false
+win:
+  target: appx
+  signAndEditExecutable: false
+appx:
+  identityName: CellSentry.MsixProbe
+  applicationId: CellSentryProbe
+  publisher: CN=CellSentryMSIXProbe
+  publisherDisplayName: CellSentry MSIX development probe
+  displayName: CellSentry MSIX development probe
+  artifactName: CellSentry-msix-probe-${version}-${arch}.msix
+  languages:
+    - en-US
+    - zh-CN
+  minVersion: 10.0.19041.0
+  maxVersionTested: 10.0.26100.0
+  electronUpdaterAware: false
