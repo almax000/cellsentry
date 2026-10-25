@@ -1,3 +1,4 @@
+import { IS_HIDDEN_RUN } from './startup'
 import { app, BrowserWindow, ipcMain, Menu, screen, shell } from 'electron'
 import { join } from 'path'
 import { readFileSync, writeFileSync, appendFileSync, mkdirSync } from 'fs'
@@ -10,14 +11,6 @@ import { bootstrapBundledModel } from '../model/bundled'
 import { getBundledModelDir, getModelsDir } from '../model/paths'
 
 import { IS_TEST_MODE } from '../testMode'
-// Automated runs keep the window off screen and never take focus from the person at the desk.
-const IS_HIDDEN_TEST = IS_TEST_MODE && process.env.CELLSENTRY_TEST_HIDDEN === '1'
-
-// Test runs own their application data; never read/write the user's model or settings.
-if (IS_TEST_MODE && process.env.CELLSENTRY_TEST_USER_DATA) {
-  mkdirSync(process.env.CELLSENTRY_TEST_USER_DATA, { recursive: true })
-  app.setPath('userData', process.env.CELLSENTRY_TEST_USER_DATA)
-}
 
 // ---------------------------------------------------------------------------
 // Crash Logging
@@ -252,7 +245,7 @@ function createWindow(): BrowserWindow {
       // Chromium's spell checker downloads dictionaries on some platforms; nothing here may go online for text.
       spellcheck: false,
       // A never-shown window must still run timers and animation frames at full speed.
-      ...(IS_HIDDEN_TEST ? { backgroundThrottling: false } : {})
+      ...(IS_HIDDEN_RUN ? { backgroundThrottling: false } : {})
     }
   })
 
@@ -264,7 +257,7 @@ function createWindow(): BrowserWindow {
   }
 
   mainWindow.on('ready-to-show', () => {
-    if (IS_HIDDEN_TEST) return
+    if (IS_HIDDEN_RUN) return
     if (savedState.isMaximized) {
       mainWindow.maximize()
     }
@@ -308,7 +301,7 @@ if (!gotTheLock) {
   app.on('second-instance', () => {
     const win = BrowserWindow.getAllWindows()[0]
     // A hidden test run must never take focus.
-    if (win && !IS_HIDDEN_TEST) {
+    if (win && !IS_HIDDEN_RUN) {
       if (win.isMinimized()) win.restore()
       win.focus()
     }
@@ -316,7 +309,7 @@ if (!gotTheLock) {
 
   app.whenReady().then(() => {
     // No Dock icon or menu bar, and the app never becomes frontmost.
-    if (IS_HIDDEN_TEST && process.platform === 'darwin') app.setActivationPolicy('accessory')
+    if (IS_HIDDEN_RUN && process.platform === 'darwin') app.setActivationPolicy('accessory')
     setEngineLocale(app.getLocale())
     electronApp.setAppUserModelId('com.cellsentry.app')
 
