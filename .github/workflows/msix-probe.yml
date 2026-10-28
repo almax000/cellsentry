@@ -83,6 +83,21 @@ jobs:
       - name: Install dependencies
         working-directory: app
         run: npm ci
+      - name: Check resolved builder resources for duplicate native copies
+        run: |
+          node -e '
+            const assert = require("node:assert/strict");
+            const { getConfig } = require("./app/node_modules/app-builder-lib/out/util/config/config.js");
+            (async () => {
+              for (const model of [false, true]) {
+                const file = model ? "electron-builder.msix-model-probe.yml" : "electron-builder.msix-probe.yml";
+                const config = await getConfig(require("node:path").resolve("app"), file);
+                const resources = config.win.extraResources;
+                assert.equal(resources.filter(x => x.to.startsWith("native/win32-")).length, 1, "native runtime must be copied exactly once");
+                assert.equal(resources.filter(x => x.to === "offline-model").length, model ? 1 : 0, "model payload must match the selected package mode");
+              }
+            })().catch(error => { console.error(error.message); process.exitCode = 1; });
+          '
       - name: Parse MSIX Electron Node probe
         run: |
           node --check scripts/probe-msix-electron.cjs

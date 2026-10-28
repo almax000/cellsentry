@@ -4,8 +4,6 @@ directories:
   output: dist-msix-model-probe
 win:
   extraResources:
-    - from: ../native/win32-${arch}
-      to: native/win32-${arch}
     - from: ../tmp/msix-model-input
       to: offline-model
 appx:
