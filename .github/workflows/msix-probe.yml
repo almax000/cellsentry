@@ -14,6 +14,10 @@ on:
       - 'scripts/probe-model-release-access.mjs'
       - 'scripts/test-model-release-access.mjs'
       - 'scripts/lib/stage-model-package.mjs'
+      - 'app/electron-builder.msix-model-probe.yml'
+      - 'scripts/prepare-msix-model-probe.mjs'
+      - 'scripts/probe-msix-electron-model.cjs'
+      - 'scripts/stage-ci-model-from-rc3.ps1'
   workflow_dispatch:
     inputs:
       mode:
@@ -21,7 +25,7 @@ on:
         required: false
         default: package
         type: choice
-        options: [package, draft-access, model-source]
+        options: [package, draft-access, model-source, full-model]
 
 permissions:
   contents: read
@@ -32,11 +36,11 @@ concurrency:
 
 jobs:
   package:
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.mode == 'package' }}
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.mode == 'package' || inputs.mode == 'full-model' }}
     # Pin the image so the desktop-package cmdlets are exercised on a known
     # Windows Server 2025 runner, rather than drifting with windows-latest.
     runs-on: windows-2025
-    timeout-minutes: 25
+    timeout-minutes: ${{ inputs.mode == 'full-model' && 45 || 25 }}
     steps:
       - uses: actions/checkout@v4
       - name: Parse MSIX probe PowerShell on the Windows runner
@@ -45,7 +49,8 @@ jobs:
           $files = @(
             'scripts/verify-msix-probe.ps1',
             'scripts/msix-desktop-context-probe.ps1',
-            'scripts/activate-msix-electron.ps1'
+            'scripts/activate-msix-electron.ps1',
+            'scripts/stage-ci-model-from-rc3.ps1'
           )
           foreach ($file in $files) {
             $tokens = $null
@@ -65,11 +70,24 @@ jobs:
           node-version: 22
           cache: npm
           cache-dependency-path: app/package-lock.json
+      - name: Stage and verify the pinned model for full validation only
+        if: github.event_name == 'workflow_dispatch' && inputs.mode == 'full-model'
+        shell: pwsh
+        run: |
+          ./scripts/stage-ci-model-from-rc3.ps1 -StageDir (Join-Path $PWD.Path 'tmp/rc3-model-package') -ReceiptPath (Join-Path $PWD.Path 'tmp/model-supply/rc3-receipt.json')
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node scripts/prepare-msix-model-probe.mjs --model-dir (Join-Path $PWD.Path 'tmp/rc3-model-package') --out (Join-Path $PWD.Path 'tmp/msix-model-input')
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          # Both stages were created in this fresh job; retain only the verified build input.
+          Remove-Item -LiteralPath (Join-Path $PWD.Path 'tmp/rc3-model-package') -Recurse -Force
       - name: Install dependencies
         working-directory: app
         run: npm ci
       - name: Parse MSIX Electron Node probe
-        run: node --check scripts/probe-msix-electron.cjs
+        run: |
+          node --check scripts/probe-msix-electron.cjs
+          node --check scripts/probe-msix-electron-model.cjs
+          node --check scripts/prepare-msix-model-probe.mjs
       - name: Verify MSIX inspector identity and endpoint rejection
         run: node --test scripts/test-msix-electron-probe.cjs
       - name: Build application and verified Windows native runtime
@@ -83,10 +101,13 @@ jobs:
         working-directory: app
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
-        run: npx electron-builder --config electron-builder.msix-probe.yml --win appx --x64 --publish never
+        run: |
+          $config = if ('${{ inputs.mode }}' -eq 'full-model') { 'electron-builder.msix-model-probe.yml' } else { 'electron-builder.msix-probe.yml' }
+          npx electron-builder --config $config --win appx --x64 --publish never
       - name: Inspect, install, and probe package identity (ephemeral runner only)
         shell: pwsh
-        run: ./scripts/verify-msix-probe.ps1
+        run: |
+          if ('${{ inputs.mode }}' -eq 'full-model') { ./scripts/verify-msix-probe.ps1 -WithModel } else { ./scripts/verify-msix-probe.ps1 }
       - name: Preserve development test evidence (not a release)
         if: always()
         uses: actions/upload-artifact@v4
@@ -98,6 +119,9 @@ jobs:
             tmp/msix-probe/receipt.json
             tmp/msix-probe/electron-activation-receipt.json
             tmp/msix-probe/electron-home.png
+            tmp/msix-model-probe/*receipt.json
+            tmp/msix-model-probe/*home.png
+            tmp/model-supply/rc3-receipt.json
           if-no-files-found: warn
           retention-days: 1
 
