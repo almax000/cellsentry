@@ -157,21 +157,6 @@ namespace CellSentryMsixCleanup {
   return [CellSentryMsixCleanup.PackageIdentity]::ForProcess($ProcessId)
 }
 
-function Get-ModelFingerprint {
-  param([Parameter(Mandatory = $true)][string]$UserDataPath)
-  $modelName = 'cellsentry-minicpm5-2b-cancel2-q4_k_m.gguf'
-  $path = Join-Path (Join-Path $UserDataPath 'models') $modelName
-  if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw 'Model-mode userData did not contain the pinned model file' }
-  $item = Get-Item -LiteralPath $path
-  [ordered]@{
-    path = $path
-    bytes = $item.Length
-    sha256 = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant()
-    lastWriteTimeUtc = $item.LastWriteTimeUtc.ToString('O')
-    createdAtMs = ([DateTimeOffset]$item.CreationTimeUtc).ToUnixTimeMilliseconds()
-  }
-}
-
 function Invoke-DesktopProbeStage {
   param(
     [Parameter(Mandatory = $true)][string]$Stage,
@@ -463,7 +448,8 @@ if ($WithModel) {
   $report['realModelInferenceVerified'] = $true
   $report['modelFirstRun'] = $modelReceipt
   if (-not $modelReceipt.userData) { throw 'Model-mode first activation did not report its authenticated userData path' }
-  $firstModelFingerprint = Get-ModelFingerprint -UserDataPath $modelReceipt.userData
+  $firstModelFingerprint = $modelReceipt.modelFingerprint
+  if ($modelReceipt.modelFingerprintContext -ne 'activated-main-process-msix-identity') { throw 'Model fingerprint was not read in the activated MSIX identity context' }
   if ($firstModelFingerprint.bytes -ne 1561314592 -or $firstModelFingerprint.sha256 -ne '61d9c8ab8007dbbde0eb004089d1411fb6ec7167031f9d6fcc5b521fe8ebe49a') {
     throw 'Model-mode first activation persisted a model that did not match the pinned artifact'
   }
@@ -490,8 +476,9 @@ if ($WithModel) {
   if ($secondHost.exitCode -ne 0 -or ($secondActivation.success -isnot [bool]) -or -not $secondActivation.success) { throw "Model-mode reuse activation failed: $($secondActivation.error)" }
   $secondModelReceipt = $secondActivation.modelProbe
   if (($secondModelReceipt.modelLoaded -isnot [bool]) -or -not $secondModelReceipt.modelLoaded -or ($secondModelReceipt.nativeBackend -isnot [bool]) -or -not $secondModelReceipt.nativeBackend -or $secondModelReceipt.userData -ne $modelReceipt.userData) { throw 'Model-mode reuse did not load the same persisted user profile' }
-  $secondModelFingerprint = Get-ModelFingerprint -UserDataPath $secondModelReceipt.userData
-  if ($secondModelFingerprint.bytes -ne $firstModelFingerprint.bytes -or $secondModelFingerprint.sha256 -ne $firstModelFingerprint.sha256 -or $secondModelFingerprint.lastWriteTimeUtc -ne $firstModelFingerprint.lastWriteTimeUtc) { throw 'Model-mode reuse replaced or changed the persisted model file' }
+  $secondModelFingerprint = $secondModelReceipt.modelFingerprint
+  if ($secondModelReceipt.modelFingerprintContext -ne 'activated-main-process-msix-identity') { throw 'Reuse fingerprint was not read in the activated MSIX identity context' }
+  if ($secondModelFingerprint.bytes -ne $firstModelFingerprint.bytes -or $secondModelFingerprint.sha256 -ne $firstModelFingerprint.sha256 -or $secondModelFingerprint.lastWriteTimeMs -ne $firstModelFingerprint.lastWriteTimeMs) { throw 'Model-mode reuse replaced or changed the persisted model file' }
   $report['modelReuse'] = [ordered]@{ sameUserData = $true; first = $firstModelFingerprint; second = $secondModelFingerprint; unchanged = $true; activation = $secondModelReceipt }
 }
 $report['electronGuiLaunched'] = $true

@@ -78,13 +78,13 @@ function assertMainIdentity(value, expectedProcessId) {
   }
 }
 
-async function inspectorEvaluate(wsUrl, expression) {
+async function inspectorEvaluate(wsUrl, expression, timeoutMs = 10_000) {
   return await new Promise((resolvePromise, reject) => {
     const socket = new WebSocket(wsUrl)
     const timeout = setTimeout(() => {
       socket.close()
-      reject(new Error('Node inspector evaluation timed out after 10000ms'))
-    }, 10_000)
+      reject(new Error(`Node inspector evaluation timed out after ${timeoutMs}ms`))
+    }, timeoutMs)
     socket.addEventListener('error', () => {
       clearTimeout(timeout)
       reject(new Error('Node inspector WebSocket failed'))

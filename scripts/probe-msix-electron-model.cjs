@@ -51,6 +51,21 @@ async function main() {
         const review = audit.result.auditReview; receipt.auditReview = review; receipt.auditAttempted = Number.isInteger(review.attempted) && review.attempted > 0; receipt.auditReviewed = Number.isInteger(review.reviewed) && review.reviewed > 0
         if (!['total', 'selected', 'attempted', 'reviewed', 'failed', 'skipped'].every(k => Number.isInteger(review[k]) && review[k] >= 0) || !receipt.auditAttempted || !receipt.auditReviewed || review.attempted > review.selected || review.reviewed > review.attempted || review.reviewed + review.failed !== review.attempted || review.selected > review.total || review.skipped !== review.total - review.attempted || !['complete', 'candidate-limit'].includes(review.stopReason)) throw Error('audit review counters did not prove a valid local-model review')
       }
+      // Read virtualized files in the same authenticated MSIX process that
+      // actually loaded them. The un-packaged CI host may see a different path.
+      const { canonicalSpec } = await import('./lib/stage-model-package.mjs')
+      const expectedModel = (await canonicalSpec(resolve(__dirname, '..'))).model
+      receipt.modelFingerprint = await inspectorEvaluate(target.webSocketDebuggerUrl, `(async () => {
+        const fs = require('node:fs'); const crypto = require('node:crypto');
+        const path = require('node:path').join(require('electron').app.getPath('userData'), 'models', ${JSON.stringify(expectedModel.name)});
+        const hash = crypto.createHash('sha256'); let bytes = 0;
+        for await (const chunk of fs.createReadStream(path)) { bytes += chunk.length; hash.update(chunk); }
+        const info = await fs.promises.stat(path);
+        return { path, bytes, sha256: hash.digest('hex'), lastWriteTimeMs: info.mtimeMs, createdAtMs: info.birthtimeMs };
+      })()`, 30000)
+      const fingerprint = receipt.modelFingerprint
+      if (fingerprint.bytes !== expectedModel.bytes || fingerprint.sha256 !== expectedModel.sha256) throw Error('persisted model did not match the canonical artifact')
+      receipt.modelFingerprintContext = 'activated-main-process-msix-identity'
       receipt.fixtureAfterSha256 = fixtureHash()
       if (receipt.fixtureAfterSha256 !== receipt.fixtureBeforeSha256) throw Error('audit modified the source fixture')
       await page.screenshot({ path: screenshotPath, animations: 'disabled', timeout: 10000 })
