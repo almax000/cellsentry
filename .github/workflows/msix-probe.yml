@@ -16,11 +16,12 @@ on:
       - 'scripts/lib/stage-model-package.mjs'
   workflow_dispatch:
     inputs:
-      model_supply_only:
-        description: 'Only probe authenticated draft model metadata and LICENSE'
+      mode:
+        description: 'Development package, draft access, or pinned public model input'
         required: false
-        default: false
-        type: boolean
+        default: package
+        type: choice
+        options: [package, draft-access, model-source]
 
 permissions:
   contents: read
@@ -31,7 +32,7 @@ concurrency:
 
 jobs:
   package:
-    if: ${{ github.event_name != 'workflow_dispatch' || !inputs.model_supply_only }}
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.mode == 'package' }}
     # Pin the image so the desktop-package cmdlets are exercised on a known
     # Windows Server 2025 runner, rather than drifting with windows-latest.
     runs-on: windows-2025
@@ -101,7 +102,7 @@ jobs:
           retention-days: 1
 
   model-supply:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.model_supply_only }}
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'draft-access' }}
     runs-on: windows-2025
     timeout-minutes: 5
     steps:
@@ -123,5 +124,33 @@ jobs:
         with:
           name: windows-model-supply-receipt
           path: tmp/model-supply/receipt.json
+          if-no-files-found: error
+          retention-days: 1
+
+  model-source:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'model-source' }}
+    runs-on: windows-2025
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Parse historical model staging PowerShell
+        shell: pwsh
+        run: |
+          $tokens = $null
+          $parseErrors = $null
+          [void][System.Management.Automation.Language.Parser]::ParseFile((Join-Path $PWD.Path 'scripts/stage-ci-model-from-rc3.ps1'), [ref]$tokens, [ref]$parseErrors)
+          if ($parseErrors.Count -gt 0) { $parseErrors | ForEach-Object { Write-Error $_.Message }; exit 1 }
+      - name: Verify pinned public RC3 model input without executing its application
+        shell: pwsh
+        run: ./scripts/stage-ci-model-from-rc3.ps1 -StageDir (Join-Path $PWD.Path 'tmp/rc3-model-package') -ReceiptPath (Join-Path $PWD.Path 'tmp/model-supply/rc3-receipt.json')
+      - name: Preserve input verification receipt only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-public-model-input-receipt
+          path: tmp/model-supply/rc3-receipt.json
           if-no-files-found: error
           retention-days: 1
