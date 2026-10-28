@@ -28,6 +28,12 @@ on:
         default: package
         type: choice
         options: [package, draft-access, model-source, full-model, installed-ui]
+      target:
+        description: 'Pinned Windows runner; Windows 11 Arm runs the existing x64 package under emulation'
+        required: false
+        default: server-2025
+        type: choice
+        options: [server-2025, windows-11-arm]
 
 permissions:
   contents: read
@@ -37,14 +43,39 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  package:
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.mode == 'package' || inputs.mode == 'full-model' || inputs.mode == 'installed-ui' }}
-    # Pin the image so the desktop-package cmdlets are exercised on a known
-    # Windows Server 2025 runner, rather than drifting with windows-latest.
+  validate-dispatch:
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     runs-on: windows-2025
+    timeout-minutes: 2
+    steps:
+      - name: Validate requested Windows probe target and mode
+        shell: pwsh
+        run: |
+          $target = '${{ inputs.target }}'
+          $mode = '${{ inputs.mode }}'
+          if ($target -notin @('server-2025', 'windows-11-arm')) { throw "Unsupported MSIX probe target: $target" }
+          if ($mode -notin @('package', 'draft-access', 'model-source', 'full-model', 'installed-ui')) { throw "Unsupported MSIX probe mode: $mode" }
+          if ($target -eq 'windows-11-arm' -and $mode -notin @('package', 'installed-ui')) {
+            throw "Windows 11 Arm only supports package or installed-ui mode; received: $mode"
+          }
+
+  package:
+    if: ${{ github.event_name != 'workflow_dispatch' || (inputs.target == 'server-2025' && (inputs.mode == 'package' || inputs.mode == 'full-model' || inputs.mode == 'installed-ui')) || (inputs.target == 'windows-11-arm' && (inputs.mode == 'package' || inputs.mode == 'installed-ui')) }}
+    # PRs always stay on Server 2025. Windows 11 Arm is an explicit manual,
+    # x64-emulation probe, never an automatic matrix expansion.
+    runs-on: ${{ github.event_name == 'workflow_dispatch' && inputs.target == 'windows-11-arm' && 'windows-11-arm' || 'windows-2025' }}
     timeout-minutes: ${{ inputs.mode == 'full-model' && 45 || 25 }}
     steps:
       - uses: actions/checkout@v4
+      - name: Validate requested Windows probe target
+        shell: pwsh
+        run: |
+          $target = if ('${{ github.event_name }}' -eq 'workflow_dispatch') { '${{ inputs.target }}' } else { 'server-2025' }
+          $os = Get-CimInstance Win32_OperatingSystem
+          if ($target -eq 'server-2025' -and $os.ProductType -ne 3) { throw "server-2025 target requires a server host; ProductType=$($os.ProductType)" }
+          if ($target -eq 'windows-11-arm' -and ($os.ProductType -ne 1 -or $env:RUNNER_ARCH -ne 'ARM64' -or $os.Caption -notmatch 'Windows 11' -or [uint32]$os.BuildNumber -lt 22000)) {
+            throw "windows-11-arm target requires Windows 11 workstation build >=22000 and RUNNER_ARCH=ARM64; Caption=$($os.Caption), Build=$($os.BuildNumber), ProductType=$($os.ProductType), RUNNER_ARCH=$env:RUNNER_ARCH"
+          }
       - name: Parse MSIX probe PowerShell on the Windows runner
         shell: powershell
         run: |
@@ -71,6 +102,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+          architecture: x64
           cache: npm
           cache-dependency-path: app/package-lock.json
       - name: Stage and verify the pinned model for full validation only
@@ -147,7 +179,7 @@ jobs:
           retention-days: 1
 
   model-supply:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'draft-access' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.target == 'server-2025' && inputs.mode == 'draft-access' }}
     runs-on: windows-2025
     timeout-minutes: 5
     steps:
@@ -173,7 +205,7 @@ jobs:
           retention-days: 1
 
   model-source:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'model-source' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.target == 'server-2025' && inputs.mode == 'model-source' }}
     runs-on: windows-2025
     timeout-minutes: 20
     steps:

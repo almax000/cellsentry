@@ -20,9 +20,34 @@ $mode = if ($WithModel) { 'model' } elseif ($WithUi) { 'ui' } else { 'generic' }
 $out = Join-Path $root $(if ($WithModel) { 'tmp/msix-model-probe' } elseif ($WithUi) { 'tmp/msix-ui-probe' } else { 'tmp/msix-probe' })
 New-Item -ItemType Directory -Path $out -Force | Out-Null
 $receiptPath = Join-Path $out 'receipt.json'
+$operatingSystem = Get-CimInstance -ClassName Win32_OperatingSystem
+$currentProcess = [System.Diagnostics.Process]::GetCurrentProcess()
+$runtimeInformation = [System.Runtime.InteropServices.RuntimeInformation]
+$hostFacts = [ordered]@{
+  win32OperatingSystem = [ordered]@{
+    caption = $operatingSystem.Caption
+    version = $operatingSystem.Version
+    buildNumber = $operatingSystem.BuildNumber
+    productType = $operatingSystem.ProductType
+    osArchitecture = $operatingSystem.OSArchitecture
+  }
+  runnerArchitecture = $env:RUNNER_ARCH
+  currentProcess = [ordered]@{
+    id = $currentProcess.Id
+    sessionId = $currentProcess.SessionId
+    is64BitProcess = [Environment]::Is64BitProcess
+    is64BitOperatingSystem = [Environment]::Is64BitOperatingSystem
+    runtimeProcessArchitecture = $runtimeInformation::ProcessArchitecture.ToString()
+    runtimeOperatingSystemArchitecture = $runtimeInformation::OSArchitecture.ToString()
+    processorArchitectureEnvironment = $env:PROCESSOR_ARCHITECTURE
+    processorArchitectureWow64Environment = $env:PROCESSOR_ARCHITEW6432
+  }
+}
+$currentProcess.Dispose()
 
 $report = [ordered]@{
   sourceRevision = $env:GITHUB_SHA
+  host = $hostFacts
   packageBuiltAndInspected = $false
   nativeLayoutVerified = $false
   extractedNativeVersionCommandPassed = $false
@@ -51,8 +76,8 @@ $report = [ordered]@{
   limitations = @(
     'Ephemeral self-signed test certificate and signed copy are used only on this GitHub-hosted runner.',
     'Invoke-CommandInDesktopPackage verifies package identity and virtual resources only; it does not launch Electron.',
-    'AUMID activation uses an ephemeral development identity on Windows Server; it is not a Windows 11 or real Store-acquisition test.',
-    $(if ($WithModel) { 'Fixed bundled-model inference on synthetic data only; not a model-accuracy, Windows 11, Store-acquisition, global-offline, update, or IAP proof.' } else { 'No real Store identity, Store signature, certification, update, IAP, model download, or full-model inference is exercised.' })
+    'AUMID activation uses an ephemeral development identity; recorded host facts do not establish standard-user coverage or a real Store-acquisition test.',
+    $(if ($WithModel) { 'Fixed bundled-model inference on synthetic data only; not a model-accuracy, Store-acquisition, global-offline, update, or IAP proof.' } else { 'No real Store identity, Store signature, certification, update, IAP, model download, or full-model inference is exercised.' })
   )
 }
 
