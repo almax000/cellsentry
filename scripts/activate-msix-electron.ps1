@@ -10,7 +10,10 @@ param(
   [Parameter(Mandatory = $true)][string]$ScreenshotPath,
   [switch]$ModelMode,
   [string]$ModelFixturePath,
-  [ValidateSet('first', 'reuse')][string]$ModelPhase
+  [ValidateSet('first', 'reuse')][string]$ModelPhase,
+  [switch]$UiMode,
+  [string]$UiFixturePath,
+  [string]$UiOutputDirectory
 )
 
 $ErrorActionPreference = 'Stop'
@@ -150,6 +153,7 @@ function Invoke-BoundedNodeProbe {
 }
 
 try {
+  if ($ModelMode -and $UiMode) { throw 'Model and UI probe modes are separate gates' }
   $nodePort = Get-LoopbackPort
   $cdpPort = Get-LoopbackPort
   if ($nodePort -eq $cdpPort) { throw 'Loopback port allocation collided' }
@@ -184,7 +188,11 @@ try {
     if (-not $ModelFixturePath -or -not $ModelPhase) { throw 'Model mode requires a fixture path and phase' }
     $nodeArguments += @($ModelFixturePath, $ModelPhase)
   }
-  $nodeTimeoutMs = if ($ModelMode) { 450000 } else { 55000 }
+  if ($UiMode) {
+    if (-not $UiFixturePath -or -not $UiOutputDirectory) { throw 'UI mode requires synthetic fixture and output paths' }
+    $nodeArguments += @($UiFixturePath, $UiOutputDirectory)
+  }
+  $nodeTimeoutMs = if ($ModelMode) { 450000 } elseif ($UiMode) { 360000 } else { 55000 }
   Invoke-BoundedNodeProbe -Arguments $nodeArguments -TimeoutMs $nodeTimeoutMs
   $nodeReceipt = Get-Content -LiteralPath $NodeReceiptPath -Raw | ConvertFrom-Json
   foreach ($name in @('nodeInspectorConnected', 'activationPidMatchedMainPid', 'processWindowsStoreTrue', 'electronPackagedTrue', 'rendererHomeVisible', 'realUpdaterChannelStore')) {
@@ -193,6 +201,7 @@ try {
   $receipt.mainIdentity = $nodeReceipt.mainIdentity
   $receipt.screenshot = $nodeReceipt.screenshot
   if ($ModelMode) { $receipt.modelProbe = $nodeReceipt }
+  if ($UiMode) { $receipt.uiProbe = $nodeReceipt }
   $requiredNodeSignals = @('nodeInspectorConnected', 'activationPidMatchedMainPid', 'processWindowsStoreTrue', 'electronPackagedTrue', 'rendererHomeVisible', 'realUpdaterChannelStore')
   if (($nodeReceipt.success -isnot [bool]) -or -not $nodeReceipt.success -or @($requiredNodeSignals | Where-Object { -not $receipt[$_] }).Count -gt 0) {
     throw "MSIX Electron Node probe reported failure: $($nodeReceipt.error)"

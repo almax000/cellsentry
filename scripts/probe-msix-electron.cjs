@@ -187,7 +187,7 @@ async function main() {
   if (!receipt.success) process.exitCode = 1
 }
 
-module.exports = { assertMainIdentity, isExpectedLoopbackWebSocket, inspectorEvaluate, QUIT_EXPRESSION }
+module.exports = { assertMainIdentity, isExpectedLoopbackWebSocket, inspectorEvaluate, QUIT_EXPRESSION, waitForJson, withinTimeout }
 
 if (require.main === module) {
   main().catch(error => {

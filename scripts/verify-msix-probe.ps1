@@ -1,5 +1,5 @@
 [CmdletBinding()]
-param([switch]$WithModel)
+param([switch]$WithModel, [switch]$WithUi)
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
@@ -15,8 +15,9 @@ if ($env:GITHUB_ACTIONS -ne 'true' -or $env:RUNNER_OS -ne 'Windows' -or $env:RUN
 }
 
 $root = Split-Path $PSScriptRoot -Parent
-$mode = if ($WithModel) { 'model' } else { 'generic' }
-$out = Join-Path $root $(if ($WithModel) { 'tmp/msix-model-probe' } else { 'tmp/msix-probe' })
+if ($WithModel -and $WithUi) { throw 'Run model and UI validation separately' }
+$mode = if ($WithModel) { 'model' } elseif ($WithUi) { 'ui' } else { 'generic' }
+$out = Join-Path $root $(if ($WithModel) { 'tmp/msix-model-probe' } elseif ($WithUi) { 'tmp/msix-ui-probe' } else { 'tmp/msix-probe' })
 New-Item -ItemType Directory -Path $out -Force | Out-Null
 $receiptPath = Join-Path $out 'receipt.json'
 
@@ -40,6 +41,8 @@ $report = [ordered]@{
   modelAccuracyVerified = $false
   globalNetworkVerified = $false
   modelMode = $WithModel.IsPresent
+  installedUiMode = $WithUi.IsPresent
+  realNativeDialogUiVerified = $false
   purchaseVerified = $false
   iapVerified = $false
   updateVerified = $false
@@ -407,7 +410,7 @@ $electronActivationReceiptPath = Join-Path $out 'electron-activation-receipt.jso
 $electronNodeReceiptPath = Join-Path $out 'electron-node-receipt.json'
 $electronActivationScreenshot = Join-Path $out 'electron-home.png'
 $activationScript = Join-Path $PSScriptRoot 'activate-msix-electron.ps1'
-$nodeProbeScript = Join-Path $PSScriptRoot $(if ($WithModel) { 'probe-msix-electron-model.cjs' } else { 'probe-msix-electron.cjs' })
+$nodeProbeScript = Join-Path $PSScriptRoot $(if ($WithModel) { 'probe-msix-electron-model.cjs' } elseif ($WithUi) { 'probe-msix-electron-ui.cjs' } else { 'probe-msix-electron.cjs' })
 if (-not (Test-Path -LiteralPath $activationScript -PathType Leaf)) { throw 'MSIX Electron activation script is missing' }
 if (-not (Test-Path -LiteralPath $nodeProbeScript -PathType Leaf)) { throw 'MSIX Electron Node probe script is missing' }
 $activationArguments = @(
@@ -426,8 +429,12 @@ if ($WithModel) {
   if (-not (Test-Path -LiteralPath $fixture -PathType Leaf)) { throw 'Model-mode audit fixture is missing' }
   $activationArguments += @('-ModelMode', '-ModelFixturePath', $fixture, '-ModelPhase', 'first')
 }
+if ($WithUi) {
+  $uiFixture = Join-Path $root 'app/e2e/fixtures/golden-three-workflows.xlsx'
+  $activationArguments += @('-UiMode', '-UiFixturePath', $uiFixture, '-UiOutputDirectory', $out)
+}
 $firstActivationStartedAtMs = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()
-$activationTimeoutMs = if ($WithModel) { 500000 } else { 90000 }
+$activationTimeoutMs = if ($WithModel) { 500000 } elseif ($WithUi) { 410000 } else { 90000 }
 $activationHostResult = Invoke-BoundedActivationProbe -Arguments $activationArguments -TimeoutMs $activationTimeoutMs
 if (-not (Test-Path -LiteralPath $electronActivationReceiptPath -PathType Leaf)) {
   throw "MSIX Electron activation did not write a receipt (exit $($activationHostResult.exitCode)): $($activationHostResult.stderr) $($activationHostResult.stdout)"
@@ -480,6 +487,15 @@ if ($WithModel) {
   if ($secondModelReceipt.modelFingerprintContext -ne 'activated-main-process-msix-identity') { throw 'Reuse fingerprint was not read in the activated MSIX identity context' }
   if ($secondModelFingerprint.bytes -ne $firstModelFingerprint.bytes -or $secondModelFingerprint.sha256 -ne $firstModelFingerprint.sha256 -or $secondModelFingerprint.lastWriteTimeMs -ne $firstModelFingerprint.lastWriteTimeMs) { throw 'Model-mode reuse replaced or changed the persisted model file' }
   $report['modelReuse'] = [ordered]@{ sameUserData = $true; first = $firstModelFingerprint; second = $secondModelFingerprint; unchanged = $true; activation = $secondModelReceipt }
+}
+if ($WithUi) {
+  $ui = $electronActivation.uiProbe
+  foreach ($signal in @('nativeOpenCancelled','nativeOpenSelected','cellDetailSelected','nativeSaveCancelled','markedWorkbookVerified','htmlReportVerified','pdfReportVerified','sourceUnchanged','normalExitRequested')) {
+    if ($ui.$signal -isnot [bool] -or -not $ui.$signal) { throw "Installed UI evidence missing: $signal" }
+  }
+  if ($ui.requiredFindingsVerified -ne 4 -or $ui.nativeDialogs.Count -ne 6) { throw 'Installed UI did not prove all expected findings and six native dialog operations' }
+  $report['realNativeDialogUiVerified'] = $true
+  $report['installedUi'] = $ui
 }
 $report['electronGuiLaunched'] = $true
 $report['installedPackageLaunchVerified'] = $true
