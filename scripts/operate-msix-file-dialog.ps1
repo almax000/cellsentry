@@ -57,8 +57,9 @@ namespace CellSentryFileDialog {
       if (owner != processId || controlOwner != processId || !IsChild(dialog, control) || ClassName(dialog) != "#32770") throw new InvalidOperationException("Refusing metadata for an unrelated window");
       return GetDlgCtrlID(control);
     }
-    public static void SetFileName(IntPtr dialog, IntPtr edit, uint processId, string path) {
-      Check(dialog, edit, processId, "Edit", 1148);
+    public static void SetFileName(IntPtr dialog, IntPtr edit, uint processId, string path, int controlId) {
+      if (controlId != 1148 && controlId != 1001) throw new InvalidOperationException("Unsupported filename control ID");
+      Check(dialog, edit, processId, "Edit", controlId);
       UIntPtr result;
       if (SendText(edit, 0x000c, UIntPtr.Zero, path, 2, 2000, out result) == IntPtr.Zero || result == UIntPtr.Zero) throw new InvalidOperationException("Bounded WM_SETTEXT failed");
       var text = new StringBuilder(32768);
@@ -107,17 +108,28 @@ namespace CellSentryFileDialog {
   $receipt.dialogFound = $true
   $receipt.dialog = [ordered]@{ processId = $dialog.Current.ProcessId; nativeWindowHandle = $dialog.Current.NativeWindowHandle; className = $dialog.Current.ClassName }
 
-  $fileNameCondition = [System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::AutomationIdProperty, '1148')
-  $edits = @($dialog.FindAll([System.Windows.Automation.TreeScope]::Descendants, $fileNameCondition) | Where-Object { $_.Current.ClassName -eq 'Edit' })
-  if ($edits.Count -ne 1) { Fail 'Expected exactly one File name Edit control with AutomationId 1148' }
+  # Open and Save expose different, actually observed native layouts.
+  $fileNameId = if ($Mode -in @('Open', 'CancelOpen')) { 1148 } else { 1001 }
+  $fileNameScope = $dialog
+  if ($fileNameId -eq 1001) {
+    $hostCondition = [System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::AutomationIdProperty, 'FileNameControlHost')
+    $hosts = @($dialog.FindAll([System.Windows.Automation.TreeScope]::Descendants, $hostCondition) | Where-Object { $_.Current.ClassName -eq 'AppControlHost' -and $_.Current.ProcessId -eq [int]$ActivatedProcessId })
+    if ($hosts.Count -ne 1) { Fail 'Expected exactly one same-process FileNameControlHost for Save' }
+    $fileNameScope = $hosts[0]
+    $receipt.fileNameScope = 'FileNameControlHost'
+  } else { $receipt.fileNameScope = 'legacy-open-filename-combobox' }
+  $fileNameCondition = [System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::AutomationIdProperty, [string]$fileNameId)
+  $edits = @($fileNameScope.FindAll([System.Windows.Automation.TreeScope]::Descendants, $fileNameCondition) | Where-Object { $_.Current.ClassName -eq 'Edit' })
+  if ($edits.Count -ne 1) { Fail "Expected exactly one scoped File name Edit control with AutomationId $fileNameId" }
   $edit = $edits[0]
   $receipt.fileNameControl = [ordered]@{ automationId = $edit.Current.AutomationId; controlType = $edit.Current.ControlType.ProgrammaticName }
 
   $receipt.fileNameControl.nativeWindowHandle = $edit.Current.NativeWindowHandle
   $receipt.fileNameControl.nativeControlId = [CellSentryFileDialog.Controls]::DescribeControlId([IntPtr]$receipt.dialog.nativeWindowHandle, [IntPtr]$edit.Current.NativeWindowHandle, $ActivatedProcessId)
 
+  if ($receipt.fileNameControl.nativeControlId -ne $fileNameId) { Fail 'Filename UIA/native control ID mismatch' }
   if ($Mode -notlike 'Cancel*') {
-    [CellSentryFileDialog.Controls]::SetFileName([IntPtr]$receipt.dialog.nativeWindowHandle, [IntPtr]$edit.Current.NativeWindowHandle, $ActivatedProcessId, $fullPath)
+    [CellSentryFileDialog.Controls]::SetFileName([IntPtr]$receipt.dialog.nativeWindowHandle, [IntPtr]$edit.Current.NativeWindowHandle, $ActivatedProcessId, $fullPath, $fileNameId)
     $receipt.expectedValueSet = $true
   }
   $buttonId = if ($Mode -like 'Cancel*') { '2' } else { '1' }
