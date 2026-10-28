@@ -2,6 +2,9 @@ const { writeFileSync } = require('node:fs')
 const { resolve } = require('node:path')
 
 const [nodePort, cdpPort, expectedPid, receiptPath, screenshotPath] = process.argv.slice(2)
+// Command-line API bindings exist only during this evaluation. Capture the app
+// reference now, so the delayed callback does not depend on the injected require.
+const QUIT_EXPRESSION = "(() => { const app = require('electron').app; setTimeout(() => app.quit(), 100); return 'quit-scheduled'; })()"
 
 const receipt = {
   success: false,
@@ -173,7 +176,7 @@ async function main() {
       await withinTimeout(browser.close(), 5_000, 'CDP close')
     }
 
-    await inspectorEvaluate(nodeTarget.webSocketDebuggerUrl, "setTimeout(() => require('electron').app.quit(), 100); 'quit-scheduled'")
+    await inspectorEvaluate(nodeTarget.webSocketDebuggerUrl, QUIT_EXPRESSION)
     receipt.normalExitRequested = true
     receipt.success = true
   } catch (error) {
@@ -184,7 +187,7 @@ async function main() {
   if (!receipt.success) process.exitCode = 1
 }
 
-module.exports = { assertMainIdentity, isExpectedLoopbackWebSocket }
+module.exports = { assertMainIdentity, isExpectedLoopbackWebSocket, inspectorEvaluate, QUIT_EXPRESSION }
 
 if (require.main === module) {
   main().catch(error => {
