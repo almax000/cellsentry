@@ -4,6 +4,7 @@ import { useSidecar } from '../hooks/useSidecar'
 import './SettingsPage.css'
 import ModelDownloadModal from './modals/ModelDownloadModal'
 import type { EngineLocale } from '../../shared/locale'
+import type { UpdateChannel } from '../../shared/api'
 import { formatByteSize, formatExactBytes } from '../utils/byteSize'
 import { FORMULA_ASSISTANT_MODEL } from '../utils/formulaAssistant'
 
@@ -31,6 +32,7 @@ export default function SettingsPage(): JSX.Element {
   }
   const [zoomIndex, setZoomIndex] = useState(3) // default 100%
   const [updateStatus, setUpdateStatus] = useState<UpdateStatus | null>(null)
+  const [updateChannel, setUpdateChannel] = useState<UpdateChannel | null>(null)
 
   useEffect(() => {
     window.api?.zoom?.get().then((level) => {
@@ -43,6 +45,14 @@ export default function SettingsPage(): JSX.Element {
   useEffect(() => {
     const unsub = window.api?.onUpdateStatus?.((status) => setUpdateStatus(status))
     return () => unsub?.()
+  }, [])
+
+  useEffect(() => {
+    let disposed = false
+    void window.api.getUpdateChannel()
+      .then((channel) => { if (!disposed) setUpdateChannel(channel) })
+      .catch(() => { if (!disposed) setUpdateChannel(null) })
+    return () => { disposed = true }
   }, [])
 
   const applyZoom = useCallback((index: number) => {
@@ -232,13 +242,15 @@ export default function SettingsPage(): JSX.Element {
           <div className="settings-row">
             <div>
               <div className="settings-label">
-                {!updateStatus && t('checkForUpdates')}
-                {updateStatus?.status === 'checking' && t('checkForUpdates')}
-                {updateStatus?.status === 'not-available' && t('upToDate')}
-                {updateStatus?.status === 'available' && t('updateAvailable', { version: updateStatus.version })}
-                {updateStatus?.status === 'downloading' && t('downloading')}
-                {updateStatus?.status === 'downloaded' && t('readyToInstall')}
-                {updateStatus?.status === 'error' && (
+                {updateChannel === 'store' && <span data-testid="settings-updates-store-managed">{t('updatesManagedByStore')}</span>}
+                {updateChannel === null && t('updatesUnavailable')}
+                {updateChannel === 'manual' && !updateStatus && t('checkForUpdates')}
+                {updateChannel === 'manual' && updateStatus?.status === 'checking' && t('checkForUpdates')}
+                {updateChannel === 'manual' && updateStatus?.status === 'not-available' && t('upToDate')}
+                {updateChannel === 'manual' && updateStatus?.status === 'available' && t('updateAvailable', { version: updateStatus.version })}
+                {updateChannel === 'manual' && updateStatus?.status === 'downloading' && t('downloading')}
+                {updateChannel === 'manual' && updateStatus?.status === 'downloaded' && t('readyToInstall')}
+                {updateChannel === 'manual' && updateStatus?.status === 'error' && (
                   <>
                     {t('updateError')}
                     {updateStatus.error && (
@@ -249,14 +261,14 @@ export default function SettingsPage(): JSX.Element {
                   </>
                 )}
               </div>
-              {updateStatus?.status === 'downloading' && updateStatus.percent != null && (
+              {updateChannel === 'manual' && updateStatus?.status === 'downloading' && updateStatus.percent != null && (
                 <div className="update-progress">
                   <div className="update-progress-fill" style={{ width: `${updateStatus.percent}%` }} />
                 </div>
               )}
             </div>
             <div>
-              {(!updateStatus || updateStatus.status === 'not-available' || updateStatus.status === 'error') && (
+              {updateChannel === 'manual' && (!updateStatus || updateStatus.status === 'not-available' || updateStatus.status === 'error') && (
                 <button
                   className="btn btn-primary"
                   data-testid="settings-check-updates"
@@ -267,7 +279,7 @@ export default function SettingsPage(): JSX.Element {
                   {updateStatus?.status === 'checking' ? t('checking') : t('checkForUpdates')}
                 </button>
               )}
-              {updateStatus?.status === 'available' && (
+              {updateChannel === 'manual' && updateStatus?.status === 'available' && (
                 <button
                   className="btn btn-primary"
                   style={{ fontSize: '11.5px', padding: '4px 10px' }}
@@ -276,7 +288,7 @@ export default function SettingsPage(): JSX.Element {
                   {t('download')}
                 </button>
               )}
-              {updateStatus?.status === 'downloaded' && (
+              {updateChannel === 'manual' && updateStatus?.status === 'downloaded' && (
                 <button
                   className="btn btn-primary"
                   style={{ fontSize: '11.5px', padding: '4px 10px' }}

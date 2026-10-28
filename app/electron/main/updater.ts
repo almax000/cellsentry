@@ -8,8 +8,16 @@ export interface UpdateStatus {
   error?: string
 }
 
+export type UpdateChannel = 'manual' | 'store'
+
+export function getUpdateChannel(): UpdateChannel {
+  return process.platform === 'win32' && process.windowsStore ? 'store' : 'manual'
+}
+
 /** Attach status listeners only. Checking, downloading and installing need an explicit IPC action. */
 export function initManualUpdater(mainWindow: BrowserWindow): void {
+  if (getUpdateChannel() === 'store') return
+
   autoUpdater.autoDownload = false
   autoUpdater.autoInstallOnAppQuit = false
 
@@ -50,7 +58,10 @@ export function initManualUpdater(mainWindow: BrowserWindow): void {
 }
 
 export function registerUpdaterIpc(): void {
+  ipcMain.handle('updater:channel', () => getUpdateChannel())
+
   ipcMain.handle('updater:check', async () => {
+    if (getUpdateChannel() === 'store') return
     try {
       return await autoUpdater.checkForUpdates()
     } catch (err) {
@@ -70,10 +81,12 @@ export function registerUpdaterIpc(): void {
   })
 
   ipcMain.handle('updater:download', async () => {
+    if (getUpdateChannel() === 'store') return
     return autoUpdater.downloadUpdate()
   })
 
   ipcMain.handle('updater:install', () => {
+    if (getUpdateChannel() === 'store') return
     autoUpdater.quitAndInstall()
   })
 }

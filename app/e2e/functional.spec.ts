@@ -111,6 +111,33 @@ test.describe('Settings', () => {
     expect(displayed).toBe(actual)
   })
 
+  test('Microsoft Store channel shows managed updates without manual updater actions', async () => {
+    const screenshots = join(__dirname, '..', 'tmp', 'e2e', 'store-update-channel')
+    mkdirSync(screenshots, { recursive: true })
+    try {
+      // This controls only the renderer's IPC signal. It is not an MSIX or Store-install test.
+      await ctx.app.evaluate(({ ipcMain }) => {
+        ipcMain.removeHandler('updater:channel')
+        ipcMain.handle('updater:channel', () => 'store')
+      })
+      await page.getByTestId('sidebar-nav-home').click()
+      await expect(page.getByTestId('home-page')).toBeVisible()
+      await page.getByTestId('sidebar-nav-settings').click()
+      const storeManaged = page.getByTestId('settings-updates-store-managed')
+      await expect(storeManaged).toHaveText('Updates are managed by Microsoft Store')
+      await expect(page.getByTestId('settings-check-updates')).toHaveCount(0)
+      await expect(page.getByRole('button', { name: 'Download', exact: true })).toHaveCount(0)
+      await expect(page.getByRole('button', { name: 'Install & Restart', exact: true })).toHaveCount(0)
+      await storeManaged.scrollIntoViewIfNeeded()
+      await page.screenshot({ path: join(screenshots, 'store-managed-updates.png'), animations: 'disabled' })
+    } finally {
+      await ctx.app.evaluate(({ ipcMain }) => {
+        ipcMain.removeHandler('updater:channel')
+        ipcMain.handle('updater:channel', () => process.platform === 'win32' && process.windowsStore ? 'store' : 'manual')
+      })
+    }
+  })
+
   test('model setup is explicit, optional, and rejects an invalid local model', async () => {
     const before = await page.evaluate(() => window.api.getModelStatus())
     expect(before.exists).toBe(false)

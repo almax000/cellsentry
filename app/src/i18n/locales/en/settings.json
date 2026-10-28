@@ -30,6 +30,8 @@
   "version": "Version",
   "website": "Website",
   "updates": "Updates",
+  "updatesManagedByStore": "Updates are managed by Microsoft Store",
+  "updatesUnavailable": "Update options are unavailable",
   "checkForUpdates": "Check for Updates",
   "upToDate": "You're up to date",
   "updateAvailable": "Update available: v{{version}}",

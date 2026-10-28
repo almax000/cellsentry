@@ -39,6 +39,8 @@ export interface UpdateStatus {
   error?: string
 }
 
+export type UpdateChannel = 'manual' | 'store'
+
 export interface SidecarAPI {
   getHealth: () => Promise<{ status: string; version: string }>
   getModelStatus: () => Promise<ModelStatus>
@@ -61,6 +63,7 @@ export interface SidecarAPI {
   checkForUpdates: () => Promise<void>
   downloadUpdate: () => Promise<void>
   installUpdate: () => void
+  getUpdateChannel: () => Promise<UpdateChannel>
   onUpdateStatus: (callback: (status: UpdateStatus) => void) => () => void
   onTestTriggerAnalysis?: (callback: (filePath: string) => void) => () => void
   onTestResetState?: (callback: () => void) => () => void

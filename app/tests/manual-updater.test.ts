@@ -14,6 +14,21 @@ const state = vi.hoisted(() => ({
     quitAndInstall: vi.fn(),
   },
 }))
+
+const originalPlatform = Object.getOwnPropertyDescriptor(process, 'platform')
+const originalWindowsStore = Object.getOwnPropertyDescriptor(process, 'windowsStore')
+
+function setWindowsStoreChannel(enabled: boolean): void {
+  Object.defineProperty(process, 'platform', { configurable: true, value: 'win32' })
+  Object.defineProperty(process, 'windowsStore', { configurable: true, value: enabled })
+}
+
+function restoreProcessChannel(): void {
+  if (originalPlatform) Object.defineProperty(process, 'platform', originalPlatform)
+  if (originalWindowsStore) Object.defineProperty(process, 'windowsStore', originalWindowsStore)
+  else delete (process as NodeJS.Process & { windowsStore?: boolean }).windowsStore
+}
+
 vi.mock('electron', () => ({
   ipcMain: { handle: (channel: string, handler: () => Promise<unknown>) => state.handlers.set(channel, handler) },
   BrowserWindow: { getAllWindows: () => [] },
@@ -29,7 +44,10 @@ describe('manual application updates', () => {
     state.listeners.clear()
     state.updater.on.mockImplementation((event, listener) => state.listeners.set(event, listener))
   })
-  afterEach(() => vi.useRealTimers())
+  afterEach(() => {
+    vi.useRealTimers()
+    restoreProcessChannel()
+  })
 
   it('stays idle after startup and never downloads or installs automatically', async () => {
     const send = vi.fn()
@@ -48,8 +66,10 @@ describe('manual application updates', () => {
   })
 
   it('keeps check, download and install as separate explicit actions', async () => {
+    setWindowsStoreChannel(false)
     initManualUpdater({ webContents: { send: vi.fn() } } as unknown as BrowserWindow)
     registerUpdaterIpc()
+    expect(await state.handlers.get('updater:channel')?.()).toBe('manual')
     await state.handlers.get('updater:check')?.()
     expect(state.updater.checkForUpdates).toHaveBeenCalledOnce()
     expect(state.updater.downloadUpdate).not.toHaveBeenCalled()
@@ -58,5 +78,21 @@ describe('manual application updates', () => {
     expect(state.updater.quitAndInstall).not.toHaveBeenCalled()
     await state.handlers.get('updater:install')?.()
     expect(state.updater.quitAndInstall).toHaveBeenCalledOnce()
+  })
+
+  it('does not invoke the GitHub/NSIS updater from a Microsoft Store package', async () => {
+    setWindowsStoreChannel(true)
+    initManualUpdater({ webContents: { send: vi.fn() } } as unknown as BrowserWindow)
+    registerUpdaterIpc()
+    expect(await state.handlers.get('updater:channel')?.()).toBe('store')
+
+    await state.handlers.get('updater:check')?.()
+    await state.handlers.get('updater:download')?.()
+    await state.handlers.get('updater:install')?.()
+
+    expect(state.updater.checkForUpdates).not.toHaveBeenCalled()
+    expect(state.updater.downloadUpdate).not.toHaveBeenCalled()
+    expect(state.updater.quitAndInstall).not.toHaveBeenCalled()
+    expect(state.updater.on).not.toHaveBeenCalled()
   })
 })

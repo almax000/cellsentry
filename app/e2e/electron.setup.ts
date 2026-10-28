@@ -22,6 +22,20 @@ function electronExecutablePath(): string {
   return join(electronPackageDir, 'dist', process.platform === 'win32' ? 'electron.exe' : 'electron')
 }
 
+async function withinTimeout<T>(operation: Promise<T>, timeoutMs: number, label: string): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined
+  try {
+    return await Promise.race([
+      operation,
+      new Promise<never>((_, reject) => {
+        timer = setTimeout(() => reject(new Error(`${label} timed out after ${timeoutMs}ms`)), timeoutMs)
+      })
+    ])
+  } finally {
+    if (timer !== undefined) clearTimeout(timer)
+  }
+}
+
 export interface TestContext {
   app: ElectronApplication
   page: Page
@@ -74,17 +88,68 @@ export async function launchApp(options: { xlsxGatePath?: string } = {}): Promis
     }
   }
 
-  const page = await app.firstWindow()
+  let page: Page | undefined
   const rendererFailures: string[] = []
-  page.on('pageerror', (error) => rendererFailures.push(`pageerror: ${error.message}`))
-  page.on('requestfailed', (request) => {
-    rendererFailures.push(`requestfailed: ${request.url()} (${request.failure()?.errorText ?? 'unknown'})`)
-  })
-  await page.waitForLoadState('domcontentloaded')
-  // Give React time to render
-  await page.waitForTimeout(1000)
-
-  return { app, page, rendererFailures }
+  try {
+    page = await app.firstWindow()
+    page.on('pageerror', (error) => rendererFailures.push(`pageerror: ${error.message}`))
+    page.on('requestfailed', (request) => {
+      rendererFailures.push(`requestfailed: ${request.url()} (${request.failure()?.errorText ?? 'unknown'})`)
+    })
+    // A rendered root is the user's actual starting point, unlike a navigation
+    // lifecycle signal which does not prove the app UI is ready for interaction.
+    await page.getByTestId('home-page').waitFor({ state: 'visible', timeout: 30_000 })
+    return { app, page, rendererFailures }
+  } catch (error) {
+    const diagnostics: Record<string, unknown> = { rendererFailures }
+    if (page) {
+      try {
+        diagnostics.url = page.url()
+      } catch (diagnosticError) {
+        diagnostics.urlError = diagnosticError instanceof Error ? diagnosticError.message : String(diagnosticError)
+      }
+      try {
+        Object.assign(diagnostics, await withinTimeout(
+          page.evaluate(() => ({ url: window.location.href, readyState: document.readyState })),
+          2_000,
+          'Electron launch diagnostic'
+        ))
+      } catch (diagnosticError) {
+        diagnostics.domDiagnosticError = diagnosticError instanceof Error ? diagnosticError.message : String(diagnosticError)
+      }
+      try {
+        const screenshotPath = join(userDataDir, 'launch-failure.png')
+        await withinTimeout(page.screenshot({ path: screenshotPath, timeout: 2_000 }), 2_000, 'Electron launch screenshot')
+        diagnostics.screenshot = screenshotPath
+      } catch (diagnosticError) {
+        diagnostics.screenshotError = diagnosticError instanceof Error ? diagnosticError.message : String(diagnosticError)
+      }
+    }
+    try {
+      await withinTimeout(app.close(), 2_000, 'Electron launch cleanup')
+    } catch (cleanupError) {
+      diagnostics.cleanupError = cleanupError instanceof Error ? cleanupError.message : String(cleanupError)
+      try {
+        app.process().kill()
+        diagnostics.forcedCleanup = true
+      } catch (killError) {
+        diagnostics.forcedCleanupError = killError instanceof Error ? killError.message : String(killError)
+      }
+    }
+    try {
+      writeFileSync(join(userDataDir, 'launch-diagnostic.json'), JSON.stringify(diagnostics, null, 2))
+    } catch (diagnosticError) {
+      diagnostics.writeError = diagnosticError instanceof Error ? diagnosticError.message : String(diagnosticError)
+    }
+    if (error instanceof Error) {
+      try {
+        error.message += `\n\nElectron launch diagnostics:\n${JSON.stringify(diagnostics, null, 2)}`
+      } catch {
+        // Keep the original startup failure if even diagnostic enrichment fails.
+      }
+    }
+    throw error
+  }
 }
 
 /**

@@ -42,6 +42,7 @@ const api: SidecarAPI = {
   checkForUpdates: () => ipcRenderer.invoke('updater:check'),
   downloadUpdate: () => ipcRenderer.invoke('updater:download'),
   installUpdate: () => ipcRenderer.invoke('updater:install'),
+  getUpdateChannel: () => ipcRenderer.invoke('updater:channel'),
   onUpdateStatus: (callback) => {
     const handler = (_event: Electron.IpcRendererEvent, status: UpdateStatus): void => {
       callback(status)

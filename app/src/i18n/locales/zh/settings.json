@@ -30,6 +30,8 @@
   "version": "版本",
   "website": "网站",
   "updates": "更新",
+  "updatesManagedByStore": "更新由 Microsoft Store 管理",
+  "updatesUnavailable": "更新选项暂不可用",
   "checkForUpdates": "检查更新",
   "upToDate": "已是最新版本",
   "updateAvailable": "有新版本：v{{version}}",
