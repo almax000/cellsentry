@@ -18,6 +18,8 @@ on:
       - 'scripts/prepare-msix-model-probe.mjs'
       - 'scripts/probe-msix-electron-model.cjs'
       - 'scripts/stage-ci-model-from-rc3.ps1'
+      - 'scripts/operate-msix-file-dialog.ps1'
+      - 'scripts/probe-msix-electron-ui.cjs'
   workflow_dispatch:
     inputs:
       mode:
@@ -25,7 +27,7 @@ on:
         required: false
         default: package
         type: choice
-        options: [package, draft-access, model-source, full-model]
+        options: [package, draft-access, model-source, full-model, installed-ui]
 
 permissions:
   contents: read
@@ -36,7 +38,7 @@ concurrency:
 
 jobs:
   package:
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.mode == 'package' || inputs.mode == 'full-model' }}
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.mode == 'package' || inputs.mode == 'full-model' || inputs.mode == 'installed-ui' }}
     # Pin the image so the desktop-package cmdlets are exercised on a known
     # Windows Server 2025 runner, rather than drifting with windows-latest.
     runs-on: windows-2025
@@ -50,7 +52,8 @@ jobs:
             'scripts/verify-msix-probe.ps1',
             'scripts/msix-desktop-context-probe.ps1',
             'scripts/activate-msix-electron.ps1',
-            'scripts/stage-ci-model-from-rc3.ps1'
+            'scripts/stage-ci-model-from-rc3.ps1',
+            'scripts/operate-msix-file-dialog.ps1'
           )
           foreach ($file in $files) {
             $tokens = $null
@@ -102,6 +105,7 @@ jobs:
         run: |
           node --check scripts/probe-msix-electron.cjs
           node --check scripts/probe-msix-electron-model.cjs
+          node --check scripts/probe-msix-electron-ui.cjs
           node --check scripts/prepare-msix-model-probe.mjs
       - name: Verify MSIX inspector identity and endpoint rejection
         run: node --test scripts/test-msix-electron-probe.cjs
@@ -122,7 +126,7 @@ jobs:
       - name: Inspect, install, and probe package identity (ephemeral runner only)
         shell: pwsh
         run: |
-          if ('${{ inputs.mode }}' -eq 'full-model') { ./scripts/verify-msix-probe.ps1 -WithModel } else { ./scripts/verify-msix-probe.ps1 }
+          if ('${{ inputs.mode }}' -eq 'full-model') { ./scripts/verify-msix-probe.ps1 -WithModel } elseif ('${{ inputs.mode }}' -eq 'installed-ui') { ./scripts/verify-msix-probe.ps1 -WithUi } else { ./scripts/verify-msix-probe.ps1 }
       - name: Preserve development test evidence (not a release)
         if: always()
         uses: actions/upload-artifact@v4
@@ -137,6 +141,8 @@ jobs:
             tmp/msix-model-probe/*receipt.json
             tmp/msix-model-probe/*home.png
             tmp/model-supply/rc3-receipt.json
+            tmp/msix-ui-probe/*receipt.json
+            tmp/msix-ui-probe/*.png
           if-no-files-found: warn
           retention-days: 1
 
