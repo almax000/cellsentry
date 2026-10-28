@@ -24,6 +24,56 @@ try {
   if (-not (Get-Process -Id $ActivatedProcessId -ErrorAction SilentlyContinue)) { Fail 'Authenticated activated process is not live' }
   Add-Type -AssemblyName UIAutomationClient, UIAutomationTypes
 
+  Add-Type -TypeDefinition @'
+using System;
+using System.Text;
+using System.Runtime.InteropServices;
+namespace CellSentryFileDialog {
+  public static class Controls {
+    [DllImport("user32.dll")] static extern uint GetWindowThreadProcessId(IntPtr handle, out uint processId);
+    [DllImport("user32.dll", CharSet=CharSet.Unicode)] static extern int GetClassName(IntPtr handle, StringBuilder text, int size);
+    [DllImport("user32.dll")] static extern int GetDlgCtrlID(IntPtr handle);
+    [DllImport("user32.dll")] static extern bool IsChild(IntPtr parent, IntPtr child);
+    [DllImport("user32.dll", EntryPoint="SendMessageTimeoutW", CharSet=CharSet.Unicode, SetLastError=true)]
+    static extern IntPtr SendText(IntPtr handle, uint message, UIntPtr wParam, string text, uint flags, uint timeout, out UIntPtr result);
+    [DllImport("user32.dll", EntryPoint="SendMessageTimeoutW", CharSet=CharSet.Unicode, SetLastError=true)]
+    static extern IntPtr ReadText(IntPtr handle, uint message, UIntPtr size, StringBuilder text, uint flags, uint timeout, out UIntPtr result);
+    [DllImport("user32.dll", EntryPoint="SendMessageTimeoutW", SetLastError=true)]
+    static extern IntPtr SendValue(IntPtr handle, uint message, UIntPtr wParam, IntPtr lParam, uint flags, uint timeout, out UIntPtr result);
+    static string ClassName(IntPtr handle) {
+      var text = new StringBuilder(256);
+      if (GetClassName(handle, text, text.Capacity) <= 0) throw new InvalidOperationException("Window class is unavailable");
+      return text.ToString();
+    }
+    static void Check(IntPtr dialog, IntPtr control, uint processId, string className, int controlId) {
+      uint owner; uint controlOwner;
+      if (dialog == IntPtr.Zero || control == IntPtr.Zero || dialog == new IntPtr(0xffff) || control == new IntPtr(0xffff)) throw new InvalidOperationException("Invalid individual window handle");
+      GetWindowThreadProcessId(dialog, out owner); GetWindowThreadProcessId(control, out controlOwner);
+      if (owner != processId || controlOwner != processId || ClassName(dialog) != "#32770" || !IsChild(dialog, control) || ClassName(control) != className || GetDlgCtrlID(control) != controlId) throw new InvalidOperationException("Native window identity, ancestry, class or control ID mismatch");
+    }
+    public static int DescribeControlId(IntPtr dialog, IntPtr control, uint processId) {
+      uint owner; uint controlOwner;
+      GetWindowThreadProcessId(dialog, out owner); GetWindowThreadProcessId(control, out controlOwner);
+      if (owner != processId || controlOwner != processId || !IsChild(dialog, control) || ClassName(dialog) != "#32770") throw new InvalidOperationException("Refusing metadata for an unrelated window");
+      return GetDlgCtrlID(control);
+    }
+    public static void SetFileName(IntPtr dialog, IntPtr edit, uint processId, string path) {
+      Check(dialog, edit, processId, "Edit", 1148);
+      UIntPtr result;
+      if (SendText(edit, 0x000c, UIntPtr.Zero, path, 2, 2000, out result) == IntPtr.Zero || result == UIntPtr.Zero) throw new InvalidOperationException("Bounded WM_SETTEXT failed");
+      var text = new StringBuilder(32768);
+      if (ReadText(edit, 0x000d, new UIntPtr((uint)text.Capacity), text, 2, 2000, out result) == IntPtr.Zero || text.ToString() != path) throw new InvalidOperationException("Native filename readback did not match the requested path");
+    }
+    public static void Click(IntPtr dialog, IntPtr button, uint processId, int controlId) {
+      if (controlId != 1 && controlId != 2) throw new InvalidOperationException("Only dialog accept/cancel buttons are allowed");
+      Check(dialog, button, processId, "Button", controlId);
+      UIntPtr result;
+      if (SendValue(button, 0x00f5, UIntPtr.Zero, IntPtr.Zero, 2, 2000, out result) == IntPtr.Zero) throw new InvalidOperationException("Bounded BM_CLICK failed");
+    }
+  }
+}
+'@
+
   $repo = Split-Path $PSScriptRoot -Parent
   $fullPath = [IO.Path]::GetFullPath($FilePath)
   $repoPrefix = $repo.TrimEnd('\') + '\'
@@ -57,35 +107,37 @@ try {
   $receipt.dialogFound = $true
   $receipt.dialog = [ordered]@{ processId = $dialog.Current.ProcessId; nativeWindowHandle = $dialog.Current.NativeWindowHandle; className = $dialog.Current.ClassName }
 
-  $fileNameCondition = [System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::AutomationIdProperty, '1001')
-  $edits = @($dialog.FindAll([System.Windows.Automation.TreeScope]::Descendants, $fileNameCondition) | Where-Object { $_.Current.ControlType -eq [System.Windows.Automation.ControlType]::Edit })
-  if ($edits.Count -ne 1) { Fail 'Expected exactly one File name Edit control with AutomationId 1001' }
+  $fileNameCondition = [System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::AutomationIdProperty, '1148')
+  $edits = @($dialog.FindAll([System.Windows.Automation.TreeScope]::Descendants, $fileNameCondition) | Where-Object { $_.Current.ClassName -eq 'Edit' })
+  if ($edits.Count -ne 1) { Fail 'Expected exactly one File name Edit control with AutomationId 1148' }
   $edit = $edits[0]
   $receipt.fileNameControl = [ordered]@{ automationId = $edit.Current.AutomationId; controlType = $edit.Current.ControlType.ProgrammaticName }
 
+  $receipt.fileNameControl.nativeWindowHandle = $edit.Current.NativeWindowHandle
+  $receipt.fileNameControl.nativeControlId = [CellSentryFileDialog.Controls]::DescribeControlId([IntPtr]$receipt.dialog.nativeWindowHandle, [IntPtr]$edit.Current.NativeWindowHandle, $ActivatedProcessId)
+
   if ($Mode -notlike 'Cancel*') {
-    $valuePattern = $null
-    if (-not $edit.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern, [ref]$valuePattern)) { Fail 'File name control does not support ValuePattern' }
-    $valuePattern.SetValue($fullPath)
-    if ($valuePattern.Current.Value -ne $fullPath) { Fail 'File name control did not retain the exact requested path' }
+    [CellSentryFileDialog.Controls]::SetFileName([IntPtr]$receipt.dialog.nativeWindowHandle, [IntPtr]$edit.Current.NativeWindowHandle, $ActivatedProcessId, $fullPath)
     $receipt.expectedValueSet = $true
   }
   $buttonId = if ($Mode -like 'Cancel*') { '2' } else { '1' }
   $buttonCondition = [System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::AutomationIdProperty, $buttonId)
-  $buttons = @($dialog.FindAll([System.Windows.Automation.TreeScope]::Descendants, $buttonCondition) | Where-Object { $_.Current.ControlType -eq [System.Windows.Automation.ControlType]::Button })
+  $buttons = @($dialog.FindAll([System.Windows.Automation.TreeScope]::Descendants, $buttonCondition) | Where-Object { $_.Current.ClassName -eq 'Button' })
   if ($buttons.Count -ne 1) { Fail "Expected exactly one dialog button with AutomationId $buttonId" }
   $button = $buttons[0]; $receipt.button = [ordered]@{ automationId = $button.Current.AutomationId; controlType = $button.Current.ControlType.ProgrammaticName }
-  $invokePattern = $null
-  if (-not $button.TryGetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern, [ref]$invokePattern)) { Fail 'Dialog button does not support InvokePattern' }
+  $receipt.button.nativeWindowHandle = $button.Current.NativeWindowHandle
+  $receipt.button.nativeControlId = [CellSentryFileDialog.Controls]::DescribeControlId([IntPtr]$receipt.dialog.nativeWindowHandle, [IntPtr]$button.Current.NativeWindowHandle, $ActivatedProcessId)
   $handle = $receipt.dialog.nativeWindowHandle
-  $invokePattern.Invoke(); $receipt.invoked = $true
+  [CellSentryFileDialog.Controls]::Click([IntPtr]$handle, [IntPtr]$button.Current.NativeWindowHandle, $ActivatedProcessId, [int]$buttonId)
+  $receipt.transport = 'validated-individual-HWND-SendMessageTimeoutW'
+  $receipt.invoked = $true
   $closeDeadline = [DateTime]::UtcNow.AddSeconds($TimeoutSeconds)
   while ([DateTime]::UtcNow -lt $closeDeadline) {
     $stillOpen = @($root.FindAll([System.Windows.Automation.TreeScope]::Children, $ownedCondition) | Where-Object { $_.Current.NativeWindowHandle -eq $handle })
     if ($stillOpen.Count -eq 0) { $receipt.dialogClosed = $true; break }
     Start-Sleep -Milliseconds 150
   }
-  if (-not $receipt.dialogClosed) { Fail 'Native file dialog did not close after InvokePattern' }
+  if (-not $receipt.dialogClosed) { Fail 'Native file dialog did not close after bounded native button click' }
   $receipt.success = $true
 } catch {
   $receipt.error = $_.Exception.Message
