@@ -1,0 +1,91 @@
+name: Windows MSIX preflight
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/msix-probe.yml'
+      - 'app/electron-builder.msix-probe.yml'
+      - 'scripts/verify-msix-probe.ps1'
+      - 'scripts/msix-desktop-context-probe.ps1'
+      - 'scripts/activate-msix-electron.ps1'
+      - 'scripts/probe-msix-electron.cjs'
+      - 'scripts/test-msix-electron-probe.cjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: msix-preflight-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  package:
+    # Pin the image so the desktop-package cmdlets are exercised on a known
+    # Windows Server 2025 runner, rather than drifting with windows-latest.
+    runs-on: windows-2025
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Parse MSIX probe PowerShell on the Windows runner
+        shell: powershell
+        run: |
+          $files = @(
+            'scripts/verify-msix-probe.ps1',
+            'scripts/msix-desktop-context-probe.ps1',
+            'scripts/activate-msix-electron.ps1'
+          )
+          foreach ($file in $files) {
+            $tokens = $null
+            $parseErrors = $null
+            [void][System.Management.Automation.Language.Parser]::ParseFile(
+              (Join-Path $PWD.Path $file),
+              [ref]$tokens,
+              [ref]$parseErrors
+            )
+            if ($parseErrors.Count -gt 0) {
+              $parseErrors | ForEach-Object { Write-Error "${file}: $($_.Message) at line $($_.Extent.StartLineNumber)" }
+              exit 1
+            }
+          }
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - name: Install dependencies
+        working-directory: app
+        run: npm ci
+      - name: Parse MSIX Electron Node probe
+        run: node --check scripts/probe-msix-electron.cjs
+      - name: Verify MSIX inspector identity and endpoint rejection
+        run: node --test scripts/test-msix-electron-probe.cjs
+      - name: Build application and verified Windows native runtime
+        working-directory: app
+        run: |
+          npm run build
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node ../scripts/prepare-native.mjs win32-x64
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Build unsigned development MSIX (never publish)
+        working-directory: app
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+        run: npx electron-builder --config electron-builder.msix-probe.yml --win appx --x64 --publish never
+      - name: Inspect, install, and probe package identity (ephemeral runner only)
+        shell: pwsh
+        run: ./scripts/verify-msix-probe.ps1
+      - name: Preserve development test evidence (not a release)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-msix-preflight
+          # Keep receipts and the synthetic UI screenshot only. The unsigned
+          # probe installer and temporary signing material stay on the runner.
+          path: |
+            tmp/msix-probe/receipt.json
+            tmp/msix-probe/electron-activation-receipt.json
+            tmp/msix-probe/electron-home.png
+          if-no-files-found: warn
+          retention-days: 1
