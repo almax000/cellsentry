@@ -48,8 +48,10 @@ async function main() {
           const start = await window.api.analyzeAll(fixture, scanId); if (!start.success) { clearTimeout(timer); off(); reject(new Error(start.error || 'analysis rejected')) }
         }), { fixture: fixturePath, scanId: `msix-model-${Date.now()}` })
         if (audit.error || !audit.result?.auditReview) throw Error(audit.error || 'audit did not report local AI review')
-        const review = audit.result.auditReview; receipt.auditReview = review; receipt.auditAttempted = Number.isInteger(review.attempted) && review.attempted > 0; receipt.auditReviewed = Number.isInteger(review.reviewed) && review.reviewed > 0
-        if (!['total', 'selected', 'attempted', 'reviewed', 'failed', 'skipped'].every(k => Number.isInteger(review[k]) && review[k] >= 0) || !receipt.auditAttempted || !receipt.auditReviewed || review.attempted > review.selected || review.reviewed > review.attempted || review.reviewed + review.failed !== review.attempted || review.selected > review.total || review.skipped !== review.total - review.attempted || !['complete', 'candidate-limit'].includes(review.stopReason)) throw Error('audit review counters did not prove a valid local-model review')
+        const review = audit.result.auditReview; receipt.auditReview = review;
+        receipt.auditAllCandidatesReviewed = review.reviewed === review.total && review.failed === 0 && review.stopReason === 'complete';
+        receipt.auditTimeBudgetReached = review.stopReason === 'time-budget'; receipt.auditAttempted = Number.isInteger(review.attempted) && review.attempted > 0; receipt.auditReviewed = Number.isInteger(review.reviewed) && review.reviewed > 0
+        if (!['total', 'selected', 'attempted', 'reviewed', 'failed', 'skipped'].every(k => Number.isInteger(review[k]) && review[k] >= 0) || !receipt.auditAttempted || !receipt.auditReviewed || review.attempted > review.selected || review.reviewed > review.attempted || review.reviewed + review.failed !== review.attempted || review.selected > review.total || review.skipped !== review.total - review.attempted || !['complete', 'candidate-limit', 'time-budget'].includes(review.stopReason)) throw Error('audit review counters did not prove a valid local-model review')
       }
       // Read virtualized files in the same authenticated MSIX process that
       // actually loaded them. The un-packaged CI host may see a different path.
