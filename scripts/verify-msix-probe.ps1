@@ -1,3 +1,6 @@
+[CmdletBinding()]
+param([switch]$WithModel)
+
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
@@ -12,7 +15,8 @@ if ($env:GITHUB_ACTIONS -ne 'true' -or $env:RUNNER_OS -ne 'Windows' -or $env:RUN
 }
 
 $root = Split-Path $PSScriptRoot -Parent
-$out = Join-Path $root 'tmp/msix-probe'
+$mode = if ($WithModel) { 'model' } else { 'generic' }
+$out = Join-Path $root $(if ($WithModel) { 'tmp/msix-model-probe' } else { 'tmp/msix-probe' })
 New-Item -ItemType Directory -Path $out -Force | Out-Null
 $receiptPath = Join-Path $out 'receipt.json'
 
@@ -33,6 +37,9 @@ $report = [ordered]@{
   storeCertificationPassed = $false
   storeRealSignatureVerified = $false
   realModelInferenceVerified = $false
+  modelAccuracyVerified = $false
+  globalNetworkVerified = $false
+  modelMode = $WithModel.IsPresent
   purchaseVerified = $false
   iapVerified = $false
   updateVerified = $false
@@ -42,7 +49,7 @@ $report = [ordered]@{
     'Ephemeral self-signed test certificate and signed copy are used only on this GitHub-hosted runner.',
     'Invoke-CommandInDesktopPackage verifies package identity and virtual resources only; it does not launch Electron.',
     'AUMID activation uses an ephemeral development identity on Windows Server; it is not a Windows 11 or real Store-acquisition test.',
-    'No real Store identity, Store signature, certification, update, IAP, model download, or full-model inference is exercised.'
+    $(if ($WithModel) { 'Fixed bundled-model inference on synthetic data only; not a model-accuracy, Windows 11, Store-acquisition, global-offline, update, or IAP proof.' } else { 'No real Store identity, Store signature, certification, update, IAP, model download, or full-model inference is exercised.' })
   )
 }
 
@@ -61,6 +68,7 @@ $desktopReceipts = @()
 $desktopProgressFiles = @()
 $desktopStageProgress = @()
 $electronActivationReceiptPath = $null
+$secondReceiptPath = $null
 $electronNodeReceiptPath = $null
 $electronActivationScreenshot = $null
 $failure = $null
@@ -74,7 +82,7 @@ function Quote-WindowsCommandArgument {
 }
 
 function Invoke-BoundedActivationProbe {
-  param([Parameter(Mandatory = $true)][string[]]$Arguments)
+  param([Parameter(Mandatory = $true)][string[]]$Arguments, [int]$TimeoutMs = 90000)
   $pwsh = (Get-Command pwsh -ErrorAction Stop).Source
   $startInfo = [System.Diagnostics.ProcessStartInfo]::new()
   $startInfo.FileName = $pwsh
@@ -91,10 +99,10 @@ function Invoke-BoundedActivationProbe {
     if (-not $started) { throw 'MSIX Electron activation host did not start' }
     $stdoutTask = $activationHost.StandardOutput.ReadToEndAsync()
     $stderrTask = $activationHost.StandardError.ReadToEndAsync()
-    if (-not $activationHost.WaitForExit(90000)) {
+    if (-not $activationHost.WaitForExit($TimeoutMs)) {
       $activationHost.Kill()
       $activationHost.WaitForExit()
-      throw 'MSIX Electron activation host timed out after 90000ms'
+      throw "MSIX Electron activation host timed out after $TimeoutMs ms"
     }
     $stdout = $stdoutTask.GetAwaiter().GetResult()
     $stderr = $stderrTask.GetAwaiter().GetResult()
@@ -143,6 +151,7 @@ namespace CellSentryMsixCleanup {
     }
   }
 }
+
 '@
   }
   return [CellSentryMsixCleanup.PackageIdentity]::ForProcess($ProcessId)
@@ -231,7 +240,10 @@ try {
     }
   }
 
-$packages = @(Get-ChildItem (Join-Path $root 'app/dist-msix-probe') -Filter '*.msix')
+$packageOutput = if ($WithModel) { 'app/dist-msix-model-probe' } else { 'app/dist-msix-probe' }
+$expectedIdentity = if ($WithModel) { 'CellSentry.MsixModelProbe' } else { 'CellSentry.MsixProbe' }
+$expectedApplicationId = if ($WithModel) { 'CellSentryModelProbe' } else { 'CellSentryProbe' }
+$packages = @(Get-ChildItem (Join-Path $root $packageOutput) -Filter '*.msix')
 if ($packages.Count -ne 1) { throw 'Expected exactly one development MSIX package' }
 $package = $packages[0]
 Add-Type -AssemblyName System.IO.Compression.FileSystem
@@ -257,11 +269,11 @@ $ns = [System.Xml.XmlNamespaceManager]::new($manifest.NameTable)
 $ns.AddNamespace('p', 'http://schemas.microsoft.com/appx/manifest/foundation/windows10')
 $ns.AddNamespace('r', 'http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities')
 $identity = $manifest.SelectSingleNode('/p:Package/p:Identity', $ns)
-if ($identity.GetAttribute('Name') -ne 'CellSentry.MsixProbe') { throw 'Unexpected probe identity' }
+if ($identity.GetAttribute('Name') -ne $expectedIdentity) { throw 'Unexpected probe identity' }
 if ($identity.GetAttribute('Publisher') -ne 'CN=CellSentryMSIXProbe') { throw 'Unexpected probe publisher' }
 if ($identity.GetAttribute('ProcessorArchitecture') -ne 'x64') { throw 'Expected x64 package' }
 $application = $manifest.SelectSingleNode('/p:Package/p:Applications/p:Application', $ns)
-if ($application.GetAttribute('Id') -ne 'CellSentryProbe') { throw 'Unexpected application identity' }
+if ($application.GetAttribute('Id') -ne $expectedApplicationId) { throw 'Unexpected application identity' }
 if ($application.GetAttribute('EntryPoint') -ne 'Windows.FullTrustApplication') { throw 'Missing full-trust application entry' }
 if (-not $manifest.SelectSingleNode('/p:Package/p:Capabilities/r:Capability[@Name="runFullTrust"]', $ns)) {
   throw 'Missing full-trust capability'
@@ -295,6 +307,12 @@ $report['nativeLayoutVerified'] = $true
 $report['extractedNativeVersionCommandPassed'] = $true
 $report['extractedNativeVersion'] = $nativeVersion
 $report['modelBundled'] = (Test-Path (Join-Path $unpacked 'app/resources/offline-model'))
+if ($WithModel -and -not $report['modelBundled']) { throw 'Model-mode MSIX is missing its sealed offline-model payload' }
+if (-not $WithModel -and $report['modelBundled']) { throw 'Generic MSIX probe unexpectedly bundled a model' }
+if ($WithModel) {
+  & node (Join-Path $root 'scripts/verify-formula-cancellation-v2-package.mjs') --dir (Join-Path $unpacked 'app/resources/offline-model')
+  if ($LASTEXITCODE -ne 0) { throw 'Unpacked MSIX model payload did not match the pinned five-file package' }
+}
 
 # Sign only a temporary copy. The private key is explicitly non-exportable and
 # SignTool selects it directly from CurrentUser\\My by thumbprint, so no PFX is made.
@@ -331,6 +349,7 @@ $report['signedCopySignatureVerified'] = $true
 
 # Add-AppxPackage must fail the job if trust, deployment, or registration does
 # not work. Querying the registered package makes installation an observable gate.
+if (@(Get-AppxPackage -Name $identity.GetAttribute('Name')).Count -ne 0) { throw 'Development probe identity was already installed before this isolated first activation' }
 Add-AppxPackage -Path $signedPackage
 $installedPackage = @(Get-AppxPackage -Name $identity.GetAttribute('Name') | Where-Object {
   $_.PackageFullName -like "$($identity.GetAttribute('Name'))_*" -and
@@ -388,10 +407,10 @@ $electronActivationReceiptPath = Join-Path $out 'electron-activation-receipt.jso
 $electronNodeReceiptPath = Join-Path $out 'electron-node-receipt.json'
 $electronActivationScreenshot = Join-Path $out 'electron-home.png'
 $activationScript = Join-Path $PSScriptRoot 'activate-msix-electron.ps1'
-$nodeProbeScript = Join-Path $PSScriptRoot 'probe-msix-electron.cjs'
+$nodeProbeScript = Join-Path $PSScriptRoot $(if ($WithModel) { 'probe-msix-electron-model.cjs' } else { 'probe-msix-electron.cjs' })
 if (-not (Test-Path -LiteralPath $activationScript -PathType Leaf)) { throw 'MSIX Electron activation script is missing' }
 if (-not (Test-Path -LiteralPath $nodeProbeScript -PathType Leaf)) { throw 'MSIX Electron Node probe script is missing' }
-$activationHostResult = Invoke-BoundedActivationProbe -Arguments @(
+$activationArguments = @(
   '-NoProfile', '-NonInteractive', '-File', $activationScript,
   '-PackageFullName', $installedPackage.PackageFullName,
   '-PackageFamilyName', $installedPackage.PackageFamilyName,
@@ -402,6 +421,14 @@ $activationHostResult = Invoke-BoundedActivationProbe -Arguments @(
   '-NodeReceiptPath', $electronNodeReceiptPath,
   '-ScreenshotPath', $electronActivationScreenshot
 )
+if ($WithModel) {
+  $fixture = Join-Path $root 'app/e2e/fixtures/golden-three-workflows.xlsx'
+  if (-not (Test-Path -LiteralPath $fixture -PathType Leaf)) { throw 'Model-mode audit fixture is missing' }
+  $activationArguments += @('-ModelMode', '-ModelFixturePath', $fixture, '-ModelPhase', 'first')
+}
+$firstActivationStartedAtMs = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()
+$activationTimeoutMs = if ($WithModel) { 500000 } else { 90000 }
+$activationHostResult = Invoke-BoundedActivationProbe -Arguments $activationArguments -TimeoutMs $activationTimeoutMs
 if (-not (Test-Path -LiteralPath $electronActivationReceiptPath -PathType Leaf)) {
   throw "MSIX Electron activation did not write a receipt (exit $($activationHostResult.exitCode)): $($activationHostResult.stderr) $($activationHostResult.stdout)"
 }
@@ -410,6 +437,50 @@ $report['electronActivation'] = $electronActivation
 if ($activationHostResult.exitCode -ne 0 -or ($electronActivation.success -isnot [bool]) -or -not $electronActivation.success) {
   throw "MSIX Electron AUMID activation failed: $($electronActivation.error)"
 }
+if ($WithModel) {
+  $modelReceipt = $electronActivation.modelProbe
+  if (($modelReceipt.modelLoaded -isnot [bool]) -or -not $modelReceipt.modelLoaded -or
+      ($modelReceipt.nativeBackend -isnot [bool]) -or -not $modelReceipt.nativeBackend -or
+      ($modelReceipt.auditAttempted -isnot [bool]) -or -not $modelReceipt.auditAttempted -or
+      ($modelReceipt.auditReviewed -isnot [bool]) -or -not $modelReceipt.auditReviewed) {
+    throw 'Model-mode activation did not prove a bundled model load and valid local audit review'
+  }
+  $report['realModelInferenceVerified'] = $true
+  $report['modelFirstRun'] = $modelReceipt
+  if (-not $modelReceipt.userData) { throw 'Model-mode first activation did not report its authenticated userData path' }
+  $firstModelFingerprint = $modelReceipt.modelFingerprint
+  if ($modelReceipt.modelFingerprintContext -ne 'activated-main-process-msix-identity') { throw 'Model fingerprint was not read in the activated MSIX identity context' }
+  if ($firstModelFingerprint.bytes -ne 1561314592 -or $firstModelFingerprint.sha256 -ne '61d9c8ab8007dbbde0eb004089d1411fb6ec7167031f9d6fcc5b521fe8ebe49a') {
+    throw 'Model-mode first activation persisted a model that did not match the pinned artifact'
+  }
+  if ($firstModelFingerprint.createdAtMs -lt $firstActivationStartedAtMs) { throw 'First activation reused a pre-existing model file instead of preparing the bundled model' }
+  $report['modelCreatedAfterFirstActivation'] = $true
+  $secondReceiptPath = Join-Path $out 'electron-model-reuse-activation-receipt.json'
+  $secondNodeReceiptPath = Join-Path $out 'electron-model-reuse-node-receipt.json'
+  $secondScreenshotPath = Join-Path $out 'electron-model-reuse-home.png'
+  $secondArguments = @(
+    '-NoProfile', '-NonInteractive', '-File', $activationScript,
+    '-PackageFullName', $installedPackage.PackageFullName,
+    '-PackageFamilyName', $installedPackage.PackageFamilyName,
+    '-ApplicationId', $application.GetAttribute('Id'),
+    '-NodePath', (Get-Command node -ErrorAction Stop).Source,
+    '-ProbeScript', $nodeProbeScript,
+    '-ReceiptPath', $secondReceiptPath,
+    '-NodeReceiptPath', $secondNodeReceiptPath,
+    '-ScreenshotPath', $secondScreenshotPath,
+    '-ModelMode', '-ModelFixturePath', $fixture, '-ModelPhase', 'reuse'
+  )
+  $secondHost = Invoke-BoundedActivationProbe -Arguments $secondArguments -TimeoutMs $activationTimeoutMs
+  if (-not (Test-Path -LiteralPath $secondReceiptPath -PathType Leaf)) { throw 'Model-mode reuse activation did not write a receipt' }
+  $secondActivation = Get-Content -LiteralPath $secondReceiptPath -Raw | ConvertFrom-Json
+  if ($secondHost.exitCode -ne 0 -or ($secondActivation.success -isnot [bool]) -or -not $secondActivation.success) { throw "Model-mode reuse activation failed: $($secondActivation.error)" }
+  $secondModelReceipt = $secondActivation.modelProbe
+  if (($secondModelReceipt.modelLoaded -isnot [bool]) -or -not $secondModelReceipt.modelLoaded -or ($secondModelReceipt.nativeBackend -isnot [bool]) -or -not $secondModelReceipt.nativeBackend -or $secondModelReceipt.userData -ne $modelReceipt.userData) { throw 'Model-mode reuse did not load the same persisted user profile' }
+  $secondModelFingerprint = $secondModelReceipt.modelFingerprint
+  if ($secondModelReceipt.modelFingerprintContext -ne 'activated-main-process-msix-identity') { throw 'Reuse fingerprint was not read in the activated MSIX identity context' }
+  if ($secondModelFingerprint.bytes -ne $firstModelFingerprint.bytes -or $secondModelFingerprint.sha256 -ne $firstModelFingerprint.sha256 -or $secondModelFingerprint.lastWriteTimeMs -ne $firstModelFingerprint.lastWriteTimeMs) { throw 'Model-mode reuse replaced or changed the persisted model file' }
+  $report['modelReuse'] = [ordered]@{ sameUserData = $true; first = $firstModelFingerprint; second = $secondModelFingerprint; unchanged = $true; activation = $secondModelReceipt }
+}
 $report['electronGuiLaunched'] = $true
 $report['installedPackageLaunchVerified'] = $true
 } catch {
@@ -417,10 +488,11 @@ $report['installedPackageLaunchVerified'] = $true
   $report['failure'] = $_.Exception.Message
 } finally {
   $cleanupErrors = @()
-  if ($electronActivationReceiptPath -and (Test-Path -LiteralPath $electronActivationReceiptPath -PathType Leaf) -and $installedPackage) {
+  foreach ($cleanupReceiptPath in @($electronActivationReceiptPath, $secondReceiptPath)) {
+  if ($cleanupReceiptPath -and (Test-Path -LiteralPath $cleanupReceiptPath -PathType Leaf) -and $installedPackage) {
     try {
-      $activationCleanup = Get-Content -LiteralPath $electronActivationReceiptPath -Raw | ConvertFrom-Json
-      $report['electronActivation'] = $activationCleanup
+      $activationCleanup = Get-Content -LiteralPath $cleanupReceiptPath -Raw | ConvertFrom-Json
+      if ($cleanupReceiptPath -eq $secondReceiptPath) { $report['modelReuseActivation'] = $activationCleanup } else { $report['electronActivation'] = $activationCleanup }
       if ($activationCleanup.activatedProcessId -and (Get-Process -Id $activationCleanup.activatedProcessId -ErrorAction SilentlyContinue)) {
         $runningPackageFullName = Get-PackageFullNameForProcess ([uint32]$activationCleanup.activatedProcessId)
         if ($runningPackageFullName -ne $installedPackage.PackageFullName) {
@@ -436,6 +508,7 @@ $report['installedPackageLaunchVerified'] = $true
         }
       }
     } catch { $cleanupErrors += "activated Electron process: $($_.Exception.Message)" }
+  }
   }
   if ($stateFile -and (Test-Path -LiteralPath $stateFile)) {
     try { Remove-Item -LiteralPath $stateFile -Force } catch { $cleanupErrors += "state file: $($_.Exception.Message)" }

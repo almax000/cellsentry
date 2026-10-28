@@ -1,0 +1,14 @@
+# CI-only model-mode MSIX. It deliberately has a distinct unassigned identity.
+extends: ./electron-builder.msix-probe.yml
+directories:
+  output: dist-msix-model-probe
+win:
+  extraResources:
+    - from: ../tmp/msix-model-input
+      to: offline-model
+appx:
+  identityName: CellSentry.MsixModelProbe
+  applicationId: CellSentryModelProbe
+  publisher: CN=CellSentryMSIXProbe
+  displayName: CellSentry MSIX model development probe
+  artifactName: CellSentry-msix-model-probe-${version}-${arch}.msix

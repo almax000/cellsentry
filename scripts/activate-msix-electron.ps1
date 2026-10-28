@@ -7,7 +7,10 @@ param(
   [Parameter(Mandatory = $true)][string]$ProbeScript,
   [Parameter(Mandatory = $true)][string]$ReceiptPath,
   [Parameter(Mandatory = $true)][string]$NodeReceiptPath,
-  [Parameter(Mandatory = $true)][string]$ScreenshotPath
+  [Parameter(Mandatory = $true)][string]$ScreenshotPath,
+  [switch]$ModelMode,
+  [string]$ModelFixturePath,
+  [ValidateSet('first', 'reuse')][string]$ModelPhase
 )
 
 $ErrorActionPreference = 'Stop'
@@ -117,7 +120,7 @@ namespace CellSentryMsixActivation {
 }
 
 function Invoke-BoundedNodeProbe {
-  param([Parameter(Mandatory = $true)][string[]]$Arguments)
+  param([Parameter(Mandatory = $true)][string[]]$Arguments, [int]$TimeoutMs = 55000)
   $startInfo = [System.Diagnostics.ProcessStartInfo]::new()
   $startInfo.FileName = $NodePath
   # Windows PowerShell 5.1 runs on .NET Framework, where ArgumentList is absent.
@@ -132,10 +135,10 @@ function Invoke-BoundedNodeProbe {
     if (-not $nodeProcess.Start()) { throw 'MSIX Electron Node probe did not start' }
     $stdoutTask = $nodeProcess.StandardOutput.ReadToEndAsync()
     $stderrTask = $nodeProcess.StandardError.ReadToEndAsync()
-    if (-not $nodeProcess.WaitForExit(55000)) {
+    if (-not $nodeProcess.WaitForExit($TimeoutMs)) {
       $nodeProcess.Kill()
       $nodeProcess.WaitForExit()
-      throw 'MSIX Electron Node probe timed out after 55000ms'
+      throw "MSIX Electron Node probe timed out after $TimeoutMs ms"
     }
     $stdout = $stdoutTask.GetAwaiter().GetResult()
     $stderr = $stderrTask.GetAwaiter().GetResult()
@@ -176,13 +179,20 @@ try {
   if (-not $receipt.processPackageFullNameMatched) { throw 'Activated process package full name did not match the registered MSIX package' }
   Write-ActivationReceipt
 
-  Invoke-BoundedNodeProbe -Arguments @($ProbeScript, $nodePort, $cdpPort, $activatedProcessId, $NodeReceiptPath, $ScreenshotPath)
+  $nodeArguments = @($ProbeScript, $nodePort, $cdpPort, $activatedProcessId, $NodeReceiptPath, $ScreenshotPath)
+  if ($ModelMode) {
+    if (-not $ModelFixturePath -or -not $ModelPhase) { throw 'Model mode requires a fixture path and phase' }
+    $nodeArguments += @($ModelFixturePath, $ModelPhase)
+  }
+  $nodeTimeoutMs = if ($ModelMode) { 450000 } else { 55000 }
+  Invoke-BoundedNodeProbe -Arguments $nodeArguments -TimeoutMs $nodeTimeoutMs
   $nodeReceipt = Get-Content -LiteralPath $NodeReceiptPath -Raw | ConvertFrom-Json
   foreach ($name in @('nodeInspectorConnected', 'activationPidMatchedMainPid', 'processWindowsStoreTrue', 'electronPackagedTrue', 'rendererHomeVisible', 'realUpdaterChannelStore')) {
     $receipt[$name] = ($nodeReceipt.$name -is [bool]) -and ($nodeReceipt.$name -eq $true)
   }
   $receipt.mainIdentity = $nodeReceipt.mainIdentity
   $receipt.screenshot = $nodeReceipt.screenshot
+  if ($ModelMode) { $receipt.modelProbe = $nodeReceipt }
   $requiredNodeSignals = @('nodeInspectorConnected', 'activationPidMatchedMainPid', 'processWindowsStoreTrue', 'electronPackagedTrue', 'rendererHomeVisible', 'realUpdaterChannelStore')
   if (($nodeReceipt.success -isnot [bool]) -or -not $nodeReceipt.success -or @($requiredNodeSignals | Where-Object { -not $receipt[$_] }).Count -gt 0) {
     throw "MSIX Electron Node probe reported failure: $($nodeReceipt.error)"

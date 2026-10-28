@@ -11,7 +11,21 @@ on:
       - 'scripts/activate-msix-electron.ps1'
       - 'scripts/probe-msix-electron.cjs'
       - 'scripts/test-msix-electron-probe.cjs'
+      - 'scripts/probe-model-release-access.mjs'
+      - 'scripts/test-model-release-access.mjs'
+      - 'scripts/lib/stage-model-package.mjs'
+      - 'app/electron-builder.msix-model-probe.yml'
+      - 'scripts/prepare-msix-model-probe.mjs'
+      - 'scripts/probe-msix-electron-model.cjs'
+      - 'scripts/stage-ci-model-from-rc3.ps1'
   workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Development package, draft access, or pinned public model input'
+        required: false
+        default: package
+        type: choice
+        options: [package, draft-access, model-source, full-model]
 
 permissions:
   contents: read
@@ -22,10 +36,11 @@ concurrency:
 
 jobs:
   package:
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.mode == 'package' || inputs.mode == 'full-model' }}
     # Pin the image so the desktop-package cmdlets are exercised on a known
     # Windows Server 2025 runner, rather than drifting with windows-latest.
     runs-on: windows-2025
-    timeout-minutes: 25
+    timeout-minutes: ${{ inputs.mode == 'full-model' && 45 || 25 }}
     steps:
       - uses: actions/checkout@v4
       - name: Parse MSIX probe PowerShell on the Windows runner
@@ -34,7 +49,8 @@ jobs:
           $files = @(
             'scripts/verify-msix-probe.ps1',
             'scripts/msix-desktop-context-probe.ps1',
-            'scripts/activate-msix-electron.ps1'
+            'scripts/activate-msix-electron.ps1',
+            'scripts/stage-ci-model-from-rc3.ps1'
           )
           foreach ($file in $files) {
             $tokens = $null
@@ -54,11 +70,39 @@ jobs:
           node-version: 22
           cache: npm
           cache-dependency-path: app/package-lock.json
+      - name: Stage and verify the pinned model for full validation only
+        if: github.event_name == 'workflow_dispatch' && inputs.mode == 'full-model'
+        shell: pwsh
+        run: |
+          ./scripts/stage-ci-model-from-rc3.ps1 -StageDir (Join-Path $PWD.Path 'tmp/rc3-model-package') -ReceiptPath (Join-Path $PWD.Path 'tmp/model-supply/rc3-receipt.json')
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node scripts/prepare-msix-model-probe.mjs --model-dir (Join-Path $PWD.Path 'tmp/rc3-model-package') --out (Join-Path $PWD.Path 'tmp/msix-model-input')
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          # Both stages were created in this fresh job; retain only the verified build input.
+          Remove-Item -LiteralPath (Join-Path $PWD.Path 'tmp/rc3-model-package') -Recurse -Force
       - name: Install dependencies
         working-directory: app
         run: npm ci
+      - name: Check resolved builder resources for duplicate native copies
+        run: |
+          node -e '
+            const assert = require("node:assert/strict");
+            const { getConfig } = require("./app/node_modules/app-builder-lib/out/util/config/config.js");
+            (async () => {
+              for (const model of [false, true]) {
+                const file = model ? "electron-builder.msix-model-probe.yml" : "electron-builder.msix-probe.yml";
+                const config = await getConfig(require("node:path").resolve("app"), file);
+                const resources = config.win.extraResources;
+                assert.equal(resources.filter(x => x.to.startsWith("native/win32-")).length, 1, "native runtime must be copied exactly once");
+                assert.equal(resources.filter(x => x.to === "offline-model").length, model ? 1 : 0, "model payload must match the selected package mode");
+              }
+            })().catch(error => { console.error(error.message); process.exitCode = 1; });
+          '
       - name: Parse MSIX Electron Node probe
-        run: node --check scripts/probe-msix-electron.cjs
+        run: |
+          node --check scripts/probe-msix-electron.cjs
+          node --check scripts/probe-msix-electron-model.cjs
+          node --check scripts/prepare-msix-model-probe.mjs
       - name: Verify MSIX inspector identity and endpoint rejection
         run: node --test scripts/test-msix-electron-probe.cjs
       - name: Build application and verified Windows native runtime
@@ -72,10 +116,13 @@ jobs:
         working-directory: app
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
-        run: npx electron-builder --config electron-builder.msix-probe.yml --win appx --x64 --publish never
+        run: |
+          $config = if ('${{ inputs.mode }}' -eq 'full-model') { 'electron-builder.msix-model-probe.yml' } else { 'electron-builder.msix-probe.yml' }
+          npx electron-builder --config $config --win appx --x64 --publish never
       - name: Inspect, install, and probe package identity (ephemeral runner only)
         shell: pwsh
-        run: ./scripts/verify-msix-probe.ps1
+        run: |
+          if ('${{ inputs.mode }}' -eq 'full-model') { ./scripts/verify-msix-probe.ps1 -WithModel } else { ./scripts/verify-msix-probe.ps1 }
       - name: Preserve development test evidence (not a release)
         if: always()
         uses: actions/upload-artifact@v4
@@ -87,5 +134,62 @@ jobs:
             tmp/msix-probe/receipt.json
             tmp/msix-probe/electron-activation-receipt.json
             tmp/msix-probe/electron-home.png
+            tmp/msix-model-probe/*receipt.json
+            tmp/msix-model-probe/*home.png
+            tmp/model-supply/rc3-receipt.json
           if-no-files-found: warn
+          retention-days: 1
+
+  model-supply:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'draft-access' }}
+    runs-on: windows-2025
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check model-supply probe source
+        run: |
+          node --check scripts/probe-model-release-access.mjs
+          node --test scripts/test-model-release-access.mjs
+      - name: Probe draft model metadata and LICENSE only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/probe-model-release-access.mjs --receipt tmp/model-supply/receipt.json
+      - name: Preserve model-supply receipt only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-model-supply-receipt
+          path: tmp/model-supply/receipt.json
+          if-no-files-found: error
+          retention-days: 1
+
+  model-source:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'model-source' }}
+    runs-on: windows-2025
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Parse historical model staging PowerShell
+        shell: pwsh
+        run: |
+          $tokens = $null
+          $parseErrors = $null
+          [void][System.Management.Automation.Language.Parser]::ParseFile((Join-Path $PWD.Path 'scripts/stage-ci-model-from-rc3.ps1'), [ref]$tokens, [ref]$parseErrors)
+          if ($parseErrors.Count -gt 0) { $parseErrors | ForEach-Object { Write-Error $_.Message }; exit 1 }
+      - name: Verify pinned public RC3 model input without executing its application
+        shell: pwsh
+        run: ./scripts/stage-ci-model-from-rc3.ps1 -StageDir (Join-Path $PWD.Path 'tmp/rc3-model-package') -ReceiptPath (Join-Path $PWD.Path 'tmp/model-supply/rc3-receipt.json')
+      - name: Preserve input verification receipt only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-public-model-input-receipt
+          path: tmp/model-supply/rc3-receipt.json
+          if-no-files-found: error
           retention-days: 1
