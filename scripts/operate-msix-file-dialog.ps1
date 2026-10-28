@@ -34,8 +34,14 @@ namespace CellSentryFileDialog {
     [DllImport("user32.dll", CharSet=CharSet.Unicode)] static extern int GetClassName(IntPtr handle, StringBuilder text, int size);
     [DllImport("user32.dll")] static extern int GetDlgCtrlID(IntPtr handle);
     [DllImport("user32.dll")] static extern bool IsChild(IntPtr parent, IntPtr child);
-    [DllImport("user32.dll", EntryPoint="SendMessageTimeoutW", CharSet=CharSet.Unicode, SetLastError=true)]
-    static extern IntPtr SendText(IntPtr handle, uint message, UIntPtr wParam, string text, uint flags, uint timeout, out UIntPtr result);
+    [StructLayout(LayoutKind.Sequential)] struct Rect { public int left, top, right, bottom; }
+    [StructLayout(LayoutKind.Sequential)] struct GuiThreadInfo {
+      public uint cbSize, flags;
+      public IntPtr active, focus, capture, menuOwner, moveSize, caret;
+      public Rect caretRect;
+    }
+    [DllImport("user32.dll", SetLastError=true)] static extern bool GetGUIThreadInfo(uint threadId, ref GuiThreadInfo info);
+    [DllImport("user32.dll", EntryPoint="PostMessageW", SetLastError=true)] static extern bool PostValue(IntPtr handle, uint message, UIntPtr wParam, IntPtr lParam);
     [DllImport("user32.dll", EntryPoint="SendMessageTimeoutW", CharSet=CharSet.Unicode, SetLastError=true)]
     static extern IntPtr ReadText(IntPtr handle, uint message, UIntPtr size, StringBuilder text, uint flags, uint timeout, out UIntPtr result);
     [DllImport("user32.dll", EntryPoint="SendMessageTimeoutW", SetLastError=true)]
@@ -57,11 +63,26 @@ namespace CellSentryFileDialog {
       if (owner != processId || controlOwner != processId || !IsChild(dialog, control) || ClassName(dialog) != "#32770") throw new InvalidOperationException("Refusing metadata for an unrelated window");
       return GetDlgCtrlID(control);
     }
+    static void FocusControl(IntPtr dialog, IntPtr control, uint processId) {
+      uint owner; uint threadId = GetWindowThreadProcessId(dialog, out owner);
+      if (owner != processId || !PostValue(dialog, 0x0028, new UIntPtr((ulong)control.ToInt64()), new IntPtr(1))) throw new InvalidOperationException("Could not focus the authenticated dialog control");
+      DateTime deadline = DateTime.UtcNow.AddSeconds(2);
+      while (DateTime.UtcNow < deadline) {
+        var info = new GuiThreadInfo(); info.cbSize = (uint)Marshal.SizeOf(typeof(GuiThreadInfo));
+        if (GetGUIThreadInfo(threadId, ref info) && info.focus == control) return;
+        System.Threading.Thread.Sleep(10);
+      }
+      throw new InvalidOperationException("Dialog control did not receive real keyboard focus");
+    }
     public static void SetFileName(IntPtr dialog, IntPtr edit, uint processId, string path, int controlId) {
       if (controlId != 1148 && controlId != 1001) throw new InvalidOperationException("Unsupported filename control ID");
       Check(dialog, edit, processId, "Edit", controlId);
       UIntPtr result;
-      if (SendText(edit, 0x000c, UIntPtr.Zero, path, 2, 2000, out result) == IntPtr.Zero || result == UIntPtr.Zero) throw new InvalidOperationException("Bounded WM_SETTEXT failed");
+      FocusControl(dialog, edit, processId);
+      if (SendValue(edit, 0x00b1, UIntPtr.Zero, new IntPtr(-1), 2, 2000, out result) == IntPtr.Zero) throw new InvalidOperationException("Bounded select-all failed");
+      foreach (char character in path) {
+        if (SendValue(edit, 0x0102, new UIntPtr((uint)character), new IntPtr(1), 2, 2000, out result) == IntPtr.Zero) throw new InvalidOperationException("Bounded native character input failed");
+      }
       var text = new StringBuilder(32768);
       if (ReadText(edit, 0x000d, new UIntPtr((uint)text.Capacity), text, 2, 2000, out result) == IntPtr.Zero || text.ToString() != path) throw new InvalidOperationException("Native filename readback did not match the requested path");
     }
@@ -69,6 +90,7 @@ namespace CellSentryFileDialog {
       if (controlId != 1 && controlId != 2) throw new InvalidOperationException("Only dialog accept/cancel buttons are allowed");
       Check(dialog, button, processId, "Button", controlId);
       UIntPtr result;
+      FocusControl(dialog, button, processId);
       if (SendValue(button, 0x00f5, UIntPtr.Zero, IntPtr.Zero, 2, 2000, out result) == IntPtr.Zero) throw new InvalidOperationException("Bounded BM_CLICK failed");
     }
   }
@@ -141,7 +163,7 @@ namespace CellSentryFileDialog {
   $receipt.button.nativeControlId = [CellSentryFileDialog.Controls]::DescribeControlId([IntPtr]$receipt.dialog.nativeWindowHandle, [IntPtr]$button.Current.NativeWindowHandle, $ActivatedProcessId)
   $handle = $receipt.dialog.nativeWindowHandle
   [CellSentryFileDialog.Controls]::Click([IntPtr]$handle, [IntPtr]$button.Current.NativeWindowHandle, $ActivatedProcessId, [int]$buttonId)
-  $receipt.transport = 'validated-individual-HWND-SendMessageTimeoutW'
+  $receipt.transport = 'validated-individual-HWND-focus-and-character-input'
   $receipt.invoked = $true
   $closeDeadline = [DateTime]::UtcNow.AddSeconds($TimeoutSeconds)
   while ([DateTime]::UtcNow -lt $closeDeadline) {
