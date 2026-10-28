@@ -10,6 +10,7 @@
  * - FormulaColInconsistencyRule
  */
 
+import { isLocalAxisAggregate } from '../formulaLayout'
 import {
   BaseRule,
   ConfidenceLevel,
@@ -425,7 +426,7 @@ export const FormulaColInconsistencyRule: BaseRule = {
 
       for (let row = 2; row <= context.maxRow; row++) {
         const cell = getCellByRC(context, row, col)
-        if (cell && isFormula(cell)) {
+        if (cell && isFormula(cell) && !isLocalAxisAggregate(cell, 'vertical')) {
           const refCols = new Set(
             [...cell.formula!.matchAll(/([A-Z]+)\d+/g)].map((m) => m[1]),
           )

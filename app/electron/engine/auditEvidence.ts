@@ -4,12 +4,16 @@ import { getColumnLetter } from './utils'
 /** Evidence character cap; the native tokenizer separately checks the full prompt budget. */
 export const MAX_AUDIT_EVIDENCE_CHARS = 480
 const MAX_QUOTED_VALUE_CHARS = 48
+// ExcelJS's supported cached error values; do not serialize arbitrary objects.
+const EXCEL_ERRORS = new Set(['#N/A', '#REF!', '#NAME?', '#DIV/0!', '#NULL!', '#VALUE!', '#NUM!'])
 
 function shortQuoted(value: unknown): string {
   let text: string
   if (value === null) text = 'null'
   else if (value === undefined) text = 'undefined'
   else if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') text = String(value)
+  else if (typeof value === 'object' && Object.keys(value).length === 1 && 'error' in value
+    && typeof value.error === 'string' && EXCEL_ERRORS.has(value.error)) text = value.error
   else text = '[non-scalar value]'
 
   text = text.replace(/\\/g, '\\\\').replace(/\r/g, '\\r').replace(/\n/g, '\\n').replace(/"/g, '\\"')
@@ -143,14 +147,8 @@ export function buildAuditEvidence(issue: EngineIssue, context: SheetContext): s
   const excluded = new Set<string>(target ? [normalizedAddress(target.address)] : [])
   const optional: string[] = []
 
-  // Stable order is intentional: rule-derived facts first, then workbook
-  // observations in formula-reference order, then immediate neighbours.
-  if (issue.expectedValue !== null && issue.expectedValue !== undefined) {
-    optional.push(`rule-derived (not business truth): expectedValue ${shortQuoted(issue.expectedValue)}`)
-  }
-  if (issue.correctFormula) optional.push(`rule-derived (not business truth): correctFormula ${shortQuoted(issue.correctFormula)}`)
-  if (issue.suggestion) optional.push(`rule-derived (not business truth): suggestion ${shortQuoted(issue.suggestion)}`)
-
+  // Prioritize file observations over the rule's unverified repair. Otherwise
+  // a long suggestion can crowd out the actual operands of an error.
   for (const address of addresses.slice(0, 4)) {
     const cell = findCell(context, address)
     if (!cell) continue
@@ -159,6 +157,11 @@ export function buildAuditEvidence(issue: EngineIssue, context: SheetContext): s
   }
   if (crossSheetCount > 0) optional.push(`cross-sheet references omitted: ${crossSheetCount} (not guessed from this sheet)`)
   if (complexCount > 0) optional.push(`complex formula references omitted: ${complexCount} (not guessed)`)
+  if (issue.expectedValue !== null && issue.expectedValue !== undefined) {
+    optional.push(`rule-derived (not business truth): expectedValue ${shortQuoted(issue.expectedValue)}`)
+  }
+  if (issue.correctFormula) optional.push(`rule-derived (not business truth): correctFormula ${shortQuoted(issue.correctFormula)}`)
+  if (issue.suggestion) optional.push(`rule-derived (not business truth): suggestion ${shortQuoted(issue.suggestion)}`)
   for (const cell of nearbyCells(context, target, excluded)) optional.push(describeObservedCell('neighbor', context, cell))
 
   const lines = [...required]

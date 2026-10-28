@@ -16,6 +16,22 @@ function sheet(name = 'Revenue', cells: Record<string, CellInfo> = {}): SheetCon
 }
 
 describe('audit evidence', () => {
+  it('keeps an observed Excel error and both operands ahead of an unverified repair suggestion', () => {
+    const context = sheet('PressCost', {
+      G7: cell('G7', 7, 7, { error: '#DIV/0!' }, '=E7/F7'),
+      E7: cell('E7', 7, 5, 1500), F7: cell('F7', 7, 6, 0),
+    })
+    const evidence = buildAuditEvidence(issue({
+      sheetName: 'PressCost', cellAddress: 'G7', formula: '=E7/F7',
+      correctFormula: '=E7/F6', suggestion: 'Unverified repair suggestion '.repeat(40),
+    }), context)
+    expect(evidence).toContain('cached value "#DIV/0!" (not recalculated)')
+    expect(evidence).toContain('observed reference "PressCost"!E7: value "1500"')
+    expect(evidence).toContain('observed reference "PressCost"!F7: value "0"')
+    expect(evidence).toContain('business requirement: unknown')
+    expect(evidence.length).toBeLessThanOrEqual(MAX_AUDIT_EVIDENCE_CHARS)
+  })
+
   it('adds bounded observed SUM evidence during the same rule scan without treating derived values as business truth', async () => {
     const context = sheet('Revenue', {
       B2: cell('B2', 2, 2, 10), B3: cell('B3', 3, 2, 20), B4: cell('B4', 4, 2, 30),

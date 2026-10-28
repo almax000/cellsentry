@@ -21,6 +21,7 @@ import {
 import { columnToNumber, extractCellReferences, getColumnLetter } from '../utils'
 import { RuleRegistry } from '../registry'
 import { msg } from '../locale'
+import { isLocalAxisAggregate, type FormulaAxis } from '../formulaLayout'
 
 // ── Helper types & functions ─────────────────────────────────────────
 
@@ -167,68 +168,42 @@ export const InconsistentFormulaRule: BaseRule = {
     const currentPattern = extractFormulaPattern(cell.formula!, cellRow, cellCol)
     if (currentPattern.length === 0) return null
 
-    const adjacentPatterns: [PatternItem[], CellInfo, string][] = []
-
-    // Check cells above
-    for (let r = cellRow - 1; r > Math.max(0, cellRow - 5); r--) {
-      const adj = getCellByRC(context, r, cellCol)
-      if (adj && isFormula(adj)) {
-        const p = extractFormulaPattern(adj.formula!, r, cellCol)
-        if (p.length) adjacentPatterns.push([p, adj, 'above'])
-      } else {
-        break
+    const comparisons: Array<{ axis: FormulaAxis; pattern: PatternItem[]; count: number; total: number; matching: number }> = []
+    for (const axis of ['vertical', 'horizontal'] as const) {
+      if (isLocalAxisAggregate(cell, axis)) continue
+      const peers: PatternItem[][] = []
+      for (const direction of [-1, 1]) {
+        for (let distance = 1; distance <= 4; distance++) {
+          const row = cellRow + (axis === 'vertical' ? distance * direction : 0)
+          const column = cellCol + (axis === 'horizontal' ? distance * direction : 0)
+          if (row < 1 || row > context.maxRow || column < 1 || column > context.maxColumn) break
+          const adjacent = getCellByRC(context, row, column)
+          if (!adjacent || !isFormula(adjacent)) break
+          if (isLocalAxisAggregate(adjacent, axis)) continue
+          const pattern = extractFormulaPattern(adjacent.formula!, row, column)
+          if (pattern.length) peers.push(pattern)
+        }
       }
+      const groups: Array<{ pattern: PatternItem[]; count: number }> = []
+      for (const pattern of peers) {
+        const group = groups.find(group => patternsMatch(group.pattern, pattern))
+        if (group) group.count++
+        else groups.push({ pattern, count: 1 })
+      }
+      const dominant = groups.find(group => group.count >= MIN_ADJACENT_FORMULAS && group.count > peers.length / 2)
+      if (!dominant) continue
+      // Independent axes can describe different roles. Do not overwrite a
+      // formula which agrees with an established pattern on either axis.
+      if (patternsMatch(currentPattern, dominant.pattern)) return null
+      comparisons.push({ axis, ...dominant, total: peers.length,
+        matching: peers.filter(pattern => patternsMatch(currentPattern, pattern)).length })
     }
 
-    // Check cells below
-    for (let r = cellRow + 1; r < Math.min(context.maxRow + 1, cellRow + 5); r++) {
-      const adj = getCellByRC(context, r, cellCol)
-      if (adj && isFormula(adj)) {
-        const p = extractFormulaPattern(adj.formula!, r, cellCol)
-        if (p.length) adjacentPatterns.push([p, adj, 'below'])
-      } else {
-        break
-      }
-    }
-
-    // Check cells to the left
-    for (let c = cellCol - 1; c > Math.max(0, cellCol - 5); c--) {
-      const adj = getCellByRC(context, cellRow, c)
-      if (adj && isFormula(adj)) {
-        const p = extractFormulaPattern(adj.formula!, cellRow, c)
-        if (p.length) adjacentPatterns.push([p, adj, 'left'])
-      } else {
-        break
-      }
-    }
-
-    // Check cells to the right
-    for (let c = cellCol + 1; c < Math.min(context.maxColumn + 1, cellCol + 5); c++) {
-      const adj = getCellByRC(context, cellRow, c)
-      if (adj && isFormula(adj)) {
-        const p = extractFormulaPattern(adj.formula!, cellRow, c)
-        if (p.length) adjacentPatterns.push([p, adj, 'right'])
-      } else {
-        break
-      }
-    }
-
-    if (adjacentPatterns.length < MIN_ADJACENT_FORMULAS) return null
-
-    let matchingCount = 0
-    const nonMatching: [PatternItem[], CellInfo, string][] = []
-
-    for (const [adjPattern, adjCell, direction] of adjacentPatterns) {
-      if (patternsMatch(currentPattern, adjPattern)) {
-        matchingCount++
-      } else {
-        nonMatching.push([adjPattern, adjCell, direction])
-      }
-    }
-
-    const totalAdjacent = adjacentPatterns.length
-    if (matchingCount < Math.floor(totalAdjacent / 2) && nonMatching.length > 0) {
-      const dominantPattern = nonMatching[0][0]
+    // Different majority patterns across axes are ambiguous, not permission to
+    // select the first neighbour's expression as a repair.
+    if (comparisons.length && comparisons.every(item => patternsMatch(item.pattern, comparisons[0].pattern))) {
+      const dominant = comparisons[0]
+      const dominantPattern = dominant.pattern
       const suggestedFormula = suggestCorrectFormula(dominantPattern, cellRow, cellCol)
 
       return createIssue(this, {
@@ -242,8 +217,10 @@ export const InconsistentFormulaRule: BaseRule = {
         details: {
           current_formula: cell.formula,
           suggested_formula: suggestedFormula,
-          adjacent_count: totalAdjacent,
-          matching_count: matchingCount,
+          adjacent_count: dominant.total,
+          matching_count: dominant.matching,
+          dominant_count: dominant.count,
+          comparison_axis: dominant.axis,
         },
       })
     }
