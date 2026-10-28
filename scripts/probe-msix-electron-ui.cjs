@@ -1,6 +1,6 @@
 // Installed production UI, real Windows file dialogs, synthetic inputs only.
 const assert = require('node:assert/strict')
-const { readFileSync, writeFileSync, mkdirSync, copyFileSync, existsSync } = require('node:fs')
+const { readFileSync, writeFileSync, mkdirSync, copyFileSync, existsSync, readdirSync, statSync } = require('node:fs')
 const { createHash } = require('node:crypto')
 const { resolve, join } = require('node:path')
 const { execFile } = require('node:child_process')
@@ -31,6 +31,7 @@ async function clickWithNative(page, mode, path, locator) {
 }
 async function main() {
   let browser
+  let activePage
   try {
     if (process.env.GITHUB_ACTIONS !== 'true' || process.env.RUNNER_OS !== 'Windows' || process.env.RUNNER_ENVIRONMENT !== 'github-hosted') throw Error('Installed UI probe is limited to an ephemeral Windows runner')
     assert(nodePort && cdpPort && expectedPid && originalFixture && outputDir)
@@ -57,6 +58,7 @@ async function main() {
       if (!page) await new Promise(resolvePromise => setTimeout(resolvePromise, 150))
     }
     assert(page, 'Real main-window home must be visible')
+    activePage = page
     receipt.rendererHomeVisible = true; receipt.rendererUrl = page.url()
     assert.equal(await page.evaluate(() => typeof window.__TEST_API__), 'undefined')
     receipt.realUpdaterChannelStore = await page.evaluate(() => window.api.getUpdateChannel()) === 'store'
@@ -92,16 +94,18 @@ async function main() {
     await clickWithNative(page, 'CancelSave', cancelled, page.getByTestId('export-html'))
     assert(!existsSync(cancelled)); assert.equal(await page.locator('.export-feedback.success').count(), 0)
     receipt.nativeSaveCancelled = true
-    const outputs = {}
+    const outputs = {}; receipt.exports = outputs
     for (const format of ['xlsx', 'html', 'pdf']) {
       const path = join(outputDir, `审计 结果.${format}`)
       assert(!existsSync(path))
       await page.getByTestId('export-btn').click()
       await clickWithNative(page, 'Save', path, page.getByTestId(`export-${format}`))
       await page.locator('.export-feedback.success').waitFor({ state: 'visible', timeout: 30000 })
-      assert((await page.locator('.export-feedback.success').textContent()).includes(path))
+      const feedback = await page.locator('.export-feedback.success').textContent()
+      outputs[format] = { expectedPath: path, feedback, expectedFileExists: existsSync(path) }; write()
+      assert(feedback.replaceAll('/', '\\').toLowerCase().includes(path.replaceAll('/', '\\').toLowerCase()), `Expected saved location ${path}; actual feedback: ${feedback}`)
       const bytes = readFileSync(path); assert(bytes.length > 0)
-      outputs[format] = { bytes: bytes.length, sha256: sha(path) }
+      outputs[format] = { ...outputs[format], bytes: bytes.length, sha256: sha(path) }
       if (format === 'pdf') { assert.equal(bytes.subarray(0, 5).toString(), '%PDF-'); assert(bytes.subarray(-1024).toString().includes('%%EOF')); receipt.pdfHeaderAndTrailerVerified = true }
       if (format === 'html') for (const issue of manifest.audit.requiredIssues) assert(bytes.toString('utf8').includes(issue.cell))
       if (format === 'xlsx') {
@@ -118,7 +122,13 @@ async function main() {
     await withinTimeout(browser.close(), 5000, 'CDP close'); browser = undefined
     await inspectorEvaluate(target.webSocketDebuggerUrl, QUIT_EXPRESSION)
     receipt.normalExitRequested = true; receipt.success = true
-  } catch (error) { receipt.error = error.message } finally {
+  } catch (error) {
+    receipt.error = error.message
+    if (outputDir && existsSync(outputDir)) {
+      receipt.outputFiles = [outputDir, join(outputDir, 'input')].filter(existsSync).flatMap(folder => readdirSync(folder, { withFileTypes: true }).filter(x => x.isFile() && /\.(xlsx|html|pdf)$/i.test(x.name)).map(x => ({ name: join(folder, x.name), bytes: statSync(join(folder, x.name)).size })))
+      if (activePage) await activePage.screenshot({ path: join(outputDir, 'ui-failure.png'), animations: 'disabled', timeout: 5000 }).catch(() => {})
+    }
+  } finally {
     if (browser) await withinTimeout(browser.close(), 5000, 'CDP close after failure').catch(() => {})
     write()
   }
