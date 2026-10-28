@@ -11,7 +11,16 @@ on:
       - 'scripts/activate-msix-electron.ps1'
       - 'scripts/probe-msix-electron.cjs'
       - 'scripts/test-msix-electron-probe.cjs'
+      - 'scripts/probe-model-release-access.mjs'
+      - 'scripts/test-model-release-access.mjs'
+      - 'scripts/lib/stage-model-package.mjs'
   workflow_dispatch:
+    inputs:
+      model_supply_only:
+        description: 'Only probe authenticated draft model metadata and LICENSE'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -22,6 +31,7 @@ concurrency:
 
 jobs:
   package:
+    if: ${{ github.event_name != 'workflow_dispatch' || !inputs.model_supply_only }}
     # Pin the image so the desktop-package cmdlets are exercised on a known
     # Windows Server 2025 runner, rather than drifting with windows-latest.
     runs-on: windows-2025
@@ -88,4 +98,30 @@ jobs:
             tmp/msix-probe/electron-activation-receipt.json
             tmp/msix-probe/electron-home.png
           if-no-files-found: warn
+          retention-days: 1
+
+  model-supply:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.model_supply_only }}
+    runs-on: windows-2025
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check model-supply probe source
+        run: |
+          node --check scripts/probe-model-release-access.mjs
+          node --test scripts/test-model-release-access.mjs
+      - name: Probe draft model metadata and LICENSE only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/probe-model-release-access.mjs --receipt tmp/model-supply/receipt.json
+      - name: Preserve model-supply receipt only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-model-supply-receipt
+          path: tmp/model-supply/receipt.json
+          if-no-files-found: error
           retention-days: 1

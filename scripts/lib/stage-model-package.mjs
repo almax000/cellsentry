@@ -44,17 +44,21 @@ function packageMetadata(spec) {
     .sort((a, b) => a.name.localeCompare(b.name))
     .map((entry) => `${entry.sha256}  ${entry.name}`)
     .join('\n') + '\n'
-  return { manifest, manifestBytes, manifestSha256, sums }
+  const generated = [
+    { name: 'manifest.json', data: manifestBytes },
+    { name: 'SHA256SUMS', data: Buffer.from(sums) },
+  ].map(({ name, data }) => ({ name, bytes: data.length, sha256: createHash('sha256').update(data).digest('hex') }))
+  return { manifest, manifestBytes, manifestSha256, sums, generated }
+}
+
+export function expectedPackageFiles(spec) {
+  const metadata = packageMetadata(spec)
+  return [...metadata.manifest.files, ...metadata.generated]
 }
 
 /** Offline verification against the repository's pinned spec, never a supplied checksum file. */
 export async function verifyReleaseDirectory({ outDir, spec }) {
-  const metadata = packageMetadata(spec)
-  const generated = [
-    { name: 'manifest.json', data: metadata.manifestBytes },
-    { name: 'SHA256SUMS', data: Buffer.from(metadata.sums) },
-  ].map(({ name, data }) => ({ name, bytes: data.length, sha256: createHash('sha256').update(data).digest('hex') }))
-  const expected = [...metadata.manifest.files, ...generated]
+  const expected = expectedPackageFiles(spec)
   const names = (await readdir(outDir)).sort()
   if (JSON.stringify(names) !== JSON.stringify(expected.map(({ name }) => name).sort())) {
     throw new Error('Release directory must contain exactly the five public package files')
