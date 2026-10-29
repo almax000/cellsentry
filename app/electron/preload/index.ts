@@ -18,8 +18,8 @@ const api: SidecarAPI = {
       ipcRenderer.removeListener('sidecar:scan-progress', handler)
     }
   },
-  getFileCells: (filePath: string, sheet: string, range: string) =>
-    ipcRenderer.invoke('sidecar:file-cells', filePath, sheet, range),
+  getFileCells: (filePath: string, sheet: string, range: string, sourceFingerprint?: string) =>
+    ipcRenderer.invoke('sidecar:file-cells', filePath, sheet, range, sourceFingerprint),
   generateReport: (data: { issues: unknown[]; fileName: string }) =>
     ipcRenderer.invoke('sidecar:report-generate', data),
   openFileDialog: () => ipcRenderer.invoke('dialog:open-file'),

@@ -7,6 +7,8 @@
 import { app, ipcMain, dialog, shell } from 'electron'
 import { readdirSync, statSync, appendFileSync, mkdirSync, readFileSync } from 'fs'
 import { join, extname, normalize } from 'path'
+import { createHash } from 'crypto'
+import { readFile } from 'fs/promises'
 
 /** Write diagnostic error to crash-logs for remote debugging */
 function logIpcError(handler: string, filePath: string, error: unknown): void {
@@ -72,9 +74,15 @@ export function registerIpcHandlers(): void {
   })
 
   // ── File Cells ──────────────────────────────────────────
-  ipcMain.handle('sidecar:file-cells', async (_event, filePath: string, sheet: string, range: string) => {
+  ipcMain.handle('sidecar:file-cells', async (_event, filePath: string, sheet: string, range: string, sourceFingerprint?: string) => {
     if (!validateFilePath(filePath)) return { success: false, error: 'Invalid path' }
-    return readFileCells(filePath, sheet, range)
+    try {
+      const matches = async (): Promise<boolean> => !sourceFingerprint || createHash('sha256').update(await readFile(filePath)).digest('hex') === sourceFingerprint
+      const changed = { success: false, errorCode: 'source-changed', error: 'The workbook changed after scanning. Please scan it again.' }
+      if (!await matches()) return changed
+      const cells = await readFileCells(filePath, sheet, range)
+      return await matches() ? cells : changed
+    } catch { return { success:false, error:'Unable to read source workbook' } }
   })
 
   // ── Open File in System App ───────────────────────────────

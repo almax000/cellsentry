@@ -181,8 +181,11 @@ test.describe('Settings', () => {
 
 test.describe('Export', () => {
   test('export button exists on results page', async () => {
-    // Navigate to home first to ensure we can trigger a scan flow later
-    await page.locator('[data-testid="sidebar-nav-home"]').click()
-    await page.waitForTimeout(300)
+    await page.evaluate(file => window.__TEST_API__?.triggerFileAnalysis(file), join(__dirname,'fixtures','combined-test-data.xlsx'))
+    await expect(page.getByTestId('audit-workspace')).toBeVisible()
+    await expect(page.getByTestId('header-export-btn')).toBeVisible()
+    await page.getByTestId('export-btn').click()
+    await expect(page.getByTestId('export-dropdown')).toBeVisible()
+    await page.keyboard.press('Escape')
   })
 })

@@ -21,6 +21,7 @@ export default defineConfig({
     video: 'on-first-retry'
   },
   projects: [
+    { name: 'audit-workspace', testMatch: /audit-workspace\.spec\.ts/ },
     { name: 'visual', testMatch: /visual\.spec\.ts/ },
     { name: 'functional', testMatch: /[\\/]functional\.spec\.ts$/ },
     { name: 'flow', testMatch: /flow\.spec\.ts/ },
@@ -30,6 +31,7 @@ export default defineConfig({
     { name: 'audit-budget', testMatch: /audit-budget-functional\.spec\.ts/ },
     { name: 'model-setup', testMatch: /model-setup-functional\.spec\.ts/ },
     { name: 'offline-model', testMatch: /offline-model-functional\.spec\.ts/ },
+    { name: 'msix-ui-contract', testMatch: /msix-ui-contract\.spec\.ts/ },
     // Document redaction, extraction, and standalone-PII specs remain in e2e/
     // as Vibli migration references, outside CellSentry's default product run.
     {

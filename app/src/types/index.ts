@@ -21,6 +21,11 @@ export interface Issue {
   suggestion: string
   category: string
   layer: 'rule' | 'ai'
+  /** Value cached in the workbook at read time; undefined means the source did not provide one. */
+  currentValue?: unknown
+  /** Rule-derived comparison, not a claim about the user's business intent. */
+  expectedValue?: unknown
+  correctFormula?: string | null
   llmVerified?: boolean
   llmDisputed?: boolean
   llmReviewRequired?: boolean
@@ -43,6 +48,8 @@ export interface AnalysisResult {
   summary: AnalysisSummary
   scannedAt: string
   duration: number
+  /** SHA-256 of the exact workbook bytes analyzed. Never reuse review state across a different fingerprint. */
+  sourceFingerprint?: string
   error?: string
   aiWarning?: string
   auditReview?: import('../../shared/auditReview').AuditReviewSummary

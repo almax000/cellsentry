@@ -80,10 +80,13 @@ test('header has always-dark chrome background', async () => {
   expect(bg).toBe('rgb(15, 17, 23)')
 })
 
-test('header has no theme toggle button', async () => {
-  // Theme toggle was moved to Settings — header should have no btn-icon for toggling
-  const headerBtnIcons = page.locator('.main-header .header-actions .btn-icon')
-  await expect(headerBtnIcons).toHaveCount(0)
+test('header switches the content between light and dark themes', async () => {
+  const toggle=page.getByTestId('theme-toggle')
+  await expect(toggle).toBeVisible()
+  await toggle.click()
+  await expect(page.locator('html')).toHaveAttribute('data-theme','dark')
+  await toggle.click()
+  await expect(page.locator('html')).toHaveAttribute('data-theme','light')
 })
 
 test('header has drag region', async () => {

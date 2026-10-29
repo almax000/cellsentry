@@ -9,6 +9,7 @@ const { saveDialog } = vi.hoisted(() => ({ saveDialog: vi.fn() }))
 vi.mock('../electron/llm/lifecycle', () => ({ isLocalAiReadyFor: () => true, analyzeWithLlmPii: vi.fn(async () => []) }))
 vi.mock('electron', () => ({ app: { getVersion: () => 'test' }, dialog: { showSaveDialog: saveDialog }, BrowserWindow: vi.fn() }))
 import { exportAudit, redactPii } from '../electron/main/exportHandlers'
+import { ExcelMarker } from '../electron/excel/marker'
 import { redactFile, redactSelectedCell } from '../electron/pii/redactor'
 import { maskPiiText } from '../electron/pii/masking'
 import { exportToCsv } from '../electron/extraction/exporters'
@@ -72,6 +73,40 @@ describe('source protection across export formats', () => {
       saveDialog.mockRejectedValueOnce(new Error('dialog unavailable'))
       expect(await action()).toEqual({ success: false, error: 'dialog unavailable' })
     }
+  })
+})
+
+describe('audit review export snapshot', () => {
+  it('marks only confirmed snapshot rows in a confirmed-only XLSX export', async () => {
+    const source = await workbook([1, 2])
+    const output = nextPath('confirmed-only.xlsx')
+    saveDialog.mockResolvedValue({ filePath: output, canceled: false })
+    const first = { sheetName: 'S', cell: 'A1', severity: 'warning' as const, ruleId: 'FIRST', message: 'first', suggestion: '', confidence: 1, formula: '=1', currentValue: 1 }
+    const second = { ...first, cell: 'A2', ruleId: 'SECOND', message: 'second' }
+    const { reviewKey } = await import('../shared/auditWorkspace')
+    const result = await exportAudit({
+      filePath: source, fileName: 'source.xlsx', format: 'xlsx', scope: 'confirmed', issues: [first, second],
+      reviewDecisions: { [reviewKey(second)]: { status: 'confirmed', note: '' } },
+    })
+    expect(result).toMatchObject({ success: true })
+    const marked = new ExcelJS.Workbook()
+    await marked.xlsx.readFile(output)
+    const sheet = marked.getWorksheet('S')!
+    expect(sheet.getCell('A1').note).toBeUndefined()
+    expect(sheet.getCell('A2').note).toContain('SECOND')
+  })
+
+  it('preserves an existing target when a staged XLSX review record fails', async () => {
+    const source = await workbook([1])
+    const output = nextPath('existing-target.xlsx')
+    const originalTarget = Buffer.from('pre-existing target must survive')
+    await writeFile(output, originalTarget)
+    saveDialog.mockResolvedValue({ filePath: output, canceled: false })
+    const failure = vi.spyOn(ExcelMarker.prototype, 'addReviewSheet').mockResolvedValueOnce({ success: false, errors: ['review sheet failed'] })
+    const result = await exportAudit({ filePath: source, fileName: 'source.xlsx', format: 'xlsx', issues: [] })
+    failure.mockRestore()
+    expect(result).toMatchObject({ success: false, error: 'review sheet failed' })
+    expect(await readFile(output)).toEqual(originalTarget)
   })
 })
 

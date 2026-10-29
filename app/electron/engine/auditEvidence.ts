@@ -64,9 +64,10 @@ function maskFormulaStrings(formula: string): string {
   return masked
 }
 
-function localFormulaReferences(formula: string | null): { addresses: string[]; crossSheetCount: number; complexCount: number } {
-  if (!formula) return { addresses: [], crossSheetCount: 0, complexCount: 0 }
+function localFormulaReferences(formula: string | null): { addresses: string[]; externalAddresses: string[]; crossSheetCount: number; complexCount: number } {
+  if (!formula) return { addresses: [], externalAddresses: [], crossSheetCount: 0, complexCount: 0 }
   const addresses: string[] = []
+  const externalAddresses: string[] = []
   let crossSheetCount = 0
   let masked = maskFormulaStrings(formula)
   // A colon before a sheet qualifier is a 3D reference (including numeric
@@ -75,20 +76,25 @@ function localFormulaReferences(formula: string | null): { addresses: string[]; 
   // The conservative whole-formula omission also avoids guessing unrelated
   // local references from a mixed 3D expression.
   const ambiguousThreeDimensional = /(?:'[^']+'|[A-Za-z0-9_. ]+)\s*:\s*(?:'[^']+'|[A-Za-z0-9_. ]+)\s*!/.test(masked)
-  if (ambiguousThreeDimensional) return { addresses, crossSheetCount: 1, complexCount: 1 }
+  if (ambiguousThreeDimensional) return { addresses, externalAddresses, crossSheetCount: 1, complexCount: 1 }
 
   // Mask a qualified *whole* reference or range before looking for local
   // references. In particular, this prevents the B2 tail of Other!A1:B2 from
   // being reclassified as the current sheet's B2.
-  const qualified = /(?:'[^']+'|(?:\[[^\]]+\])?[A-Za-z_][A-Za-z0-9_. ]*)!\$?[A-Z]{1,3}\$?\d+(?:\s*:\s*\$?[A-Z]{1,3}\$?\d+)?/g
-  masked = masked.replace(qualified, (match) => {
+  const qualified = /(?:'[^']+'|(?:\[[^\]]+\])?[A-Za-z_][A-Za-z0-9_. ]*)!(\$?[A-Z]{1,3}\$?\d+)(?:\s*:\s*(\$?[A-Z]{1,3}\$?\d+))?/g
+  masked = masked.replace(qualified, (match, startAddress: string, endAddress: string | undefined) => {
     crossSheetCount += 1
+    for (const address of [startAddress, endAddress]) {
+      if (!address) continue
+      const normalized = normalizedAddress(address)
+      if (!externalAddresses.includes(normalized)) externalAddresses.push(normalized)
+    }
     return ' '.repeat(match.length)
   })
   // Structured references and unmatched qualifiers are intentionally outside
   // this small A1-only parser. Do not guess their sheet or coordinates.
   const complexCount = /[\[\]!]/.test(masked) ? 1 : 0
-  if (complexCount > 0) return { addresses, crossSheetCount, complexCount }
+  if (complexCount > 0) return { addresses, externalAddresses, crossSheetCount, complexCount }
 
   // Only accept a bounded, simple A1 reference or A1:B2 range. Brackets avoid
   // treating structured-reference tokens as cells; a following '(' avoids
@@ -103,7 +109,7 @@ function localFormulaReferences(formula: string | null): { addresses: string[]; 
       if (!addresses.includes(address)) addresses.push(address)
     }
   }
-  return { addresses, crossSheetCount, complexCount }
+  return { addresses, externalAddresses, crossSheetCount, complexCount }
 }
 
 function nearbyCells(context: SheetContext, target: CellInfo | undefined, excluded: Set<string>): CellInfo[] {
@@ -143,8 +149,8 @@ export function buildAuditEvidence(issue: EngineIssue, context: SheetContext): s
     `sheet ${shortQuoted(context.name)}; business requirement: unknown (not declared).`,
     targetLine,
   ]
-  const { addresses, crossSheetCount, complexCount } = localFormulaReferences(formula)
-  const excluded = new Set<string>(target ? [normalizedAddress(target.address)] : [])
+  const { addresses, externalAddresses, crossSheetCount, complexCount } = localFormulaReferences(formula)
+  const excluded = new Set<string>([...(target ? [normalizedAddress(target.address)] : []), ...externalAddresses])
   const optional: string[] = []
 
   // Prioritize file observations over the rule's unverified repair. Otherwise

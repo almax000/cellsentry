@@ -1,6 +1,7 @@
 import { BrowserWindow, dialog } from 'electron'
-import { copyFile, writeFile } from 'fs/promises'
-import { basename, extname, parse } from 'path'
+import { copyFile, readFile, rename, unlink, writeFile } from 'fs/promises'
+import { createHash, randomUUID } from 'crypto'
+import { basename, dirname, extname, join, parse } from 'path'
 import { assertDistinctOutput } from '../exportSafety'
 import type {
   AuditExportRequest,
@@ -8,6 +9,7 @@ import type {
   PiiRedactionRequest,
 } from '../../shared/export'
 import { generateReport } from '../report/generator'
+import { buildAuditSnapshot } from '../../shared/auditWorkspace'
 import { ExcelMarker, MarkerSeverity, type CellMarker } from '../excel/marker'
 import { redactFile } from '../pii/redactor'
 
@@ -25,8 +27,22 @@ function toMarkerSeverity(severity: string): MarkerSeverity {
   return MarkerSeverity.LOW
 }
 
+async function assertSourceFingerprint(filePath: string, expected?: string): Promise<void> {
+  if (!expected) return
+  const actual = createHash('sha256').update(await readFile(filePath)).digest('hex')
+  const normalized = expected.startsWith('sha256:') ? expected.slice('sha256:'.length) : expected
+  if (actual !== normalized) throw new Error('The source workbook changed after review. Run a new scan before exporting.')
+}
+
+function temporaryOutputPath(outputPath: string): string {
+  const parsed = parse(outputPath)
+  return join(dirname(outputPath), `.${parsed.name}.cellsentry-${randomUUID()}${parsed.ext}`)
+}
+
 export async function exportAudit(request: AuditExportRequest): Promise<ExportResult> {
+  let temporaryPath: string | undefined
   try {
+    const snapshot = buildAuditSnapshot(request)
     const extension = request.format === 'xlsx' ? 'xlsx' : request.format
     const outputPath = await chooseSavePath(
       `${stem(request.fileName)}-audit.${extension}`,
@@ -35,56 +51,59 @@ export async function exportAudit(request: AuditExportRequest): Promise<ExportRe
     if (!outputPath) return { success: false, cancelled: true }
 
     await assertDistinctOutput(request.filePath, outputPath)
+    await assertSourceFingerprint(request.filePath, request.sourceFingerprint)
+    const stagingPath = temporaryOutputPath(outputPath)
+    temporaryPath = stagingPath
     if (request.format === 'html') {
-      await writeFile(outputPath, generateReport(request.issues.map((issue) => ({
-        sheet_name: issue.sheetName,
-        cell_address: issue.cell,
-        severity: issue.severity,
-        message: issue.message,
-        suggestion: issue.suggestion,
-      })), request.fileName), 'utf8')
+      await writeFile(stagingPath, generateReport(snapshot), 'utf8')
+      await rename(stagingPath, outputPath)
+      temporaryPath = undefined
       return { success: true, outputPath }
     }
 
     if (request.format === 'pdf') {
-      const html = generateReport(request.issues.map((issue) => ({
-        sheet_name: issue.sheetName,
-        cell_address: issue.cell,
-        severity: issue.severity,
-        message: issue.message,
-        suggestion: issue.suggestion,
-      })), request.fileName)
+      const html = generateReport(snapshot)
       const window = new BrowserWindow({
         show: false,
         webPreferences: { contextIsolation: true, nodeIntegration: false, sandbox: true },
       })
       try {
         await window.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(html)}`)
-        await writeFile(outputPath, await window.webContents.printToPDF({ printBackground: true }))
+        await writeFile(stagingPath, await window.webContents.printToPDF({ printBackground: true }))
       } finally {
         if (!window.isDestroyed()) window.destroy()
       }
+      await rename(stagingPath, outputPath)
+      temporaryPath = undefined
       return { success: true, outputPath }
     }
 
     if (extname(request.filePath).toLowerCase() !== '.xlsx') {
       return { success: false, error: 'Marked Excel export requires an .xlsx source file' }
     }
-    await copyFile(request.filePath, outputPath)
-    const markers: CellMarker[] = request.issues.map((issue) => ({
-      sheetName: issue.sheetName,
-      cellAddress: issue.cell,
-      severity: toMarkerSeverity(issue.severity),
-      ruleId: issue.ruleId,
-      message: issue.message,
-      suggestion: issue.suggestion,
-      confidence: issue.confidence,
+    await copyFile(request.filePath, stagingPath)
+    await assertSourceFingerprint(stagingPath, request.sourceFingerprint)
+    const markers: CellMarker[] = snapshot.rows.map((row) => ({
+      sheetName: row.sheetName,
+      cellAddress: row.cell,
+      severity: toMarkerSeverity(row.rule.severity),
+      ruleId: row.rule.ruleId,
+      message: row.rule.message,
+      suggestion: row.rule.suggestion,
+      confidence: row.rule.confidence,
     }))
-    const result = await new ExcelMarker().markIssues(outputPath, markers, false)
+    const marker = new ExcelMarker()
+    const result = await marker.markIssues(stagingPath, markers, false)
     if (!result.success) return { success: false, error: result.errors?.join('; ') || 'Failed to mark workbook' }
+    const review = await marker.addReviewSheet(stagingPath, snapshot)
+    if (!review.success) return { success: false, error: review.errors?.join('; ') || 'Failed to add review record' }
+    await rename(stagingPath, outputPath)
+    temporaryPath = undefined
     return { success: true, outputPath, count: result.markedCount }
   } catch (error) {
     return { success: false, error: error instanceof Error ? error.message : String(error) }
+  } finally {
+    if (temporaryPath) await unlink(temporaryPath).catch(() => undefined)
   }
 }
 export async function redactPii(request: PiiRedactionRequest): Promise<ExportResult> {

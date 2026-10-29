@@ -2,6 +2,7 @@ import ExcelJS from 'exceljs'
 import { copyFileSync, existsSync } from 'fs'
 import { join, parse as parsePath } from 'path'
 import { loadWorkbook } from '../engine/excelReader'
+import type { AuditSnapshot } from '../../shared/auditWorkspace'
 
 export enum MarkerSeverity {
   CRITICAL = 'critical',
@@ -156,6 +157,27 @@ export class ExcelMarker {
       return { success: true, clearedCount }
     } catch {
       return { success: false }
+    }
+  }
+
+  async addReviewSheet(filePath: string, snapshot: AuditSnapshot): Promise<{ success: boolean; errors?: string[] }> {
+    try {
+      const wb = await loadWorkbook(filePath)
+      const base = 'CellSentry Review'
+      let name = base
+      let index = 2
+      while (wb.getWorksheet(name)) name = `${base} ${index++}`
+      const ws = wb.addWorksheet(name)
+      ws.addRow(['CellSentry spreadsheet review'])
+      ws.addRow(['Scope', snapshot.scope, 'Included', snapshot.exportedFindings, 'Total', snapshot.totalFindings, 'Excluded', snapshot.excludedFindings])
+      ws.addRow(['Sheet', 'Cell', 'Severity', 'Rule', 'Formula', 'Saved value', 'Message', 'Suggestion', 'AI status', 'AI opinion', 'Human status', 'Human note'])
+      for (const row of snapshot.rows) ws.addRow([row.sheetName, row.cell, row.rule.severity, row.rule.ruleId, row.rule.formula, row.rule.observedValue, row.rule.message, row.rule.suggestion, row.ai.status, row.ai.reasoning, row.review.status, row.review.note])
+      ws.getRow(3).font = { bold: true }
+      ws.columns.forEach((column) => { column.width = 20 })
+      await wb.xlsx.writeFile(filePath)
+      return { success: true }
+    } catch (error) {
+      return { success: false, errors: [error instanceof Error ? error.message : String(error)] }
     }
   }
 

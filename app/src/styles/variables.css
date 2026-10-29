@@ -67,6 +67,19 @@
   box-sizing: border-box;
 }
 
+[data-theme="dark"] {
+  color-scheme: dark;
+  --brand: #82bd8d;
+  --brand-light: #96cea0;
+  --brand-subtle: rgba(130,189,141,0.12);
+  --bg-primary:#1a201d; --bg-secondary:#171c19; --bg-tertiary:#28322c;
+  --bg-card:#202822; --bg-elevated:#27322b;
+  --text-primary:#e8ede9; --text-secondary:#b1bcb4; --text-muted:#a4b0a7;
+  --border:#3c4840; --border-light:#303a33;
+}
+
+[data-theme="dark"] .btn-primary { color:#142019; }
+
 body {
   font-family: var(--font-sans);
   background: var(--bg-primary);

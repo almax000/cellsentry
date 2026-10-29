@@ -74,7 +74,8 @@ test.describe('Flow: Export options', () => {
     await expect(page.locator('[data-testid="export-pdf"]')).toBeVisible()
     await expect(page.locator('[data-testid="export-xlsx"]')).toBeVisible()
 
-    // Navigate back home
+    // Close the focused report preview before navigating.
+    await page.keyboard.press('Escape')
     await page.locator('[data-testid="sidebar-nav-home"]').click()
     await page.waitForTimeout(300)
   })

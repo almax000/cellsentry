@@ -49,26 +49,27 @@ describe('unified scan state identity', () => {
     expect(afterOldEvent).toBe(next)
   })
 
-  it('counts audit and workbook PII once and only completes after both settle', () => {
+  it('completes once the deterministic audit is available and accepts the later AI update', () => {
     let state = start()
     state = scanReducer(state, {
-      type: 'ENGINE_DONE', scanId: 'scan-current', engine: 'audit', result: { issues: [], summary: {} },
+      type: 'ENGINE_DONE', scanId: 'scan-current', engine: 'audit', stage: 'rules', result: { issues: [], summary: {} },
     })
-    expect(state.enginesComplete).toBe(1)
+    expect(state.enginesComplete).toBe(0)
     expect(state.scanState).toBe('scanning')
 
     const afterDuplicate = scanReducer(state, {
-      type: 'ENGINE_DONE', scanId: 'scan-current', engine: 'audit', result: { issues: [], summary: {} },
+      type: 'ENGINE_DONE', scanId: 'scan-current', engine: 'audit', stage: 'rules', result: { issues: [], summary: {} },
     })
     expect(afterDuplicate).toBe(state)
 
     state = scanReducer(state, {
-      type: 'ENGINE_DONE', scanId: 'scan-current', engine: 'pii', error: 'model unavailable',
+      type: 'ENGINE_DONE', scanId: 'scan-current', engine: 'audit', stage: 'complete', result: { issues: [], summary: {} },
     })
-
-    expect(state.enginesComplete).toBe(2)
+    expect(state.enginesComplete).toBe(1)
     expect(state.scanState).toBe('complete')
-    expect(state.piiError).toBe('model unavailable')
+    expect(scanReducer(state, {
+      type: 'ENGINE_DONE', scanId: 'scan-current', engine: 'audit', stage: 'complete', result: { issues: [], summary: {} },
+    })).toBe(state)
   })
 })
 
@@ -92,9 +93,10 @@ describe('batch result association', () => {
   })
   it('normalizes actual engine severity counts for the renderer', () => {
     const state = scanReducer(start(), { type: 'ENGINE_DONE', scanId: 'scan-current', engine: 'audit', result: {
-      success: true, issues: [{ severity: 'error' }, { severity: 'warning' }], summary: { total: 2, error: 1, warning: 1, info: 0 },
+      success: true, issues: [{ severity: 'error', currentValue: 42, expectedValue: 43 }, { severity: 'warning' }], summary: { total: 2, error: 1, warning: 1, info: 0 },
     } })
     expect(state.results?.summary).toEqual({ errors: 1, warnings: 1, info: 0, total: 2 })
+    expect(state.results?.issues[0]).toMatchObject({ currentValue: 42, expectedValue: 43 })
   })
   it('counts every scan start and failure, and keeps the counts through cancel and reset', () => {
     const first = start('a')

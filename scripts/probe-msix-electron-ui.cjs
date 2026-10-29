@@ -29,6 +29,93 @@ async function clickWithNative(page, mode, path, locator) {
   const native = nativeDialog(mode, path)
   await Promise.all([native, locator.click({ timeout: 30000 })])
 }
+
+function requiredIssueLocator(page, issue) {
+  return page.locator(`[data-testid^="results-issue-card-"][data-rule-id=${JSON.stringify(issue.ruleId)}][data-sheet-name=${JSON.stringify(issue.sheet)}][data-cell-address=${JSON.stringify(issue.cell)}]`)
+}
+
+/**
+ * Exercise the shipped audit UI through its visible controls. The caller owns
+ * package identity and the dialog driver: Windows supplies real native dialogs;
+ * source Electron tests inject only dialog responses. This does not establish
+ * that the latter is an MSIX or Windows verification.
+ */
+async function runAuditUiContract({ page, manifest, originalFixture, fixture, outputDir, dialogs, onProgress }) {
+  assert.equal(sha(originalFixture), manifest.sourceSha256)
+  const result = { sourceBeforeSha256: sha(fixture), exports: {} }
+  const publish = () => onProgress?.({ ...result, exports: { ...result.exports } })
+
+  await page.getByTestId('home-task-audit').click()
+  await page.getByTestId('entry-audit').waitFor({ state: 'visible', timeout: 10000 })
+  await dialogs.open('CancelOpen', fixture, page.getByTestId('dropzone-browse-btn'))
+  assert(await page.getByTestId('entry-audit').isVisible(), 'Cancelled selection must keep the import page')
+  result.openCancelled = true
+  publish()
+  await dialogs.open('Open', fixture, page.getByTestId('dropzone-browse-btn'))
+  await page.waitForURL(/#\/results$/, { timeout: 30000 })
+  await page.getByTestId('results-panel-left').waitFor({ state: 'visible' })
+  result.openSelected = true
+  publish()
+
+  for (const issue of manifest.audit.requiredIssues) {
+    const card = requiredIssueLocator(page, issue)
+    await card.waitFor({ state: 'visible', timeout: 30000 })
+    assert.equal(await card.count(), 1, `Required independent finding missing: ${issue.ruleId}/${issue.cell}`)
+  }
+  result.requiredFindingsVerified = manifest.audit.requiredIssues.length
+  const first = manifest.audit.requiredIssues[0]
+  await requiredIssueLocator(page, first).click()
+  await page.locator('.ss-cell.selected-cell').first().waitFor({ state: 'visible', timeout: 10000 })
+  result.cellDetailSelected = true
+  await page.screenshot({ path: join(outputDir, 'ui-results.png'), animations: 'disabled', timeout: 10000 })
+
+  const cancelled = join(outputDir, '取消报告.html')
+  await page.getByTestId('export-btn').click()
+  await dialogs.save('CancelSave', cancelled, page.getByTestId('export-html'))
+  assert(!existsSync(cancelled))
+  const cancellation = page.locator('.export-feedback.success')
+  await cancellation.waitFor({ state: 'visible', timeout: 30000 })
+  assert.match(await cancellation.textContent() || '', /cancelled|已取消/i, 'Cancelled export must be reported honestly')
+  assert(await page.getByTestId('export-dropdown').evaluate(dialog => dialog.open), 'Export preview remains open after cancellation')
+  result.saveCancelled = true
+  publish()
+
+  for (const format of ['xlsx', 'html', 'pdf']) {
+    const path = join(outputDir, `审计 结果.${format}`)
+    assert(!existsSync(path))
+    // The dialog remains modal after cancellation and successful exports; do not
+    // click the covered opener between formats.
+    await dialogs.save('Save', path, page.getByTestId(`export-${format}`))
+    const success = page.locator('.export-feedback.success')
+    await success.waitFor({ state: 'visible', timeout: 30000 })
+    const feedback = await success.textContent() || ''
+    assert(feedback.replaceAll('/', '\\').toLowerCase().includes(path.replaceAll('/', '\\').toLowerCase()), `Expected saved location ${path}; actual feedback: ${feedback}`)
+    const bytes = readFileSync(path)
+    assert(bytes.length > 0)
+    result.exports[format] = { expectedPath: path, feedback, expectedFileExists: existsSync(path), bytes: bytes.length, sha256: sha(path) }
+    publish()
+    if (format === 'pdf') {
+      assert.equal(bytes.subarray(0, 5).toString(), '%PDF-')
+      assert(bytes.subarray(-1024).toString().includes('%%EOF'))
+      result.pdfHeaderAndTrailerVerified = true
+    }
+    if (format === 'html') for (const issue of manifest.audit.requiredIssues) assert(bytes.toString('utf8').includes(issue.cell))
+    if (format === 'xlsx') {
+      const ExcelJS = require(join(root, 'app/node_modules/exceljs'))
+      const workbook = new ExcelJS.Workbook()
+      await workbook.xlsx.readFile(path)
+      for (const issue of manifest.audit.requiredIssues) assert(JSON.stringify(workbook.getWorksheet(issue.sheet).getCell(issue.cell).note).includes('[CellSentry]'))
+    }
+  }
+  result.markedWorkbookVerified = result.htmlReportVerified = result.pdfReportVerified = true
+  result.sourceAfterSha256 = sha(fixture)
+  assert.equal(result.sourceAfterSha256, result.sourceBeforeSha256)
+  assert.equal(sha(originalFixture), manifest.sourceSha256)
+  result.sourceUnchanged = true
+  await page.screenshot({ path: join(outputDir, 'ui-export.png'), animations: 'disabled', timeout: 10000 })
+  return result
+}
+
 async function main() {
   let browser
   let activePage
@@ -70,53 +157,24 @@ async function main() {
     page.on('pageerror', error => pageErrors.push(error.message)); page.on('console', message => { if (message.type() === 'error') consoleErrors.push(message.text()) });
     page.on('requestfailed', request => requestFailures.push({ protocol: new URL(request.url()).protocol, error: request.failure()?.errorText }))
     await page.screenshot({ path: screenshotPath, animations: 'disabled', timeout: 10000 }); receipt.screenshot = screenshotPath
-    await page.getByTestId('home-task-audit').click()
-    await page.getByTestId('entry-audit').waitFor({ state: 'visible', timeout: 10000 })
-    await clickWithNative(page, 'CancelOpen', fixture, page.getByTestId('dropzone-browse-btn'))
-    assert(await page.getByTestId('entry-audit').isVisible(), 'Cancelled selection must keep the import page')
-    receipt.nativeOpenCancelled = true
-    await clickWithNative(page, 'Open', fixture, page.getByTestId('dropzone-browse-btn'))
-    await page.waitForURL(/#\/results$/, { timeout: 30000 })
-    await page.getByTestId('results-panel-left').waitFor({ state: 'visible' })
-    receipt.nativeOpenSelected = true
-    for (const issue of manifest.audit.requiredIssues) {
-      const card = page.locator(`[data-testid^="results-issue-card-"][data-rule-id=${JSON.stringify(issue.ruleId)}][data-sheet-name=${JSON.stringify(issue.sheet)}][data-cell-address=${JSON.stringify(issue.cell)}]`)
-      await card.waitFor({ state: 'visible', timeout: 30000 }); assert.equal(await card.count(), 1, `Required independent finding missing: ${issue.ruleId}/${issue.cell}`)
-    }
-    receipt.requiredFindingsVerified = manifest.audit.requiredIssues.length
-    const first = manifest.audit.requiredIssues[0]
-    await page.locator(`[data-testid^="results-issue-card-"][data-rule-id=${JSON.stringify(first.ruleId)}][data-cell-address=${JSON.stringify(first.cell)}]`).click()
-    await page.locator('.ss-cell.selected-cell').first().waitFor({ state: 'visible', timeout: 10000 })
-    receipt.cellDetailSelected = true
-    await page.screenshot({ path: join(outputDir, 'ui-results.png'), animations: 'disabled', timeout: 10000 })
-    const cancelled = join(outputDir, '取消报告.html')
-    await page.getByTestId('export-btn').click()
-    await clickWithNative(page, 'CancelSave', cancelled, page.getByTestId('export-html'))
-    assert(!existsSync(cancelled)); assert.equal(await page.locator('.export-feedback.success').count(), 0)
-    receipt.nativeSaveCancelled = true
-    const outputs = {}; receipt.exports = outputs
-    for (const format of ['xlsx', 'html', 'pdf']) {
-      const path = join(outputDir, `审计 结果.${format}`)
-      assert(!existsSync(path))
-      await page.getByTestId('export-btn').click()
-      await clickWithNative(page, 'Save', path, page.getByTestId(`export-${format}`))
-      await page.locator('.export-feedback.success').waitFor({ state: 'visible', timeout: 30000 })
-      const feedback = await page.locator('.export-feedback.success').textContent()
-      outputs[format] = { expectedPath: path, feedback, expectedFileExists: existsSync(path) }; write()
-      assert(feedback.replaceAll('/', '\\').toLowerCase().includes(path.replaceAll('/', '\\').toLowerCase()), `Expected saved location ${path}; actual feedback: ${feedback}`)
-      const bytes = readFileSync(path); assert(bytes.length > 0)
-      outputs[format] = { ...outputs[format], bytes: bytes.length, sha256: sha(path) }
-      if (format === 'pdf') { assert.equal(bytes.subarray(0, 5).toString(), '%PDF-'); assert(bytes.subarray(-1024).toString().includes('%%EOF')); receipt.pdfHeaderAndTrailerVerified = true }
-      if (format === 'html') for (const issue of manifest.audit.requiredIssues) assert(bytes.toString('utf8').includes(issue.cell))
-      if (format === 'xlsx') {
-        const ExcelJS = require(join(root, 'app/node_modules/exceljs')); const workbook = new ExcelJS.Workbook()
-        await workbook.xlsx.readFile(path)
-        for (const issue of manifest.audit.requiredIssues) assert(JSON.stringify(workbook.getWorksheet(issue.sheet).getCell(issue.cell).note).includes('[CellSentry]'))
-      }
-    }
-    receipt.exports = outputs; receipt.markedWorkbookVerified = receipt.htmlReportVerified = receipt.pdfReportVerified = true
-    receipt.sourceAfterSha256 = sha(fixture); assert.equal(receipt.sourceAfterSha256, receipt.sourceBeforeSha256); assert.equal(sha(originalFixture), manifest.sourceSha256)
-    receipt.sourceUnchanged = true; receipt.rendererErrors = pageErrors; receipt.consoleErrors = consoleErrors; receipt.requestFailures = requestFailures;
+    const uiContract = await runAuditUiContract({
+      page, manifest, originalFixture, fixture, outputDir,
+      dialogs: { open: (mode, path, locator) => clickWithNative(page, mode, path, locator), save: (mode, path, locator) => clickWithNative(page, mode, path, locator) },
+      onProgress: partial => {
+        Object.assign(receipt, partial, {
+          nativeOpenCancelled: partial.openCancelled,
+          nativeOpenSelected: partial.openSelected,
+          nativeSaveCancelled: partial.saveCancelled,
+        })
+        write()
+      },
+    })
+    Object.assign(receipt, uiContract, {
+      nativeOpenCancelled: uiContract.openCancelled,
+      nativeOpenSelected: uiContract.openSelected,
+      nativeSaveCancelled: uiContract.saveCancelled,
+    })
+    receipt.rendererErrors = pageErrors; receipt.consoleErrors = consoleErrors; receipt.requestFailures = requestFailures;
     assert.deepEqual(pageErrors, []); assert.deepEqual(consoleErrors, []); assert.deepEqual(requestFailures, [])
     await page.screenshot({ path: join(outputDir, 'ui-export.png'), animations: 'disabled', timeout: 10000 })
     await withinTimeout(browser.close(), 5000, 'CDP close'); browser = undefined
@@ -134,4 +192,6 @@ async function main() {
   }
   if (!receipt.success) process.exitCode = 1
 }
-main().catch(error => { receipt.error = error.message; write(); process.exitCode = 1 })
+
+module.exports = { runAuditUiContract }
+if (require.main === module) main().catch(error => { receipt.error = error.message; write(); process.exitCode = 1 })

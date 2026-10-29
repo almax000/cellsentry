@@ -213,3 +213,14 @@ button.sheet-tab:focus-visible { outline: 2px solid var(--brand); outline-offset
 .preview-status { padding: 20px; font-size: 13px; color: var(--text-secondary); }
 
 .spreadsheet-toolbar { flex-wrap: wrap; }
+
+/* The source preview follows the workspace theme; selection remains a full outline. */
+.aw-sheet .spreadsheet-toolbar { background:var(--bg-primary); border-color:var(--border); gap:5px; }
+.aw-sheet .sheet-tab { color:var(--text-secondary); }
+.aw-sheet .spreadsheet-grid,.aw-sheet .ss-cell,.aw-sheet .ss-cell.empty { background:var(--bg-card); color:var(--text-primary); }
+.aw-sheet .ss-table th,.aw-sheet .ss-table td { border-color:var(--border); }
+.aw-sheet .ss-table thead th,.aw-sheet .ss-row-num { background:var(--bg-secondary); color:var(--text-secondary); }
+.aw-sheet .ss-cell.formula { color:var(--text-primary); }
+.aw-sheet .ss-cell.selected-cell { background:var(--brand-subtle); box-shadow:inset 0 0 0 2px var(--brand); animation:none; }
+.aw-sheet .ss-cell:focus-visible { outline:2px solid var(--brand); outline-offset:-2px; }
+.ss-cell-tooltip { background:var(--bg-card); color:var(--text-primary); border-color:var(--border); }
