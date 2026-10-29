@@ -22,6 +22,7 @@
     "test:flow": "npx playwright test --project=flow",
     "test:ci": "npm run typecheck && npm run test:unit && npm run test:native && npm run build && npm run test:e2e",
     "build:win": "node ../scripts/prepare-native.mjs win32-x64 && npm run build && npx electron-builder --win --x64",
+    "build:store-candidate": "node ../scripts/build-windows-store-candidate.mjs",
     "build:mac": "npm run runtime:prepare && npm run build && npx electron-builder --mac",
     "test:unit": "vitest run",
     "brand:generate": "node scripts/generate-brand-assets.mjs",
@@ -40,6 +41,7 @@
   "devDependencies": {
     "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/utils": "^4.0.0",
+    "@electron/asar": "3.4.1",
     "@playwright/test": "^1.58.2",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
@@ -47,9 +49,12 @@
     "electron": "^40.8.0",
     "electron-builder": "^25.1.8",
     "electron-vite": "^5.0.0",
+    "jszip": "3.10.1",
     "patch-package": "^8.0.1",
+    "saxes": "5.0.1",
     "sharp": "^0.34.5",
     "typescript": "^5.7.2",
+    "unzipper": "0.10.14",
     "vite": "^6.0.3",
     "vitest": "3.2.7"
   },
