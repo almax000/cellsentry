@@ -9,6 +9,8 @@ interface SpreadsheetPreviewProps {
   selectedIssue: Issue | null
   sheets: string[]
   filePath: string
+  sourceFingerprint?: string
+  onSelectIssue?: (issue: Issue) => void
 }
 
 interface CellTooltip {
@@ -29,6 +31,8 @@ export default function SpreadsheetPreview({
   selectedIssue,
   sheets,
   filePath,
+  sourceFingerprint,
+  onSelectIssue,
 }: SpreadsheetPreviewProps): JSX.Element {
   const { t } = useTranslation('results')
   const gridRef = useRef<HTMLDivElement>(null)
@@ -50,7 +54,7 @@ export default function SpreadsheetPreview({
   const selectedColumn = selectedCell ? columnNumber(selectedCell.col) : 1
   const startColumn = selectedColumn > 26 ? Math.max(1, selectedColumn - 8) : 1
   const range = `${columnLetter(startColumn)}${startRow}:${columnLetter(Math.min(16384, startColumn + 25))}${Math.min(1048576, startRow + 49)}`
-  const requestKey = JSON.stringify([filePath, activeSheet, range])
+  const requestKey = JSON.stringify([filePath, activeSheet, range, sourceFingerprint])
 
   // Include the sheet in lookup and selection; identical addresses on other sheets are different cells.
   const issueCellMap = useMemo(() => {
@@ -78,11 +82,11 @@ export default function SpreadsheetPreview({
     setTooltip(null)
     async function loadCells(): Promise<void> {
       try {
-        const result = await window.api.getFileCells(filePath, activeSheet, range)
+        const result = await window.api.getFileCells(filePath, activeSheet, range, sourceFingerprint)
         if (cancelled) return
         if (!result.success) {
           setCellData([])
-          setLoadError(t('previewFailed'))
+          setLoadError(t(result.errorCode === 'source-changed' ? 'workspace.sourceChanged' : 'previewFailed'))
           setLoadedKey(requestKey)
           return
         }
@@ -218,6 +222,10 @@ export default function SpreadsheetPreview({
                       key={col}
                       className={getCellClass(col, rowNum)}
                       data-cell={`${col}${rowNum}`}
+                      tabIndex={issueCellMap.has(`${col}${rowNum}`) ? 0 : undefined}
+                      aria-label={issueCellMap.has(`${col}${rowNum}`) ? `${activeSheet} ${col}${rowNum}: ${issueCellMap.get(`${col}${rowNum}`)?.message}` : undefined}
+                      onClick={() => { const issue = issueCellMap.get(`${col}${rowNum}`); if (issue) onSelectIssue?.(issue) }}
+                      onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') { const issue = issueCellMap.get(`${col}${rowNum}`); if (issue) { event.preventDefault(); onSelectIssue?.(issue) } } }}
                       onMouseEnter={(e) => handleCellHover(e, col, rowNum)}
                       onMouseLeave={() => setTooltip(null)}
                     >

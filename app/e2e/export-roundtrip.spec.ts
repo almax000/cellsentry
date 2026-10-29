@@ -16,6 +16,11 @@ async function stubSaveDialog(result: { canceled: boolean; filePath?: string }):
   }, result)
 }
 
+async function openExport(): Promise<void> {
+  if (await page.getByRole('dialog').isVisible()) await page.keyboard.press('Escape')
+  await page.getByTestId('export-btn').click()
+}
+
 async function scanFixture(): Promise<void> {
   await page.evaluate((filePath) => window.__TEST_API__?.triggerFileAnalysis(filePath), COMBINED_FIXTURE)
   await page.waitForFunction(() => window.location.hash === '#/results', { timeout: 30000 })
@@ -41,23 +46,23 @@ test.describe.serial('real export round trips', () => {
   test('exports audit HTML through the visible menu', async () => {
     const output = join(EXPORT_DIR, 'audit.html')
     await stubSaveDialog({ canceled: false, filePath: output })
-    await page.locator('[data-testid="export-btn"]').click()
+    await openExport()
     await page.locator('[data-testid="export-html"]').click()
     await expect(page.locator('.export-feedback[role="status"]')).toContainText(output)
-    expect(readFileSync(output, 'utf8')).toContain('CellSentry Report')
+    expect(readFileSync(output, 'utf8')).toContain('CellSentry spreadsheet review')
   })
 
   test('exports a real PDF and marked workbook through visible menu items', async () => {
     const pdfOutput = join(EXPORT_DIR, 'audit.pdf')
     await stubSaveDialog({ canceled: false, filePath: pdfOutput })
-    await page.locator('[data-testid="export-btn"]').click()
+    await openExport()
     await page.locator('[data-testid="export-pdf"]').click()
     await expect(page.locator('.export-feedback[role="status"]')).toContainText(pdfOutput)
     expect(readFileSync(pdfOutput).subarray(0, 4).toString()).toBe('%PDF')
 
     const xlsxOutput = join(EXPORT_DIR, 'audit.xlsx')
     await stubSaveDialog({ canceled: false, filePath: xlsxOutput })
-    await page.locator('[data-testid="export-btn"]').click()
+    await openExport()
     await page.locator('[data-testid="export-xlsx"]').click()
     await expect(page.locator('.export-feedback[role="status"]')).toContainText(xlsxOutput)
     const workbook = new ExcelJS.Workbook()
@@ -74,30 +79,22 @@ test.describe.serial('real export round trips', () => {
 
   test('surfaces cancellation and write failures without pretending export succeeded', async () => {
     await stubSaveDialog({ canceled: true })
-    await page.locator('[data-testid="export-btn"]').click()
+    await openExport()
     await page.locator('[data-testid="export-html"]').click()
-    await expect(page.locator('.export-feedback[role="status"]')).toHaveCount(0)
+    await expect(page.locator('.export-feedback[role="status"]')).toContainText('Export cancelled')
 
     await stubSaveDialog({ canceled: false, filePath: EXPORT_DIR })
-    await page.locator('[data-testid="export-btn"]').click()
+    await openExport()
     await page.locator('[data-testid="export-html"]').click()
     await expect(page.locator('.export-feedback.error')).toBeVisible()
     await expect(page.locator('.export-feedback.error')).toContainText(/EISDIR|EPERM|EACCES/)
   })
 
-  test('writes a reviewed redacted workbook from audit results', async () => {
-    const output = join(EXPORT_DIR, 'redacted.xlsx')
-    await expect(page.getByTestId('results-protection-tab')).toBeVisible()
-    await page.getByTestId('results-protection-tab').click()
-    await expect(page.getByTestId('pii-redact-btn')).toBeVisible()
-    await stubSaveDialog({ canceled: false, filePath: output })
-    await page.getByTestId('pii-redact-btn').click()
-    await expect(page.getByRole('dialog')).toBeVisible()
-    await page.getByTestId('pii-confirm-redact-btn').click()
-    await expect(page.locator('.pii-export-feedback.success')).toContainText(output)
-    const workbook = new ExcelJS.Workbook()
-    await workbook.xlsx.readFile(output)
-    expect(String(workbook.getWorksheet('Contacts')?.getCell('B2').value)).not.toContain('alice.johnson@example.com')
+  test('offers no PII protection flow in audit results', async () => {
+    await page.keyboard.press('Escape')
+    await expect(page.getByTestId('results-protection-tab')).toHaveCount(0)
+    await expect(page.getByTestId('pii-redact-btn')).toHaveCount(0)
+    await expect(page.getByTestId('audit-workspace')).toBeVisible()
   })
 
   test('keeps batch source identity and displays failed files without stale results', async () => {
@@ -110,11 +107,11 @@ test.describe.serial('real export round trips', () => {
     await page.getByTestId('home-task-audit').click()
     await page.getByTestId('dropzone-batch-btn').click()
     await expect(page.getByTestId('results-batch-tab-1')).toHaveClass(/active/)
-    await expect(page.locator('.file-name')).toContainText('combined-test-data.xlsx')
+    await expect(page.locator('.aw-filetitle h2')).toContainText('combined-test-data.xlsx')
     await page.getByTestId('results-batch-tab-0').click()
     await expect(page.getByRole('alert')).toBeVisible()
     await expect(page.locator('[data-testid^="results-issue-card-"]')).toHaveCount(0)
-    await expect(page.locator('.file-name')).toContainText('broken.xlsx')
+    await expect(page.locator('.aw-filetitle h2')).toContainText('broken.xlsx')
     await page.getByTestId('results-batch-tab-1').click()
     await expect(page.getByRole('alert')).toHaveCount(0)
     await expect(page.locator('[data-testid^="results-issue-card-"]')).not.toHaveCount(0)

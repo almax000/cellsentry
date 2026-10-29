@@ -12,19 +12,17 @@ export default function ScanningPage(): JSX.Element {
   const navigate = useNavigate()
   const {
     scanState, fileInfo, progress, error, stopRetryRequired,
-    scanMode, isBatch, batchFiles, batchIndex, batchResults,
-    results, piiResults, auditError, piiError,
-    enginesComplete,
+    isBatch, batchFiles, batchIndex, batchResults,
+    results, auditError,
     cancelScan,
   } = useScan()
   const [elapsed, setElapsed] = useState(0)
   const startTimeRef = useRef(Date.now())
 
-  // Every workbook scan runs audit plus workbook PII protection.
+  // CellSentry has one workbook audit task.
   const scanLayers = [
     { label: t('ruleEngineScan'), engine: 'audit' as const },
-    { label: t('piiDetection'), engine: 'pii' as const },
-  ].filter((layer) => isBatch || scanMode === 'audit' || layer.engine === scanMode)
+  ]
 
   useEffect(() => {
     startTimeRef.current = Date.now()
@@ -36,7 +34,7 @@ export default function ScanningPage(): JSX.Element {
 
   // Navigate to results as soon as scan completes (first engine delivers results)
   useEffect(() => {
-    if (scanState === 'complete') {
+    if (scanState === 'complete' || (!isBatch && results)) {
       const timer = setTimeout(() => navigate('/results'), 400)
       return () => clearTimeout(timer)
     }
@@ -45,15 +43,12 @@ export default function ScanningPage(): JSX.Element {
       return () => clearTimeout(timer)
     }
     if (scanState === 'idle') navigate('/')
-  }, [scanState, stopRetryRequired, navigate])
+  }, [scanState, stopRetryRequired, navigate, results, isBatch])
 
   function getEngineState(engine: 'audit' | 'pii' | 'extraction'): 'done' | 'error' | 'active' {
     if (engine === 'audit') {
       if (auditError) return 'error'
       if (results) return 'done'
-    } else if (engine === 'pii') {
-      if (piiError) return 'error'
-      if (piiResults) return 'done'
     }
     return 'active'
   }
@@ -192,15 +187,13 @@ export default function ScanningPage(): JSX.Element {
         {progress.auditReview && <AuditReviewProgressNotice review={progress.auditReview} />}
 
         <div className="scan-elapsed" data-testid="scanning-percent">
-          {enginesComplete > 0 && enginesComplete < 2
-            ? t('enginesProgress', { done: enginesComplete, total: 2 })
-            : t('elapsed', { time: (elapsed / 1000).toFixed(1) })}
+          {t('elapsed', { time: (elapsed / 1000).toFixed(1) })}
         </div>
         <button className="btn btn-ghost" type="button" onClick={() => void cancelScan()} disabled={scanState === 'cancelling'} data-testid="scan-cancel">{scanState === 'cancelling' ? t('cancelling') : stopRetryRequired ? t('retryStop') : t('cancel')}</button>
 
-        {scanState === 'error' && (error || auditError || piiError) && (
+        {scanState === 'error' && (error || auditError) && (
           <div style={{ marginTop: 16, padding: '8px 12px', background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 6, color: '#991b1b', fontSize: 12, maxWidth: 400, overflowWrap: 'anywhere' }}>
-            {error || [auditError, piiError].filter(Boolean).join(' | ')}
+            {error || auditError}
           </div>
         )}
       </div>

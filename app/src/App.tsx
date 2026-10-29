@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import { ThemeProvider } from './hooks/useTheme'
 import { SidecarProvider } from './hooks/useSidecar'
 import { ScanProvider } from './context/ScanContext'
+import { AuditWorkspaceProvider } from './context/AuditWorkspaceContext'
 import ErrorBoundary from './components/ErrorBoundary'
 import Layout from './components/Layout'
 import HomePage from './components/HomePage'
@@ -39,6 +40,7 @@ export default function App(): JSX.Element {
       <ThemeProvider>
         <SidecarProvider>
           <ScanProvider>
+            <AuditWorkspaceProvider>
             <Routes>
               <Route element={<Layout />}>
                 <Route path="/" element={<HomePage />} />
@@ -48,6 +50,7 @@ export default function App(): JSX.Element {
                 <Route path="/settings" element={<SettingsPage />} />
               </Route>
             </Routes>
+            </AuditWorkspaceProvider>
           </ScanProvider>
         </SidecarProvider>
       </ThemeProvider>

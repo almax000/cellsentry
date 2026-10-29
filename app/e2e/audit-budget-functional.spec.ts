@@ -36,7 +36,6 @@ for (const language of ['en', 'zh'] as const) {
               confidence: 0.7, formula: '=1', message: 'Controlled UI fixture',
               ...(index < 18 ? { llmVerified: true } : {}),
             }))
-            event.sender.send('analyze:engine-done', { scanId, engine: 'pii', result: { success: true, findings: [] } })
             event.sender.send('analyze:engine-done', { scanId, engine: 'audit', result: {
               issues, auditReview: { total: 80, selected: 20, attempted: 20, reviewed: 18, failed: 2, skipped: 60, stopReason: 'candidate-limit' },
             } })
@@ -92,4 +91,32 @@ test('a failed stop retains the scan identity and the visible retry action', asy
     await retry.click()
     await expect(ctx.page.getByTestId('home-page')).toBeVisible()
   } finally { await teardownApp(ctx) }
+})
+
+test('rule findings can be reviewed before AI finishes and survive stopping it', async () => {
+  const ctx=await launchApp()
+  try {
+    await prepare(ctx,'en')
+    await ctx.app.evaluate(({BrowserWindow,ipcMain})=>{
+      BrowserWindow.getAllWindows()[0].setSize(1440,900)
+      let settle: ((value: unknown)=>void) | undefined
+      ipcMain.removeHandler('analyze:all')
+      ipcMain.handle('analyze:all',(event,_file,scanId)=>new Promise(resolve=>{
+        settle=resolve
+        event.sender.send('analyze:engine-done',{scanId,engine:'audit',stage:'rules',result:{sourceFingerprint:'controlled-rule-stage',issues:[{ruleId:'CONTROLLED_RULE_STAGE',cell:'A1',sheet:'Invoice Audit',severity:'warning',confidence:0.7,formula:'=1',message:'Controlled rule evidence'}]}})
+      }))
+      ipcMain.removeHandler('analyze:cancel')
+      ipcMain.handle('analyze:cancel',()=>{settle?.({success:false,error:'Analysis cancelled'});return {success:true}})
+    })
+    await ctx.page.getByTestId('dropzone-browse-btn').click()
+    await expect(ctx.page.getByTestId('audit-workspace')).toBeVisible()
+    await expect(ctx.page.getByTestId('workspace-cancel')).toBeVisible()
+    await ctx.page.getByRole('radio',{name:'Confirmed issue',exact:true}).check()
+    await ctx.page.getByTestId('review-note').fill('Review completed while AI is pending.')
+    await ctx.page.getByTestId('workspace-cancel').click()
+    await expect(ctx.page.getByTestId('workspace-cancel')).toHaveCount(0)
+    await expect(ctx.page.locator('.aw-issue')).toHaveCount(1)
+    await expect(ctx.page.getByRole('radio',{name:'Confirmed issue',exact:true})).toBeChecked()
+    await expect(ctx.page.getByTestId('review-note')).toHaveValue('Review completed while AI is pending.')
+  } finally {await teardownApp(ctx)}
 })

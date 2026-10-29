@@ -78,6 +78,7 @@ function confidenceToSeverity(c: ConfidenceLevel): 'error' | 'warning' | 'info' 
 }
 
 function mapToRendererIssue(issue: EngineIssue, index: number, context?: SheetContext): RendererIssue {
+  const sourceCell = issue.cellAddress ? context?.cells[issue.cellAddress] : undefined
   return {
     id: `issue-${index}`,
     ruleId: issue.ruleId,
@@ -90,7 +91,7 @@ function mapToRendererIssue(issue: EngineIssue, index: number, context?: SheetCo
     layer: 'rule',
     suggestion: issue.suggestion,
     confidence: confidenceToNumber(issue.confidence),
-    currentValue: issue.currentValue,
+    currentValue: sourceCell ? sourceCell.value : issue.currentValue,
     expectedValue: issue.expectedValue,
     correctFormula: issue.correctFormula,
     ...(context ? { context: buildAuditEvidence(issue, context) } : {}),

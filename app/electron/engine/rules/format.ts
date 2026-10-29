@@ -8,9 +8,12 @@
 
 import {
   BaseRule,
+  CellInfo,
   ConfidenceLevel,
   IssueType,
+  SheetContext,
   createIssue,
+  getCellByRC,
   isFormula,
   isNumeric,
 } from '../types'
@@ -130,6 +133,34 @@ export const PercentageFormatRule: BaseRule = {
 // ── UnitConsistencyRule ──────────────────────────────────────────────
 
 const MAGNITUDE_THRESHOLD = 100
+const INLINE_UNIT_HEADERS = new Set([
+  'unit', 'units', 'uom', 'currency', 'currencies', 'currency code', 'unit of measure',
+  '单位', '币种', '计量单位', '计量', '度量单位', '金额单位',
+])
+
+function isInlineUnitHeader(value: unknown): boolean {
+  const normalized = String(value ?? '').trim().replace(/\s+/g, ' ').toLowerCase()
+  return INLINE_UNIT_HEADERS.has(normalized)
+}
+
+/**
+ * A directly adjacent text cell is unit evidence only when its column header
+ * explicitly says it holds units or currencies. This lets a dashboard keep
+ * USD, %, people and days in one value column without treating a neighbouring
+ * customer/category field as a guessed unit declaration.
+ */
+function inlineUnit(context: SheetContext, cell: CellInfo): string | null {
+  if (!isInlineUnitHeader(context.headers[cell.column + 1])) return null
+  const right = getCellByRC(context, cell.row, cell.column + 1)
+  if (!right || right.formula || right.dataType !== 'text') return null
+  const value = String(right.value ?? '').trim().toLowerCase()
+  if (!value || value.length > 24) return null
+  return value
+}
+
+function hasInlineUnitColumn(context: SheetContext, cell: CellInfo): boolean {
+  return isInlineUnitHeader(context.headers[cell.column + 1])
+}
 
 export const UnitConsistencyRule: BaseRule = {
   ruleId: 'UNIT_INCONSISTENCY',
@@ -145,14 +176,23 @@ export const UnitConsistencyRule: BaseRule = {
     const cellValue = cell.value as number
     if (cellValue === 0) return null
 
-    // Collect other numeric values in the same column
-    const colValues: number[] = []
+    // Collect numeric values in the same column. A table with an explicitly
+    // named adjacent unit column compares only opaque matching unit labels (or
+    // the same absence of one). Without that header-level evidence retain the
+    // legacy column rule instead of guessing from nearby category text.
+    const columnCells = [] as Array<{ value: number; unit: string | null }>
     for (const otherCell of Object.values(context.cells)) {
       if (otherCell.column === cell.column && isNumeric(otherCell)) {
         const v = otherCell.value as number
-        if (v && v !== 0) colValues.push(Math.abs(v))
+        if (v && v !== 0) columnCells.push({ value: Math.abs(v), unit: inlineUnit(context, otherCell) })
       }
     }
+
+    const targetUnit = inlineUnit(context, cell)
+    const comparable = hasInlineUnitColumn(context, cell)
+      ? columnCells.filter((candidate) => candidate.unit === targetUnit)
+      : columnCells
+    const colValues = comparable.map((candidate) => candidate.value)
 
     if (colValues.length < 3) return null
 

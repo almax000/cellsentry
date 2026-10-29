@@ -1,3 +1,8 @@
+.main-header .header-actions > .btn-ghost,
+.main-header .export-wrapper > .btn-ghost { color:var(--chrome-text-secondary); border-color:var(--chrome-border); }
+.main-header .header-actions > .btn-ghost:hover,
+.main-header .export-wrapper > .btn-ghost:hover { color:var(--chrome-text); background:var(--chrome-bg-hover); }
+
 .main-header {
   padding: 12px 20px;
   display: flex;

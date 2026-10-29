@@ -1,9 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 const dependencies = vi.hoisted(() => ({
   handlers: new Map<string, (...args: any[]) => Promise<any>>(),
-  read: vi.fn(), audit: vi.fn(), auditSheets: vi.fn(), pii: vi.fn(), extract: vi.fn(), llm: vi.fn(), stop: vi.fn(), ready: vi.fn(),
+  read: vi.fn(), bytes: vi.fn(), audit: vi.fn(), auditSheets: vi.fn(), pii: vi.fn(), extract: vi.fn(), llm: vi.fn(), stop: vi.fn(), ready: vi.fn(),
 }))
 vi.mock('electron', () => ({ ipcMain: { handle: (name: string, handler: (...args: any[]) => Promise<any>) => dependencies.handlers.set(name, handler) } }))
+vi.mock('fs/promises', () => ({ readFile: dependencies.bytes }))
 vi.mock('../electron/engine/excelReader', () => ({ readWorkbook: dependencies.read }))
 vi.mock('../electron/engine/ruleEngine', () => ({ analyzeExcel: dependencies.audit, analyzeExcelFromSheets: dependencies.auditSheets }))
 vi.mock('../electron/pii/scanner', () => ({ scanForPiiFromSheets: dependencies.pii }))
@@ -26,6 +27,7 @@ beforeEach(() => {
   dependencies.stop.mockResolvedValue(undefined)
   dependencies.ready.mockReturnValue(true)
   dependencies.read.mockResolvedValue({ sheets: [] })
+  dependencies.bytes.mockResolvedValue(Buffer.from('fixture'))
   dependencies.audit.mockResolvedValue(emptyAudit)
   dependencies.auditSheets.mockResolvedValue(emptyAudit)
   dependencies.pii.mockResolvedValue({ success: true, findings: [] })
@@ -39,19 +41,19 @@ describe('auditable bounded review integration', () => {
     expect(dependencies.handlers.has('extraction:analyze')).toBe(false)
   })
 
-  it('runs only the audit and workbook-PII engines for a unified spreadsheet analysis', async () => {
+  it('runs only the audit engine for a spreadsheet analysis', async () => {
     const owner = sender()
 
     expect((await invoke('analyze:all', { sender: owner }, '/fixture.xlsx', 'spreadsheet-only')).success).toBe(true)
 
     expect(dependencies.auditSheets).toHaveBeenCalledOnce()
-    expect(dependencies.pii).toHaveBeenCalledOnce()
+    expect(dependencies.pii).not.toHaveBeenCalled()
     expect(dependencies.extract).not.toHaveBeenCalled()
     const engines = owner.send.mock.calls
       .filter(([channel]) => channel === 'analyze:engine-done')
       .map(([, event]) => event.engine)
       .sort()
-    expect(engines).toEqual(['audit', 'pii'])
+    expect(engines).toEqual(['audit'])
   })
 
   it('passes evidence in stable severity order and preserves reviewed and unreviewed findings', async () => {
@@ -73,13 +75,43 @@ describe('auditable bounded review integration', () => {
       })) }
     })
     expect((await invoke('analyze:all', { sender: owner }, '/fixture.xlsx', 'scan-partial')).success).toBe(true)
-    const result = owner.send.mock.calls.find(([channel, event]) => channel === 'analyze:engine-done' && event.engine === 'audit')![1].result
+    const auditEvents = owner.send.mock.calls.filter(([channel, event]) => channel === 'analyze:engine-done' && event.engine === 'audit')
+    expect(auditEvents.map(([, event]) => event.stage)).toEqual(['rules', 'complete'])
+    const result = auditEvents.at(-1)![1].result
     expect(result.issues).toHaveLength(3)
     expect(result.issues[0].llmVerified).toBeUndefined()
     expect(result.issues[1].llmDisputed).toBe(true)
     expect(result.issues[2].llmVerified).toBe(true)
     expect(result.auditReview).toMatchObject({ reviewed: 2, failed: 1, total: 3 })
     expect(owner.send).toHaveBeenCalledWith('sidecar:scan-progress', expect.objectContaining({ scanId: 'scan-partial', auditReview: expect.objectContaining({ reviewed: 2 }) }))
+  })
+
+  it('sends rule findings before optional AI enrichment and retains their identities', async () => {
+    const owner = sender()
+    const review = deferred<any>()
+    const issues = [{ ruleId: 'r', cell: 'A1', sheet: 'S', severity: 'error', confidence: 1, formula: '=1' }]
+    dependencies.auditSheets.mockResolvedValue({ ...emptyAudit, issues })
+    dependencies.llm.mockReturnValueOnce(review.promise)
+    const pending = invoke('analyze:all', { sender: owner }, '/fixture.xlsx', 'progressive')
+    await vi.waitFor(() => expect(owner.send).toHaveBeenCalledWith('analyze:engine-done', expect.objectContaining({ scanId: 'progressive', stage: 'rules' })))
+    const rules = owner.send.mock.calls.find(([channel, event]) => channel === 'analyze:engine-done' && event.stage === 'rules')![1].result
+    expect(rules.issues).toEqual(issues)
+    review.resolve({ judgments: [], summary: { total: 1, selected: 1, attempted: 1, reviewed: 0, failed: 1, skipped: 0, stopReason: 'complete' } })
+    expect((await pending).success).toBe(true)
+    const events = owner.send.mock.calls.filter(([channel]) => channel === 'analyze:engine-done')
+    expect(events).toHaveLength(2)
+    expect(events[1][1]).toMatchObject({ stage: 'complete', result: expect.objectContaining({ issues: expect.arrayContaining([expect.objectContaining({ ruleId: 'r', cell: 'A1' })]) }) })
+  })
+
+  it('invalidates all results when the workbook bytes change while scanning', async () => {
+    const owner = sender()
+    dependencies.bytes.mockResolvedValueOnce(Buffer.from('before')).mockResolvedValueOnce(Buffer.from('after'))
+
+    const response = await invoke('analyze:all', { sender: owner }, '/fixture.xlsx', 'changed')
+
+    expect(response.success).toBe(false)
+    expect(dependencies.auditSheets).not.toHaveBeenCalled()
+    expect(owner.send).toHaveBeenCalledWith('analyze:engine-done', expect.objectContaining({ scanId: 'changed', invalidate: true }))
   })
 
   it('locks the session after a failed deadline stop until explicit Cancel succeeds', async () => {
@@ -104,7 +136,7 @@ describe('audit when local AI cannot run', () => {
     const response = await invoke(channel, { sender: owner }, '/fixture.xlsx', scanId)
     expect(response.success).toBe(true)
     if (channel === 'sidecar:analyze') return response
-    return owner.send.mock.calls.find(([name, event]) => name === 'analyze:engine-done' && event.engine === 'audit')![1].result
+    return owner.send.mock.calls.filter(([name, event]) => name === 'analyze:engine-done' && event.engine === 'audit').at(-1)![1].result
   }
 
   for (const channel of ['analyze:all', 'sidecar:analyze']) {
@@ -156,7 +188,7 @@ describe('analysis cancellation through registered IPC handlers', () => {
       expect(owner.send).not.toHaveBeenCalledWith('analyze:engine-done', expect.anything())
     })
   }
-  it('does not emit an audit result after cancellation during model inference', async () => {
+  it('retains the rule-stage result but suppresses the final AI update after cancellation', async () => {
     const owner = sender()
     const inference = deferred<any[]>()
     dependencies.auditSheets.mockResolvedValue({ ...emptyAudit, issues: [{ ruleId: 'r', cell: 'A1', sheet: 'S', confidence: 1 }] })
@@ -170,7 +202,8 @@ describe('analysis cancellation through registered IPC handlers', () => {
     await pending
     await cancellation
     const audits = owner.send.mock.calls.filter(([channel, data]) => channel === 'analyze:engine-done' && data.engine === 'audit')
-    expect(audits).toHaveLength(0)
+    expect(audits).toHaveLength(1)
+    expect(audits[0][1]).toMatchObject({ stage: 'rules' })
     expect((await invoke('analyze:all', { sender: owner }, '/fixture.xlsx', 'scan-next')).success).toBe(true)
   })
   it('prevents a scan or second model mutation while model files are being replaced', async () => {

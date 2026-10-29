@@ -5,10 +5,6 @@ import type {
   AnalysisResult,
   AnalysisSummary,
   ActiveView,
-  PiiResult,
-  PiiFinding,
-  PiiSummary,
-  PiiType,
   FileInfo,
   Issue,
   ScanPhase,
@@ -30,17 +26,14 @@ interface ScanContextState {
   filePath: string
   fileInfo: FileInfo | null
   progress: ScanProgress
-  // Per-engine results (populated progressively)
+  // Audit results arrive once after rules and again when optional AI review ends.
   results: AnalysisResult | null
-  piiResults: PiiResult | null
-  // Per-engine errors
   auditError: string | null
-  piiError: string | null
   error: string
   stopRetryRequired: boolean
   enginesComplete: number
   activeScanId: string | null
-  completedEngines: Partial<Record<'audit' | 'pii', true>>
+  completedEngines: Partial<Record<'audit', true>>
   // Batch scan state
   batchState: BatchState
   batchFiles: QueuedFile[]
@@ -61,9 +54,7 @@ const initialState: ScanContextState = {
   fileInfo: null,
   progress: { phase: 'rules', percent: 0, message: '' },
   results: null,
-  piiResults: null,
   auditError: null,
-  piiError: null,
   error: '',
   stopRetryRequired: false,
   enginesComplete: 0,
@@ -83,9 +74,8 @@ const initialState: ScanContextState = {
 type ScanAction =
   | { type: 'START_SCAN'; filePath: string; fileInfo: FileInfo; scanId: string }
   | { type: 'UPDATE_PROGRESS'; progress: ScanProgress; scanId?: string }
-  | { type: 'ENGINE_DONE'; scanId: string; engine: 'audit' | 'pii'; result?: unknown; error?: string }
+  | { type: 'ENGINE_DONE'; scanId: string; engine: 'audit'; result?: unknown; error?: string; stage?: 'rules' | 'complete'; invalidate?: boolean }
   | { type: 'SCAN_COMPLETE'; results: AnalysisResult }
-  | { type: 'PII_COMPLETE'; results: PiiResult }
   | { type: 'SCAN_ERROR'; error: string; stopRetryRequired?: boolean }
   | { type: 'CANCEL_SCAN' }
   | { type: 'CANCEL_REQUEST' }
@@ -127,6 +117,9 @@ function mapRawResult(filePath: string, fileName: string, rawResult: Record<stri
       suggestion: (ri.suggestion as string) || '',
       category: (ri.category as string) || '',
       layer: (ri.layer as 'rule' | 'ai') || 'rule',
+      ...(Object.prototype.hasOwnProperty.call(ri, 'currentValue') && { currentValue: ri.currentValue }),
+      ...(Object.prototype.hasOwnProperty.call(ri, 'expectedValue') && { expectedValue: ri.expectedValue }),
+      ...(Object.prototype.hasOwnProperty.call(ri, 'correctFormula') && { correctFormula: ri.correctFormula as string | null }),
       ...(ri.llmVerified !== undefined && { llmVerified: ri.llmVerified as boolean }),
       ...(ri.llmDisputed !== undefined && { llmDisputed: ri.llmDisputed as boolean }),
       ...(ri.llmReviewRequired === true && { llmReviewRequired: true }),
@@ -151,43 +144,11 @@ function mapRawResult(filePath: string, fileName: string, rawResult: Record<stri
     scannedAt: (rawResult.scannedAt as string) || new Date().toISOString(),
     duration: (rawResult.duration as number) || 0,
     aiWarning: typeof rawResult.aiWarning === 'string' ? rawResult.aiWarning : undefined,
+    sourceFingerprint: typeof rawResult.sourceFingerprint === 'string' ? rawResult.sourceFingerprint : undefined,
     auditReview: (() => {
       const review = readAuditReviewSummary(rawResult.auditReview)
       return review?.total === issues.length ? review : undefined
     })(),
-  }
-}
-
-// ── Map PII raw result ──
-
-function mapPiiResult(filePath: string, fileName: string, raw: Record<string, unknown>): PiiResult {
-  const findings: PiiFinding[] = ((raw.findings as Record<string, unknown>[]) || []).map(
-    (rf, idx) => ({
-      id: `pii-${idx}`,
-      sheetName: (rf.sheet_name as string) || 'Sheet1',
-      cell: (rf.cell as string) || 'A1',
-      piiType: (rf.pii_type as PiiType) || 'email',
-      originalValue: (rf.original_value as string) || '',
-      maskedValue: (rf.masked_value as string) || '',
-      confidence: (rf.confidence as number) || 0.9,
-      pattern: (rf.pattern as string) || '',
-    })
-  )
-
-  const byType = {} as Record<PiiType, number>
-  for (const f of findings) {
-    byType[f.piiType] = (byType[f.piiType] || 0) + 1
-  }
-
-  return {
-    success: true,
-    filePath,
-    fileName,
-    findings,
-    summary: { total: findings.length, byType },
-    scannedAt: (raw.scannedAt as string) || new Date().toISOString(),
-    duration: (raw.duration as number) || 0,
-    aiWarning: typeof raw.aiWarning === 'string' ? raw.aiWarning : undefined,
   }
 }
 
@@ -219,61 +180,40 @@ export function scanReducer(state: ScanContextState, action: ScanAction): ScanCo
       return { ...state, progress: action.progress }
 
     case 'ENGINE_DONE': {
-      if (state.scanState !== 'scanning' || action.scanId !== state.activeScanId || state.completedEngines[action.engine]) return state
-      const newCount = state.enginesComplete + 1
-      const completedEngines = { ...state.completedEngines, [action.engine]: true }
-      let newResults = state.results
-      let newPiiResults = state.piiResults
-      let newAuditError = state.auditError
-      let newPiiError = state.piiError
-
+      if ((state.scanState !== 'scanning' && state.scanState !== 'complete') || action.scanId !== state.activeScanId) return state
+      if (state.completedEngines.audit && action.stage !== 'rules') return state
+      if (action.stage === 'rules' && state.results) return state
+      if (action.invalidate) {
+        return { ...state, results: null, auditError: action.error || 'Workbook changed during analysis', scanState: 'error', error: action.error || 'Workbook changed during analysis', activeScanId: null, completedEngines: {}, enginesComplete: 0 }
+      }
       if (action.error) {
-        if (action.engine === 'audit') newAuditError = action.error
-        else if (action.engine === 'pii') newPiiError = action.error
-      } else if (action.result) {
-        const raw = action.result as Record<string, unknown>
-        if (action.engine === 'audit') {
-          newResults = mapRawResult(state.filePath, state.fileInfo?.fileName || '', raw)
-        } else if (action.engine === 'pii') {
-          newPiiResults = mapPiiResult(state.filePath, state.fileInfo?.fileName || '', raw)
-        }
+        return { ...state, auditError: action.error, scanState: state.results ? 'complete' : 'error', error: state.results ? state.error : action.error }
       }
-
-      const hasAnyResult = newResults || newPiiResults
-      const allDone = newCount >= 2
-      let newScanState: ScanState = state.scanState
-      let newError = state.error
-
-      if (allDone && hasAnyResult && state.scanState === 'scanning') {
-        newScanState = 'complete'
-      } else if (allDone && !hasAnyResult && state.scanState === 'scanning') {
-        newScanState = 'error'
-        newError = [newAuditError, newPiiError].filter(Boolean).join(' | ')
-      }
-
+      if (!action.result) return state
+      const newResults = mapRawResult(state.filePath, state.fileInfo?.fileName || '', action.result as Record<string, unknown>)
+      const complete = action.stage !== 'rules'
       return {
         ...state,
-        enginesComplete: newCount,
-        completedEngines,
         results: newResults,
-        piiResults: newPiiResults,
-        auditError: newAuditError,
-        piiError: newPiiError,
-        scanState: newScanState,
-        error: newError,
+        auditError: null,
+        scanState: complete ? 'complete' : 'scanning',
+        enginesComplete: complete ? 1 : 0,
+        completedEngines: complete ? { audit: true } : {},
       }
     }
 
     // Legacy single-engine completions (used by batch mode + test triggers)
     case 'SCAN_COMPLETE':
       return { ...state, scanState: 'complete', results: action.results }
-    case 'PII_COMPLETE':
-      return { ...state, scanState: 'complete', piiResults: action.results }
 
     case 'SCAN_ERROR':
       return { ...state, scanState: 'error', error: action.error, stopRetryRequired: action.stopRetryRequired ?? false, errorSeq: state.errorSeq + 1 }
     case 'CANCEL_SCAN':
-      return { ...initialState, ...counters(state), error: 'Analysis cancelled' }
+      // A cancellation during optional AI review retains the independently
+      // completed rule evidence; it never turns the workbook into “all clear”.
+      return state.results
+        ? { ...state, scanState: 'complete', activeScanId: null, completedEngines: { audit: true }, enginesComplete: 1, error: '' }
+        : { ...initialState, ...counters(state), error: 'Analysis cancelled' }
     case 'CANCEL_REQUEST':
       return state.scanState === 'scanning' || state.stopRetryRequired ? { ...state, scanState: 'cancelling' } : state
     case 'SET_VIEW':
@@ -485,19 +425,23 @@ export function ScanProvider({ children }: { children: ReactNode }): JSX.Element
     if (!window.api?.onEngineDone) return
 
     const unsubscribe = window.api.onEngineDone((data) => {
+      if (data.engine !== 'audit') return
       dispatch({
         type: 'ENGINE_DONE',
         scanId: (data as unknown as { scanId: string }).scanId,
-        engine: data.engine as 'audit' | 'pii',
+        engine: 'audit',
         result: data.result,
         error: data.error,
+        stage: (data as unknown as { stage?: 'rules' | 'complete' }).stage,
+        invalidate: (data as unknown as { invalidate?: boolean }).invalidate,
       })
     })
 
     return unsubscribe
   }, [])
 
-  // A workbook scan runs the audit and workbook PII protection engines together.
+  // A workbook scan runs the formula audit; optional local AI only enriches
+  // those same rule findings.
   const startScan = useCallback(async (filePath: string) => {
     if (!window.api) {
       dispatch({ type: 'SCAN_ERROR', error: 'Sidecar not available' })
@@ -540,7 +484,7 @@ export function ScanProvider({ children }: { children: ReactNode }): JSX.Element
         retainForStopRetry = response.errorCode === 'model-stop-failed'
         dispatch({ type: 'SCAN_ERROR', error: retainForStopRetry ? i18n.t('scanning:aiReviewStopFailed') : response.error || 'Analysis failed', stopRetryRequired: retainForStopRetry })
       }
-      // Audit and workbook PII results arrive through onEngineDone.
+      // Rule results and any later AI enrichment arrive through onEngineDone.
     } catch (err) {
       if (activeScanIdRef.current !== scanId || retainedStopScanIdRef.current === scanId) return
       dispatch({

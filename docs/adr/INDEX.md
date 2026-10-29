@@ -25,6 +25,7 @@
 | [0018](./0018-redact-medical-staff-names-by-default.md) | 明确医护角色下的姓名默认替换 | Accepted | 2026-10-23 | — |
 
 | [0019](./0019-split-vibli-from-spreadsheet-audit.md) | CellSentry 聚焦表格审计，Vibli 独立承接 PII | Accepted | 2026-10-24 | — |
+| [0020](./0020-focus-desktop-launch-on-formula-review.md) | 桌面首发聚焦公式复核，移出工作簿 PII | Accepted | 2026-10-29 | — |
 
 ## 旧的决策记录
 

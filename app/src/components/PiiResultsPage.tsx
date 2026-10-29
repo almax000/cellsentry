@@ -2,7 +2,7 @@ import { useState, useCallback, useRef, useMemo, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useScan } from '../context/ScanContext'
-import type { Issue, PiiFinding, PiiType } from '../types'
+import type { Issue, PiiFinding, PiiType, PiiResult } from '../types'
 import { FileSpreadsheetIcon, ShieldCheckIcon } from './icons'
 import { formatDuration } from '../utils/format'
 import { TASKS } from '../tasks'
@@ -24,11 +24,12 @@ const PII_TYPE_COLORS: Record<PiiType, string> = {
   passport: '#d946ef',
 }
 
-export default function PiiResultsPage(): JSX.Element {
+// Retained only as a Vibli migration reference; CellSentry mounts no PII route.
+export default function PiiResultsPage({ piiResults }: { piiResults: PiiResult | null }): JSX.Element {
   const { t, i18n } = useTranslation('pii')
   const { t: tc } = useTranslation('common')
   const navigate = useNavigate()
-  const { piiResults, fileInfo, reset } = useScan()
+  const { fileInfo, reset } = useScan()
 
   const findings = piiResults?.findings || []
 

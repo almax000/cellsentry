@@ -26,9 +26,13 @@ export interface ModelStatus {
 }
 export interface EngineDoneEvent {
   scanId: string
-  engine: 'audit' | 'pii'
+  engine: 'audit'
   result?: unknown
   error?: string
+  /** Rules arrive before optional AI review; complete retains the same findings with review fields. */
+  stage?: 'rules' | 'complete'
+  /** The source bytes changed after rules arrived, so the renderer must discard them. */
+  invalidate?: boolean
 }
 
 
@@ -48,7 +52,7 @@ export interface SidecarAPI {
   analyzeFile: (filePath: string, scanId: string) => Promise<AnalysisResult>
   getFileInfo: (filePath: string) => Promise<FileInfo>
   onScanProgress: (callback: (progress: ScanProgress) => void) => () => void
-  getFileCells: (filePath: string, sheet: string, range: string) => Promise<FileCellsResult>
+  getFileCells: (filePath: string, sheet: string, range: string, sourceFingerprint?: string) => Promise<FileCellsResult>
   generateReport: (data: { issues: unknown[]; fileName: string }) => Promise<string>
   openFileDialog: () => Promise<string | null>
   openFilesDialog: () => Promise<string[] | null>
@@ -113,9 +117,11 @@ export interface AnalysisResult {
   errorCode?: 'model-stop-failed'
   aiWarning?: string
   auditReview?: import('./auditReview').AuditReviewSummary
+  sourceFingerprint?: string
 }
 
 export interface FileCellsResult {
+  errorCode?: 'source-changed'
   success: boolean
   columns?: string[]
   rows?: { value: string; formula: string }[][]

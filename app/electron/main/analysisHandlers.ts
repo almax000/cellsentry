@@ -1,15 +1,17 @@
 import { ipcMain, type WebContents } from 'electron'
+import { createHash } from 'crypto'
+import { readFile } from 'fs/promises'
 import { normalize } from 'path'
 
 import { analyzeExcel, analyzeExcelFromSheets } from '../engine/ruleEngine'
 import { readWorkbook } from '../engine/excelReader'
-import { scanForPiiFromSheets } from '../pii/scanner'
 import { reviewAuditIssues, AuditReviewStopError, cancelLlmAnalysis, isLocalAiReadyFor, mergeJudgments } from '../llm/lifecycle'
 import type { AuditReviewProgress } from '../../shared/auditReview'
 import { AnalysisSessionManager, type AnalysisSession } from './analysisSession'
 import { mapToLlmInput, orderAuditIssuesBySeverity } from './auditInput'
 
-type EngineName = 'audit' | 'pii'
+type EngineName = 'audit'
+type AuditStage = 'rules' | 'complete'
 const sessions = new AnalysisSessionManager(cancelLlmAnalysis)
 let modelMaintenance = false
 export async function withModelMaintenance<T>(work: () => Promise<T>): Promise<T> {
@@ -40,9 +42,21 @@ function sendEngineDone(
   sender: WebContents,
   scanId: string,
   engine: EngineName,
-  payload: { result?: unknown; error?: string },
+  payload: { result?: unknown; error?: string; stage?: AuditStage; invalidate?: boolean },
 ): void {
   if (!sender.isDestroyed()) sender.send('analyze:engine-done', { scanId, engine, ...payload })
+}
+
+class SourceChangedError extends Error {
+  constructor() { super('The workbook changed while it was being analyzed. Please scan it again.') }
+}
+
+async function fingerprint(filePath: string): Promise<string> {
+  return createHash('sha256').update(await readFile(filePath)).digest('hex')
+}
+
+async function ensureSameSource(filePath: string, expected: string): Promise<void> {
+  if (await fingerprint(filePath) !== expected) throw new SourceChangedError()
 }
 
 function sendProgress(sender: WebContents, scanId: string, progress: AuditReviewProgress): void {
@@ -52,7 +66,7 @@ function sendProgress(sender: WebContents, scanId: string, progress: AuditReview
   })
 }
 
-async function enrichAudit(result: Awaited<ReturnType<typeof analyzeExcelFromSheets>>, scan: AnalysisSession, sender: WebContents) {
+async function enrichAudit(result: Awaited<ReturnType<typeof analyzeExcelFromSheets>> & { sourceFingerprint?: string }, scan: AnalysisSession, sender: WebContents) {
   if (result.issues.length === 0) return result
   // No installed model that reviews formulas: AI is not part of this scan. Return the
   // deterministic audit as-is, without review accounting, warning or AI progress.
@@ -83,6 +97,33 @@ async function enrichAudit(result: Awaited<ReturnType<typeof analyzeExcelFromShe
   }
 }
 
+async function analyzeWorkbookProgressively(
+  filePath: string,
+  scan: AnalysisSession,
+  sender: WebContents,
+): Promise<void> {
+  const sourceFingerprint = await fingerprint(filePath)
+  const { sheets } = await readWorkbook(filePath)
+  if (!isActive(scan)) return
+  await ensureSameSource(filePath, sourceFingerprint)
+
+  const audit = await analyzeExcelFromSheets(sheets)
+  if (!isActive(scan)) return
+  await ensureSameSource(filePath, sourceFingerprint)
+  const rules = { ...audit, sourceFingerprint }
+
+  // Rules are independently useful and must remain visible while optional local
+  // AI review runs. The later event retains the same rule findings and only adds
+  // review fields; it never substitutes an AI-only list.
+  const reviewWillRun = rules.issues.length > 0 && isLocalAiReadyFor('audit')
+  if (reviewWillRun) sendEngineDone(sender, scan.scanId, 'audit', { result: rules, stage: 'rules' })
+
+  const enriched = reviewWillRun ? await enrichAudit(rules, scan, sender) : rules
+  if (!isActive(scan)) return
+  await ensureSameSource(filePath, sourceFingerprint)
+  sendEngineDone(sender, scan.scanId, 'audit', { result: enriched, stage: 'complete' })
+}
+
 /** Register the audit and unified analysis IPC endpoints. */
 export function registerAnalysisHandlers(): void {
   ipcMain.handle('analyze:cancel', async (event, scanId: unknown) => {
@@ -97,10 +138,13 @@ export function registerAnalysisHandlers(): void {
     const scan = startSession(event.sender, scanId)
     if (!scan) return { success: false, error: hasActiveAnalysis() ? 'Another analysis is active' : 'Missing scan identity' }
     try {
+      const sourceFingerprint = await fingerprint(filePath)
       const result = await analyzeExcel(filePath)
       if (!isActive(scan)) return { success: false, error: 'Analysis cancelled' }
-      const enriched = await enrichAudit(result, scan, event.sender)
-      return isActive(scan) ? { success: true, ...enriched } : inactiveResult(scan)
+      await ensureSameSource(filePath, sourceFingerprint)
+      const enriched = await enrichAudit({ ...result, sourceFingerprint }, scan, event.sender)
+      await ensureSameSource(filePath, sourceFingerprint)
+      return isActive(scan) ? { success: true, ...enriched, sourceFingerprint } : inactiveResult(scan)
     } catch (error) {
       return {
         ...(scan.stopFailed ? inactiveResult(scan) : {}),
@@ -120,26 +164,13 @@ export function registerAnalysisHandlers(): void {
     const scan = startSession(event.sender, scanId)
     if (!scan) return { success: false, error: hasActiveAnalysis() ? 'Another analysis is active' : 'Invalid analysis request' }
     try {
-      const { sheets } = await readWorkbook(filePath)
-      if (!isActive(scan)) return { success: false, error: 'Analysis cancelled' }
-      const sender = event.sender
-
-      const audit = analyzeExcelFromSheets(sheets)
-        .then((result) => isActive(scan) ? enrichAudit(result, scan, sender) : null)
-        .then((result) => { if (result && isActive(scan)) sendEngineDone(sender, scanId, 'audit', { result }) })
-        .catch((error) => { if (isActive(scan)) sendEngineDone(sender, scanId, 'audit', { error: String(error) }) })
-
-      const pii = scanForPiiFromSheets(sheets)
-        .then((result) => {
-          if (!isActive(scan)) return
-          if (!result.success) throw new Error(result.error || 'PII analysis failed')
-          sendEngineDone(sender, scanId, 'pii', { result })
-        })
-        .catch((error) => { if (isActive(scan)) sendEngineDone(sender, scanId, 'pii', { error: String(error) }) })
-
-      await Promise.all([audit, pii])
+      await analyzeWorkbookProgressively(filePath, scan, event.sender)
       return isActive(scan) ? { success: true } : inactiveResult(scan)
     } catch (error) {
+      if (scan.stopFailed) return inactiveResult(scan)
+      if (error instanceof SourceChangedError && isActive(scan)) {
+        sendEngineDone(event.sender, scanId, 'audit', { error: error.message, stage: 'complete', invalidate: true })
+      }
       return { success: false, error: String(error) }
     } finally { await releaseWhenSettled(scan) }
   })

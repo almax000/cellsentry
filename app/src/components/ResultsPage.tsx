@@ -1,271 +1,103 @@
-import { useState, useCallback, useRef, useMemo } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useScan } from '../context/ScanContext'
-import type { Issue, SeverityLevel } from '../types'
-import { FileSpreadsheetIcon, ShieldCheckIcon, CheckIcon, AlertIcon } from './icons'
-import { formatDuration } from '../utils/format'
-import { TASKS } from '../tasks'
-import IssueCard from './IssueCard'
+import { useAuditWorkspace } from '../context/AuditWorkspaceContext'
+import { reviewKey, type ReviewStatus } from '../../shared/auditWorkspace'
+import type { Issue } from '../types'
+import { auditAiStatusKey } from '../utils/auditDraft'
+import { FileSpreadsheetIcon, AlertIcon } from './icons'
 import SpreadsheetPreview from './SpreadsheetPreview'
+import { AuditReviewProgressNotice } from './AuditReviewNotice'
 import './ResultsPage.css'
+import './AuditWorkspace.css'
 
-type FilterKey = 'all' | SeverityLevel
+const STATUSES: ReviewStatus[] = ['pending', 'confirmed', 'not-applicable']
+type ReviewFilter = 'all' | ReviewStatus
+const observation = (value: unknown, missing: string): string => value == null ? missing : typeof value === 'object' ? JSON.stringify(value) : String(value)
 
 export default function AuditResultsPage(): JSX.Element {
   const { t } = useTranslation('results')
-  const { t: tc } = useTranslation('common')
   const navigate = useNavigate()
-  const { results, fileInfo, reset, isBatch, batchFiles, batchResults, batchIndex, scanState, error, selectBatchFile } = useScan()
-
-  const [filter, setFilter] = useState<FilterKey>('all')
-  const [selectedIssue, setSelectedIssue] = useState<Issue | null>(
-    results?.issues[0] || null
-  )
-  const [expandedIssue, setExpandedIssue] = useState<Issue | null>(null)
-  const [panelWidth, setPanelWidth] = useState(340)
-  const [isDragging, setIsDragging] = useState(false)
-  const activeBatchFileIndex = Math.max(0, batchIndex)
-  const selectedFileError = isBatch && scanState === 'error' ? error : ''
-  const dividerRef = useRef<HTMLDivElement>(null)
-
+  const { results, fileInfo, reset, isBatch, batchFiles, batchIndex, scanState, error, selectBatchFile, cancelScan, stopRetryRequired, progress } = useScan()
+  const { decisions, updateDecision, draftError, retrySave } = useAuditWorkspace()
   const issues = results?.issues || []
-  const summary = results?.summary || { errors: 0, warnings: 0, info: 0, total: 0 }
-
-  const filteredIssues = useMemo(() => {
-    if (filter === 'all') return issues
-    return issues.filter((i) => i.severity === filter)
-  }, [issues, filter])
-
-  // `auditReview` is present only when the formula assistant actually ran.
-  const aiReviewed = Boolean(results?.auditReview)
-  const aiReviewedCount = aiReviewed ? issues.filter((issue) => issue.llmVerified !== undefined).length : 0
-
-  const handleIssueClick = useCallback(
-    (issue: Issue) => {
-      setSelectedIssue({ ...issue })
-      setExpandedIssue((prev) => (prev?.id === issue.id ? null : issue))
-    },
-    []
-  )
-
-  // Back to this task's entry page, not the home page.
-  const handleRescan = useCallback(() => {
-    reset()
-    navigate(TASKS.audit.route)
-  }, [reset, navigate])
-
-  const handleBatchFileSelect = useCallback(
-    (index: number) => {
-      selectBatchFile(index)
-      setFilter('all')
-      setSelectedIssue(null)
-      setExpandedIssue(null)
-    },
-    [selectBatchFile]
-  )
-
-  // Resizable divider
-  const handleMouseDown = useCallback(
-    (e: React.MouseEvent) => {
-      e.preventDefault()
-      setIsDragging(true)
-      const startX = e.clientX
-      const startWidth = panelWidth
-
-      const handleMouseMove = (ev: MouseEvent): void => {
-        const delta = ev.clientX - startX
-        setPanelWidth(Math.min(Math.max(startWidth + delta, 280), 600))
-      }
-      const handleMouseUp = (): void => {
-        setIsDragging(false)
-        document.removeEventListener('mousemove', handleMouseMove)
-        document.removeEventListener('mouseup', handleMouseUp)
-      }
-      document.addEventListener('mousemove', handleMouseMove)
-      document.addEventListener('mouseup', handleMouseUp)
-    },
-    [panelWidth]
-  )
-
-  // Batch summary stats
-  const batchSummary = batchResults?.aggregateSummary
-
-  // No issues state (single file only)
-  if (!isBatch && issues.length === 0) {
-    return (
-      <div className="no-issues-container view-enter">
-        <div className="no-issues-icon">
-          <ShieldCheckIcon size={40} />
-        </div>
-        <div className="no-issues-title">{t('allClear')}</div>
-        <div className="no-issues-file">{fileInfo?.fileName || tc('file')}</div>
-        <div className="no-issues-detail">
-          {t('sheetsAndCells', {
-            sheets: fileInfo?.sheets?.length || 0,
-            cells: fileInfo?.totalCells?.toLocaleString() || 0
-          })}
-          {results?.duration ? ` · ${t('scannedIn', { duration: formatDuration(results.duration) })}` : ''}
-        </div>
-        <div className="no-issues-msg">
-          {t('noIssuesMsg').split('\n').map((line, i) => (
-            <span key={i}>{line}{i === 0 && <br />}</span>
-          ))}
-        </div>
-        <button className="btn btn-primary" onClick={handleRescan} style={{ marginTop: '8px' }}>
-          {tc('scanAnother')}
-        </button>
+  const [reviewFilter, setReviewFilter] = useState<ReviewFilter>('all')
+  const [severity, setSeverity] = useState('all')
+  const [selectedKey, setSelectedKey] = useState('')
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [narrow, setNarrow] = useState(() => window.innerWidth <= 1180)
+  const drawer = useRef<HTMLDialogElement>(null)
+  const reviewButton = useRef<HTMLButtonElement>(null)
+  const identity = JSON.stringify([results?.filePath, results?.sourceFingerprint || results?.scannedAt])
+  useEffect(() => { setSelectedKey(''); setReviewFilter('all'); setSeverity('all'); setDrawerOpen(false) }, [identity])
+  useEffect(() => {
+    const media = window.matchMedia('(max-width: 1180px)')
+    const change = (): void => setNarrow(media.matches)
+    media.addEventListener('change', change)
+    return () => media.removeEventListener('change', change)
+  }, [])
+  useEffect(() => { if (narrow && drawerOpen) drawer.current?.showModal() }, [narrow, drawerOpen])
+  const filtered = useMemo(() => issues.filter(issue =>
+    (reviewFilter === 'all' || (decisions[reviewKey(issue)]?.status || 'pending') === reviewFilter) && (severity === 'all' || issue.severity === severity)
+  ), [issues, decisions, reviewFilter, severity])
+  const selected = filtered.find(issue => reviewKey(issue) === selectedKey) || filtered[0] || null
+  const confirmed = issues.filter(issue => decisions[reviewKey(issue)]?.status === 'confirmed').length
+  const reviewed = issues.filter(issue => decisions[reviewKey(issue)]?.status && decisions[reviewKey(issue)].status !== 'pending').length
+  const names = fileInfo?.sheets?.map(sheet => sheet.name) || [...new Set(issues.map(issue => issue.sheetName))]
+  const sheets = names.length ? names : ['Sheet1']
+  const failedFile = isBatch && !results ? batchFiles[Math.max(0, batchIndex)] : null
+  const closeDrawer = (): void => { if (drawer.current?.open) drawer.current.close(); setDrawerOpen(false); reviewButton.current?.focus() }
+  const anotherFile = (): void => { reset(); navigate('/audit') }
+  const inspector = (issue: Issue): JSX.Element => {
+    const decision = decisions[reviewKey(issue)] || { status: 'pending', note: '' }
+    return <>
+      <div className="aw-inspector-heading"><h2>{t('workspace.review')}</h2>{narrow && <button className="btn btn-ghost" type="button" onClick={closeDrawer}>{t('workspace.close')}</button>}</div>
+      <div className="aw-location">{issue.sheetName}<strong>{issue.cell}</strong></div>
+      <div className="aw-evidence-scroll">
+      <section className="aw-evidence" aria-labelledby="rule-heading">
+        <h3 id="rule-heading">{t('workspace.ruleEvidence')}</h3><p>{issue.message}</p>
+        <dl><dt>{t('ruleId')}</dt><dd><code>{issue.ruleId}</code></dd></dl>
+        <dl><dt>{t('formula')}</dt><dd><code data-testid="review-formula">{issue.formula || t('workspace.noFormula')}</code></dd></dl>
+        <dl><dt>{t('workspace.cachedValue')}</dt><dd data-testid="review-cached-value">{observation(issue.currentValue, t('workspace.unknown'))}</dd></dl>
+        <p className="aw-caveat">{t('workspace.notRecalculated')}</p>
+        <dl><dt>{t('workspace.businessIntent')}</dt><dd>{t('workspace.unknown')}</dd></dl>
+        {issue.suggestion && <><h4>{t('suggest')}</h4><p>{t(`suggestionOverrides.${issue.ruleId}`, { defaultValue: issue.suggestion })}</p></>}
+      </section>
+      <section className="aw-evidence" aria-labelledby="ai-heading"><h3 id="ai-heading">{t('aiReasoning')}</h3>
+        <p data-testid="review-ai-status">{t(auditAiStatusKey(issue))}</p>
+        {issue.llmReasoning && <p>{issue.llmReasoning}</p>}<p className="aw-caveat">{t('workspace.aiIsOpinion')}</p>
+      </section>
       </div>
-    )
-  }
-
-  const filterItems: [FilterKey, string, number, string | null][] = isBatch && batchSummary
-    ? [
-        ['all', t('filterAll'), batchSummary.total, null],
-        ['error', t('filterCritical'), batchSummary.errors, 'var(--danger)'],
-        ['warning', t('filterWarn'), batchSummary.warnings, 'var(--warning)'],
-        ['info', t('filterInfo'), batchSummary.info, 'var(--info)'],
-      ]
-    : [
-        ['all', t('filterAll'), issues.length, null],
-        ['error', t('filterCritical'), summary.errors, 'var(--danger)'],
-        ['warning', t('filterWarn'), summary.warnings, 'var(--warning)'],
-        ['info', t('filterInfo'), summary.info, 'var(--info)'],
-      ]
-
-  const sheets = fileInfo?.sheets?.map((s) => s.name)
-    || (results?.issues?.[0]?.sheetName
-      ? [...new Set(results.issues.map((i) => i.sheetName))]
-      : ['Sheet1'])
-
-  return (
-    <>
-      <div className="results-split view-enter">
-        {/* Left: Issues Panel */}
-        <div className="results-panel-left" data-testid="results-panel-left" style={{ width: panelWidth, minWidth: 280 }}>
-          {/* Batch file tabs */}
-          {isBatch && batchFiles.length > 1 && (
-            <div className="batch-tabs">
-              {batchFiles.map((file, i) => {
-                const issueCount = file.result?.summary.total || 0
-                const hasError = file.status === 'error'
-                return (
-                  <div
-                    key={file.path}
-                    className={`batch-tab ${i === activeBatchFileIndex ? 'active' : ''} ${hasError ? 'error' : ''}`}
-                    data-testid={`results-batch-tab-${i}`}
-                    onClick={() => handleBatchFileSelect(i)}
-                    title={file.name}
-                  >
-                    <span className="batch-tab-icon">
-                      {hasError ? (
-                        <AlertIcon size={11} />
-                      ) : issueCount > 0 ? (
-                        <span className="batch-tab-count">{issueCount}</span>
-                      ) : (
-                        <CheckIcon size={11} />
-                      )}
-                    </span>
-                    <span className="batch-tab-name">{file.name}</span>
-                  </div>
-                )
-              })}
-            </div>
-          )}
-
-          <div className="results-top-bar">
-            <div className="file-icon-sm">
-              <FileSpreadsheetIcon size={16} />
-            </div>
-            <div className="file-info-compact">
-              <div className="file-name">
-                {isBatch
-                  ? batchFiles[activeBatchFileIndex]?.name || tc('file')
-                  : fileInfo?.fileName || tc('file')}
-              </div>
-              <div className="file-detail">
-                {isBatch && batchResults
-                  ? t('batchFileDetail', { count: batchFiles.length, issues: batchSummary?.total || 0 })
-                  : t('fileDetail', {
-                      sheets: sheets.length,
-                      sheetSuffix: sheets.length > 1 ? 's' : '',
-                      cells: fileInfo?.totalCells?.toLocaleString() || 0,
-                      duration: results?.duration ? ` · ${formatDuration(results.duration)}` : ''
-                    })}
-              </div>
-            </div>
-            <button className="rescan-btn" data-testid="results-rescan-btn" onClick={handleRescan} title={tc('rescan')}>
-              ↻
-            </button>
-          </div>
-
-          {!selectedFileError && <><div className="results-summary-row" data-testid="results-summary">
-            <div className="summary-card-mini">
-              <div className="label">{t('crit')}</div>
-              <div className="value danger">{summary.errors}</div>
-            </div>
-            <div className="summary-card-mini">
-              <div className="label">{t('warn')}</div>
-              <div className="value warning">{summary.warnings}</div>
-            </div>
-            <div className="summary-card-mini">
-              <div className="label">{t('info')}</div>
-              <div className="value info-color">{summary.info}</div>
-            </div>
-            {aiReviewed && <div className="summary-card-mini" data-testid="results-ai-reviewed">
-              <div className="label">{t('aiReviewed')}</div>
-              <div className="value brand">{aiReviewedCount}/{issues.length}</div>
-            </div>}
-          </div>
-
-          <div className="filter-bar">
-            {filterItems.map(([key, label, count, color]) => (
-              <div
-                key={key}
-                className={`filter-chip ${filter === key ? 'active' : ''}`}
-                data-testid={`results-filter-${key}`}
-                onClick={() => setFilter(key)}
-              >
-                {color && <span className="filter-dot" style={{ background: color }} />}
-                {label} ({count})
-              </div>
-            ))}
-          </div>
-
-          </>}
-          <div className="issue-list">
-            {selectedFileError && <div role="alert" className="analysis-warning">{selectedFileError}</div>}
-            {filteredIssues.map((issue, index) => (
-              <IssueCard
-                key={issue.id}
-                issue={issue}
-                isSelected={selectedIssue?.id === issue.id}
-                isExpanded={expandedIssue?.id === issue.id}
-                showAiReview={aiReviewed}
-                onClick={() => handleIssueClick(issue)}
-                data-testid={`results-issue-card-${index}`}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Resizable Divider */}
-        <div
-          ref={dividerRef}
-          className={`results-divider ${isDragging ? 'active' : ''}`}
-          onMouseDown={handleMouseDown}
-        />
-
-        {/* Right: Spreadsheet Preview */}
-        <div className="results-panel-right" data-testid="results-panel-right">
-          {selectedFileError ? <div className="no-issues-container">{tc('file')}: {batchFiles[activeBatchFileIndex]?.name}</div> : <SpreadsheetPreview
-            issues={issues}
-            selectedIssue={selectedIssue}
-            sheets={sheets}
-            filePath={results?.filePath || ''}
-          />}
-        </div>
+      <div className="aw-review-controls">
+      <fieldset className="aw-decision" data-testid="review-decision"><legend>{t('workspace.humanDecision')}</legend>
+        {STATUSES.map(status => <label key={status} className={decision.status === status ? 'chosen' : ''}><input type="radio" name="review-status" value={status} checked={decision.status === status} onChange={() => updateDecision(issue, { status })} />{t(`workspace.${status}`)}</label>)}
+      </fieldset>
+      <label className="aw-note">{t('workspace.note')}<textarea data-testid="review-note" rows={4} maxLength={4000} value={decision.note} onChange={event => updateDecision(issue, { note: event.target.value })} /></label>
+      <p className="aw-caveat">{t('workspace.localDraft')}</p>
       </div>
     </>
-  )
+  }
+  return <div className="aw-workspace" data-testid="audit-workspace">
+    {isBatch && <div className="batch-tabs aw-batch" role="group" aria-label={t('workspace.files')}>{batchFiles.map((file, index) => <button type="button" key={file.path} className={`batch-tab ${index === batchIndex ? 'active' : ''}`} data-testid={`results-batch-tab-${index}`} onClick={() => selectBatchFile(index)}>{file.name}{file.status === 'error' && <AlertIcon size={12} />}</button>)}</div>}
+    <div className="aw-filebar"><FileSpreadsheetIcon size={20} /><div className="aw-filetitle"><h2>{results?.fileName || failedFile?.name || t('workspace.review')}</h2><span>{t('workspace.reviewCount', { reviewed, total: issues.length, confirmed })}</span></div>
+      {narrow && selected && <button className="btn btn-ghost" ref={reviewButton} type="button" data-testid="review-open" onClick={() => setDrawerOpen(true)}>{t('workspace.review')}</button>}
+      <button className="btn btn-ghost" type="button" data-testid="results-rescan-btn" onClick={anotherFile}>{t('workspace.anotherFile')}</button>
+    </div>
+    {(scanState === 'scanning' || scanState === 'cancelling' || stopRetryRequired) && <div className="aw-progress" role="status"><span>{stopRetryRequired ? error : t('workspace.aiInProgress')}</span>{progress.auditReview && <AuditReviewProgressNotice review={progress.auditReview} />}<button className="btn btn-ghost" type="button" data-testid="workspace-cancel" disabled={scanState === 'cancelling'} onClick={() => void cancelScan()}>{t(stopRetryRequired ? 'workspace.retryStop' : 'workspace.stopAi')}</button></div>}
+    {draftError && <div className="aw-feedback" role="alert">{t('workspace.draftFailed')} <button type="button" className="btn btn-ghost" onClick={retrySave}>{t('workspace.retry')}</button></div>}
+    {failedFile ? <div className="aw-empty" role="alert"><h3>{failedFile.name}</h3><p>{failedFile.error || error}</p><button className="btn btn-ghost" onClick={anotherFile}>{t('workspace.anotherFile')}</button></div> : <div className="aw-columns">
+      <aside className="aw-queue" data-testid="results-panel-left" aria-label={t('workspace.findings')}>
+        <div className="aw-queue-title"><h2>{t('workspace.findings')}</h2><span>{issues.length}</span></div>
+        <div className="aw-filters"><label>{t('workspace.reviewStatus')}<select data-testid="review-filter" value={reviewFilter} onChange={event => setReviewFilter(event.target.value as ReviewFilter)}><option value="all">{t('filterAll')}</option>{STATUSES.map(status => <option key={status} value={status}>{t(`workspace.${status}`)}</option>)}</select></label>
+          <label>{t('workspace.severity')}<select data-testid="severity-filter" value={severity} onChange={event => setSeverity(event.target.value)}><option value="all">{t('filterAll')}</option><option value="error">{t('crit')}</option><option value="warning">{t('warn')}</option><option value="info">{t('info')}</option></select></label></div>
+        <div className="aw-issue-list">{filtered.map((issue, index) => <button type="button" key={reviewKey(issue)} data-testid={`results-issue-card-${index}`} data-rule-id={issue.ruleId} data-sheet-name={issue.sheetName} data-cell-address={issue.cell} className={`aw-issue ${selected === issue ? 'selected' : ''}`} aria-pressed={selected === issue} onClick={() => setSelectedKey(reviewKey(issue))}>
+          <span className="aw-issue-meta"><strong>{issue.cell}</strong><span>{issue.sheetName}</span><span className={`aw-severity ${issue.severity}`}>{t(issue.severity === 'error' ? 'crit' : issue.severity === 'warning' ? 'warn' : 'info')}</span></span><span className="aw-issue-message">{issue.message}</span><span className="aw-issue-state">{t(`workspace.${decisions[reviewKey(issue)]?.status || 'pending'}`)}</span>
+        </button>)}{!filtered.length && <div className="aw-empty"><h3>{t(issues.length ? 'workspace.noMatching' : 'allClear')}</h3><p>{t(issues.length ? 'workspace.changeFilter' : 'noIssuesMsg')}</p></div>}</div>
+      </aside>
+      <main className="aw-sheet" data-testid="results-panel-right"><div className="aw-formula-bar"><span>{selected?.cell || '—'}</span><code>{selected?.formula || t('workspace.selectFinding')}</code></div><SpreadsheetPreview issues={issues} selectedIssue={selected} sheets={sheets} filePath={results?.filePath || ''} sourceFingerprint={results?.sourceFingerprint} onSelectIssue={issue => setSelectedKey(reviewKey(issue))} /></main>
+      {!narrow && <aside className="aw-inspector" data-testid="review-inspector">{selected ? inspector(selected) : <div className="aw-empty"><p>{t('workspace.selectFinding')}</p></div>}</aside>}
+    </div>}
+    {narrow && drawerOpen && selected && <dialog className="aw-drawer" ref={drawer} onCancel={event => { event.preventDefault(); closeDrawer() }} onClose={closeDrawer} data-testid="review-inspector">{inspector(selected)}</dialog>}
+  </div>
 }
