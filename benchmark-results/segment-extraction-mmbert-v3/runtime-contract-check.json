@@ -1,8 +1,0 @@
-{
-  "passed": true,
-  "cases": [
-    "verbatim text, whitespace and source",
-    "overflow error without truncation",
-    "missing-goal error"
-  ]
-}

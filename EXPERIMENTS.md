@@ -1,5 +1,7 @@
 # 公式复核训练与本地评测成果
 
+> 数据在哪（2026-11-17）：`training-data/`、`benchmark-results/` 和 `test-cases/` 下的模型评测集只保存在开发仓，不随公开仓发布。公开仓里的 `test-cases/` 只有社区样本，本文指向另外那些路径的链接在公开仓里打不开。
+
 > 当前 `cellsentry-dev` 的接入更新（2026-10-16）：已同步本说明及历史成果，将 v2 GGUF 设为应用默认模型，补齐 Electron JSON-lines 推理接口。下文“尚未接入”“不替换默认模型”等文字描述隔壁实验归档时的状态；历史指标未因本次接入而重测或修改。
 
 保存日期：2026-10-15。本仓库基于 [almax000/cellsentry](https://github.com/almax000/cellsentry)，保留上游代码、历史及 MIT LICENSE。新增实验尚未接入 Electron 应用。
